@@ -1,0 +1,380 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>SQL IDOL - BLACKPINK Pro</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Bungee+Inline&family=Inter:wght@400;700;900&family=JetBrains+Mono&display=swap');
+
+        :root {
+            --bp-pink: #f4a7bb;
+            --bp-dark-pink: #e0809b;
+        }
+
+        body {
+            background-color: #000;
+            color: white;
+            font-family: 'Inter', sans-serif;
+            height: 100vh;
+            display: flex;
+            flex-direction: column;
+            overflow: hidden;
+            margin: 0;
+        }
+
+        /* --- STAGE AREA --- */
+        #viewport {
+            height: 55%;
+            position: relative;
+            background: radial-gradient(circle at center, #1a0a0e 0%, #000 100%);
+        }
+
+        .stage-area {
+            height: 100%;
+            display: flex;
+            align-items: center;
+            justify-content: flex-start;
+            gap: 24px;
+            padding: 40px;
+            overflow-x: auto;
+        }
+
+        .stage-area::-webkit-scrollbar { height: 8px; }
+        .stage-area::-webkit-scrollbar-thumb { background: #333; border-radius: 4px; }
+
+        #table-overlay {
+            position: absolute;
+            inset: 0;
+            background: #050505;
+            z-index: 10;
+            display: none;
+            padding: 40px;
+            overflow-y: auto;
+        }
+
+        table { width: 100%; border-collapse: collapse; font-family: 'JetBrains Mono', monospace; font-size: 13px; }
+        th { text-align: left; padding: 12px; border-bottom: 2px solid #222; color: var(--bp-pink); text-transform: uppercase; font-size: 10px; }
+        td { padding: 12px; border-bottom: 1px solid #111; color: #ccc; }
+
+        .contestant-card {
+            width: 200px;
+            height: 360px;
+            background: #0a0a0a;
+            border-radius: 12px;
+            position: relative;
+            transition: all 0.4s cubic-bezier(0.16, 1, 0.3, 1);
+            flex-shrink: 0;
+            border: 1px solid #222;
+            display: flex; 
+            flex-direction: column;
+            opacity: 0.2;
+            filter: grayscale(1) blur(1px);
+        }
+
+        .contestant-card.selected {
+            border-color: var(--bp-pink);
+            transform: translateY(-10px) scale(1.02);
+            box-shadow: 0 0 30px rgba(244, 167, 187, 0.15);
+            opacity: 1;
+            filter: grayscale(0) blur(0);
+        }
+
+        .delete-btn {
+            position: absolute; top: 10px; right: 10px; width: 20px; height: 20px;
+            background: rgba(0,0,0,0.7); color: #666; border-radius: 50%;
+            display: flex; align-items: center; justify-content: center;
+            font-size: 12px; cursor: pointer; z-index: 20; border: 1px solid #333;
+        }
+        .delete-btn:hover { color: white; border-color: white; }
+
+        .card-img-container {
+            width: 100%; height: 140px; overflow: hidden;
+            border-radius: 12px 12px 0 0; background: #111;
+        }
+        .card-img { width: 100%; height: 100%; object-fit: cover; }
+
+        .data-stack { padding: 12px; display: flex; flex-direction: column; gap: 5px; }
+
+        .field-box {
+            padding: 5px 8px; border-radius: 4px; background: #151515;
+            border: 1px solid #222; display: flex; flex-direction: column;
+            font-family: 'JetBrains Mono', monospace; transition: all 0.3s;
+        }
+        .field-box.highlight {
+            border-color: var(--bp-pink);
+            background: rgba(244, 167, 187, 0.1);
+        }
+        .field-label { font-size: 8px; font-weight: 900; color: #444; letter-spacing: 0.05em; }
+        .highlight .field-label { color: var(--bp-pink); }
+        .field-value { font-size: 11px; font-weight: 600; color: #eee; text-overflow: ellipsis; overflow: hidden; }
+
+        .backstage {
+            height: 45%; background: #050505;
+            display: grid; grid-template-columns: 320px 1fr;
+            gap: 24px; padding: 24px; border-top: 1px solid #1a1a1a;
+        }
+
+        .panel { background: #0a0a0a; border: 1px solid #1a1a1a; border-radius: 12px; padding: 16px; }
+
+        #sql-code {
+            flex-grow: 1; background: #000; color: #fff;
+            font-family: 'JetBrains Mono', monospace; padding: 20px;
+            border: 1px solid #222; border-radius: 8px; resize: none;
+            outline: none; font-size: 14px; line-height: 1.6;
+        }
+
+        .btn-primary { background: var(--bp-pink); color: black; font-weight: 800; padding: 10px; border-radius: 6px; cursor: pointer; text-align: center; text-transform: uppercase; font-size: 11px; transition: opacity 0.2s; }
+        .btn-primary:hover { opacity: 0.8; }
+        .btn-tab { padding: 4px 12px; border-radius: 20px; font-size: 10px; font-weight: bold; border: 1px solid #333; color: #555; }
+        .btn-tab.active { background: var(--bp-pink); color: black; border-color: var(--bp-pink); }
+        
+        #album-input { display: none; }
+
+        /* Preview specific styles */
+        #img-preview-container {
+            width: 100%; height: 60px; border: 1px dashed #333; border-radius: 6px;
+            display: flex; align-items: center; justify-content: center; overflow: hidden;
+            background: #050505; margin-bottom: 8px;
+        }
+        #img-preview-tag { width: 100%; height: 100%; object-fit: cover; display: none; }
+        #img-preview-placeholder { font-size: 9px; color: #444; text-transform: uppercase; font-weight: bold; }
+    </style>
+</head>
+<body>
+
+    <div id="viewport">
+        <div id="stage" class="stage-area"></div>
+        <div id="table-overlay">
+            <table id="result-table">
+                <thead><tr id="table-head"></tr></thead>
+                <tbody id="table-body"></tbody>
+            </table>
+        </div>
+        
+        <div class="absolute top-4 right-4 z-20 flex gap-2">
+            <button id="view-visual" onclick="toggleView('visual')" class="btn-tab active">VISUAL STAGE</button>
+            <button id="view-table" onclick="toggleView('table')" class="btn-tab">RAW DATA</button>
+        </div>
+    </div>
+
+    <div class="backstage">
+        <div class="sidebar flex flex-col gap-4">
+            <div class="panel flex flex-col gap-2">
+                <h3 class="text-[10px] font-black tracking-widest text-zinc-500 uppercase">New Member Details</h3>
+                
+                <div id="img-preview-container">
+                    <img id="img-preview-tag" src="" alt="Preview">
+                    <div id="img-preview-placeholder">No Photo Loaded</div>
+                </div>
+
+                <input type="text" id="in-name" placeholder="Name (e.g. LISA)" class="bg-zinc-900 border border-zinc-800 p-2 rounded text-xs outline-none">
+                <input type="text" id="in-role" placeholder="Role (e.g. Dancer)" class="bg-zinc-900 border border-zinc-800 p-2 rounded text-xs outline-none">
+                <div class="flex items-center gap-2 mt-1">
+                    <span class="text-[9px] text-zinc-500 font-mono">RATING:</span>
+                    <input type="range" id="in-rating" min="0" max="100" value="95" class="flex-grow accent-pink-400" oninput="document.getElementById('rating-val').innerText = this.value">
+                    <span id="rating-val" class="text-[10px] font-mono w-5">95</span>
+                </div>
+                
+                <button onclick="insertManual()" class="btn-primary mt-2">INSERT INTO members</button>
+                
+                <hr class="border-zinc-800 my-1">
+                
+                <h3 class="text-[10px] font-black tracking-widest text-zinc-500 uppercase">1. Prepare Image</h3>
+                <input type="file" id="album-input" accept="image/*" onchange="handleFileUpload(event)">
+                <button onclick="document.getElementById('album-input').click()" class="bg-zinc-800 text-zinc-300 hover:bg-zinc-700 p-2 rounded text-[10px] font-bold uppercase flex items-center justify-center gap-2">
+                    <svg xmlns="http://www.w3.org/2000/svg" width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="17 8 12 3 7 8"/><line x1="12" y1="3" x2="12" y2="15"/></svg>
+                    Upload Album Photo
+                </button>
+            </div>
+            <div class="text-[9px] text-zinc-600 leading-tight px-2">
+                <strong>PROCESS:</strong> Upload photo first, then fill details and click "Insert" to finish.
+            </div>
+        </div>
+
+        <div class="flex flex-col">
+            <div class="flex justify-between items-center mb-2">
+                <div class="flex items-center gap-3">
+                    <div id="sql-status" class="w-2 h-2 rounded-full bg-green-500"></div>
+                    <span id="status-text" class="text-[10px] font-bold text-zinc-500 uppercase tracking-widest">SQL Engine v2.3 (Staging Enabled)</span>
+                </div>
+            </div>
+            <textarea id="sql-code" spellcheck="false" oninput="runQuery()">SELECT * FROM members 
+WHERE role <> 'Lead Vocalist' 
+AND (rating > 96 OR name LIKE '%A%');</textarea>
+        </div>
+    </div>
+
+    <script>
+        const stage = document.getElementById('stage');
+        const sqlInput = document.getElementById('sql-code');
+        const sqlStatus = document.getElementById('sql-status');
+        const statusText = document.getElementById('status-text');
+
+        let stagedImg = null;
+
+        let members = [
+            { id: 1, name: "JISOO", role: "Lead Vocalist", rating: 98, img: "https://images.unsplash.com/photo-1544005313-94ddf0286df2?auto=format&fit=crop&q=80&w=400" },
+            { id: 2, name: "JENNIE", role: "Main Rapper", rating: 97, img: "https://images.unsplash.com/photo-1506794778202-cad84cf45f1d?auto=format&fit=crop&q=80&w=400" },
+            { id: 3, name: "ROSÉ", role: "Main Vocalist", rating: 96, img: "https://images.unsplash.com/photo-1531746020798-e6953c6e8e04?auto=format&fit=crop&q=80&w=400" },
+            { id: 4, name: "LISA", role: "Main Dancer", rating: 99, img: "https://images.unsplash.com/photo-1494790108377-be9c29b29330?auto=format&fit=crop&q=80&w=400" }
+        ];
+
+        function handleFileUpload(event) {
+            const file = event.target.files[0];
+            if (!file) return;
+            
+            const reader = new FileReader();
+            reader.onload = (e) => {
+                stagedImg = e.target.result;
+                const previewImg = document.getElementById('img-preview-tag');
+                const placeholder = document.getElementById('img-preview-placeholder');
+                
+                previewImg.src = stagedImg;
+                previewImg.style.display = 'block';
+                placeholder.style.display = 'none';
+            };
+            reader.readAsDataURL(file);
+        }
+
+        function toggleView(type) {
+            const isVisual = type === 'visual';
+            document.getElementById('table-overlay').style.display = isVisual ? 'none' : 'block';
+            document.getElementById('view-visual').className = `btn-tab ${isVisual ? 'active' : ''}`;
+            document.getElementById('view-table').className = `btn-tab ${!isVisual ? 'active' : ''}`;
+        }
+
+        function insertManual() {
+            const nameInput = document.getElementById('in-name');
+            const roleInput = document.getElementById('in-role');
+            const ratingInput = document.getElementById('in-rating');
+            
+            const name = nameInput.value.toUpperCase();
+            const role = roleInput.value;
+            const rating = parseInt(ratingInput.value);
+
+            if (!name) {
+                setError("Member Name is required!");
+                return;
+            }
+
+            // Final insertion logic
+            members.push({ 
+                id: members.length + 1, 
+                name, 
+                role: role || "Vocalist", 
+                rating, 
+                img: stagedImg || "https://images.unsplash.com/photo-1517841905240-472988babdf9?auto=format&fit=crop&q=80&w=400" 
+            });
+
+            // Reset UI
+            nameInput.value = "";
+            roleInput.value = "";
+            stagedImg = null;
+            document.getElementById('img-preview-tag').style.display = 'none';
+            document.getElementById('img-preview-placeholder').style.display = 'block';
+            
+            runQuery();
+        }
+
+        function deleteMember(id) {
+            members = members.filter(m => m.id !== id);
+            runQuery();
+        }
+
+        function runQuery() {
+            const rawQuery = sqlInput.value.replace(/\n/g, ' ').trim();
+            const selectMatch = rawQuery.match(/SELECT\s+(.+?)\s+FROM\s+members/i);
+            if (!selectMatch) { setError("Query must start with SELECT ... FROM members"); return; }
+
+            const colStr = selectMatch[1].toLowerCase();
+            let activeFields = [];
+            if (colStr.includes('*')) activeFields = ['id', 'name', 'role', 'rating'];
+            else ['id', 'name', 'role', 'rating'].forEach(f => { if (colStr.includes(f)) activeFields.push(f); });
+
+            let filtered = [];
+            const whereMatch = rawQuery.match(/WHERE\s+(.+)$/i);
+            
+            try {
+                if (!whereMatch) {
+                    filtered = [...members];
+                } else {
+                    const condition = whereMatch[1].replace(/;$/, '').trim();
+                    filtered = members.filter(row => evaluateSQL(condition, row));
+                }
+                setSuccess();
+                render(filtered, activeFields);
+            } catch (e) { setError("SQL Logic Error"); }
+        }
+
+        function evaluateSQL(condition, row) {
+            let jsExpr = condition
+                .replace(/(\w+)\s*(<>|!=)\s*'(.+?)'/gi, (m, col, op, val) => {
+                    return `String(row.${col.toLowerCase()}).toUpperCase() !== "${val.toUpperCase()}"`;
+                })
+                .replace(/(\w+)\s*(<>|!=)\s*(\d+)/gi, (m, col, op, val) => {
+                    return `row.${col.toLowerCase()} !== ${val}`;
+                })
+                .replace(/(\w+)\s+LIKE\s+'(.+?)'/gi, (m, col, pattern) => {
+                    const regex = new RegExp('^' + pattern.replace(/%/g, '.*') + '$', 'i');
+                    return `${regex}.test(row.${col.toLowerCase()})`;
+                })
+                .replace(/(\w+)\s*=\s*'(.+?)'/gi, (m, col, val) => {
+                    return `String(row.${col.toLowerCase()}).toUpperCase() === "${val.toUpperCase()}"`;
+                })
+                .replace(/(\w+)\s*(>=|<=|>|<|=)\s*(\d+)/gi, (m, col, op, val) => {
+                    const jsOp = op === '=' ? '===' : op;
+                    return `row.${col.toLowerCase()} ${jsOp} ${val}`;
+                })
+                .replace(/\bAND\b/gi, '&&')
+                .replace(/\bOR\b/gi, '||');
+
+            return new Function('row', `return (${jsExpr});`)(row);
+        }
+
+        function setError(msg) {
+            sqlStatus.className = "w-2 h-2 rounded-full bg-red-500";
+            statusText.innerText = msg;
+        }
+
+        function setSuccess() {
+            sqlStatus.className = "w-2 h-2 rounded-full bg-green-500";
+            statusText.innerText = "Query Success";
+        }
+
+        function render(filteredList, activeFields) {
+            stage.innerHTML = '';
+            members.forEach(m => {
+                const isMatch = filteredList.some(f => f.id === m.id);
+                const card = document.createElement('div');
+                card.className = `contestant-card ${isMatch ? 'selected' : ''}`;
+                card.innerHTML = `
+                    <div class="delete-btn" onclick="deleteMember(${m.id}); event.stopPropagation();">×</div>
+                    <div class="card-img-container"><img src="${m.img}" class="card-img" onerror="this.src='https://images.unsplash.com/photo-1549488344-1f9b8d2bd1f3?auto=format&fit=crop&q=80&w=400'"></div>
+                    <div class="data-stack">
+                        ${['id', 'name', 'role', 'rating'].map(f => `
+                            <div class="field-box ${isMatch && activeFields.includes(f) ? 'highlight' : ''}">
+                                <span class="field-label">${f.toUpperCase()}</span>
+                                <span class="field-value">${m[f]}</span>
+                            </div>
+                        `).join('')}
+                    </div>
+                `;
+                stage.appendChild(card);
+            });
+            const tHead = document.getElementById('table-head');
+            const tBody = document.getElementById('table-body');
+            tHead.innerHTML = ''; tBody.innerHTML = '';
+            activeFields.forEach(f => tHead.innerHTML += `<th>${f}</th>`);
+            filteredList.forEach(row => {
+                let tr = '<tr>';
+                activeFields.forEach(f => tr += `<td>${row[f]}</td>`);
+                tBody.innerHTML += tr + '</tr>';
+            });
+        }
+
+        window.onload = runQuery;
+    </script>
+</body>
+</html>
