@@ -105,11 +105,49 @@
             </div>
         </div>
 
-        <!-- OTHER PAGES REMAIN THE SAME -->
+        <!-- S.3 DATABASE PAGE -->
         <div id="page-database" class="page-content hidden">
-            <button onclick="showPage('home')" class="mb-6 text-emerald-400 font-bold text-xs uppercase tracking-widest"><i class="fas fa-arrow-left mr-2"></i>Back</button>
-            <h2 class="text-4xl font-black mb-8 text-emerald-400 uppercase tracking-tight">S.3 Database</h2>
-            <div class="glass p-8 rounded-3xl">Coming Soon...</div>
+            <button onclick="showPage('home')" class="mb-6 text-emerald-400 font-bold text-xs uppercase tracking-widest hover:underline transition">
+                <i class="fas fa-arrow-left mr-2"></i>Back to Home
+            </button>
+            <h2 class="text-4xl font-black mb-8 text-emerald-400 uppercase tracking-tight">S.3 Database & SQL</h2>
+            
+            <div class="grid gap-6">
+                <!-- SQL LAB 1 -->
+                <a href="SQLlab1.html" class="block group">
+                    <div class="glass p-8 rounded-3xl border-white/5 group-hover:border-emerald-500/50 group-hover:bg-emerald-500/5 transition-all duration-300">
+                        <div class="flex justify-between items-center">
+                            <div>
+                                <h3 class="font-black text-xl mb-2 uppercase tracking-tight text-white group-hover:text-emerald-400 transition-colors">SQL Lesson 1: Create & Insert</h3>
+                                <p class="text-slate-400 text-sm">Learn to define table structures and populate data using SQL commands.</p>
+                            </div>
+                            <div class="w-12 h-12 rounded-full bg-emerald-500/10 flex items-center justify-center text-emerald-400 group-hover:scale-110 transition-transform">
+                                <i class="fas fa-plus-square"></i>
+                            </div>
+                        </div>
+                    </div>
+                </a>
+
+                <!-- SQL LAB 2 -->
+                <a href="SQLlab2.html" class="block group">
+                    <div class="glass p-8 rounded-3xl border-white/5 group-hover:border-emerald-500/50 group-hover:bg-emerald-500/5 transition-all duration-300">
+                        <div class="flex justify-between items-center">
+                            <div>
+                                <h3 class="font-black text-xl mb-2 uppercase tracking-tight text-white group-hover:text-emerald-400 transition-colors">Interactive Select Stage</h3>
+                                <p class="text-slate-400 text-sm">Master data retrieval techniques, filtering, and sorting with SELECT queries.</p>
+                            </div>
+                            <div class="w-12 h-12 rounded-full bg-emerald-500/10 flex items-center justify-center text-emerald-400 group-hover:scale-110 transition-transform">
+                                <i class="fas fa-search"></i>
+                            </div>
+                        </div>
+                    </div>
+                </a>
+
+                <div class="glass p-8 rounded-3xl border-white/5 opacity-60">
+                    <h3 class="font-black text-xl mb-2 uppercase tracking-tight text-white/80">SQL Lesson 3: Advanced Queries</h3>
+                    <p class="text-slate-500 text-sm">Joins, Grouping, and Functions. (Coming Soon)</p>
+                </div>
+            </div>
         </div>
 
         <div id="page-concepts" class="page-content hidden">
