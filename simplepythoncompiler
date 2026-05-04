@@ -1,0 +1,412 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Python Notebook Simulator - Casting Input</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Fira+Code:wght@400;500&family=Lexend:wght@300;600&family=Indie+Flower&display=swap');
+        
+        body { 
+            background-color: #f1f5f9; 
+            font-family: 'Lexend', sans-serif;
+            color: #1e293b;
+        }
+
+        .notebook-cell {
+            background: white;
+            border-radius: 12px;
+            box-shadow: 0 10px 25px -5px rgba(0, 0, 0, 0.1);
+            overflow: hidden;
+            border: 1px solid #cbd5e1;
+        }
+
+        .paper-output {
+            background-color: #fffde7;
+            background-image: linear-gradient(#e1e1e1 1px, transparent 1px);
+            background-size: 100% 28px;
+            position: relative;
+            min-height: 520px;
+            padding-left: 55px !important;
+            padding-top: 24px !important;
+            box-shadow: inset 0 0 40px rgba(0,0,0,0.02);
+        }
+
+        .paper-output::before {
+            content: '';
+            position: absolute;
+            left: 45px;
+            top: 0;
+            bottom: 0;
+            width: 2px;
+            background: #ffcfcf;
+            border-right: 1px solid #ffcfcf;
+        }
+
+        .handwritten {
+            font-family: 'Indie Flower', cursive;
+            font-size: 1.25rem;
+            line-height: 28px;
+            color: #2563eb;
+        }
+
+        .error-ink {
+            color: #dc2626;
+            font-weight: bold;
+        }
+
+        #line-pointer {
+            position: absolute;
+            left: 2px;
+            color: #6366f1;
+            transition: top 0.15s ease;
+            z-index: 10;
+        }
+
+        #active-line-bg {
+            position: absolute;
+            left: 0;
+            right: 0;
+            height: 28px;
+            background: rgba(99, 102, 241, 0.1);
+            pointer-events: none;
+            transition: top 0.15s ease;
+        }
+
+        .notebook-input-field {
+            border: none;
+            outline: none;
+            background: rgba(0,0,0,0.04);
+            border-bottom: 2px solid #2563eb;
+            font-family: inherit;
+            width: 150px;
+            padding: 0 4px;
+            color: #d946ef;
+        }
+
+        .type-badge {
+            font-size: 0.65rem;
+            padding: 1px 8px;
+            border-radius: 4px;
+            text-transform: uppercase;
+            font-weight: 800;
+            margin-top: 4px;
+        }
+        .type-str { background: #fae8ff; color: #a21caf; }
+        .type-int { background: #dbeafe; color: #1e40af; }
+        .type-float { background: #fef3c7; color: #92400e; }
+
+        .mem-box {
+            border: 2px solid #94a3b8;
+            border-top: none;
+            padding: 16px 12px 10px 12px;
+            text-align: center;
+            min-width: 130px;
+            position: relative;
+            background: white;
+            transition: all 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+        }
+
+        .mem-box.active {
+            border-color: #6366f1;
+            transform: translateY(-5px);
+        }
+
+        .mem-label {
+            position: absolute;
+            top: -12px;
+            left: 50%;
+            transform: translateX(-50%);
+            background: #334155;
+            color: white;
+            font-size: 10px;
+            padding: 2px 8px;
+            border-radius: 4px;
+        }
+    </style>
+</head>
+<body class="p-4 md:p-8">
+
+    <div class="max-w-6xl mx-auto">
+        <header class="mb-8 flex flex-col md:flex-row justify-between items-end gap-4">
+            <div>
+                <h1 class="text-3xl font-black text-slate-900 tracking-tight">Strict Python Simulator</h1>
+                <p class="text-slate-500 font-medium">Supporting casting: int(input()) and float(input())</p>
+            </div>
+            <div class="flex gap-3">
+                <button id="runBtn" onclick="execute(true)" class="bg-indigo-600 text-white px-8 py-3 rounded-xl font-bold hover:bg-indigo-700 shadow-lg shadow-indigo-200 transition-all">Run Logic</button>
+                <button id="stepBtn" onclick="execute(false)" class="bg-white text-slate-700 border border-slate-200 px-6 py-3 rounded-xl font-bold hover:bg-slate-50 transition-all">Step ▶</button>
+                <button id="nextBtn" disabled onclick="triggerNext()" class="bg-slate-100 text-slate-300 px-6 py-3 rounded-xl font-bold">Next Line</button>
+            </div>
+        </header>
+
+        <div class="grid grid-cols-1 lg:grid-cols-12 gap-8">
+            <div class="lg:col-span-5">
+                <div class="notebook-cell bg-slate-900">
+                    <div class="p-3 bg-slate-800 text-slate-400 text-[10px] font-bold uppercase tracking-widest flex justify-between">
+                        <span>main.py</span>
+                        <span class="text-indigo-400">Strict Interpreter</span>
+                    </div>
+                    <div class="relative p-6">
+                        <div id="line-pointer" class="hidden text-xs">▶</div>
+                        <div id="active-line-bg" class="hidden"></div>
+                        <textarea id="code-editor" autocomplete="off" spellcheck="false" class="w-full h-[450px] bg-transparent text-slate-100 font-mono text-[14px] leading-[28px] outline-none resize-none" placeholder="Enter Python code..."></textarea>
+                    </div>
+                </div>
+            </div>
+
+            <div class="lg:col-span-7">
+                <div class="notebook-cell">
+                    <div id="terminal" class="paper-output p-4 handwritten overflow-y-auto">
+                        <div class="text-slate-300 italic opacity-50">Write code and press Run...</div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="lg:col-span-12 bg-slate-100/50 rounded-2xl p-8 border-2 border-dashed border-slate-300">
+                <h3 class="text-[11px] font-black text-slate-500 uppercase tracking-widest mb-6">Variable Memory (The Stack)</h3>
+                <div id="memory-viz" class="flex flex-wrap gap-8 items-end min-h-[120px]">
+                    <div class="text-slate-400 text-sm">No variables defined.</div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        const editor = document.getElementById('code-editor');
+        const terminal = document.getElementById('terminal');
+        const memoryViz = document.getElementById('memory-viz');
+        const nextBtn = document.getElementById('nextBtn');
+        const ptr = document.getElementById('line-pointer');
+        const lineBg = document.getElementById('active-line-bg');
+
+        editor.value = `name = input("Enter name: ")
+age = int(input("Enter age: "))
+score = float(input("Enter score: "))
+
+print("User:", name)
+print("Name repeated:", name * 3)
+print("Age next year:", age + 1)
+print("Double score:", score * 2)`;
+
+        let vars = {};
+        let isStepping = false;
+        let nextResolve = null;
+
+        function resetApp() {
+            vars = {};
+            terminal.innerHTML = "";
+            memoryViz.innerHTML = '<div class="text-slate-400 text-sm italic">No variables defined.</div>';
+            ptr.classList.add('hidden');
+            lineBg.classList.add('hidden');
+            toggleButtons(false);
+        }
+
+        function toggleButtons(active) {
+            document.getElementById('runBtn').disabled = active;
+            document.getElementById('stepBtn').disabled = active;
+            if (active && isStepping) {
+                nextBtn.disabled = false;
+                nextBtn.classList.replace('bg-slate-100', 'bg-orange-500');
+                nextBtn.classList.replace('text-slate-300', 'text-white');
+            } else {
+                nextBtn.disabled = true;
+                nextBtn.classList.replace('bg-orange-500', 'bg-slate-100');
+                nextBtn.classList.replace('text-white', 'text-slate-300');
+            }
+        }
+
+        function triggerNext() {
+            if (nextResolve) {
+                nextResolve();
+                nextResolve = null;
+            }
+        }
+
+        function highlightLine(idx) {
+            const top = 24 + (idx * 28);
+            ptr.classList.remove('hidden');
+            lineBg.classList.remove('hidden');
+            ptr.style.top = top + 'px';
+            lineBg.style.top = top + 'px';
+        }
+
+        function pythonEval(expr) {
+            expr = expr.trim();
+            if (!expr) return "";
+
+            // Handle string multiplication specifically: str * int
+            if (expr.includes('*')) {
+                const sides = expr.split('*').map(s => s.trim());
+                if (sides.length === 2) {
+                    const left = pythonEval(sides[0]);
+                    const right = pythonEval(sides[1]);
+                    
+                    if (typeof left === 'string' && typeof right === 'number') {
+                        return left.repeat(Math.max(0, Math.floor(right)));
+                    }
+                    if (typeof left === 'number' && typeof right === 'string') {
+                        return right.repeat(Math.max(0, Math.floor(left)));
+                    }
+                }
+            }
+
+            // Handle strings
+            const stringMatch = expr.match(/^["'](.*)["']$/);
+            if (stringMatch) return stringMatch[1];
+
+            // Handle numbers
+            if (!isNaN(expr) && expr !== "") return Number(expr);
+
+            // Handle variables directly
+            if (vars.hasOwnProperty(expr)) return vars[expr];
+
+            // Handle other operations
+            let processed = expr;
+            const words = expr.match(/[a-zA-Z_][a-zA-Z0-9_]*/g) || [];
+            const sortedWords = [...new Set(words)].sort((a,b) => b.length - a.length);
+
+            for(const word of sortedWords) {
+                if (vars.hasOwnProperty(word)) {
+                    const regex = new RegExp(`\\b${word}\\b`, 'g');
+                    const val = typeof vars[word] === 'string' ? `"${vars[word]}"` : vars[word];
+                    processed = processed.replace(regex, val);
+                }
+            }
+
+            try {
+                return Function(`'use strict'; return (${processed})`)();
+            } catch (e) {
+                if (/^[a-zA-Z_][a-zA-Z0-9_]*$/.test(expr)) {
+                    throw new ReferenceError(`name '${expr}' is not defined`);
+                }
+                throw new SyntaxError(`invalid syntax`);
+            }
+        }
+
+        function updateMemory(name, value) {
+            if (memoryViz.querySelector('.text-slate-400')) memoryViz.innerHTML = "";
+            let box = document.getElementById(`mem-${name}`);
+            
+            let type = 'str';
+            if (Number.isInteger(value)) type = 'int';
+            else if (typeof value === 'number') type = 'float';
+            
+            if (!box) {
+                box = document.createElement('div');
+                box.id = `mem-${name}`;
+                box.className = 'mem-box';
+                box.innerHTML = `<div class="mem-label font-mono">${name}</div><div class="val text-2xl font-bold"></div><div class="type-badge"></div>`;
+                memoryViz.appendChild(box);
+            }
+            
+            box.classList.add('active');
+            box.querySelector('.val').textContent = typeof value === 'string' ? `"${value}"` : value;
+            box.querySelector('.type-badge').textContent = type;
+            box.querySelector('.type-badge').className = `type-badge type-${type}`;
+            setTimeout(() => box.classList.remove('active'), 400);
+        }
+
+        async function createInput(promptText, castType = 'str') {
+            return new Promise((resolve, reject) => {
+                const line = document.createElement('div');
+                line.className = 'h-[28px]';
+                line.innerHTML = `<span>${promptText}</span> <input type="text" class="notebook-input-field">`;
+                terminal.appendChild(line);
+                const input = line.querySelector('input');
+                input.focus();
+                
+                input.onkeydown = (e) => {
+                    if (e.key === 'Enter') {
+                        let val = input.value;
+                        input.disabled = true;
+                        input.style.background = "transparent";
+                        
+                        try {
+                            if (castType === 'int') {
+                                let num = Number(val);
+                                if (val.trim() === "" || isNaN(num) || !Number.isInteger(num)) {
+                                    throw new Error(`ValueError: invalid literal for int() with base 10: '${val}'`);
+                                }
+                                resolve(num);
+                            } else if (castType === 'float') {
+                                let num = Number(val);
+                                if (val.trim() === "" || isNaN(num)) {
+                                    throw new Error(`ValueError: could not convert string to float: '${val}'`);
+                                }
+                                resolve(num);
+                            } else {
+                                resolve(val);
+                            }
+                        } catch(err) {
+                            reject(err);
+                        }
+                    }
+                };
+            });
+        }
+
+        async function execute(auto) {
+            resetApp();
+            const lines = editor.value.split('\n');
+            isStepping = !auto;
+            toggleButtons(true);
+
+            for (let i = 0; i < lines.length; i++) {
+                let line = lines[i].trim();
+                if (!line || line.startsWith('#')) {
+                    if (line) highlightLine(i);
+                    continue;
+                }
+                
+                highlightLine(i);
+                if (isStepping) await new Promise(r => nextResolve = r);
+                else await new Promise(r => setTimeout(r, 400));
+
+                try {
+                    if (line.startsWith('print(')) {
+                        const content = line.substring(6, line.lastIndexOf(')'));
+                        const parts = content.split(/,(?=(?:(?:[^"]*"){2})*[^"]*$)/);
+                        const results = parts.map(p => pythonEval(p.trim()));
+                        
+                        const div = document.createElement('div');
+                        div.className = "h-[28px]";
+                        div.textContent = results.join(" ");
+                        terminal.appendChild(div);
+                    } 
+                    else if (line.includes('=')) {
+                        let [varName, rhs] = line.split('=').map(s => s.trim());
+                        
+                        const intInputMatch = rhs.match(/^int\(input\((.*)\)\)$/);
+                        const floatInputMatch = rhs.match(/^float\(input\((.*)\)\)$/);
+                        const inputMatch = rhs.match(/^input\((.*)\)$/);
+
+                        if (intInputMatch) {
+                            let p = pythonEval(intInputMatch[1]);
+                            vars[varName] = await createInput(p, 'int');
+                        } else if (floatInputMatch) {
+                            let p = pythonEval(floatInputMatch[1]);
+                            vars[varName] = await createInput(p, 'float');
+                        } else if (inputMatch) {
+                            let p = pythonEval(inputMatch[1]);
+                            vars[varName] = await createInput(p, 'str');
+                        } else {
+                            vars[varName] = pythonEval(rhs);
+                        }
+                        updateMemory(varName, vars[varName]);
+                    }
+                } catch (e) {
+                    const err = document.createElement('div');
+                    err.className = "error-ink h-[28px] text-[0.9rem]";
+                    err.textContent = e.message || e;
+                    terminal.appendChild(err);
+                    break;
+                }
+                terminal.scrollTop = terminal.scrollHeight;
+            }
+            toggleButtons(false);
+        }
+    </script>
+</body>
+</html>
