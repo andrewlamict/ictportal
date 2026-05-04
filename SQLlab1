@@ -1,0 +1,393 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>SQL Interactive Lab | ICT Portal</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/sql.js/1.6.2/sql-wasm.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.18.5/xlsx.full.min.js"></script>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;600;800&family=Fira+Code:wght@400;500&display=swap');
+        body { font-family: 'Outfit', sans-serif; background-color: #020617; color: #f8fafc; }
+        .glass { background: rgba(255, 255, 255, 0.03); backdrop-filter: blur(12px); border: 1px solid rgba(255, 255, 255, 0.1); transition: all 0.4s ease; }
+        
+        .sql-table { border-collapse: collapse; width: 100%; font-size: 0.875rem; }
+        .sql-table th { background: rgba(16, 185, 129, 0.1); color: #10b981; text-align: left; padding: 10px; border-bottom: 2px solid rgba(16, 185, 129, 0.2); text-transform: uppercase; letter-spacing: 0.05em; font-size: 0.7rem; }
+        .sql-table td { padding: 10px; border-bottom: 1px solid rgba(255, 255, 255, 0.05); color: #cbd5e1; }
+        
+        .preview-table { border-collapse: collapse; width: 100%; font-size: 0.75rem; }
+        .preview-table th { background: rgba(255, 255, 255, 0.05); color: #94a3b8; text-align: left; padding: 6px 10px; border: 1px solid rgba(255, 255, 255, 0.1); text-transform: uppercase; }
+        .preview-table td { padding: 6px 10px; border: 1px solid rgba(255, 255, 255, 0.05); color: #64748b; transition: all 0.3s ease; }
+
+        /* Highlight classes for retrieving data */
+        .highlight-card { 
+            border-color: rgba(16, 185, 129, 0.6) !important; 
+            background: rgba(16, 185, 129, 0.08) !important;
+            box-shadow: 0 0 30px rgba(16, 185, 129, 0.15);
+            transform: translateY(-2px);
+        }
+        
+        .highlight-row td { 
+            background: rgba(16, 185, 129, 0.2) !important; 
+            color: #f8fafc !important;
+            border-color: rgba(16, 185, 129, 0.3) !important;
+        }
+
+        .custom-scrollbar::-webkit-scrollbar { width: 6px; height: 6px; }
+        .custom-scrollbar::-webkit-scrollbar-track { background: transparent; }
+        .custom-scrollbar::-webkit-scrollbar-thumb { background: rgba(255, 255, 255, 0.1); border-radius: 10px; }
+        
+        .type-pill { font-size: 9px; padding: 1px 6px; border-radius: 4px; font-weight: 800; text-transform: uppercase; margin-left: 8px; }
+        .type-int { background: rgba(59, 130, 246, 0.2); color: #60a5fa; }
+        .type-text { background: rgba(168, 85, 247, 0.2); color: #c084fc; }
+    </style>
+</head>
+<body class="min-h-screen p-4 md:p-8 pb-24">
+
+    <div class="max-w-6xl mx-auto">
+        <header class="flex flex-col md:flex-row justify-between items-start md:items-center gap-4 mb-8">
+            <div>
+                <a href="index.html" class="text-emerald-400 text-xs font-bold uppercase tracking-widest hover:underline mb-2 inline-block">
+                    <i class="fas fa-arrow-left mr-2"></i> Back to Portal
+                </a>
+                <h1 class="text-3xl font-black tracking-tighter uppercase">SQL <span class="text-emerald-500 text-transparent bg-clip-text bg-gradient-to-r from-emerald-400 to-cyan-400">Class Lab</span></h1>
+                <p class="text-slate-400 text-sm">Secure Terminal Instance v2.4.1</p>
+            </div>
+            <div class="flex gap-2">
+                <button id="sync-btn" onclick="syncExternalData()" class="px-4 py-2 bg-indigo-500/20 hover:bg-indigo-500/30 text-indigo-400 rounded-xl text-xs font-bold transition border border-indigo-500/30">
+                    <i class="fas fa-satellite mr-2"></i> RE-SYNC
+                </button>
+                <button onclick="resetDatabase()" class="px-4 py-2 bg-white/5 hover:bg-white/10 rounded-xl text-xs font-bold transition border border-white/10">
+                    <i class="fas fa-sync-alt mr-2"></i> RESET LOCAL
+                </button>
+            </div>
+        </header>
+
+        <div class="grid grid-cols-1 lg:grid-cols-4 gap-6">
+            <div class="space-y-6">
+                <div class="glass p-6 rounded-3xl">
+                    <h3 class="text-xs font-black uppercase tracking-widest text-slate-400 mb-6 flex items-center gap-2">
+                        <i class="fas fa-layer-group"></i> Table Structure
+                    </h3>
+                    <div id="schema-display" class="space-y-6 max-h-[400px] overflow-y-auto custom-scrollbar pr-2">
+                        <div class="text-center py-4 opacity-40">Scanning...</div>
+                    </div>
+                </div>
+
+                <div class="glass p-5 rounded-3xl">
+                    <h3 class="text-[10px] font-black uppercase tracking-widest text-slate-500 mb-3">Lab Missions</h3>
+                    <div class="space-y-2">
+                        <button onclick="setQuery('SELECT * FROM Students;')" class="w-full text-left px-3 py-2 bg-emerald-500/5 hover:bg-emerald-500/10 text-emerald-400 rounded-xl text-[10px] font-bold transition border border-emerald-500/10">
+                            Check Student List
+                        </button>
+                        <p class="text-[9px] text-slate-600 font-bold px-2 italic uppercase">System Task: Query data to analyze table contents.</p>
+                    </div>
+                </div>
+            </div>
+
+            <div class="lg:col-span-3 space-y-6">
+                <div class="glass rounded-3xl overflow-hidden border-white/10 shadow-2xl">
+                    <div class="bg-white/5 px-6 py-3 border-b border-white/5 flex justify-between items-center">
+                        <span class="text-[10px] font-black uppercase tracking-widest text-emerald-500">Terminal Console</span>
+                        <div class="flex gap-2 items-center">
+                            <span id="sync-status" class="text-[9px] text-slate-500 font-bold uppercase">Ready</span>
+                            <div class="w-1.5 h-1.5 rounded-full bg-emerald-500 animate-pulse"></div>
+                        </div>
+                    </div>
+                    <textarea id="sql-editor" class="w-full h-40 bg-transparent p-6 font-mono text-sm text-slate-200 transition outline-none focus:bg-emerald-500/[0.01]" spellcheck="false" placeholder="Enter SQL commands..."></textarea>
+                    <div class="p-4 bg-white/5 border-t border-white/5 flex justify-end">
+                        <button onclick="runQuery()" class="px-10 py-3 bg-emerald-600 hover:bg-emerald-500 text-white rounded-2xl font-black text-xs uppercase tracking-widest transition-all shadow-lg shadow-emerald-600/30 active:scale-95">
+                            <i class="fas fa-play mr-2"></i> Execute
+                        </button>
+                    </div>
+                </div>
+
+                <div class="glass rounded-3xl overflow-hidden min-h-[200px] flex flex-col">
+                    <div class="bg-white/5 px-6 py-3 border-b border-white/5 flex items-center justify-between">
+                        <span class="text-[10px] font-black uppercase tracking-widest text-slate-500">Query Result</span>
+                        <span id="row-count" class="text-[10px] font-bold text-emerald-500/60 hidden uppercase">0 RECORDS FOUND</span>
+                    </div>
+                    <div id="result-container" class="p-0 overflow-x-auto custom-scrollbar flex-grow bg-slate-900/40">
+                        <div class="flex flex-col items-center justify-center h-full py-16 text-slate-600">
+                            <i class="fas fa-terminal text-3xl mb-4 opacity-20"></i>
+                            <p class="text-xs font-bold uppercase tracking-widest opacity-40">Awaiting Command Input...</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="mt-12 space-y-4">
+            <div class="flex items-center justify-between border-b border-white/10 pb-4">
+                <h2 class="text-xl font-black uppercase tracking-tight text-slate-300 flex items-center gap-3">
+                    <i class="fas fa-database text-emerald-500"></i> Public Data Preview
+                </h2>
+                <p class="text-[10px] font-bold text-slate-500 uppercase">Sanitized Objects</p>
+            </div>
+            <div id="full-database-preview" class="grid grid-cols-1 md:grid-cols-2 gap-6"></div>
+        </div>
+    </div>
+
+    <div id="error-toast" class="fixed bottom-8 right-8 glass border-rose-500/30 px-6 py-4 rounded-2xl hidden z-[100] shadow-2xl">
+        <div class="flex items-center gap-3 text-rose-400">
+            <i class="fas fa-exclamation-triangle"></i>
+            <span id="error-message" class="text-xs font-bold uppercase tracking-tight"></span>
+        </div>
+    </div>
+
+    <script>
+        let db;
+        let sqlEngine;
+        let cloudDataBuffer = []; 
+        let highlightedTable = null;
+        let highlightedRows = [];
+
+        const GOOGLE_SHEET_URL = "https://docs.google.com/spreadsheets/d/1fq0efVjacm6sDqa48SFyN0vD1sZH7efnq-0vzH4zfH8/export?format=csv";
+        
+        async function init() {
+            try {
+                sqlEngine = await initSqlJs({
+                    locateFile: file => `https://cdnjs.cloudflare.com/ajax/libs/sql.js/1.6.2/${file}`
+                });
+                db = new sqlEngine.Database();
+                createDefaultTable();
+                await syncExternalData();
+                refreshUI();
+            } catch (err) {
+                showError("Engine error: " + err.message);
+            }
+        }
+
+        async function syncExternalData() {
+            const status = document.getElementById('sync-status');
+            status.innerText = "Syncing...";
+            try {
+                const response = await fetch(GOOGLE_SHEET_URL);
+                const csvText = await response.text();
+                const workbook = XLSX.read(csvText, { type: 'string' });
+                const rawData = XLSX.utils.sheet_to_json(workbook.Sheets[workbook.SheetNames[0]]);
+                
+                cloudDataBuffer = rawData.filter(row => {
+                    const classVal = String(row.class || row.Class || "").trim();
+                    return classVal === "3Ft" || classVal === "3Hn";
+                });
+                
+                if (cloudDataBuffer.length > 0) {
+                    const columns = Object.keys(cloudDataBuffer[0]);
+                    db.run("DROP TABLE IF EXISTS hidden;");
+                    const colDef = columns.map(c => `"${c}" TEXT`).join(", ");
+                    db.run(`CREATE TABLE hidden (${colDef});`);
+                }
+            } catch (err) {
+                console.error("Sync Failure:", err);
+            } finally {
+                status.innerText = "Ready";
+                refreshUI();
+            }
+        }
+
+        function createDefaultTable() {
+            db.run(`
+                CREATE TABLE Students (id INTEGER, name TEXT, class TEXT, score INTEGER);
+                INSERT INTO Students VALUES (1, 'Alice', '2A', 85), (2, 'Bob', '2A', 72), (3, 'Charlie', '2B', 94);
+            `);
+        }
+
+        function refreshUI() {
+            updateSchemaDisplay();
+            updateFullDatabasePreview();
+        }
+
+        function updateSchemaDisplay() {
+            const schemaDisplay = document.getElementById('schema-display');
+            if (!db) return;
+            try {
+                const tables = db.exec("SELECT name FROM sqlite_master WHERE type='table' AND name NOT LIKE 'sqlite_%' AND name != 'hidden'");
+                if (tables.length === 0 || !tables[0].values.length) {
+                    schemaDisplay.innerHTML = `<p class="text-xs text-slate-500 italic">No visible tables.</p>`;
+                    return;
+                }
+                let html = '';
+                tables[0].values.forEach(row => {
+                    const tableName = row[0];
+                    const cols = db.exec(`PRAGMA table_info(${tableName})`);
+                    html += `
+                        <div class="bg-white/5 rounded-2xl p-4 border border-white/5">
+                            <div class="text-[11px] font-black uppercase text-emerald-400 mb-3 flex items-center justify-between">
+                                <span>${tableName}</span>
+                                <i class="fas fa-table opacity-30"></i>
+                            </div>
+                            <div class="space-y-2">
+                    `;
+                    cols[0].values.forEach(c => {
+                        const type = (c[2] || 'TEXT').toLowerCase();
+                        const typeClass = type.includes('int') ? 'type-int' : 'type-text';
+                        html += `
+                            <div class="flex items-center justify-between border-b border-white/5 last:border-0 pb-1">
+                                <span class="text-xs font-medium text-slate-300">${c[1]}</span>
+                                <span class="type-pill ${typeClass}">${type}</span>
+                            </div>
+                        `;
+                    });
+                    html += `</div></div>`;
+                });
+                schemaDisplay.innerHTML = html;
+            } catch (e) { console.error(e); }
+        }
+
+        function updateFullDatabasePreview() {
+            const container = document.getElementById('full-database-preview');
+            if (!db) return;
+            try {
+                // Fetch public tables only
+                const tables = db.exec("SELECT name FROM sqlite_master WHERE type='table' AND name NOT LIKE 'sqlite_%' AND name != 'hidden'");
+                
+                let html = '';
+                tables[0]?.values.forEach(row => {
+                    const tableName = row[0];
+                    const tableInfo = db.exec(`PRAGMA table_info(${tableName})`);
+                    const tableData = db.exec(`SELECT * FROM ${tableName}`);
+                    
+                    const isTableHighlighted = highlightedTable === tableName.toLowerCase();
+                    const cardClass = isTableHighlighted ? 'highlight-card' : '';
+
+                    html += `
+                        <div class="glass p-5 rounded-3xl border-white/5 overflow-hidden transition-all duration-500 ${cardClass}">
+                            <h4 class="text-[10px] font-black uppercase ${isTableHighlighted ? 'text-emerald-400' : 'text-slate-500'} mb-3 tracking-widest flex items-center gap-2">
+                                <i class="fas fa-eye"></i> ${tableName}
+                            </h4>
+                            <div class="overflow-x-auto">
+                    `;
+
+                    // Always create table with headers from PRAGMA
+                    html += `<table class="preview-table"><thead><tr>`;
+                    const columns = tableInfo[0].values.map(v => v[1]);
+                    columns.forEach(col => html += `<th>${col}</th>`);
+                    html += `</tr></thead><tbody>`;
+
+                    if (tableData.length > 0) {
+                        tableData[0].values.forEach(valRow => {
+                            // Check if this specific row should light up
+                            const isRowHighlighted = isTableHighlighted && highlightedRows.some(hr => 
+                                JSON.stringify(hr) === JSON.stringify(valRow)
+                            );
+                            
+                            html += `<tr class="${isRowHighlighted ? 'highlight-row' : ''}">`;
+                            valRow.forEach(v => html += `<td>${v === null ? '' : v}</td>`);
+                            html += `</tr>`;
+                        });
+                    } else {
+                        html += `<tr><td colspan="${columns.length}" class="py-4 text-center italic opacity-20 text-[10px]">No Data in Table</td></tr>`;
+                    }
+                    
+                    html += `</tbody></table></div></div>`;
+                });
+
+                container.innerHTML = html || `<div class="col-span-full py-10 glass rounded-3xl text-center text-slate-600 text-xs font-bold italic">No public data preview available</div>`;
+            } catch (e) { console.error(e); }
+        }
+
+        function setQuery(q) {
+            document.getElementById('sql-editor').value = q;
+            runQuery();
+        }
+
+        function resetDatabase() {
+            if (!sqlEngine) return;
+            db = new sqlEngine.Database();
+            createDefaultTable();
+            syncExternalData();
+            highlightedTable = null;
+            highlightedRows = [];
+            showError("System Re-Initialized", false);
+        }
+
+        function runQuery() {
+            if (!db) return;
+            const sql = document.getElementById('sql-editor').value.trim();
+            const container = document.getElementById('result-container');
+            const rowCountLabel = document.getElementById('row-count');
+            hideError();
+            if (!sql) return;
+
+            const lowerSql = sql.toLowerCase();
+            const isHiddenQuery = lowerSql.includes('from hidden');
+
+            try {
+                // Secret population
+                if (isHiddenQuery) {
+                    const rowCountInDb = db.exec("SELECT count(*) FROM hidden")[0].values[0][0];
+                    if (rowCountInDb === 0 && cloudDataBuffer.length > 0) {
+                        const columns = Object.keys(cloudDataBuffer[0]);
+                        cloudDataBuffer.forEach(row => {
+                            const vals = columns.map(c => `'${String(row[c]).replace(/'/g, "''")}'`).join(", ");
+                            db.run(`INSERT INTO hidden VALUES (${vals});`);
+                        });
+                    }
+                }
+
+                const res = db.exec(sql);
+                
+                // Set highlighing context
+                const fromMatch = sql.match(/FROM\s+(\w+)/i);
+                if (fromMatch && res.length > 0) {
+                    highlightedTable = fromMatch[1].toLowerCase();
+                    highlightedRows = res[0].values;
+                } else {
+                    highlightedTable = null;
+                    highlightedRows = [];
+                }
+
+                refreshUI();
+
+                if (res.length === 0) {
+                    const changes = db.getRowsModified();
+                    container.innerHTML = `<div class="flex flex-col items-center justify-center h-full py-16 text-emerald-500/60"><i class="fas fa-check-circle text-4xl mb-4"></i><p class="text-xs font-bold uppercase tracking-widest">Success</p><p class="text-[10px] mt-2 opacity-60">${changes} rows affected</p></div>`;
+                    rowCountLabel.classList.add('hidden');
+                    return;
+                }
+
+                const columns = res[0].columns;
+                const values = res[0].values;
+                let tableHtml = `<table class="sql-table"><thead><tr>`;
+                columns.forEach(col => tableHtml += `<th>${col}</th>`);
+                tableHtml += `</tr></thead><tbody>`;
+                values.forEach(row => {
+                    tableHtml += `<tr>`;
+                    row.forEach(val => tableHtml += `<td>${val === null ? '<span class="italic opacity-20">null</span>' : val}</td>`);
+                    tableHtml += `</tr>`;
+                });
+                tableHtml += `</tbody></table>`;
+                container.innerHTML = tableHtml;
+                rowCountLabel.innerText = `${values.length} RECORDS RETURNED`;
+                rowCountLabel.classList.remove('hidden');
+                
+                if(isHiddenQuery) {
+                    showError("CRITICAL: Unregistered Table Accessed", false);
+                }
+            } catch (err) {
+                showError(err.message);
+                container.innerHTML = `<div class="flex flex-col items-center justify-center h-full py-16 text-rose-500/40"><i class="fas fa-bug text-4xl mb-4"></i><p class="text-[10px] font-bold uppercase tracking-widest text-center px-6">Error: ${err.message}</p></div>`;
+                rowCountLabel.classList.add('hidden');
+                highlightedTable = null;
+                highlightedRows = [];
+                refreshUI();
+            }
+        }
+
+        function showError(msg, isError = true) {
+            const toast = document.getElementById('error-toast');
+            const msgEl = document.getElementById('error-message');
+            msgEl.innerText = msg;
+            toast.className = `fixed bottom-8 right-8 glass px-6 py-4 rounded-2xl z-[100] transition-all flex items-center gap-3 border ${isError ? 'border-rose-500/30 text-rose-400' : 'border-emerald-500/30 text-emerald-400'}`;
+            toast.classList.remove('hidden');
+            setTimeout(hideError, 4000);
+        }
+
+        function hideError() { document.getElementById('error-toast').classList.add('hidden'); }
+        window.onload = init;
+    </script>
+</body>
+</html>
