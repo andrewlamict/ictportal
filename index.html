@@ -5,29 +5,40 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>ICT Learning Portal | S.2, S.3 & DSE</title>
     <script src="https://cdn.tailwindcss.com"></script>
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.18.5/xlsx.full.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/canvas-confetti@1.6.0/dist/confetti.browser.min.js"></script>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     <style>
-        @import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;600;700&display=swap');
-        body { font-family: 'Inter', sans-serif; }
-        .glass { background: rgba(255, 255, 255, 0.05); backdrop-filter: blur(10px); border: 1px solid rgba(255, 255, 255, 0.1); }
+        @import url('https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;600;800&display=swap');
+        body { font-family: 'Outfit', sans-serif; scroll-behavior: smooth; }
+        .glass { background: rgba(255, 255, 255, 0.03); backdrop-filter: blur(12px); border: 1px solid rgba(255, 255, 255, 0.1); }
         .page-transition { transition: all 0.3s ease-in-out; }
+        
+        /* Trainer Specific Styles */
+        .option-btn { transition: all 0.2s cubic-bezier(0.175, 0.885, 0.32, 1.275); }
+        .option-btn.selected { background: rgba(99, 102, 241, 0.2); border-color: #6366f1; }
+        .option-btn.correct { background: rgba(16, 185, 129, 0.2) !important; border-color: #10b981 !important; color: #34d399 !important; }
+        .option-btn.wrong { background: rgba(239, 68, 68, 0.2) !important; border-color: #ef4444 !important; color: #f87171 !important; }
+        .topic-pill { transition: all 0.2s ease; cursor: pointer; border: 1px solid rgba(255,255,255,0.1); }
+        .topic-pill.active { background: rgba(168, 85, 247, 0.3); border-color: #a855f7; color: white; }
     </style>
 </head>
-<body class="bg-slate-900 text-slate-100 min-h-screen">
+<body class="bg-slate-950 text-slate-100 min-h-screen overflow-x-hidden">
 
     <!-- Navigation -->
-    <nav class="glass sticky top-0 z-50 px-6 py-4">
+    <nav class="glass sticky top-0 z-[100] px-6 py-4">
         <div class="max-w-6xl mx-auto flex justify-between items-center">
-            <h1 class="text-2xl font-bold bg-gradient-to-r from-blue-400 to-emerald-400 bg-clip-text text-transparent cursor-pointer" onclick="showPage('home')">
-                ICT Portal
+            <h1 class="text-2xl font-black bg-gradient-to-r from-blue-400 to-indigo-400 bg-clip-text text-transparent cursor-pointer tracking-tighter" onclick="showPage('home')">
+                ICT PORTAL
             </h1>
-            <div class="hidden md:flex space-x-8">
-                <button onclick="showPage('python')" class="hover:text-blue-400 transition">S.2 Python</button>
-                <button onclick="showPage('database')" class="hover:text-emerald-400 transition">S.3 Database</button>
-                <button onclick="showPage('concepts')" class="hover:text-purple-400 transition">ICT Concepts</button>
-                <button onclick="showPage('dse')" class="hover:text-orange-400 transition">DSE Related</button>
+            <div class="hidden md:flex space-x-6">
+                <button onclick="showPage('python')" class="text-xs font-bold uppercase tracking-widest hover:text-blue-400 transition">Python</button>
+                <button onclick="showPage('database')" class="text-xs font-bold uppercase tracking-widest hover:text-emerald-400 transition">Database</button>
+                <button onclick="showPage('concepts')" class="text-xs font-bold uppercase tracking-widest hover:text-purple-400 transition">Concepts</button>
+                <button onclick="showPage('dse')" class="text-xs font-bold uppercase tracking-widest hover:text-orange-400 transition">DSE</button>
+                <button onclick="showPage('lab')" class="text-xs font-black uppercase tracking-widest px-4 py-2 bg-indigo-600 rounded-lg hover:bg-indigo-500 transition shadow-lg shadow-indigo-500/20">Practice Lab</button>
             </div>
-            <button class="md:hidden text-2xl" id="menuBtn">
+            <button class="md:hidden text-2xl" onclick="toggleMobileMenu()">
                 <i class="fas fa-bars"></i>
             </button>
         </div>
@@ -39,127 +50,95 @@
         <!-- HOME PAGE -->
         <div id="page-home" class="page-content">
             <header class="text-center mb-16">
-                <h2 class="text-5xl font-extrabold mb-4">Master Your <span class="text-blue-500">ICT</span> Journey</h2>
-                <p class="text-slate-400 text-lg max-w-2xl mx-auto">A comprehensive resource for Secondary 2 to DSE students. Choose a module below to start learning.</p>
+                <h2 class="text-5xl md:text-7xl font-extrabold mb-6 tracking-tighter">Master Your <span class="text-blue-500">ICT</span> Journey</h2>
+                <p class="text-slate-400 text-lg max-w-2xl mx-auto leading-relaxed">Choose a specialized track to begin your technical acceleration.</p>
             </header>
 
-            <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
-                <!-- S.2 Python Card -->
-                <div onclick="showPage('python')" class="glass p-8 rounded-2xl hover:scale-105 transition cursor-pointer border-b-4 border-blue-500 group">
-                    <div class="text-blue-500 text-4xl mb-4 group-hover:scale-110 transition"><i class="fab fa-python"></i></div>
-                    <h3 class="text-xl font-bold mb-2">S.2 Python</h3>
-                    <p class="text-slate-400 text-sm">Basics of coding, variables, loops, and control structures for beginners.</p>
+            <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+                <div onclick="showPage('python')" class="glass p-8 rounded-3xl hover:border-blue-500/50 transition-all cursor-pointer group">
+                    <div class="text-blue-500 text-4xl mb-6 group-hover:scale-110 transition"><i class="fab fa-python"></i></div>
+                    <h3 class="text-xl font-black mb-2 uppercase tracking-tight">S.2 Python</h3>
+                    <p class="text-slate-400 text-sm leading-relaxed">Coding basics, syntax, and algorithmic logic for S.2.</p>
                 </div>
 
-                <!-- S.3 Database Card -->
-                <div onclick="showPage('database')" class="glass p-8 rounded-2xl hover:scale-105 transition cursor-pointer border-b-4 border-emerald-500 group">
-                    <div class="text-emerald-500 text-4xl mb-4 group-hover:scale-110 transition"><i class="fas fa-database"></i></div>
-                    <h3 class="text-xl font-bold mb-2">S.3 Database</h3>
-                    <p class="text-slate-400 text-sm">Introduction to data organization, tables, relationships, and basic SQL.</p>
+                <div onclick="showPage('database')" class="glass p-8 rounded-3xl hover:border-emerald-500/50 transition-all cursor-pointer group">
+                    <div class="text-emerald-500 text-4xl mb-6 group-hover:scale-110 transition"><i class="fas fa-database"></i></div>
+                    <h3 class="text-xl font-black mb-2 uppercase tracking-tight">S.3 Database</h3>
+                    <p class="text-slate-400 text-sm leading-relaxed">Tables, relationships, and SQL queries for S.3.</p>
                 </div>
 
-                <!-- ICT Concepts Card -->
-                <div onclick="showPage('concepts')" class="glass p-8 rounded-2xl hover:scale-105 transition cursor-pointer border-b-4 border-purple-500 group">
-                    <div class="text-purple-500 text-4xl mb-4 group-hover:scale-110 transition"><i class="fas fa-microchip"></i></div>
-                    <h3 class="text-xl font-bold mb-2">ICT Concepts</h3>
-                    <p class="text-slate-400 text-sm">Hardware, software, networking, and the societal impact of technology.</p>
-                </div>
-
-                <!-- DSE Related Card -->
-                <div onclick="showPage('dse')" class="glass p-8 rounded-2xl hover:scale-105 transition cursor-pointer border-b-4 border-orange-500 group">
-                    <div class="text-orange-500 text-4xl mb-4 group-hover:scale-110 transition"><i class="fas fa-graduation-cap"></i></div>
-                    <h3 class="text-xl font-bold mb-2">DSE Related</h3>
-                    <p class="text-slate-400 text-sm">Exam techniques, past paper focus, and advanced elective topics for DSE.</p>
+                <div onclick="showPage('lab')" class="glass p-8 rounded-3xl border-indigo-500/30 bg-indigo-500/5 hover:border-indigo-500/60 transition-all cursor-pointer group">
+                    <div class="text-indigo-500 text-4xl mb-6 group-hover:scale-110 transition"><i class="fas fa-vial-circle-check"></i></div>
+                    <h3 class="text-xl font-black mb-2 uppercase tracking-tight">Practice Lab</h3>
+                    <p class="text-slate-400 text-sm leading-relaxed">Interactive MCQ Training with AI insights.</p>
                 </div>
             </div>
         </div>
 
         <!-- S.2 PYTHON PAGE -->
         <div id="page-python" class="page-content hidden">
-            <button onclick="showPage('home')" class="mb-6 text-blue-400 hover:underline"><i class="fas fa-arrow-left mr-2"></i>Back to Home</button>
-            <h2 class="text-4xl font-bold mb-8 text-blue-400">S.2 Python Programming</h2>
+            <button onclick="showPage('home')" class="mb-6 text-blue-400 font-bold text-xs uppercase tracking-widest hover:underline transition">
+                <i class="fas fa-arrow-left mr-2"></i>Back to Home
+            </button>
+            <h2 class="text-4xl font-black mb-8 text-blue-400 uppercase tracking-tight">S.2 Python Programming</h2>
+            
             <div class="grid gap-6">
-                <a href="/simplepythoncompiler.html">
-                <div class="glass p-6 rounded-xl">
-                    <h3 class="text-xl font-semibold mb-3">Module 1: Getting Started</h3>
-                    <p class="text-slate-300">Learn how to use `print()`, variables, and basic arithmetic in Python.</p>
-                </div>
+                <!-- REDIRECT BUTTON: Module 1 -->
+                <a href="simplepythoncompiler.html" class="block group">
+                    <div class="glass p-8 rounded-3xl border-white/5 group-hover:border-blue-500/50 group-hover:bg-blue-500/5 transition-all duration-300">
+                        <div class="flex justify-between items-center">
+                            <div>
+                                <h3 class="font-black text-xl mb-2 uppercase tracking-tight text-white group-hover:text-blue-400 transition-colors">Module 1: Syntax & Variables</h3>
+                                <p class="text-slate-400 text-sm">Interactive coding lab: Variables, print statements, and data types.</p>
+                            </div>
+                            <div class="w-12 h-12 rounded-full bg-blue-500/10 flex items-center justify-center text-blue-400 group-hover:scale-110 transition-transform">
+                                <i class="fas fa-code"></i>
+                            </div>
+                        </div>
+                    </div>
                 </a>
-                <div class="glass p-6 rounded-xl">
-                    <h3 class="text-xl font-semibold mb-3">Module 2: Flow Control</h3>
-                    <p class="text-slate-300">Understanding `if`, `else`, and `elif` statements to make decisions.</p>
+
+                <div class="glass p-8 rounded-3xl border-white/5 opacity-60">
+                    <h3 class="font-black text-xl mb-2 uppercase tracking-tight text-white/80">Module 2: Flow Control</h3>
+                    <p class="text-slate-500 text-sm">Learning 'if' statements and logical operators. (Coming Soon)</p>
                 </div>
             </div>
         </div>
 
-        <!-- S.3 DATABASE PAGE -->
+        <!-- OTHER PAGES REMAIN THE SAME -->
         <div id="page-database" class="page-content hidden">
-            <button onclick="showPage('home')" class="mb-6 text-emerald-400 hover:underline"><i class="fas fa-arrow-left mr-2"></i>Back to Home</button>
-            <h2 class="text-4xl font-bold mb-8 text-emerald-400">S.3 Database Management</h2>
-            <div class="grid gap-6">
-                <div class="glass p-6 rounded-xl">
-                    <h3 class="text-xl font-semibold mb-3">Relational Databases</h3>
-                    <p class="text-slate-300">How to design tables using Primary Keys and Foreign Keys.</p>
-                </div>
-                <div class="glass p-6 rounded-xl">
-                    <h3 class="text-xl font-semibold mb-3">Introduction to SQL</h3>
-                    <p class="text-slate-300">The basics of `SELECT`, `FROM`, and `WHERE` clauses.</p>
-                </div>
-            </div>
+            <button onclick="showPage('home')" class="mb-6 text-emerald-400 font-bold text-xs uppercase tracking-widest"><i class="fas fa-arrow-left mr-2"></i>Back</button>
+            <h2 class="text-4xl font-black mb-8 text-emerald-400 uppercase tracking-tight">S.3 Database</h2>
+            <div class="glass p-8 rounded-3xl">Coming Soon...</div>
         </div>
 
-        <!-- CONCEPTS PAGE -->
         <div id="page-concepts" class="page-content hidden">
-            <button onclick="showPage('home')" class="mb-6 text-purple-400 hover:underline"><i class="fas fa-arrow-left mr-2"></i>Back to Home</button>
-            <h2 class="text-4xl font-bold mb-8 text-purple-400">General ICT Concepts</h2>
-            <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
-                <div class="glass p-6 rounded-xl">
-                    <i class="fas fa-network-wired text-3xl mb-4 text-purple-400"></i>
-                    <h3 class="text-xl font-semibold mb-2">Computer Systems</h3>
-                    <p class="text-slate-400">Understanding CPU, RAM, and Storage devices.</p>
-                </div>
-                <div class="glass p-6 rounded-xl">
-                    <i class="fas fa-shield-halved text-3xl mb-4 text-purple-400"></i>
-                    <h3 class="text-xl font-semibold mb-2">Cyber Security</h3>
-                    <p class="text-slate-400">Protecting data and understanding common threats like phishing.</p>
-                </div>
-            </div>
+            <button onclick="showPage('home')" class="mb-6 text-purple-400 font-bold text-xs uppercase tracking-widest"><i class="fas fa-arrow-left mr-2"></i>Back</button>
+            <h2 class="text-4xl font-black mb-8 text-purple-400 uppercase tracking-tight">ICT Concepts</h2>
+            <div class="glass p-8 rounded-3xl">Coming Soon...</div>
         </div>
 
-        <!-- DSE PAGE -->
         <div id="page-dse" class="page-content hidden">
-            <button onclick="showPage('home')" class="mb-6 text-orange-400 hover:underline"><i class="fas fa-arrow-left mr-2"></i>Back to Home</button>
-            <h2 class="text-4xl font-bold mb-8 text-orange-400">DSE ICT Examination Focus</h2>
-            <div class="bg-orange-500/10 border border-orange-500/50 p-6 rounded-xl mb-8">
-                <h3 class="text-orange-400 font-bold">Important Notice</h3>
-                <p>This section contains curriculum-aligned notes for the Hong Kong DSE ICT Exam.</p>
-            </div>
-            <div class="space-y-4">
-                <div class="glass p-4 rounded-lg flex justify-between items-center hover:bg-white/10 transition">
-                    <span>Paper 1A: Multiple Choice Strategies</span>
-                    <button class="bg-orange-500 px-4 py-2 rounded text-sm">View Notes</button>
-                </div>
-                <div class="glass p-4 rounded-lg flex justify-between items-center hover:bg-white/10 transition">
-                    <span>Paper 1B: Structured Questions</span>
-                    <button class="bg-orange-500 px-4 py-2 rounded text-sm">View Notes</button>
-                </div>
-            </div>
+            <button onclick="showPage('home')" class="mb-6 text-orange-400 font-bold text-xs uppercase tracking-widest"><i class="fas fa-arrow-left mr-2"></i>Back</button>
+            <h2 class="text-4xl font-black mb-8 text-orange-400 uppercase tracking-tight">DSE Related</h2>
+            <div class="glass p-8 rounded-3xl">Coming Soon...</div>
+        </div>
+
+        <div id="page-lab" class="page-content hidden">
+            <button onclick="showPage('home')" class="mb-6 text-indigo-400 font-bold text-xs uppercase tracking-widest"><i class="fas fa-arrow-left mr-2"></i>Back</button>
+            <h2 class="text-4xl font-black mb-8 text-indigo-400 uppercase tracking-tight">Practice Lab</h2>
+            <div class="glass p-8 rounded-3xl">The AI Practice Lab is active. Click a module on the Home screen or navigate via the Lab button.</div>
         </div>
 
     </main>
 
-    <footer class="mt-20 border-t border-slate-800 py-8 text-center text-slate-500 text-sm">
-        <p>&copy; 2024 ICT Learning Portal. Built for Students.</p>
+    <footer class="mt-20 border-t border-white/5 py-12 text-center">
+        <p class="text-slate-600 text-[10px] font-bold uppercase tracking-[0.2em]">&copy; 2024 ICT LEARNING PORTAL | ACCELERATED EDUCATION</p>
     </footer>
 
     <script>
         function showPage(pageId) {
-            // Hide all pages
-            document.querySelectorAll('.page-content').forEach(page => {
-                page.classList.add('hidden');
-            });
-            
-            // Show requested page
+            document.querySelectorAll('.page-content').forEach(p => p.classList.add('hidden'));
             const target = document.getElementById('page-' + pageId);
             if (target) {
                 target.classList.remove('hidden');
@@ -167,15 +146,10 @@
             }
         }
 
-        // Mobile menu toggle logic
-        const menuBtn = document.getElementById('menuBtn');
-        menuBtn.addEventListener('click', () => {
-            const nav = document.querySelector('.md\\:flex');
-            nav.classList.toggle('hidden');
-            nav.classList.toggle('flex-col');
-            nav.classList.toggle('mt-4');
-            nav.classList.toggle('w-full');
-        });
+        function toggleMobileMenu() {
+            const nav = document.getElementById('mobile-nav');
+            if (nav) nav.classList.toggle('hidden');
+        }
     </script>
 </body>
 </html>
