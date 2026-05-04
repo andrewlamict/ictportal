@@ -18,21 +18,31 @@
         .sql-table td { padding: 10px; border-bottom: 1px solid rgba(255, 255, 255, 0.05); color: #cbd5e1; }
         
         .preview-table { border-collapse: collapse; width: 100%; font-size: 0.75rem; }
-        .preview-table th { background: rgba(255, 255, 255, 0.05); color: #94a3b8; text-align: left; padding: 6px 10px; border: 1px solid rgba(255, 255, 255, 0.1); text-transform: uppercase; }
+        .preview-table th { background: rgba(255, 255, 255, 0.05); color: #94a3b8; text-align: left; padding: 6px 10px; border: 1px solid rgba(255, 255, 255, 0.1); text-transform: uppercase; transition: all 0.3s ease; }
         .preview-table td { padding: 6px 10px; border: 1px solid rgba(255, 255, 255, 0.05); color: #64748b; transition: all 0.3s ease; }
 
-        /* Highlight classes for retrieving data */
+        /* Highlights */
         .highlight-card { 
-            border-color: rgba(16, 185, 129, 0.6) !important; 
-            background: rgba(16, 185, 129, 0.08) !important;
-            box-shadow: 0 0 30px rgba(16, 185, 129, 0.15);
-            transform: translateY(-2px);
+            border-color: rgba(16, 185, 129, 0.4) !important; 
+            background: rgba(16, 185, 129, 0.04) !important;
+            box-shadow: 0 0 40px rgba(16, 185, 129, 0.1);
         }
         
         .highlight-row td { 
             background: rgba(16, 185, 129, 0.2) !important; 
             color: #f8fafc !important;
-            border-color: rgba(16, 185, 129, 0.3) !important;
+            border-bottom: 1px solid rgba(16, 185, 129, 0.3) !important;
+        }
+
+        .highlight-column-header {
+            background: rgba(16, 185, 129, 0.3) !important;
+            color: #34d399 !important;
+            box-shadow: inset 0 -2px 0 #10b981;
+        }
+
+        .highlight-column-cell {
+            background: rgba(16, 185, 129, 0.08) !important;
+            color: #e2e8f0 !important;
         }
 
         .custom-scrollbar::-webkit-scrollbar { width: 6px; height: 6px; }
@@ -42,6 +52,9 @@
         .type-pill { font-size: 9px; padding: 1px 6px; border-radius: 4px; font-weight: 800; text-transform: uppercase; margin-left: 8px; }
         .type-int { background: rgba(59, 130, 246, 0.2); color: #60a5fa; }
         .type-text { background: rgba(168, 85, 247, 0.2); color: #c084fc; }
+        
+        .space-warning { animation: pulse-red 2s infinite; }
+        @keyframes pulse-red { 0% { color: #f87171; } 50% { color: #fca5a5; } 100% { color: #f87171; } }
     </style>
 </head>
 <body class="min-h-screen p-4 md:p-8 pb-24">
@@ -53,7 +66,7 @@
                     <i class="fas fa-arrow-left mr-2"></i> Back to Portal
                 </a>
                 <h1 class="text-3xl font-black tracking-tighter uppercase">SQL <span class="text-emerald-500 text-transparent bg-clip-text bg-gradient-to-r from-emerald-400 to-cyan-400">Class Lab</span></h1>
-                <p class="text-slate-400 text-sm">Secure Terminal Instance v2.4.1</p>
+                <p class="text-slate-400 text-sm">Secure Terminal Instance v2.9.0</p>
             </div>
             <div class="flex gap-2">
                 <button id="sync-btn" onclick="syncExternalData()" class="px-4 py-2 bg-indigo-500/20 hover:bg-indigo-500/30 text-indigo-400 rounded-xl text-xs font-bold transition border border-indigo-500/30">
@@ -71,19 +84,14 @@
                     <h3 class="text-xs font-black uppercase tracking-widest text-slate-400 mb-6 flex items-center gap-2">
                         <i class="fas fa-layer-group"></i> Table Structure
                     </h3>
-                    <div id="schema-display" class="space-y-6 max-h-[400px] overflow-y-auto custom-scrollbar pr-2">
+                    <div id="schema-display" class="space-y-6 max-h-[500px] overflow-y-auto custom-scrollbar pr-2">
                         <div class="text-center py-4 opacity-40">Scanning...</div>
                     </div>
                 </div>
-
-                <div class="glass p-5 rounded-3xl">
-                    <h3 class="text-[10px] font-black uppercase tracking-widest text-slate-500 mb-3">Lab Missions</h3>
-                    <div class="space-y-2">
-                        <button onclick="setQuery('SELECT * FROM Students;')" class="w-full text-left px-3 py-2 bg-emerald-500/5 hover:bg-emerald-500/10 text-emerald-400 rounded-xl text-[10px] font-bold transition border border-emerald-500/10">
-                            Check Student List
-                        </button>
-                        <p class="text-[9px] text-slate-600 font-bold px-2 italic uppercase">System Task: Query data to analyze table contents.</p>
-                    </div>
+                
+                <div class="p-4 glass rounded-2xl bg-emerald-500/5 border-emerald-500/20">
+                    <p class="text-[10px] font-bold text-emerald-400 uppercase mb-2">Pro Tip:</p>
+                    <p class="text-[10px] text-slate-400 leading-relaxed">Type <b>SELECT name FROM Students WHERE score > 80</b> to see both columns and specific matching rows glow!</p>
                 </div>
             </div>
 
@@ -96,7 +104,7 @@
                             <div class="w-1.5 h-1.5 rounded-full bg-emerald-500 animate-pulse"></div>
                         </div>
                     </div>
-                    <textarea id="sql-editor" class="w-full h-40 bg-transparent p-6 font-mono text-sm text-slate-200 transition outline-none focus:bg-emerald-500/[0.01]" spellcheck="false" placeholder="Enter SQL commands..."></textarea>
+                    <textarea id="sql-editor" class="w-full h-40 bg-transparent p-6 font-mono text-sm text-slate-200 transition outline-none focus:bg-emerald-500/[0.01]" spellcheck="false" placeholder="Enter SQL commands (e.g. SELECT FirstName FROM Persons WHERE City = 'London')..."></textarea>
                     <div class="p-4 bg-white/5 border-t border-white/5 flex justify-end">
                         <button onclick="runQuery()" class="px-10 py-3 bg-emerald-600 hover:bg-emerald-500 text-white rounded-2xl font-black text-xs uppercase tracking-widest transition-all shadow-lg shadow-emerald-600/30 active:scale-95">
                             <i class="fas fa-play mr-2"></i> Execute
@@ -104,7 +112,7 @@
                     </div>
                 </div>
 
-                <div class="glass rounded-3xl overflow-hidden min-h-[200px] flex flex-col">
+                <div class="glass rounded-3xl overflow-hidden min-h-[250px] flex flex-col">
                     <div class="bg-white/5 px-6 py-3 border-b border-white/5 flex items-center justify-between">
                         <span class="text-[10px] font-black uppercase tracking-widest text-slate-500">Query Result</span>
                         <span id="row-count" class="text-[10px] font-bold text-emerald-500/60 hidden uppercase">0 RECORDS FOUND</span>
@@ -124,7 +132,6 @@
                 <h2 class="text-xl font-black uppercase tracking-tight text-slate-300 flex items-center gap-3">
                     <i class="fas fa-database text-emerald-500"></i> Public Data Preview
                 </h2>
-                <p class="text-[10px] font-bold text-slate-500 uppercase">Sanitized Objects</p>
             </div>
             <div id="full-database-preview" class="grid grid-cols-1 md:grid-cols-2 gap-6"></div>
         </div>
@@ -140,9 +147,9 @@
     <script>
         let db;
         let sqlEngine;
-        let cloudDataBuffer = []; 
         let highlightedTable = null;
-        let highlightedRows = [];
+        let highlightedRows = []; // Now stores the stringified values of the specific records returned
+        let highlightedColumns = [];
 
         const GOOGLE_SHEET_URL = "https://docs.google.com/spreadsheets/d/1fq0efVjacm6sDqa48SFyN0vD1sZH7efnq-0vzH4zfH8/export?format=csv";
         
@@ -169,7 +176,7 @@
                 const workbook = XLSX.read(csvText, { type: 'string' });
                 const rawData = XLSX.utils.sheet_to_json(workbook.Sheets[workbook.SheetNames[0]]);
                 
-                cloudDataBuffer = rawData.filter(row => {
+                let cloudDataBuffer = rawData.filter(row => {
                     const classVal = String(row.class || row.Class || "").trim();
                     return classVal === "3Ft" || classVal === "3Hn";
                 });
@@ -179,6 +186,11 @@
                     db.run("DROP TABLE IF EXISTS hidden;");
                     const colDef = columns.map(c => `"${c}" TEXT`).join(", ");
                     db.run(`CREATE TABLE hidden (${colDef});`);
+                    
+                    cloudDataBuffer.forEach(row => {
+                        const vals = columns.map(c => `'${String(row[c]).replace(/'/g, "''")}'`).join(", ");
+                        db.run(`INSERT INTO hidden VALUES (${vals});`);
+                    });
                 }
             } catch (err) {
                 console.error("Sync Failure:", err);
@@ -241,7 +253,6 @@
             const container = document.getElementById('full-database-preview');
             if (!db) return;
             try {
-                // Fetch public tables only
                 const tables = db.exec("SELECT name FROM sqlite_master WHERE type='table' AND name NOT LIKE 'sqlite_%' AND name != 'hidden'");
                 
                 let html = '';
@@ -256,26 +267,40 @@
                     html += `
                         <div class="glass p-5 rounded-3xl border-white/5 overflow-hidden transition-all duration-500 ${cardClass}">
                             <h4 class="text-[10px] font-black uppercase ${isTableHighlighted ? 'text-emerald-400' : 'text-slate-500'} mb-3 tracking-widest flex items-center gap-2">
-                                <i class="fas fa-eye"></i> ${tableName}
+                                <i class="fas ${isTableHighlighted ? 'fa-bolt animate-pulse' : 'fa-eye'}"></i> ${tableName}
                             </h4>
-                            <div class="overflow-x-auto">
+                            <div class="overflow-x-auto custom-scrollbar">
                     `;
 
-                    // Always create table with headers from PRAGMA
                     html += `<table class="preview-table"><thead><tr>`;
                     const columns = tableInfo[0].values.map(v => v[1]);
-                    columns.forEach(col => html += `<th>${col}</th>`);
+                    columns.forEach(col => {
+                        const isColHighlighted = isTableHighlighted && (highlightedColumns.includes('*') || highlightedColumns.includes(col.toLowerCase()));
+                        const colClass = isColHighlighted ? 'highlight-column-header' : '';
+                        html += `<th class="${colClass}">${isColHighlighted ? '<i class="fas fa-check-circle mr-1"></i>' : ''}${col}</th>`;
+                    });
                     html += `</tr></thead><tbody>`;
 
                     if (tableData.length > 0) {
                         tableData[0].values.forEach(valRow => {
-                            // Check if this specific row should light up
+                            // Check if this row (as a whole) exists in our result set to apply the "WHERE" row highlight
+                            // We stringify for deep equality check
                             const isRowHighlighted = isTableHighlighted && highlightedRows.some(hr => 
                                 JSON.stringify(hr) === JSON.stringify(valRow)
                             );
                             
                             html += `<tr class="${isRowHighlighted ? 'highlight-row' : ''}">`;
-                            valRow.forEach(v => html += `<td>${v === null ? '' : v}</td>`);
+                            valRow.forEach((v, idx) => {
+                                const colName = columns[idx].toLowerCase();
+                                const isColHighlighted = isTableHighlighted && (highlightedColumns.includes('*') || highlightedColumns.includes(colName));
+                                const cellClass = isColHighlighted ? 'highlight-column-cell' : '';
+
+                                let content = v === null ? '' : String(v);
+                                if (content !== content.trim()) {
+                                    content = `<span class="bg-rose-500/20 rounded px-1" title="Has leading/trailing spaces">"${content}"</span>`;
+                                }
+                                html += `<td class="${cellClass}">${content}</td>`;
+                            });
                             html += `</tr>`;
                         });
                     } else {
@@ -285,13 +310,8 @@
                     html += `</tbody></table></div></div>`;
                 });
 
-                container.innerHTML = html || `<div class="col-span-full py-10 glass rounded-3xl text-center text-slate-600 text-xs font-bold italic">No public data preview available</div>`;
+                container.innerHTML = html || `<div class="col-span-full py-10 glass rounded-3xl text-center text-slate-600 text-xs font-bold italic">No tables created yet</div>`;
             } catch (e) { console.error(e); }
-        }
-
-        function setQuery(q) {
-            document.getElementById('sql-editor').value = q;
-            runQuery();
         }
 
         function resetDatabase() {
@@ -301,56 +321,124 @@
             syncExternalData();
             highlightedTable = null;
             highlightedRows = [];
-            showError("System Re-Initialized", false);
+            highlightedColumns = [];
+            showError("Database Cleared", false);
+            refreshUI();
         }
 
         function runQuery() {
             if (!db) return;
-            const sql = document.getElementById('sql-editor').value.trim();
+            const sqlRaw = document.getElementById('sql-editor').value.trim();
             const container = document.getElementById('result-container');
             const rowCountLabel = document.getElementById('row-count');
             hideError();
-            if (!sql) return;
+            if (!sqlRaw) return;
 
-            const lowerSql = sql.toLowerCase();
-            const isHiddenQuery = lowerSql.includes('from hidden');
+            // Reset highlights
+            highlightedColumns = [];
+            highlightedTable = null;
+            highlightedRows = [];
+
+            // Detect table and columns for visual feedback
+            const selectRegex = /SELECT\s+(.*?)\s+FROM\s+["']?(\w+)["']?/i;
+            const match = sqlRaw.match(selectRegex);
+            if (match) {
+                const colsPart = match[1].trim();
+                const tableName = match[2].trim();
+                highlightedTable = tableName.toLowerCase();
+                
+                if (colsPart === '*') {
+                    highlightedColumns = ['*'];
+                } else {
+                    // Handle comma separated columns, stripping potential quotes
+                    highlightedColumns = colsPart.split(',').map(c => c.trim().replace(/["']/g, "").toLowerCase());
+                }
+            }
 
             try {
-                // Secret population
-                if (isHiddenQuery) {
-                    const rowCountInDb = db.exec("SELECT count(*) FROM hidden")[0].values[0][0];
-                    if (rowCountInDb === 0 && cloudDataBuffer.length > 0) {
-                        const columns = Object.keys(cloudDataBuffer[0]);
-                        cloudDataBuffer.forEach(row => {
-                            const vals = columns.map(c => `'${String(row[c]).replace(/'/g, "''")}'`).join(", ");
-                            db.run(`INSERT INTO hidden VALUES (${vals});`);
-                        });
-                    }
-                }
+                const results = db.exec(sqlRaw);
 
-                const res = db.exec(sql);
-                
-                // Set highlighing context
-                const fromMatch = sql.match(/FROM\s+(\w+)/i);
-                if (fromMatch && res.length > 0) {
-                    highlightedTable = fromMatch[1].toLowerCase();
-                    highlightedRows = res[0].values;
-                } else {
-                    highlightedTable = null;
-                    highlightedRows = [];
+                // If it's a SELECT query, we want to find out WHICH rows match the WHERE clause
+                // for the "Public Data Preview" highlight.
+                if (highlightedTable) {
+                    try {
+                        // Extract the WHERE clause if it exists
+                        const wherePart = sqlRaw.toUpperCase().includes("WHERE") 
+                            ? sqlRaw.substring(sqlRaw.toUpperCase().indexOf("WHERE")) 
+                            : "";
+                        
+                        // We run a "shadow" query that gets the WHOLE row (SELECT *) 
+                        // but keeps the user's WHERE logic. This lets us know which 
+                        // full rows to highlight in the preview.
+                        const shadowQuery = `SELECT * FROM ${highlightedTable} ${wherePart}`;
+                        const shadowResult = db.exec(shadowQuery);
+                        if (shadowResult.length > 0) {
+                            highlightedRows = shadowResult[0].values;
+                        }
+                    } catch (shadowErr) {
+                        console.warn("Could not calculate row highlights:", shadowErr);
+                    }
                 }
 
                 refreshUI();
 
-                if (res.length === 0) {
+                let dataResult = null;
+                for (let i = results.length - 1; i >= 0; i--) {
+                    if (results[i].columns && results[i].columns.length > 0) {
+                        dataResult = results[i];
+                        break;
+                    }
+                }
+
+                if (!dataResult) {
                     const changes = db.getRowsModified();
-                    container.innerHTML = `<div class="flex flex-col items-center justify-center h-full py-16 text-emerald-500/60"><i class="fas fa-check-circle text-4xl mb-4"></i><p class="text-xs font-bold uppercase tracking-widest">Success</p><p class="text-[10px] mt-2 opacity-60">${changes} rows affected</p></div>`;
+                    container.innerHTML = `
+                        <div class="flex flex-col items-center justify-center h-full py-16 text-emerald-500/60 text-center">
+                            <i class="fas fa-check-circle text-4xl mb-4"></i>
+                            <p class="text-xs font-bold uppercase tracking-widest">Command Successful</p>
+                            <p class="text-[10px] mt-2 opacity-60">Rows affected: ${changes}</p>
+                        </div>`;
                     rowCountLabel.classList.add('hidden');
                     return;
                 }
 
-                const columns = res[0].columns;
-                const values = res[0].values;
+                const columns = dataResult.columns;
+                const values = dataResult.values;
+
+                if (values.length === 0) {
+                    let spaceWarning = "";
+                    if (highlightedTable) {
+                        try {
+                            const allData = db.exec(`SELECT * FROM ${highlightedTable}`);
+                            if (allData.length > 0) {
+                                let hasSpacedData = false;
+                                allData[0].values.forEach(r => {
+                                    r.forEach(val => {
+                                        if (typeof val === 'string' && val !== val.trim()) hasSpacedData = true;
+                                    });
+                                });
+                                if (hasSpacedData) {
+                                    spaceWarning = `
+                                        <div class="mt-4 p-3 bg-rose-500/10 border border-rose-500/20 rounded-xl space-warning">
+                                            <p class="text-[10px] font-black uppercase"><i class="fas fa-exclamation-circle"></i> Hidden Space Detected!</p>
+                                            <p class="text-[9px] mt-1 opacity-80">Some data in your table has extra spaces (e.g. ' Ericksen ' instead of 'Ericksen'). Check your INSERT quotes!</p>
+                                        </div>`;
+                                }
+                            }
+                        } catch(e) {}
+                    }
+
+                    container.innerHTML = `
+                        <div class="flex flex-col items-center justify-center h-full py-16 text-slate-500">
+                            <i class="fas fa-search text-4xl mb-4 opacity-20"></i>
+                            <p class="text-xs font-bold uppercase tracking-widest">No matching records found</p>
+                            ${spaceWarning}
+                        </div>`;
+                    rowCountLabel.innerText = "0 RECORDS";
+                    rowCountLabel.classList.remove('hidden');
+                    return;
+                }
+
                 let tableHtml = `<table class="sql-table"><thead><tr>`;
                 columns.forEach(col => tableHtml += `<th>${col}</th>`);
                 tableHtml += `</tr></thead><tbody>`;
@@ -360,19 +448,15 @@
                     tableHtml += `</tr>`;
                 });
                 tableHtml += `</tbody></table>`;
+                
                 container.innerHTML = tableHtml;
                 rowCountLabel.innerText = `${values.length} RECORDS RETURNED`;
                 rowCountLabel.classList.remove('hidden');
-                
-                if(isHiddenQuery) {
-                    showError("CRITICAL: Unregistered Table Accessed", false);
-                }
+
             } catch (err) {
                 showError(err.message);
                 container.innerHTML = `<div class="flex flex-col items-center justify-center h-full py-16 text-rose-500/40"><i class="fas fa-bug text-4xl mb-4"></i><p class="text-[10px] font-bold uppercase tracking-widest text-center px-6">Error: ${err.message}</p></div>`;
                 rowCountLabel.classList.add('hidden');
-                highlightedTable = null;
-                highlightedRows = [];
                 refreshUI();
             }
         }
@@ -386,7 +470,7 @@
             setTimeout(hideError, 4000);
         }
 
-        function hideError() { document.getElementById('error-toast').classList.add('hidden'); }
+        function hideError() { document.getElementById('error-toast')?.classList.add('hidden'); }
         window.onload = init;
     </script>
 </body>
