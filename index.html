@@ -35,8 +35,7 @@
                 <button onclick="showPage('python')" class="text-xs font-bold uppercase tracking-widest hover:text-blue-400 transition">Python</button>
                 <button onclick="showPage('database')" class="text-xs font-bold uppercase tracking-widest hover:text-emerald-400 transition">Database</button>
                 <button onclick="showPage('concepts')" class="text-xs font-bold uppercase tracking-widest hover:text-purple-400 transition">Concepts</button>
-                <button onclick="showPage('dse')" class="text-xs font-bold uppercase tracking-widest hover:text-orange-400 transition">DSE</button>
-                <button onclick="showPage('lab')" class="text-xs font-black uppercase tracking-widest px-4 py-2 bg-indigo-600 rounded-lg hover:bg-indigo-500 transition shadow-lg shadow-indigo-500/20">Practice Lab</button>
+                <button onclick="showPage('dse')" class="text-xs font-black uppercase tracking-widest px-4 py-2 bg-orange-600 rounded-lg hover:bg-orange-500 transition shadow-lg shadow-orange-500/20">DSE Resources</button>
             </div>
             <button class="md:hidden text-2xl" onclick="toggleMobileMenu()">
                 <i class="fas fa-bars"></i>
@@ -67,10 +66,10 @@
                     <p class="text-slate-400 text-sm leading-relaxed">Tables, relationships, and SQL queries for S.3.</p>
                 </div>
 
-                <div onclick="showPage('lab')" class="glass p-8 rounded-3xl border-indigo-500/30 bg-indigo-500/5 hover:border-indigo-500/60 transition-all cursor-pointer group">
-                    <div class="text-indigo-500 text-4xl mb-6 group-hover:scale-110 transition"><i class="fas fa-vial-circle-check"></i></div>
-                    <h3 class="text-xl font-black mb-2 uppercase tracking-tight">Practice Lab</h3>
-                    <p class="text-slate-400 text-sm leading-relaxed">Interactive MCQ Training with AI insights.</p>
+                <div onclick="showPage('dse')" class="glass p-8 rounded-3xl border-orange-500/30 bg-orange-500/5 hover:border-orange-500/60 transition-all cursor-pointer group">
+                    <div class="text-orange-500 text-4xl mb-6 group-hover:scale-110 transition"><i class="fas fa-graduation-cap"></i></div>
+                    <h3 class="text-xl font-black mb-2 uppercase tracking-tight">DSE Portal</h3>
+                    <p class="text-slate-400 text-sm leading-relaxed">Access Past Papers and MC Practice Forms.</p>
                 </div>
             </div>
         </div>
@@ -83,7 +82,6 @@
             <h2 class="text-4xl font-black mb-8 text-blue-400 uppercase tracking-tight">S.2 Python Programming</h2>
             
             <div class="grid gap-6">
-                <!-- REDIRECT BUTTON: Module 1 -->
                 <a href="simplepythoncompiler.html" class="block group">
                     <div class="glass p-8 rounded-3xl border-white/5 group-hover:border-blue-500/50 group-hover:bg-blue-500/5 transition-all duration-300">
                         <div class="flex justify-between items-center">
@@ -113,7 +111,6 @@
             <h2 class="text-4xl font-black mb-8 text-emerald-400 uppercase tracking-tight">S.3 Database & SQL</h2>
             
             <div class="grid gap-6">
-                <!-- SQL LAB 1 -->
                 <a href="sqllab1.html" class="block group">
                     <div class="glass p-8 rounded-3xl border-white/5 group-hover:border-emerald-500/50 group-hover:bg-emerald-500/5 transition-all duration-300">
                         <div class="flex justify-between items-center">
@@ -128,7 +125,6 @@
                     </div>
                 </a>
 
-                <!-- SQL LAB 2 -->
                 <a href="sqllab2.html" class="block group">
                     <div class="glass p-8 rounded-3xl border-white/5 group-hover:border-emerald-500/50 group-hover:bg-emerald-500/5 transition-all duration-300">
                         <div class="flex justify-between items-center">
@@ -142,30 +138,65 @@
                         </div>
                     </div>
                 </a>
-
-                <div class="glass p-8 rounded-3xl border-white/5 opacity-60">
-                    <h3 class="font-black text-xl mb-2 uppercase tracking-tight text-white/80">SQL Lesson 3: Advanced Queries</h3>
-                    <p class="text-slate-500 text-sm">Joins, Grouping, and Functions. (Coming Soon)</p>
-                </div>
             </div>
         </div>
 
+        <!-- CONCEPTS PAGE -->
         <div id="page-concepts" class="page-content hidden">
             <button onclick="showPage('home')" class="mb-6 text-purple-400 font-bold text-xs uppercase tracking-widest"><i class="fas fa-arrow-left mr-2"></i>Back</button>
             <h2 class="text-4xl font-black mb-8 text-purple-400 uppercase tracking-tight">ICT Concepts</h2>
             <div class="glass p-8 rounded-3xl">Coming Soon...</div>
         </div>
 
+        <!-- DSE PAGE (With Login Gateway) -->
         <div id="page-dse" class="page-content hidden">
-            <button onclick="showPage('home')" class="mb-6 text-orange-400 font-bold text-xs uppercase tracking-widest"><i class="fas fa-arrow-left mr-2"></i>Back</button>
-            <h2 class="text-4xl font-black mb-8 text-orange-400 uppercase tracking-tight">DSE Related</h2>
-            <div class="glass p-8 rounded-3xl">Coming Soon...</div>
+            <button onclick="showPage('home')" class="mb-6 text-orange-400 font-bold text-xs uppercase tracking-widest"><i class="fas fa-arrow-left mr-2"></i>Back to Home</button>
+            <h2 class="text-4xl font-black mb-8 text-orange-400 uppercase tracking-tight">DSE Specialized Resources</h2>
+
+            <!-- Login Gateway -->
+            <div id="dse-login-gateway" class="glass p-12 rounded-3xl max-w-md mx-auto text-center border-orange-500/20">
+                <div class="w-16 h-16 bg-orange-500/10 rounded-full flex items-center justify-center mx-auto mb-6 text-orange-400">
+                    <i class="fas fa-lock text-2xl"></i>
+                </div>
+                <h3 class="text-xl font-black mb-6 uppercase tracking-tight">Restricted Access</h3>
+                <div class="space-y-4">
+                    <input type="text" id="dse-user" placeholder="Username" class="w-full bg-white/5 border border-white/10 rounded-xl px-4 py-3 text-sm focus:outline-none focus:border-orange-500 transition">
+                    <input type="password" id="dse-pass" placeholder="Password" class="w-full bg-white/5 border border-white/10 rounded-xl px-4 py-3 text-sm focus:outline-none focus:border-orange-500 transition">
+                    <button onclick="handleDseLogin()" class="w-full bg-orange-600 hover:bg-orange-500 py-3 rounded-xl font-black text-xs uppercase tracking-widest transition shadow-lg shadow-orange-600/20">Sign In</button>
+                    <p id="login-error" class="text-rose-500 text-[10px] font-bold uppercase hidden pt-2">Invalid Credentials</p>
+                </div>
+            </div>
+
+            <!-- Content Area (Hidden by Default) -->
+            <div id="dse-protected-content" class="hidden space-y-8 animate-in fade-in duration-500">
+                <div class="glass p-10 rounded-3xl border-emerald-500/20 bg-emerald-500/5 flex flex-col md:flex-row items-center justify-between gap-6">
+                    <div>
+                        <h3 class="text-2xl font-black text-white mb-2 uppercase tracking-tight">DSE Resource Repository</h3>
+                        <p class="text-slate-400 text-sm">Access comprehensive study notes, past papers, and marking schemes.</p>
+                    </div>
+                    <a href="https://drive.google.com/drive/folders/1G6nJZTG4lF-YCoRj5_qAPYyx35h0D4zT?usp=drive_link" target="_blank" class="px-8 py-4 bg-emerald-600 hover:bg-emerald-500 rounded-2xl font-black text-xs uppercase tracking-widest transition shadow-xl shadow-emerald-600/20 flex items-center gap-3">
+                        <i class="fab fa-google-drive text-lg"></i> Open Drive Folder
+                    </a>
+                </div>
+
+                <!-- Google Forms Grid -->
+                <div>
+                    <h4 class="text-xs font-black text-slate-500 uppercase tracking-[0.2em] mb-6 flex items-center gap-3">
+                        <div class="h-px flex-grow bg-white/5"></div>
+                        ICT DSE MC Practice Forms
+                        <div class="h-px flex-grow bg-white/5"></div>
+                    </h4>
+                    <div class="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-6 gap-3" id="mc-forms-grid">
+                        <!-- JS will populate these buttons -->
+                    </div>
+                </div>
+            </div>
         </div>
 
         <div id="page-lab" class="page-content hidden">
             <button onclick="showPage('home')" class="mb-6 text-indigo-400 font-bold text-xs uppercase tracking-widest"><i class="fas fa-arrow-left mr-2"></i>Back</button>
             <h2 class="text-4xl font-black mb-8 text-indigo-400 uppercase tracking-tight">Practice Lab</h2>
-            <div class="glass p-8 rounded-3xl">The AI Practice Lab is active. Click a module on the Home screen or navigate via the Lab button.</div>
+            <div class="glass p-8 rounded-3xl">This module has been moved to the DSE portal or is currently under maintenance.</div>
         </div>
 
     </main>
@@ -175,6 +206,51 @@
     </footer>
 
     <script>
+        const mcForms = [
+            { year: "2012 Sample", url: "https://forms.gle/Ck7mDDnd8N27swix8" },
+            { year: "2012 Practice", url: "https://forms.gle/RWm4fXWu2WtVULvx8" },
+            { year: "2012", url: "https://forms.gle/yTm5CVk7sSeEP81o9" },
+            { year: "2013", url: "https://forms.gle/UYYwT2EsyCQK31Qo6" },
+            { year: "2014", url: "https://forms.gle/nDhfX35acK8QTiSz9" },
+            { year: "2015", url: "https://forms.gle/HLKn4KSvofA8ThV58" },
+            { year: "2016", url: "https://forms.gle/W4vu237PJjBJL2Rj7" },
+            { year: "2017", url: "https://forms.gle/xfxtJ9WWBE7CMRDe9" },
+            { year: "2018", url: "https://forms.gle/4szeqDviydbbun3m8" },
+            { year: "2019", url: "https://forms.gle/3iTWP3xJ9izoTFea9" },
+            { year: "2020", url: "https://forms.gle/EBFPGG1KQty6g4fN7" },
+            { year: "2021", url: "https://forms.gle/s7HVww426jHmyCwL9" },
+            { year: "2022", url: "https://forms.gle/QkX9AZqBKmGWdFwS7" },
+            { year: "2023", url: "https://forms.gle/kcgnyW21GySs6ziV8" },
+            { year: "2024", url: "https://forms.gle/UDfWgEwKieUN5aeM6" },
+            { year: "2025 Sample", url: "https://forms.gle/ipqyV4j6nY5unZJg9" },
+            { year: "2025", url: "https://forms.gle/YDzqGi87wPqSkJ9A8" }
+        ];
+
+        function populateMCForms() {
+            const grid = document.getElementById('mc-forms-grid');
+            grid.innerHTML = mcForms.map(form => `
+                <a href="${form.url}" target="_blank" class="glass px-3 py-4 rounded-xl text-center hover:border-orange-500/40 hover:bg-orange-500/5 transition group">
+                    <span class="block text-[10px] text-slate-500 font-black uppercase tracking-widest group-hover:text-orange-400 mb-1">${form.year}</span>
+                    <i class="fas fa-external-link-alt text-[8px] opacity-30"></i>
+                </a>
+            `).join('');
+        }
+
+        function handleDseLogin() {
+            const user = document.getElementById('dse-user').value;
+            const pass = document.getElementById('dse-pass').value;
+            const error = document.getElementById('login-error');
+
+            if (user === 'stccstudent' && pass === 'student') {
+                document.getElementById('dse-login-gateway').classList.add('hidden');
+                document.getElementById('dse-protected-content').classList.remove('hidden');
+                confetti({ particleCount: 100, spread: 70, origin: { y: 0.6 }, colors: ['#ea580c', '#fb923c', '#ffffff'] });
+            } else {
+                error.classList.remove('hidden');
+                setTimeout(() => error.classList.add('hidden'), 3000);
+            }
+        }
+
         function showPage(pageId) {
             document.querySelectorAll('.page-content').forEach(p => p.classList.add('hidden'));
             const target = document.getElementById('page-' + pageId);
@@ -188,6 +264,8 @@
             const nav = document.getElementById('mobile-nav');
             if (nav) nav.classList.toggle('hidden');
         }
+
+        window.onload = populateMCForms;
     </script>
 </body>
 </html>
