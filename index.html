@@ -111,6 +111,7 @@
                 </a>
             </div>
         </div>
+
         <!-- S.3 DATABASE PAGE -->
         <div id="page-database" class="page-content hidden">
             <button onclick="showPage('home')" class="mb-6 text-emerald-400 font-bold text-xs uppercase tracking-widest hover:underline transition">
@@ -177,14 +178,28 @@
 
             <!-- Content Area (Hidden by Default) -->
             <div id="dse-protected-content" class="hidden space-y-8 animate-in fade-in duration-500">
-                <div class="glass p-10 rounded-3xl border-emerald-500/20 bg-emerald-500/5 flex flex-col md:flex-row items-center justify-between gap-6">
-                    <div>
-                        <h3 class="text-2xl font-black text-white mb-2 uppercase tracking-tight">DSE Resource Repository</h3>
-                        <p class="text-slate-400 text-sm">Access comprehensive study notes, past papers, and marking schemes.</p>
+                <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+                    <!-- Google Drive Link -->
+                    <div class="glass p-10 rounded-3xl border-emerald-500/20 bg-emerald-500/5 flex flex-col justify-between gap-6">
+                        <div>
+                            <h3 class="text-2xl font-black text-white mb-2 uppercase tracking-tight">DSE Resource Repository</h3>
+                            <p class="text-slate-400 text-sm">Access comprehensive study notes, past papers, and marking schemes.</p>
+                        </div>
+                        <a href="https://drive.google.com/drive/folders/1G6nJZTG4lF-YCoRj5_qAPYyx35h0D4zT?usp=drive_link" target="_blank" class="px-8 py-4 bg-emerald-600 hover:bg-emerald-500 rounded-2xl font-black text-xs text-center uppercase tracking-widest transition shadow-xl shadow-emerald-600/20 flex items-center justify-center gap-3">
+                            <i class="fab fa-google-drive text-lg"></i> Open Drive Folder
+                        </a>
                     </div>
-                    <a href="https://drive.google.com/drive/folders/1G6nJZTG4lF-YCoRj5_qAPYyx35h0D4zT?usp=drive_link" target="_blank" class="px-8 py-4 bg-emerald-600 hover:bg-emerald-500 rounded-2xl font-black text-xs uppercase tracking-widest transition shadow-xl shadow-emerald-600/20 flex items-center gap-3">
-                        <i class="fab fa-google-drive text-lg"></i> Open Drive Folder
-                    </a>
+
+                    <!-- NEW: MC Trainer Redirect -->
+                    <div class="glass p-10 rounded-3xl border-blue-500/20 bg-blue-500/5 flex flex-col justify-between gap-6">
+                        <div>
+                            <h3 class="text-2xl font-black text-white mb-2 uppercase tracking-tight">DSE MC Trainer</h3>
+                            <p class="text-slate-400 text-sm">Interactive MC practice engine with randomized questions and instant feedback.</p>
+                        </div>
+                        <a href="mctrainer.html" class="px-8 py-4 bg-blue-600 hover:bg-blue-500 rounded-2xl font-black text-xs text-center uppercase tracking-widest transition shadow-xl shadow-blue-600/20 flex items-center justify-center gap-3">
+                            <i class="fas fa-bolt text-lg"></i> Launch MC Trainer
+                        </a>
+                    </div>
                 </div>
 
                 <!-- Google Forms Grid -->
