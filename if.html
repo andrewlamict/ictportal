@@ -1,0 +1,679 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Logic Ladders: Responsive Edition</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Fredoka:wght@400;600&family=JetBrains+Mono:wght@500&display=swap');
+        
+        body { font-family: 'Fredoka', sans-serif; background-color: #0f172a; color: white; }
+        .code-font { font-family: 'JetBrains Mono', monospace; }
+
+        /* --- Layout --- */
+        .game-split {
+            display: flex;
+            flex-direction: column;
+            gap: 20px;
+        }
+        
+        /* Desktop: Side by Side */
+        @media (min-width: 1024px) {
+            .game-split {
+                display: grid;
+                grid-template-columns: 1fr 320px;
+                align-items: start;
+            }
+        }
+
+        /* --- Ghost Leg Board --- */
+        #game-board {
+            position: relative;
+            background-color: #1e293b;
+            background-image: radial-gradient(#334155 1px, transparent 1px);
+            background-size: 20px 20px;
+            border-radius: 16px;
+            overflow: hidden;
+            /* Mobile Height */
+            height: 400px; 
+            border: 1px solid #334155;
+            width: 100%;
+        }
+
+        @media (min-width: 768px) {
+            #game-board { height: 500px; }
+        }
+
+        #connections-layer {
+            position: absolute; top: 0; left: 0; width: 100%; height: 100%;
+            z-index: 10; pointer-events: none;
+        }
+
+        .path-line {
+            stroke: #475569; stroke-width: 3; fill: none; stroke-linecap: round; transition: stroke 0.3s;
+        }
+        @media (min-width: 768px) { .path-line { stroke-width: 4; } }
+        
+        .path-line.active { stroke: #fbbf24; stroke-width: 5; }
+        @media (min-width: 768px) { .path-line.active { stroke-width: 6; } }
+
+        /* --- Nodes (Responsive Scaling) --- */
+        .node {
+            position: absolute; z-index: 20;
+            transform: translate(-50%, -50%);
+            width: 90px; /* Mobile Width */
+            text-align: center;
+        }
+        @media (min-width: 768px) { .node { width: 140px; } }
+
+        .node-diamond {
+            width: 30px; height: 30px; /* Mobile Size */
+            background: #3b82f6;
+            transform: rotate(45deg);
+            margin: 0 auto 6px auto;
+            border: 3px solid #1e293b;
+            box-shadow: 0 0 10px rgba(59, 130, 246, 0.5);
+            display: flex; align-items: center; justify-content: center;
+            transition: all 0.3s;
+        }
+        @media (min-width: 768px) { 
+            .node-diamond { width: 40px; height: 40px; margin-bottom: 10px; border-width: 4px; } 
+        }
+
+        .node-diamond i { transform: rotate(-45deg); font-size: 10px; color: white; }
+        @media (min-width: 768px) { .node-diamond i { font-size: 12px; } }
+
+        .node-label {
+            background: #0f172a; padding: 2px 4px; border-radius: 4px;
+            font-size: 0.65rem; color: #94a3b8; font-family: 'JetBrains Mono', monospace;
+            border: 1px solid #334155;
+            white-space: nowrap;
+        }
+        @media (min-width: 768px) { .node-label { padding: 4px 8px; font-size: 0.75rem; } }
+
+        .node.active .node-diamond { background: #fbbf24; box-shadow: 0 0 20px #fbbf24; border-color: white; }
+        .node.active .node-label { color: #fbbf24; border-color: #fbbf24; }
+
+        /* --- Buckets (Responsive Scaling) --- */
+        .bucket {
+            position: absolute; z-index: 20;
+            transform: translate(-50%, 0); bottom: auto;
+            width: 65px; /* Mobile Width */
+            padding: 8px 2px;
+            background: #334155;
+            border-radius: 0 0 8px 8px; border-top: 4px solid #64748b;
+            text-align: center; font-size: 0.65rem; font-weight: bold; color: #cbd5e1;
+            transition: all 0.3s;
+        }
+        @media (min-width: 768px) { 
+            .bucket { width: 90px; padding: 10px 5px; font-size: 0.75rem; border-top-width: 5px; border-radius: 0 0 10px 10px; } 
+        }
+
+        .bucket.target {
+            border-top-color: #3b82f6; background: #1e3a8a;
+            box-shadow: 0 0 15px rgba(59, 130, 246, 0.3); transform: translate(-50%, -2px);
+        }
+        .bucket.success { background: #22c55e; color: white; border-color: #16a34a; transform: translate(-50%, -5px); box-shadow: 0 10px 20px -5px rgba(34, 197, 94, 0.5); }
+        .bucket.fail { background: #ef4444; color: white; border-color: #dc2626; }
+
+        /* --- Ball --- */
+        #data-ball {
+            position: absolute; 
+            width: 18px; height: 18px; /* Mobile Size */
+            background: #fbbf24; border: 2px solid white; border-radius: 50%;
+            z-index: 50; box-shadow: 0 0 10px #fbbf24;
+            display: none;
+        }
+        @media (min-width: 768px) { #data-ball { width: 24px; height: 24px; } }
+
+        /* --- Code Panel --- */
+        #code-panel {
+            background: #0f172a; border: 1px solid #334155; border-radius: 16px;
+            padding: 12px; font-family: 'JetBrains Mono', monospace; font-size: 0.75rem;
+            line-height: 1.6; overflow-y: auto; position: relative;
+            max-height: 300px; /* Prevent it from being too tall on mobile */
+        }
+        @media (min-width: 768px) { 
+            #code-panel { font-size: 0.85rem; line-height: 1.8; max-height: none; } 
+        }
+
+        .code-line {
+            padding: 2px 6px; border-radius: 4px; color: #94a3b8;
+            transition: all 0.2s; border-left: 3px solid transparent;
+        }
+        .code-line.active {
+            background: rgba(251, 191, 36, 0.15); color: #fbbf24;
+            border-left-color: #fbbf24; font-weight: bold;
+        }
+        .code-indent-0 { margin-left: 0px; }
+        .code-indent-1 { margin-left: 15px; }
+        @media (min-width: 768px) { .code-indent-1 { margin-left: 20px; } }
+
+        /* Range Slider */
+        input[type=range] { -webkit-appearance: none; width: 100%; background: transparent; }
+        input[type=range]::-webkit-slider-thumb {
+            -webkit-appearance: none; height: 24px; width: 24px;
+            border-radius: 50%; background: #fbbf24; cursor: pointer;
+            margin-top: -8px; box-shadow: 0 0 10px rgba(251, 191, 36, 0.5);
+        }
+        input[type=range]::-webkit-slider-runnable-track {
+            width: 100%; height: 8px; cursor: pointer; background: #334155; border-radius: 4px;
+        }
+    </style>
+</head>
+<body class="p-2 md:p-6 flex flex-col items-center min-h-screen">
+
+<div class="max-w-6xl w-full">
+    
+    <!-- Header Area (Responsive Stack) -->
+    <div class="flex flex-col lg:flex-row justify-between items-start lg:items-end mb-4 md:mb-6 bg-slate-800 p-4 md:p-6 rounded-2xl border border-slate-700 shadow-xl gap-4">
+        
+        <!-- Title & Levels -->
+        <div class="w-full lg:w-1/3">
+            <h1 class="text-xl md:text-2xl font-bold text-yellow-400 mb-1"><i class="fas fa-code-branch"></i> Logic Ladders</h1>
+            <p class="text-slate-400 text-[10px] md:text-xs uppercase font-bold tracking-wider">Live Code Edition</p>
+            
+            <div class="mt-4 flex space-x-2">
+                <button onclick="loadLevel(0)" class="level-btn flex-1 py-2 px-2 bg-slate-700 rounded hover:bg-slate-600 text-[10px] md:text-xs font-bold transition">1. Basic</button>
+                <button onclick="loadLevel(1)" class="level-btn flex-1 py-2 px-2 bg-slate-700 rounded hover:bg-slate-600 text-[10px] md:text-xs font-bold transition">2. ELIF</button>
+                <button onclick="loadLevel(2)" class="level-btn flex-1 py-2 px-2 bg-slate-700 rounded hover:bg-slate-600 text-[10px] md:text-xs font-bold transition">3. Weather</button>
+            </div>
+        </div>
+
+        <!-- Controls (Variable & Run) -->
+        <div class="w-full lg:w-1/2 flex flex-col sm:flex-row gap-3 items-stretch sm:items-end">
+             <div class="flex-1 bg-slate-900 p-3 rounded-xl border border-slate-600">
+                <div class="flex justify-between mb-2">
+                    <span class="text-[10px] uppercase text-slate-400 font-bold" id="var-name">Variable</span>
+                    <span class="text-yellow-400 font-mono font-bold text-lg" id="var-val">0</span>
+                </div>
+                <input type="range" min="0" max="100" value="0" id="input-slider" class="touch-manipulation">
+            </div>
+            
+            <button onclick="runSimulation()" id="run-btn" class="py-3 px-6 bg-yellow-500 hover:bg-yellow-400 text-black font-bold rounded-xl shadow-[0_0_15px_rgba(234,179,8,0.4)] transform active:scale-95 transition flex items-center justify-center sm:w-auto w-full">
+                <i class="fas fa-play mr-2"></i> RUN
+            </button>
+        </div>
+    </div>
+
+    <!-- Main Game Area (Responsive Grid/Flex) -->
+    <div class="game-split">
+        
+        <!-- Game Board -->
+        <div id="game-board">
+            <svg id="connections-layer"></svg>
+            <div id="nodes-container"></div>
+            <div id="data-ball"></div>
+            
+            <!-- Mission Toast -->
+            <div class="absolute top-3 left-3 bg-slate-900/90 backdrop-blur px-3 py-2 rounded-lg border border-slate-600 text-sm shadow-lg flex items-center max-w-[80%]">
+                <div class="mr-3 overflow-hidden">
+                    <span class="text-slate-500 text-[9px] uppercase block font-bold">Mission</span>
+                    <span id="mission-text" class="text-white font-bold text-xs md:text-sm truncate block">...</span>
+                </div>
+                <div class="bg-blue-600 text-[10px] font-bold px-2 py-1 rounded text-white shrink-0" id="case-counter">1/2</div>
+            </div>
+
+            <!-- Result Overlay -->
+            <div id="result-overlay" class="absolute inset-0 bg-black/85 backdrop-blur-sm flex flex-col items-center justify-center z-50 hidden opacity-0 transition-opacity duration-300 p-4 text-center">
+                <div class="text-5xl mb-2 animate-bounce" id="result-icon">🎉</div>
+                <h2 class="text-2xl font-bold text-white mb-2" id="result-title">Success!</h2>
+                <button id="result-btn" class="mt-4 px-8 py-3 bg-white text-black rounded-full font-bold hover:bg-slate-200 transition transform hover:scale-105 shadow-lg">
+                    Next Challenge
+                </button>
+            </div>
+        </div>
+
+        <!-- Code Panel -->
+        <div id="code-panel">
+            <div class="text-[10px] font-bold text-slate-500 uppercase tracking-widest mb-2 border-b border-slate-700 pb-2 flex justify-between items-center">
+                <span><i class="fab fa-python mr-1"></i> Python Script</span>
+                <span class="text-xs text-slate-600" id="code-hint">Read Only</span>
+            </div>
+            <div id="code-lines-container">
+                <!-- Lines injected by JS -->
+            </div>
+        </div>
+
+    </div>
+</div>
+
+<script>
+    // --- Data ---
+    const levels = [
+        {
+            id: 0,
+            varName: "age",
+            min: 5, max: 25, start: 10,
+            cases: [
+                { mission: "Get Adult Ticket ", targetBucketId: 'bucket-adult' },
+                { mission: "Get Child Ticket ", targetBucketId: 'bucket-child' }
+            ],
+            codeLines: [
+                { id: 0, text: "if age >= 18:", indent: 0 },
+                { id: 1, text: "print('Adult Ticket')", indent: 1 },
+                { id: 2, text: "else:", indent: 0 },
+                { id: 3, text: "print('Child Ticket')", indent: 1 }
+            ],
+            structure: {
+                start: { x: 50, y: 10 },
+                nodes: [
+                    { 
+                        id: 'n1', x: 50, y: 30, text: 'age >= 18', 
+                        check: (v) => v >= 18, 
+                        lineIdx: 0,
+                        trueTo: 'bucket-adult', 
+                        falseTo: 'bucket-child',
+                        falseLineIdx: 2
+                    }
+                ],
+                buckets: [
+                    { id: 'bucket-child', x: 30, y: 80, text: 'Child', lineIdx: 3 },
+                    { id: 'bucket-adult', x: 70, y: 80, text: 'Adult', lineIdx: 1 }
+                ],
+                paths: [
+                    { from: {x:50, y:10}, to: {x:50, y:30} },
+                    { from: {x:50, y:30}, to: {x:70, y:80}, type: 'true' },
+                    { from: {x:50, y:30}, to: {x:30, y:80}, type: 'false' }
+                ]
+            }
+        },
+        {
+            id: 1,
+            varName: "score",
+            min: 0, max: 100, start: 50,
+            cases: [
+                { mission: "Get Grade B", targetBucketId: 'bucket-b' },
+                { mission: "Get Grade A", targetBucketId: 'bucket-a' },
+                { mission: "Fail the Exam ", targetBucketId: 'bucket-f' }
+            ],
+            codeLines: [
+                { id: 0, text: "if score >= 90:", indent: 0 },
+                { id: 1, text: "print('Grade A')", indent: 1 },
+                { id: 2, text: "elif score >= 60:", indent: 0 },
+                { id: 3, text: "print('Grade B')", indent: 1 },
+                { id: 4, text: "else:", indent: 0 },
+                { id: 5, text: "print('Fail')", indent: 1 }
+            ],
+            structure: {
+                start: { x: 30, y: 10 },
+                nodes: [
+                    { 
+                        id: 'n1', x: 30, y: 30, text: '>= 90', 
+                        check: (v) => v >= 90, 
+                        lineIdx: 0,
+                        trueTo: 'bucket-a', 
+                        falseTo: 'n2' 
+                    },
+                    { 
+                        id: 'n2', x: 30, y: 55, text: '>= 60', 
+                        check: (v) => v >= 60, 
+                        lineIdx: 2,
+                        trueTo: 'bucket-b', 
+                        falseTo: 'bucket-f',
+                        falseLineIdx: 4
+                    }
+                ],
+                buckets: [
+                    { id: 'bucket-a', x: 80, y: 80, text: 'A', lineIdx: 1 },
+                    { id: 'bucket-b', x: 55, y: 80, text: 'B', lineIdx: 3 },
+                    { id: 'bucket-f', x: 30, y: 80, text: 'F', lineIdx: 5 }
+                ],
+                paths: [
+                    { from: {x:30, y:10}, to: {x:30, y:30} },
+                    { from: {x:30, y:30}, to: {x:80, y:80}, type: 'true' },
+                    { from: {x:30, y:30}, to: {x:30, y:55}, type: 'false' },
+                    { from: {x:30, y:55}, to: {x:55, y:80}, type: 'true' },
+                    { from: {x:30, y:55}, to: {x:30, y:80}, type: 'false' }
+                ]
+            }
+        },
+        {
+            id: 2,
+            varName: "temp",
+            min: 0, max: 40, start: 25,
+            cases: [
+                { mission: "Go to Beach ", targetBucketId: 'bucket-beach' },
+                { mission: "Go Skiing ", targetBucketId: 'bucket-ski' },
+                { mission: "Stay Home ", targetBucketId: 'bucket-home' },
+                { mission: "Go to Pool ", targetBucketId: 'bucket-pool' }
+            ],
+            codeLines: [
+                { id: 0, text: "if temp < 15:", indent: 0 },
+                { id: 1, text: "print('Skiing')", indent: 1 },
+                { id: 2, text: "elif temp > 30:", indent: 0 },
+                { id: 3, text: "print('Pool')", indent: 1 },
+                { id: 4, text: "elif temp > 20:", indent: 0 },
+                { id: 5, text: "print('Beach')", indent: 1 },
+                { id: 6, text: "else:", indent: 0 },
+                { id: 7, text: "print('Home')", indent: 1 }
+            ],
+            structure: {
+                start: { x: 50, y: 5 },
+                nodes: [
+                    { 
+                        id: 'n1', x: 50, y: 25, text: '< 15', 
+                        check: (v) => v < 15, lineIdx: 0,
+                        trueTo: 'bucket-ski', falseTo: 'n2'
+                    },
+                    { 
+                        id: 'n2', x: 50, y: 45, text: '> 30', 
+                        check: (v) => v > 30, lineIdx: 2,
+                        trueTo: 'bucket-pool', falseTo: 'n3'
+                    },
+                    { 
+                        id: 'n3', x: 50, y: 65, text: '> 20', 
+                        check: (v) => v > 20, lineIdx: 4,
+                        trueTo: 'bucket-beach', falseTo: 'bucket-home',
+                        falseLineIdx: 6
+                    }
+                ],
+                buckets: [
+                    { id: 'bucket-ski', x: 15, y: 90, text: 'Ski', lineIdx: 1 },
+                    { id: 'bucket-pool', x: 85, y: 90, text: 'Pool', lineIdx: 3 },
+                    { id: 'bucket-beach', x: 65, y: 90, text: 'Beach', lineIdx: 5 },
+                    { id: 'bucket-home', x: 35, y: 90, text: 'Home', lineIdx: 7 }
+                ],
+                paths: [
+                    { from: {x:50, y:5}, to: {x:50, y:25} },
+                    { from: {x:50, y:25}, to: {x:15, y:90}, type: 'true' },
+                    { from: {x:50, y:25}, to: {x:50, y:45}, type: 'false' },
+                    { from: {x:50, y:45}, to: {x:85, y:90}, type: 'true' },
+                    { from: {x:50, y:45}, to: {x:50, y:65}, type: 'false' },
+                    { from: {x:50, y:65}, to: {x:65, y:90}, type: 'true' },
+                    { from: {x:50, y:65}, to: {x:35, y:90}, type: 'false' }
+                ]
+            }
+        }
+    ];
+
+    // --- State & DOM ---
+    let currentLevelIdx = 0;
+    let currentCaseIdx = 0;
+    let isRunning = false;
+    
+    const elements = {
+        slider: document.getElementById('input-slider'),
+        varVal: document.getElementById('var-val'),
+        varName: document.getElementById('var-name'),
+        missionText: document.getElementById('mission-text'),
+        caseCounter: document.getElementById('case-counter'),
+        nodesContainer: document.getElementById('nodes-container'),
+        svgLayer: document.getElementById('connections-layer'),
+        ball: document.getElementById('data-ball'),
+        overlay: document.getElementById('result-overlay'),
+        runBtn: document.getElementById('run-btn'),
+        levelBtns: document.querySelectorAll('.level-btn'),
+        codeContainer: document.getElementById('code-lines-container'),
+        resultBtn: document.getElementById('result-btn'),
+        resultTitle: document.getElementById('result-title'),
+        resultIcon: document.getElementById('result-icon')
+    };
+
+    // --- Core Functions ---
+    function init() {
+        elements.slider.addEventListener('input', (e) => {
+            elements.varVal.textContent = e.target.value;
+            resetBall();
+        });
+        loadLevel(0);
+    }
+
+    function loadLevel(idx) {
+        if(isRunning) return;
+        currentLevelIdx = idx;
+        currentCaseIdx = 0; // Reset case
+        loadCase();
+        
+        // Update Nav
+        elements.levelBtns.forEach((btn, i) => {
+            if(i === idx) {
+                btn.classList.add('bg-yellow-500', 'text-black');
+                btn.classList.remove('bg-slate-700', 'text-white');
+            } else {
+                btn.classList.remove('bg-yellow-500', 'text-black');
+                btn.classList.add('bg-slate-700', 'text-white');
+            }
+        });
+    }
+
+    function loadCase() {
+        const level = levels[currentLevelIdx];
+        const currentCase = level.cases[currentCaseIdx];
+
+        // Update UI
+        elements.varName.textContent = level.varName;
+        elements.slider.min = level.min;
+        elements.slider.max = level.max;
+        
+        if (currentCaseIdx === 0) elements.slider.value = level.start;
+        elements.varVal.textContent = elements.slider.value;
+        
+        elements.missionText.textContent = currentCase.mission;
+        elements.caseCounter.textContent = `${currentCaseIdx + 1}/${level.cases.length}`;
+
+        drawCode(level);
+        drawBoard(level, currentCase.targetBucketId);
+        resetBall();
+    }
+
+    function drawCode(level) {
+        elements.codeContainer.innerHTML = '';
+        level.codeLines.forEach(line => {
+            const div = document.createElement('div');
+            div.className = `code-line code-indent-${line.indent}`;
+            div.id = `code-line-${line.id}`;
+            div.textContent = line.text;
+            elements.codeContainer.appendChild(div);
+        });
+    }
+
+    function highlightLine(lineId) {
+        document.querySelectorAll('.code-line').forEach(el => el.classList.remove('active'));
+        if (lineId !== null && lineId !== undefined) {
+            const el = document.getElementById(`code-line-${lineId}`);
+            if(el) {
+                el.classList.add('active');
+                el.scrollIntoView({ behavior: 'smooth', block: 'center' });
+            }
+        }
+    }
+
+    function drawBoard(level, targetId) {
+        elements.nodesContainer.innerHTML = '';
+        elements.svgLayer.innerHTML = '';
+
+        const getX = (pct) => (pct / 100) * 100 + '%';
+        const getY = (pct) => (pct / 100) * 100 + '%';
+
+        level.structure.nodes.forEach(node => {
+            const div = document.createElement('div');
+            div.className = 'node';
+            div.id = node.id;
+            div.style.left = getX(node.x);
+            div.style.top = getY(node.y);
+            div.innerHTML = `<div class="node-diamond"><i class="fas fa-question"></i></div><div class="node-label">${node.text}</div>`;
+            elements.nodesContainer.appendChild(div);
+        });
+
+        level.structure.buckets.forEach(bucket => {
+            const div = document.createElement('div');
+            const isTarget = bucket.id === targetId;
+            div.className = `bucket ${isTarget ? 'target' : ''}`;
+            div.id = bucket.id;
+            div.style.left = getX(bucket.x);
+            div.style.top = getY(bucket.y); 
+            div.innerText = bucket.text;
+            elements.nodesContainer.appendChild(div);
+        });
+
+        level.structure.paths.forEach(path => {
+            const line = document.createElementNS('http://www.w3.org/2000/svg', 'line');
+            line.setAttribute('x1', path.from.x + '%');
+            line.setAttribute('y1', path.from.y + '%');
+            line.setAttribute('x2', path.to.x + '%');
+            line.setAttribute('y2', path.to.y + '%');
+            line.setAttribute('class', `path-line ${path.type || 'neutral'}`);
+            elements.svgLayer.appendChild(line);
+        });
+    }
+
+    function resetBall() {
+        const level = levels[currentLevelIdx];
+        elements.ball.style.display = 'block';
+        elements.ball.style.transition = 'none';
+        elements.ball.style.left = level.structure.start.x + '%';
+        elements.ball.style.top = level.structure.start.y + '%';
+        elements.ball.style.transform = 'translate(-50%, -50%)';
+        
+        document.querySelectorAll('.bucket').forEach(b => b.classList.remove('success', 'fail'));
+        document.querySelectorAll('.node').forEach(n => n.classList.remove('active'));
+        highlightLine(null);
+        
+        elements.overlay.classList.add('hidden');
+        elements.overlay.classList.remove('opacity-100');
+    }
+
+    async function runSimulation() {
+        if (isRunning) return;
+        isRunning = true;
+        elements.runBtn.disabled = true;
+        elements.runBtn.classList.add('opacity-50');
+
+        const level = levels[currentLevelIdx];
+        const currentCase = level.cases[currentCaseIdx];
+        const val = parseInt(elements.slider.value);
+        
+        let currentPos = level.structure.start; 
+        let nextNode = level.structure.nodes[0];
+        
+        await moveBall(currentPos.x, currentPos.y, nextNode.x, nextNode.y);
+        
+        let finished = false;
+        let finalBucketId = null;
+
+        while (!finished) {
+            const nodeEl = document.getElementById(nextNode.id);
+            nodeEl.classList.add('active'); 
+
+            highlightLine(nextNode.lineIdx);
+
+            await wait(800);
+
+            const result = nextNode.check(val);
+            const nextId = result ? nextNode.trueTo : nextNode.falseTo;
+
+            let nextStepObj = level.structure.nodes.find(n => n.id === nextId);
+            let isBucket = false;
+            
+            if (!nextStepObj) {
+                nextStepObj = level.structure.buckets.find(b => b.id === nextId);
+                isBucket = true;
+            }
+
+            if (!result && nextNode.falseLineIdx !== undefined) {
+                nodeEl.classList.remove('active');
+                highlightLine(nextNode.falseLineIdx);
+                await wait(600);
+            }
+
+            await moveBall(nextNode.x, nextNode.y, nextStepObj.x, nextStepObj.y);
+            nodeEl.classList.remove('active');
+
+            if (isBucket) {
+                finished = true;
+                finalBucketId = nextId;
+                highlightLine(nextStepObj.lineIdx);
+            } else {
+                nextNode = nextStepObj;
+            }
+        }
+
+        await wait(500);
+        const bucketEl = document.getElementById(finalBucketId);
+        const isWin = finalBucketId === currentCase.targetBucketId;
+
+        if (isWin) {
+            bucketEl.classList.add('success');
+            handleWin();
+        } else {
+            bucketEl.classList.add('fail');
+            handleFail();
+        }
+
+        isRunning = false;
+        elements.runBtn.disabled = false;
+        elements.runBtn.classList.remove('opacity-50');
+    }
+
+    function handleWin() {
+        elements.overlay.classList.remove('hidden');
+        setTimeout(() => elements.overlay.classList.add('opacity-100'), 10);
+        elements.resultIcon.textContent = '🏆';
+        elements.resultTitle.textContent = 'Success!';
+        elements.resultTitle.className = "text-2xl font-bold mb-2 text-green-400";
+        
+        const level = levels[currentLevelIdx];
+        
+        if (currentCaseIdx < level.cases.length - 1) {
+            elements.resultBtn.textContent = "Next Challenge";
+            elements.resultBtn.onclick = () => { 
+                currentCaseIdx++;
+                hideResult();
+                loadCase();
+            };
+        } else if (currentLevelIdx < levels.length - 1) {
+            elements.resultBtn.textContent = "Next Level";
+            elements.resultBtn.onclick = () => {
+                loadLevel(currentLevelIdx + 1);
+                hideResult();
+            };
+        } else {
+            elements.resultBtn.textContent = "Finish & Restart";
+            elements.resultBtn.onclick = () => {
+                loadLevel(0);
+                hideResult();
+            };
+        }
+    }
+
+    function handleFail() {
+        elements.overlay.classList.remove('hidden');
+        setTimeout(() => elements.overlay.classList.add('opacity-100'), 10);
+        elements.resultIcon.textContent = '⚠️';
+        elements.resultTitle.textContent = 'Missed';
+        elements.resultTitle.className = "text-2xl font-bold mb-2 text-red-400";
+        elements.resultBtn.textContent = "Try Again";
+        elements.resultBtn.onclick = () => {
+            hideResult();
+            resetBall();
+        };
+    }
+
+    function hideResult() {
+        elements.overlay.classList.remove('opacity-100');
+        setTimeout(() => {
+            elements.overlay.classList.add('hidden');
+        }, 300);
+    }
+
+    function moveBall(x1, y1, x2, y2) {
+        return new Promise(resolve => {
+            elements.ball.style.transition = 'top 1s ease-in-out, left 1s ease-in-out';
+            void elements.ball.offsetWidth; 
+            elements.ball.style.left = x2 + '%';
+            elements.ball.style.top = y2 + '%';
+            setTimeout(resolve, 1000);
+        });
+    }
+
+    function wait(ms) { return new Promise(r => setTimeout(r, ms)); }
+
+    init();
+    window.addEventListener('resize', () => { if(!isRunning) drawBoard(levels[currentLevelIdx], levels[currentLevelIdx].cases[currentCaseIdx].targetBucketId); });
+
+</script>
+</body>
+</html>
