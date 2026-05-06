@@ -1,0 +1,607 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>AI Training Lab - Media Edition</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.18.5/xlsx.full.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/canvas-confetti@1.6.0/dist/confetti.browser.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/tone/14.8.49/Tone.js"></script>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Outfit:wght@400;600;800&display=swap');
+        :root { --primary: #6366f1; --secondary: #8b5cf6; --success: #10b981; --error: #ef4444; }
+        body { font-family: 'Outfit', sans-serif; background: #0f172a; color: #f1f5f9; margin: 0; overflow-x: hidden; }
+        
+        .glass-card { background: rgba(255, 255, 255, 0.05); backdrop-filter: blur(12px); border: 1px solid rgba(255, 255, 255, 0.1); border-radius: 2rem; }
+        .option-btn { transition: all 0.2s cubic-bezier(0.175, 0.885, 0.32, 1.275); }
+        .option-btn.selected { background: rgba(99, 102, 241, 0.2); border-color: var(--primary); }
+        .option-btn.correct { background: rgba(16, 185, 129, 0.2) !important; border-color: var(--success) !important; color: #34d399 !important; }
+        .option-btn.wrong { background: rgba(239, 68, 68, 0.2) !important; border-color: var(--error) !important; color: #f87171 !important; }
+        
+        .topic-pill { transition: all 0.2s ease; cursor: pointer; border: 1px solid rgba(255,255,255,0.1); }
+        .topic-pill.active { background: rgba(168, 85, 247, 0.3); border-color: #a855f7; color: white; }
+
+        .shake { animation: shake 0.4s ease-in-out; }
+        @keyframes shake { 0%, 100% { transform: translateX(0); } 25% { transform: translateX(-5px); } 50% { transform: translateX(5px); } 75% { transform: translateX(-5px); } }
+        .fade-in { animation: fadeIn 0.3s ease-out forwards; }
+        @keyframes fadeIn { from { opacity: 0; transform: translateY(10px); } to { opacity: 1; transform: translateY(0); } }
+        
+        .combined-glow { background: linear-gradient(135deg, rgba(99, 102, 241, 0.15) 0%, rgba(168, 85, 247, 0.15) 100%); border: 2px solid rgba(168, 85, 247, 0.3); }
+
+        .question-img-container { 
+            width: 100%; 
+            border-radius: 1.5rem; 
+            overflow: hidden; 
+            background: rgba(0,0,0,0.3); 
+            margin-bottom: 1.5rem; 
+            border: 1px solid rgba(255,255,255,0.05); 
+            position: relative;
+            min-height: 100px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+        .question-img { width: 100%; height: auto; max-height: 400px; object-fit: contain; display: block; }
+        .img-error { font-size: 10px; color: #f87171; padding: 20px; text-align: center; }
+        .custom-scrollbar::-webkit-scrollbar { width: 6px; }
+        .custom-scrollbar::-webkit-scrollbar-thumb { background: rgba(255,255,255,0.1); border-radius: 10px; }
+    </style>
+</head>
+<body class="min-h-screen flex items-center justify-center p-4">
+
+    <div id="toast-container" class="fixed top-5 right-5 z-[110] flex flex-col gap-2"></div>
+
+    <!-- AI Settings Modal -->
+    <div id="api-modal" class="fixed inset-0 bg-black/80 backdrop-blur-md z-[100] hidden flex items-center justify-center p-4">
+        <div class="glass-card max-w-md w-full p-8 border-indigo-500/30">
+            <h3 class="text-xl font-bold mb-4 flex items-center gap-2 text-white">
+                <i class="fa-solid fa-brain text-indigo-400"></i> AI Provider Setup
+            </h3>
+            
+            <div class="mb-4">
+                <label class="text-[10px] font-bold text-white/40 uppercase tracking-widest block mb-2">Select Provider</label>
+                <select id="ai-provider" class="w-full bg-slate-800 border border-white/10 rounded-xl p-3 text-sm text-white outline-none focus:border-indigo-500 cursor-pointer">
+                    <option value="gemini">Google Gemini</option>
+                    <option value="openai">OpenAI (ChatGPT)</option>
+                    <option value="groq">Groq (Llama 3)</option>
+                </select>
+            </div>
+
+            <div class="mb-6">
+                <label class="text-[10px] font-bold text-white/40 uppercase tracking-widest block mb-2">API Key</label>
+                <input type="password" id="api-key-input" placeholder="Paste your API Key..." 
+                       class="w-full bg-white/5 border border-white/10 rounded-xl p-4 text-sm text-white outline-none focus:border-indigo-500 transition-all">
+            </div>
+
+            <div class="flex gap-3">
+                <button onclick="toggleApiModal()" class="flex-1 py-3 rounded-xl bg-white/5 hover:bg-white/10 font-bold text-xs transition text-white">CANCEL</button>
+                <button onclick="saveApiSettings()" class="flex-1 py-3 rounded-xl bg-indigo-600 hover:bg-indigo-500 font-bold text-xs transition text-white">SAVE LINK</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Combined Multi-Select Modal -->
+    <div id="combined-modal" class="fixed inset-0 bg-black/80 backdrop-blur-md z-[90] hidden flex items-center justify-center p-4">
+        <div class="glass-card max-w-lg w-full p-8 border-purple-500/30 max-h-[90vh] flex flex-col">
+            <h3 class="text-xl font-bold mb-2 flex items-center gap-2 text-white">
+                <i class="fa-solid fa-layer-group text-purple-400"></i> Neural Overload Setup
+            </h3>
+            <p class="text-xs text-white/40 mb-6">Select the chapters you want to mix into this session.</p>
+            
+            <div class="flex flex-wrap gap-2 mb-6 overflow-y-auto custom-scrollbar pr-2" id="multi-topic-list">
+                <!-- Topics injected here -->
+            </div>
+
+            <div class="flex flex-col gap-3 mt-auto">
+                <div class="flex gap-2">
+                    <button onclick="selectAllTopics(true)" class="flex-1 py-2 rounded-lg bg-white/5 text-[9px] font-bold uppercase tracking-widest text-white/60">Select All</button>
+                    <button onclick="selectAllTopics(false)" class="flex-1 py-2 rounded-lg bg-white/5 text-[9px] font-bold uppercase tracking-widest text-white/60">Deselect All</button>
+                </div>
+                <div class="flex gap-3">
+                    <button onclick="toggleCombinedModal()" class="flex-1 py-3 rounded-xl bg-white/5 hover:bg-white/10 font-bold text-xs transition text-white">CANCEL</button>
+                    <button onclick="startMultiQuiz()" class="flex-1 py-3 rounded-xl bg-purple-600 hover:bg-purple-500 font-bold text-xs transition text-white uppercase tracking-widest">Initiate Mission</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <main class="glass-card w-full max-w-4xl overflow-hidden min-h-[600px] flex flex-col shadow-2xl relative">
+        <header class="p-6 border-b border-white/10 flex justify-between items-center bg-white/5">
+            <div class="flex items-center gap-4">
+                <div class="w-10 h-10 rounded-xl bg-gradient-to-br from-indigo-500 to-purple-600 flex items-center justify-center shadow-lg">
+                    <i class="fa-solid fa-bolt text-white text-lg"></i>
+                </div>
+                <div>
+                    <h1 class="text-lg font-extrabold tracking-tight text-white uppercase">AI Training Lab</h1>
+                    <div class="flex items-center gap-2">
+                        <span id="rank-badge" class="text-[9px] font-bold px-2 py-0.5 rounded bg-amber-500/20 text-amber-500 uppercase tracking-widest">Recruit</span>
+                        <span id="total-xp-display" class="text-[10px] font-bold text-white/50">0 XP</span>
+                    </div>
+                </div>
+            </div>
+            
+            <div class="flex items-center gap-4">
+                <button onclick="toggleApiModal()" class="text-white/30 hover:text-indigo-400 transition-colors" title="AI Settings">
+                    <i class="fa-solid fa-gear text-lg"></i>
+                </button>
+                <div class="flex flex-col items-end gap-1">
+                    <div class="text-[9px] font-bold text-white/40 uppercase tracking-widest">Level <span id="user-level" class="text-white">1</span></div>
+                    <div class="w-24 h-1.5 bg-white/10 rounded-full overflow-hidden">
+                        <div id="level-progress" class="h-full bg-indigo-500 transition-all duration-1000" style="width: 0%"></div>
+                    </div>
+                </div>
+            </div>
+        </header>
+
+        <div id="app-content" class="p-6 md:p-10 flex-grow flex flex-col overflow-y-auto custom-scrollbar">
+            <div id="initial-loader" class="flex flex-col items-center justify-center h-full space-y-6 py-20">
+                <div class="relative">
+                    <div class="w-16 h-16 border-4 border-indigo-500/20 border-t-indigo-500 rounded-full animate-spin"></div>
+                    <i class="fa-solid fa-microchip absolute inset-0 flex items-center justify-center text-xl text-indigo-400 animate-pulse"></i>
+                </div>
+                <p class="text-indigo-300 font-bold tracking-widest uppercase text-xs animate-pulse">Syncing Neural Database...</p>
+            </div>
+        </div>
+    </main>
+
+    <script>
+        let allQuestions = [];
+        let availableTopics = [];
+        let selectedTopic = "";
+        let currentQuizQuestions = [];
+        let currentQuestionIndex = 0;
+        let sessionScore = 0;
+        let selectedOption = null;
+        let userAnswers = [];
+        let isAnswerRevealed = false;
+        let selectedMultiTopics = new Set();
+
+        let userData = {
+            xp: parseInt(localStorage.getItem('lab_xp') || '0'),
+            history: JSON.parse(localStorage.getItem('lab_history') || '[]'),
+            mastery: JSON.parse(localStorage.getItem('lab_mastery') || '{}')
+        };
+
+        const XP_PER_CORRECT = 50;
+        const DEFAULT_SHEET_URL = "https://docs.google.com/spreadsheets/d/1tqzEoKMua89rtTvodpgZb7GRhcE55dhg/edit?usp=sharing";
+
+        function playSfx(type) {
+            try {
+                const synth = new Tone.PolySynth(Tone.Synth).toDestination();
+                if (type === 'success') synth.triggerAttackRelease(["C4", "E4", "G4"], "8n");
+                else if (type === 'error') synth.triggerAttackRelease(["G2", "B2"], "4n");
+                else if (type === 'click') synth.triggerAttackRelease("C3", "16n");
+            } catch(e) { console.warn("Audio Context blocked"); }
+        }
+
+        async function initApp() {
+            try {
+                const sheetIdMatch = DEFAULT_SHEET_URL.match(/\/spreadsheets\/d\/([a-zA-Z0-9-_]+)/);
+                if (!sheetIdMatch) throw new Error("Invalid URL");
+                
+                const exportUrl = `https://docs.google.com/spreadsheets/d/${sheetIdMatch[1]}/export?format=csv&t=${Date.now()}`;
+                const response = await fetch(exportUrl);
+                const csvData = await response.text();
+                
+                const workbook = XLSX.read(csvData, { type: 'string' });
+                const jsonData = XLSX.utils.sheet_to_json(workbook.Sheets[workbook.SheetNames[0]], { defval: "" });
+
+                allQuestions = validateData(jsonData);
+                availableTopics = [...new Set(allQuestions.map(q => q.topic))].sort();
+                
+                updateStatsUI();
+                renderTopicSelection();
+            } catch (err) {
+                console.error(err);
+                renderErrorState();
+            }
+        }
+
+        function validateData(data) {
+            return data.map(row => {
+                const clean = {};
+                for (let k in row) {
+                    const cleanKey = k.trim().toLowerCase().replace(/\s/g, '');
+                    clean[cleanKey] = row[k];
+                }
+                
+                let rawImageUrl = String(clean.image || clean.picture || clean.media || clean.img || "").trim();
+                if (rawImageUrl.includes('drive.google.com')) {
+                    const driveIdMatch = rawImageUrl.match(/\/d\/([a-zA-Z0-9-_]+)/) || rawImageUrl.match(/id=([a-zA-Z0-9-_]+)/);
+                    if (driveIdMatch && driveIdMatch[1]) {
+                        rawImageUrl = `https://lh3.googleusercontent.com/d/${driveIdMatch[1]}`;
+                    }
+                }
+
+                return {
+                    topic: String(clean.topic || "General").trim(),
+                    question: String(clean.question || "").trim(),
+                    image: rawImageUrl,
+                    options: {
+                        A: String(clean.optiona || ""),
+                        B: String(clean.optionb || ""),
+                        C: String(clean.optionc || ""),
+                        D: String(clean.optiond || "")
+                    },
+                    answer: String(clean.answer || clean.correctanswer || "").trim().toUpperCase().charAt(0),
+                    explanation: String(clean.explanation || "").trim()
+                };
+            }).filter(q => q.question && q.options.A && q.answer);
+        }
+
+        function renderTopicSelection() {
+            const appContent = document.getElementById('app-content');
+            let starsHTML = (topic) => {
+                const s = userData.mastery[topic] || 0;
+                let h = '';
+                for(let i=1; i<=3; i++) h += `<i class="fa-solid fa-star ${i <= s ? 'text-amber-400' : 'text-white/10'} text-[10px]"></i>`;
+                return h;
+            };
+
+            const topicsCards = availableTopics.map(t => `
+                <button onclick="startQuiz('${t}')" class="group p-5 bg-white/5 border border-white/10 rounded-3xl hover:border-indigo-500/50 transition-all text-left">
+                    <div class="flex justify-between items-start mb-2">
+                        <h3 class="font-bold text-white group-hover:text-indigo-400 transition-colors">${t}</h3>
+                        <div class="flex gap-0.5">${starsHTML(t)}</div>
+                    </div>
+                    <span class="text-[10px] text-white/40 uppercase font-bold tracking-widest">
+                        ${allQuestions.filter(q => q.topic === t).length} Questions Available
+                    </span>
+                </button>
+            `).join('');
+
+            appContent.innerHTML = `
+                <div class="fade-in">
+                    <div class="flex justify-between items-center mb-8">
+                        <h2 class="text-xl font-black italic tracking-tight text-white uppercase">Choose Training Module</h2>
+                        <button onclick="renderHistory()" class="text-[10px] font-bold text-indigo-400 hover:underline uppercase tracking-widest">View Mission Logs</button>
+                    </div>
+
+                    <button onclick="toggleCombinedModal()" class="combined-glow w-full p-6 rounded-3xl mb-6 text-left group">
+                        <div class="flex justify-between items-center">
+                            <div>
+                                <span class="bg-purple-500 text-[9px] font-black px-2 py-0.5 rounded text-white tracking-widest uppercase mb-2 inline-block">Advanced Mission</span>
+                                <h3 class="text-xl font-black text-white group-hover:text-purple-300 transition-colors">COMBINED NEURAL CHALLENGE</h3>
+                                <p class="text-xs text-white/50 mt-1">Select and mix topics for a custom cross-chapter test</p>
+                            </div>
+                            <div class="flex gap-0.5">${starsHTML('Combined')}</div>
+                        </div>
+                    </button>
+
+                    <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                        ${topicsCards}
+                    </div>
+                </div>
+            `;
+        }
+
+        function toggleCombinedModal() {
+            const m = document.getElementById('combined-modal');
+            const list = document.getElementById('multi-topic-list');
+            m.classList.toggle('hidden');
+            
+            if (!m.classList.contains('hidden')) {
+                selectedMultiTopics.clear();
+                list.innerHTML = availableTopics.map(t => `
+                    <div onclick="toggleTopicSelection('${t}', this)" class="topic-pill px-4 py-2 rounded-xl text-[11px] font-bold uppercase tracking-tight text-white/60">
+                        ${t}
+                    </div>
+                `).join('');
+            }
+        }
+
+        function toggleTopicSelection(topic, el) {
+            playSfx('click');
+            if (selectedMultiTopics.has(topic)) {
+                selectedMultiTopics.delete(topic);
+                el.classList.remove('active');
+            } else {
+                selectedMultiTopics.add(topic);
+                el.classList.add('active');
+            }
+        }
+
+        function selectAllTopics(shouldSelect) {
+            playSfx('click');
+            const pills = document.querySelectorAll('.topic-pill');
+            pills.forEach(p => {
+                const text = p.innerText.trim();
+                if (shouldSelect) {
+                    selectedMultiTopics.add(text);
+                    p.classList.add('active');
+                } else {
+                    selectedMultiTopics.delete(text);
+                    p.classList.remove('active');
+                }
+            });
+        }
+
+        function startMultiQuiz() {
+            if (selectedMultiTopics.size === 0) {
+                showToast("Select at least one topic", "error");
+                return;
+            }
+            toggleCombinedModal();
+            startQuiz('Combined', Array.from(selectedMultiTopics));
+        }
+
+        function startQuiz(topic, filterList = null) {
+            playSfx('click');
+            selectedTopic = topic;
+            
+            let pool;
+            if (topic === 'Combined') {
+                const targetList = filterList || availableTopics;
+                pool = allQuestions.filter(q => targetList.includes(q.topic));
+                selectedTopic = "Combined Lab";
+            } else {
+                pool = allQuestions.filter(q => q.topic === topic);
+            }
+
+            currentQuizQuestions = pool.sort(() => 0.5 - Math.random()).slice(0, 10);
+            currentQuestionIndex = 0;
+            sessionScore = 0;
+            userAnswers = [];
+            renderQuestion();
+        }
+
+        function renderQuestion() {
+            selectedOption = null;
+            isAnswerRevealed = false;
+            const q = currentQuizQuestions[currentQuestionIndex];
+            const appContent = document.getElementById('app-content');
+
+            const mediaHTML = q.image ? `
+                <div class="question-img-container">
+                    <img src="${q.image}" class="question-img" onload="this.nextElementSibling?.remove()" onerror="handleImageError(this)">
+                    <div class="absolute inset-0 flex items-center justify-center bg-indigo-500/5 animate-pulse text-indigo-400/30 text-[10px] uppercase font-bold tracking-widest">
+                        Loading Visual Asset...
+                    </div>
+                </div>` : '';
+
+            appContent.innerHTML = `
+                <div class="fade-in flex flex-col h-full">
+                    <div class="flex justify-between items-center mb-6">
+                        <span class="text-[10px] font-black text-indigo-400 uppercase tracking-widest">${selectedTopic}</span>
+                        <span class="text-[10px] text-white/30 font-bold uppercase tracking-widest">Progress: ${currentQuestionIndex + 1} / ${currentQuizQuestions.length}</span>
+                    </div>
+
+                    <div id="q-card" class="mb-8">
+                        ${mediaHTML}
+                        <h2 class="text-lg md:text-xl font-bold text-white leading-relaxed">${q.question}</h2>
+                    </div>
+
+                    <div class="grid grid-cols-1 gap-3 mb-6">
+                        ${['A', 'B', 'C', 'D'].map(key => `
+                            <button id="btn-${key}" onclick="selectOption('${key}')" class="option-btn p-4 rounded-2xl border border-white/10 text-left flex items-center bg-white/5 hover:bg-white/10">
+                                <span class="w-8 h-8 rounded-lg bg-white/5 flex items-center justify-center font-bold text-xs text-white/40 mr-4">${key}</span>
+                                <span class="text-sm font-medium text-white/80">${q.options[key]}</span>
+                            </button>
+                        `).join('')}
+                    </div>
+
+                    <div id="feedback-panel" class="hidden mb-6"></div>
+
+                    <div class="mt-auto flex justify-end">
+                        <button id="action-btn" disabled onclick="handleAction()" class="px-8 py-3 bg-indigo-600 rounded-xl font-black text-xs uppercase tracking-widest disabled:opacity-20 transition-all text-white">
+                            Lock Answer
+                        </button>
+                    </div>
+                </div>
+            `;
+        }
+
+        function handleImageError(img) {
+            img.parentElement.innerHTML = `
+                <div class="img-error">
+                    <i class="fa-solid fa-circle-exclamation mb-2 text-xl"></i>
+                    <p class="font-bold">IMAGE BLOCKED OR PRIVATE</p>
+                    <p class="opacity-50 mt-1">Ensure the Drive file is shared as "Anyone with the link can view".</p>
+                </div>
+            `;
+        }
+
+        function selectOption(key) {
+            if (isAnswerRevealed) return;
+            playSfx('click');
+            selectedOption = key;
+            ['A', 'B', 'C', 'D'].forEach(k => document.getElementById(`btn-${k}`).classList.toggle('selected', k === key));
+            document.getElementById('action-btn').disabled = false;
+        }
+
+        function handleAction() {
+            if (!isAnswerRevealed) revealAnswer();
+            else nextQuestion();
+        }
+
+        function revealAnswer() {
+            isAnswerRevealed = true;
+            const q = currentQuizQuestions[currentQuestionIndex];
+            const isCorrect = selectedOption === q.answer;
+            const panel = document.getElementById('feedback-panel');
+            const btn = document.getElementById('action-btn');
+
+            if (isCorrect) { sessionScore++; playSfx('success'); }
+            else { playSfx('error'); document.getElementById('q-card').classList.add('shake'); }
+
+            userAnswers.push({ ...q, selected: selectedOption, isCorrect });
+
+            ['A', 'B', 'C', 'D'].forEach(k => {
+                const el = document.getElementById(`btn-${k}`);
+                el.disabled = true;
+                if (k === q.answer) el.classList.add('correct');
+                else if (k === selectedOption && !isCorrect) el.classList.add('wrong');
+            });
+
+            panel.classList.remove('hidden');
+            panel.innerHTML = `
+                <div class="p-4 rounded-2xl ${isCorrect ? 'bg-emerald-500/10 border-emerald-500/20 text-emerald-400' : 'bg-rose-500/10 border-rose-500/20 text-rose-400'} border flex flex-col items-center gap-4">
+                    <div class="w-full flex justify-between items-center">
+                        <div class="flex items-center font-bold text-xs uppercase tracking-tighter">
+                            <i class="fa-solid ${isCorrect ? 'fa-check-circle' : 'fa-times-circle'} mr-2 text-lg"></i>
+                            ${isCorrect ? 'Correct!' : 'Incorrect'}
+                        </div>
+                        <button onclick="getExplanation(${userAnswers.length - 1}, this)" class="text-[9px] font-black uppercase tracking-widest bg-white/10 px-3 py-2 rounded-lg border border-white/10 hover:bg-white/20 text-indigo-300">
+                            <i class="fa-solid ${q.explanation ? 'fa-book-open' : 'fa-wand-magic-sparkles'} mr-1"></i> ${q.explanation ? "View Explanation" : "Get AI Tutorial"}
+                        </button>
+                    </div>
+                    <div id="explanation-target-${userAnswers.length-1}" class="w-full hidden"></div>
+                </div>
+            `;
+            btn.innerText = "NEXT QUESTION";
+        }
+
+        async function getExplanation(index, btn) {
+            const data = userAnswers[index];
+            const target = document.getElementById(`explanation-target-${index}`);
+            target.classList.remove('hidden');
+            btn.disabled = true;
+
+            if (data.explanation) {
+                target.innerHTML = `<div class="mt-2 p-4 bg-indigo-500/10 rounded-xl border border-indigo-500/20 text-[11px] leading-relaxed text-indigo-100 fade-in">
+                    <b class="text-[9px] uppercase tracking-tighter text-indigo-400 block mb-1">Pre-written Guide:</b> ${data.explanation}
+                </div>`;
+                btn.remove(); return;
+            }
+
+            const key = localStorage.getItem('lab_ai_key');
+            const provider = localStorage.getItem('lab_ai_provider') || 'gemini';
+            if (!key) {
+                target.innerHTML = `<div class="text-[10px] text-rose-400 p-2 italic">Add an AI key in settings to unlock this feature.</div>`;
+                btn.disabled = false; return;
+            }
+
+            btn.innerHTML = `<i class="fa-solid fa-spinner fa-spin mr-1"></i> ANALYZING...`;
+            try {
+                const prompt = `Explain why ${data.selected} is wrong and ${data.answer} is right for: ${data.question}. Options: A:${data.options.A}, B:${data.options.B}, C:${data.options.C}, D:${data.options.D}. Max 40 words.`;
+                let responseText = "";
+
+                if (provider === 'gemini') {
+                    const resp = await fetch(`https://generativelanguage.googleapis.com/v1beta/models/gemini-1.5-flash:generateContent?key=${key}`, {
+                        method: 'POST', headers: {'Content-Type': 'application/json'},
+                        body: JSON.stringify({ contents: [{ parts: [{ text: prompt }] }] })
+                    });
+                    const json = await resp.json();
+                    responseText = json.candidates[0].content.parts[0].text;
+                } else {
+                    const url = provider === 'openai' ? 'https://api.openai.com/v1/chat/completions' : 'https://api.groq.com/openai/v1/chat/completions';
+                    const resp = await fetch(url, {
+                        method: 'POST', headers: {'Content-Type': 'application/json', 'Authorization': `Bearer ${key}`},
+                        body: JSON.stringify({ model: provider === 'openai' ? 'gpt-4o-mini' : 'llama3-8b-8192', messages: [{ role: "user", content: prompt }], max_tokens: 100 })
+                    });
+                    const json = await resp.json();
+                    responseText = json.choices[0].message.content;
+                }
+                target.innerHTML = `<div class="mt-2 p-3 bg-indigo-500/10 rounded-xl border border-indigo-500/20 text-[11px] leading-relaxed text-indigo-100 fade-in"><b class="text-[9px] uppercase tracking-tighter text-indigo-400 block mb-1">${provider.toUpperCase()} AI INSIGHT</b> ${responseText}</div>`;
+                btn.remove();
+            } catch (err) {
+                target.innerHTML = `<div class="text-[10px] text-rose-400 py-2">Neural link failed. Verify key.</div>`;
+                btn.disabled = false; btn.innerText = "RETRY";
+            }
+        }
+
+        function nextQuestion() {
+            currentQuestionIndex++;
+            if (currentQuestionIndex < currentQuizQuestions.length) renderQuestion();
+            else finishQuiz();
+        }
+
+        function finishQuiz() {
+            const xpGained = sessionScore * XP_PER_CORRECT;
+            const percent = (sessionScore / currentQuizQuestions.length) * 100;
+            const stars = percent >= 100 ? 3 : percent >= 70 ? 2 : percent >= 40 ? 1 : 0;
+            const masteryKey = selectedTopic === "Combined Lab" ? "Combined" : selectedTopic;
+
+            userData.xp += xpGained;
+            if (!userData.mastery[masteryKey] || userData.mastery[masteryKey] < stars) userData.mastery[masteryKey] = stars;
+            userData.history.unshift({ topic: selectedTopic, score: sessionScore, total: currentQuizQuestions.length, date: new Date().toISOString() });
+            userData.history = userData.history.slice(0, 30);
+
+            localStorage.setItem('lab_xp', userData.xp);
+            localStorage.setItem('lab_mastery', JSON.stringify(userData.mastery));
+            localStorage.setItem('lab_history', JSON.stringify(userData.history));
+
+            updateStatsUI();
+            if (percent >= 70) confetti({ particleCount: 100, spread: 70, origin: { y: 0.6 } });
+
+            document.getElementById('app-content').innerHTML = `
+                <div class="fade-in text-center py-6">
+                    <div class="mb-4"><span class="text-6xl font-black text-white italic">${percent}%</span><p class="text-[10px] font-bold text-indigo-400 uppercase tracking-widest">Efficiency Rating</p></div>
+                    <div class="inline-block p-4 bg-white/5 border border-amber-500/20 rounded-2xl mb-8"><div class="text-amber-500 font-black text-xl">+${xpGained} XP</div></div>
+                    <div class="grid grid-cols-2 gap-3 mb-8">
+                        <button onclick="startQuiz('${masteryKey}')" class="p-4 bg-indigo-600 rounded-xl font-bold text-xs uppercase text-white">Retry Mission</button>
+                        <button onclick="renderTopicSelection()" class="p-4 bg-white/5 border border-white/10 rounded-xl font-bold text-xs uppercase text-white">Home</button>
+                    </div>
+                </div>
+            `;
+        }
+
+        function updateStatsUI() {
+            const level = Math.floor(Math.sqrt(userData.xp / 100)) + 1;
+            const currentLevelXP = Math.pow(level - 1, 2) * 100;
+            const nextLevelXP = Math.pow(level, 2) * 100;
+            const progress = ((userData.xp - currentLevelXP) / (nextLevelXP - currentLevelXP)) * 100;
+            document.getElementById('user-level').innerText = level;
+            document.getElementById('total-xp-display').innerText = `${userData.xp} XP`;
+            document.getElementById('level-progress').style.width = `${progress}%`;
+            const ranks = ["Recruit", "Scholar", "Specialist", "Master", "Grandmaster"];
+            document.getElementById('rank-badge').innerText = ranks[Math.min(Math.floor(level / 5), ranks.length - 1)];
+        }
+
+        function toggleApiModal() {
+            const m = document.getElementById('api-modal');
+            m.classList.toggle('hidden');
+            if (!m.classList.contains('hidden')) {
+                document.getElementById('api-key-input').value = localStorage.getItem('lab_ai_key') || '';
+                document.getElementById('ai-provider').value = localStorage.getItem('lab_ai_provider') || 'gemini';
+            }
+        }
+
+        function saveApiSettings() {
+            localStorage.setItem('lab_ai_key', document.getElementById('api-key-input').value.trim());
+            localStorage.setItem('lab_ai_provider', document.getElementById('ai-provider').value);
+            toggleApiModal();
+            showToast("AI Updated", "success");
+        }
+
+        function showToast(msg, type) {
+            const t = document.createElement('div');
+            t.className = `p-3 px-6 rounded-xl text-[10px] font-black uppercase tracking-widest border fade-in ${type==='success' ? 'bg-emerald-500/20 border-emerald-500/40 text-emerald-400' : 'bg-rose-500/20 border-rose-500/40 text-rose-400'}`;
+            t.innerText = msg;
+            document.getElementById('toast-container').appendChild(t);
+            setTimeout(() => t.remove(), 3000);
+        }
+
+        function renderHistory() {
+            const appContent = document.getElementById('app-content');
+            appContent.innerHTML = `
+                <div class="fade-in">
+                    <div class="flex items-center mb-6">
+                        <button onclick="renderTopicSelection()" class="mr-4 text-white/50 hover:text-white"><i class="fa-solid fa-arrow-left"></i></button>
+                        <h2 class="text-xl font-black italic tracking-tighter text-white uppercase">Mission Logs</h2>
+                    </div>
+                    <div class="space-y-3">
+                        ${userData.history.length ? userData.history.map(h => `
+                            <div class="p-4 bg-white/5 border border-white/10 rounded-xl flex justify-between items-center">
+                                <div><div class="text-xs font-bold text-white">${h.topic}</div><div class="text-[9px] text-white/30 uppercase">${new Date(h.date).toLocaleDateString()}</div></div>
+                                <div class="text-sm font-black text-indigo-400">${h.score}/${h.total}</div>
+                            </div>
+                        `).join('') : '<p class="text-center text-white/20 py-20 uppercase font-bold text-[10px]">No Logs</p>'}
+                    </div>
+                </div>
+            `;
+        }
+
+        function renderErrorState() {
+            document.getElementById('app-content').innerHTML = `
+                <div class="text-center py-20"><i class="fa-solid fa-triangle-exclamation text-rose-500 text-3xl mb-4"></i><h2 class="font-bold text-white">SYNC FAILED</h2><button onclick="location.reload()" class="mt-6 px-6 py-2 bg-indigo-600 rounded-lg text-xs font-bold text-white uppercase">Retry</button></div>
+            `;
+        }
+
+        window.onload = initApp;
+    </script>
+</body>
+</html>
