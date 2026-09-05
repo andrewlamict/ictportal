@@ -14,8 +14,8 @@
             font-family: 'Outfit', sans-serif; 
             background-color: #020617; /* slate-950 */
             color: #f1f5f9; /* slate-100 */
-            overflow: hidden; /* Prevent scrolling during game */
-            touch-action: none; /* Crucial for canvas multi-touch round */
+            overflow-x: hidden; 
+            overflow-y: auto; /* Re-enabled scrolling for mobile */
         }
         
         .glass { 
@@ -45,7 +45,10 @@
         .char-current { border-bottom: 2px solid #3b82f6; } /* Blue */
 
         /* Round 2 Styles */
-        #r2-area { cursor: crosshair; }
+        #r2-area { 
+            cursor: crosshair; 
+            touch-action: none; /* Applied only to game area to prevent swipe-to-scroll while tapping */
+        }
         .tiny-target {
             position: absolute;
             width: 12px;
@@ -64,6 +67,7 @@
             background-size: 20px 20px;
             border-radius: 1rem;
             cursor: pointer;
+            touch-action: none; /* Crucial for canvas multi-touch round */
         }
         
         .stat-card {
@@ -79,7 +83,7 @@
     <header class="glass fixed top-0 w-full z-50 px-6 py-4 flex justify-between items-center">
         <div class="flex items-center gap-3">
             <i class="fas fa-gamepad text-blue-500 text-2xl"></i>
-            <h1 class="text-xl font-black tracking-widest uppercase">Input Lab</h1>
+            <h1 class="text-xl font-black tracking-widest uppercase hidden sm:block">Input Lab</h1>
         </div>
         <div class="flex items-center gap-4">
             <div id="global-timer" class="mono text-2xl font-bold text-slate-300">00.00s</div>
@@ -87,8 +91,8 @@
     </header>
 
     <!-- INTRO SCREEN -->
-    <main id="screen-intro" class="screen active flex-col items-center justify-center flex-grow pt-20 px-6 text-center w-full max-w-4xl mx-auto">
-        <div class="inline-block p-4 rounded-full bg-blue-500/10 border border-blue-500/20 mb-6">
+    <main id="screen-intro" class="screen active flex-col items-center justify-center flex-grow pt-24 pb-20 px-6 text-center w-full max-w-4xl mx-auto">
+        <div class="inline-block p-4 rounded-full bg-blue-500/10 border border-blue-500/20 mb-6 mt-8">
             <div class="flex gap-4 text-blue-400 text-4xl">
                 <i class="fas fa-keyboard"></i>
                 <i class="fas fa-mouse"></i>
@@ -123,21 +127,21 @@
             </div>
         </div>
 
-        <button onclick="startGame()" class="px-10 py-5 bg-white text-black rounded-full font-black text-lg uppercase tracking-widest hover:scale-105 hover:shadow-[0_0_30px_rgba(255,255,255,0.3)] transition-all duration-300">
+        <button onclick="startGame()" class="px-10 py-5 bg-white text-black rounded-full font-black text-lg uppercase tracking-widest hover:scale-105 hover:shadow-[0_0_30px_rgba(255,255,255,0.3)] transition-all duration-300 mb-8">
             Initialize Test Sequence
         </button>
     </main>
 
     <!-- ROUND 1: TYPING -->
-    <main id="screen-r1" class="screen flex-col items-center justify-center flex-grow pt-20 px-6 w-full max-w-4xl mx-auto relative">
+    <main id="screen-r1" class="screen flex-col items-center justify-center flex-grow pt-24 pb-20 px-6 w-full max-w-4xl mx-auto relative">
         <div class="absolute top-24 text-center w-full left-0 opacity-20 pointer-events-none">
-            <h2 class="text-[120px] font-black tracking-tighter text-blue-500">ROUND 1</h2>
+            <h2 class="text-[80px] md:text-[120px] font-black tracking-tighter text-blue-500">ROUND 1</h2>
         </div>
         
-        <div class="z-10 w-full glass p-8 md:p-12 rounded-3xl border-blue-500/20 shadow-2xl shadow-blue-900/20">
+        <div class="z-10 w-full glass p-6 md:p-12 rounded-3xl border-blue-500/20 shadow-2xl shadow-blue-900/20 mt-8">
             <div class="flex justify-between items-end mb-6">
                 <div>
-                    <h3 class="text-3xl font-black text-white tracking-tight mb-2">Text Input Challenge</h3>
+                    <h3 class="text-2xl md:text-3xl font-black text-white tracking-tight mb-2">Text Input Challenge</h3>
                     <p class="text-slate-400 text-sm">Type the text exactly as shown. Case and punctuation matter.</p>
                 </div>
                 <div class="text-right hidden md:block">
@@ -147,40 +151,40 @@
             </div>
 
             <!-- Target Text Display -->
-            <div id="r1-target" class="mono text-lg md:text-xl leading-relaxed text-slate-500 mb-8 p-6 bg-slate-900/50 rounded-2xl border border-white/5 shadow-inner select-none">
+            <div id="r1-target" class="mono text-base md:text-xl leading-relaxed text-slate-500 mb-8 p-4 md:p-6 bg-slate-900/50 rounded-2xl border border-white/5 shadow-inner select-none">
                 <!-- Populated by JS -->
             </div>
 
             <!-- Hidden Input for mobile keyboard popping, actual visible input is styled -->
-            <textarea id="r1-input" class="w-full h-32 bg-slate-900/80 text-white mono text-lg p-6 rounded-2xl border-2 border-slate-700 focus:outline-none focus:border-blue-500 transition-colors resize-none shadow-inner" placeholder="Click 'Start Round' to begin typing..." disabled autocomplete="off" autocorrect="off" autocapitalize="off" spellcheck="false"></textarea>
+            <textarea id="r1-input" class="w-full h-32 bg-slate-900/80 text-white mono text-lg p-4 md:p-6 rounded-2xl border-2 border-slate-700 focus:outline-none focus:border-blue-500 transition-colors resize-none shadow-inner" placeholder="Click 'Start Round' to begin typing..." disabled autocomplete="off" autocorrect="off" autocapitalize="off" spellcheck="false"></textarea>
             
-            <div class="mt-8 flex justify-between items-center">
-                <div class="flex gap-6">
-                    <div class="text-sm">
+            <div class="mt-8 flex flex-col sm:flex-row justify-between items-center gap-6">
+                <div class="flex gap-6 w-full sm:w-auto justify-center">
+                    <div class="text-sm text-center sm:text-left">
                         <span class="block text-slate-500 uppercase tracking-widest text-[10px] font-bold">Accuracy</span>
                         <span id="r1-acc" class="mono font-bold text-xl">100%</span>
                     </div>
-                    <div class="text-sm">
+                    <div class="text-sm text-center sm:text-left">
                         <span class="block text-slate-500 uppercase tracking-widest text-[10px] font-bold">WPM</span>
                         <span id="r1-wpm" class="mono font-bold text-xl">0</span>
                     </div>
                 </div>
-                <button id="r1-start-btn" onclick="startR1Logic()" class="px-8 py-3 bg-blue-600 hover:bg-blue-500 text-white rounded-xl font-bold uppercase tracking-widest transition-all">Start Round</button>
+                <button id="r1-start-btn" onclick="startR1Logic()" class="w-full sm:w-auto px-8 py-4 sm:py-3 bg-blue-600 hover:bg-blue-500 text-white rounded-xl font-bold uppercase tracking-widest transition-all">Start Round</button>
             </div>
         </div>
     </main>
 
     <!-- ROUND 2: PRECISION -->
-    <main id="screen-r2" class="screen flex-col items-center justify-center flex-grow pt-20 px-6 w-full max-w-5xl mx-auto relative">
+    <main id="screen-r2" class="screen flex-col items-center justify-center flex-grow pt-24 pb-20 px-6 w-full max-w-5xl mx-auto relative">
         <div class="absolute top-24 text-center w-full left-0 opacity-20 pointer-events-none z-0">
-            <h2 class="text-[120px] font-black tracking-tighter text-rose-500">ROUND 2</h2>
+            <h2 class="text-[80px] md:text-[120px] font-black tracking-tighter text-rose-500">ROUND 2</h2>
         </div>
 
-        <div class="z-10 w-full flex flex-col md:flex-row gap-6 h-[70vh]">
+        <div class="z-10 w-full flex flex-col md:flex-row gap-6 min-h-[70vh] md:h-[70vh] pb-12 mt-8">
             <!-- Info Panel -->
-            <div class="glass p-8 rounded-3xl border-rose-500/20 md:w-1/3 flex flex-col justify-between">
+            <div class="glass p-6 md:p-8 rounded-3xl border-rose-500/20 md:w-1/3 flex flex-col justify-between">
                 <div>
-                    <h3 class="text-3xl font-black text-white tracking-tight mb-2">Micro Precision</h3>
+                    <h3 class="text-2xl md:text-3xl font-black text-white tracking-tight mb-2">Micro Precision</h3>
                     <p class="text-slate-400 text-sm mb-6">A tiny target will appear in the grid. Click/Tap it 10 times as fast as you can. Beware of the fat-finger effect!</p>
                     
                     <div class="space-y-4 mb-6">
@@ -195,11 +199,11 @@
                     </div>
                 </div>
                 
-                <button id="r2-start-btn" onclick="startR2Logic()" class="w-full py-4 bg-rose-600 hover:bg-rose-500 text-white rounded-xl font-bold uppercase tracking-widest transition-all shadow-[0_0_20px_rgba(225,29,72,0.3)]">Start Round</button>
+                <button id="r2-start-btn" onclick="startR2Logic()" class="w-full py-4 bg-rose-600 hover:bg-rose-500 text-white rounded-xl font-bold uppercase tracking-widest transition-all shadow-[0_0_20px_rgba(225,29,72,0.3)] mt-4">Start Round</button>
             </div>
 
             <!-- Game Area -->
-            <div id="r2-area" class="flex-grow bg-slate-900 border border-slate-700 rounded-3xl relative overflow-hidden shadow-inner">
+            <div id="r2-area" class="flex-grow min-h-[350px] bg-slate-900 border border-slate-700 rounded-3xl relative overflow-hidden shadow-inner">
                 <!-- Target injected via JS -->
                 <div id="r2-overlay" class="absolute inset-0 bg-black/80 flex items-center justify-center z-20 backdrop-blur-sm">
                     <p class="text-slate-400 font-bold uppercase tracking-widest">Awaiting Start...</p>
@@ -209,16 +213,16 @@
     </main>
 
     <!-- ROUND 3: INTUITIVE -->
-    <main id="screen-r3" class="screen flex-col items-center justify-center flex-grow pt-20 px-6 w-full max-w-5xl mx-auto relative">
+    <main id="screen-r3" class="screen flex-col items-center justify-center flex-grow pt-24 pb-20 px-6 w-full max-w-5xl mx-auto relative">
         <div class="absolute top-24 text-center w-full left-0 opacity-20 pointer-events-none z-0">
-            <h2 class="text-[120px] font-black tracking-tighter text-purple-500">ROUND 3</h2>
+            <h2 class="text-[80px] md:text-[120px] font-black tracking-tighter text-purple-500">ROUND 3</h2>
         </div>
 
-        <div class="z-10 w-full flex flex-col md:flex-row gap-6 h-[70vh]">
+        <div class="z-10 w-full flex flex-col md:flex-row gap-6 min-h-[70vh] md:h-[70vh] pb-12 mt-8">
             <!-- Info Panel -->
-            <div class="glass p-8 rounded-3xl border-purple-500/20 md:w-1/3 flex flex-col justify-between">
+            <div class="glass p-6 md:p-8 rounded-3xl border-purple-500/20 md:w-1/3 flex flex-col justify-between">
                 <div>
-                    <h3 class="text-3xl font-black text-white tracking-tight mb-2">Intuitive Wipe</h3>
+                    <h3 class="text-2xl md:text-3xl font-black text-white tracking-tight mb-2">Intuitive Wipe</h3>
                     <p class="text-slate-400 text-sm mb-6">The canvas is covered in dust. Erase 90% of it to reveal the circuit underneath. <strong class="text-purple-400">Hint: Multi-touch is supported!</strong></p>
                     
                     <div class="bg-black/30 p-4 rounded-xl border border-white/5 mb-6 relative overflow-hidden">
@@ -232,11 +236,11 @@
                     </div>
                 </div>
                 
-                <button id="r3-start-btn" onclick="startR3Logic()" class="w-full py-4 bg-purple-600 hover:bg-purple-500 text-white rounded-xl font-bold uppercase tracking-widest transition-all shadow-[0_0_20px_rgba(168,85,247,0.3)]">Start Round</button>
+                <button id="r3-start-btn" onclick="startR3Logic()" class="w-full py-4 bg-purple-600 hover:bg-purple-500 text-white rounded-xl font-bold uppercase tracking-widest transition-all shadow-[0_0_20px_rgba(168,85,247,0.3)] mt-4">Start Round</button>
             </div>
 
             <!-- Canvas Area -->
-            <div class="flex-grow relative rounded-3xl overflow-hidden border border-slate-700 shadow-inner bg-slate-900">
+            <div class="flex-grow min-h-[350px] relative rounded-3xl overflow-hidden border border-slate-700 shadow-inner bg-slate-900">
                 <canvas id="r3-canvas" class="absolute inset-0 w-full h-full z-10"></canvas>
                 <div id="r3-overlay" class="absolute inset-0 bg-black/80 flex items-center justify-center z-20 backdrop-blur-sm pointer-events-none">
                     <p class="text-slate-400 font-bold uppercase tracking-widest">Awaiting Start...</p>
@@ -246,42 +250,42 @@
     </main>
 
     <!-- RESULTS SCREEN -->
-    <main id="screen-results" class="screen flex-col items-center justify-center flex-grow pt-20 px-6 w-full max-w-4xl mx-auto">
-        <h2 class="text-5xl md:text-6xl font-black mb-2 tracking-tighter text-white">TEST COMPLETE</h2>
-        <p class="text-slate-400 mb-10 uppercase tracking-widest text-sm">Diagnostic Results Generated</p>
+    <main id="screen-results" class="screen flex-col items-center justify-center flex-grow pt-24 pb-20 px-6 w-full max-w-4xl mx-auto">
+        <h2 class="text-5xl md:text-6xl font-black mb-2 tracking-tighter text-white mt-8">TEST COMPLETE</h2>
+        <p class="text-slate-400 mb-10 uppercase tracking-widest text-sm text-center">Diagnostic Results Generated</p>
 
-        <div class="grid grid-cols-1 md:grid-cols-3 gap-6 w-full mb-10">
+        <div class="grid grid-cols-1 md:grid-cols-3 gap-6 w-full mb-10 text-left">
             <!-- R1 Stat -->
-            <div class="stat-card p-6 rounded-3xl text-center relative overflow-hidden">
+            <div class="stat-card p-6 rounded-3xl relative overflow-hidden">
                 <div class="absolute top-0 right-0 w-24 h-24 bg-blue-500/10 rounded-full blur-2xl"></div>
                 <h3 class="text-blue-400 font-bold uppercase tracking-widest text-xs mb-4">R1: Text Input</h3>
                 <p id="res-r1-time" class="mono text-4xl font-black text-white mb-2">0.00s</p>
                 <p id="res-r1-acc" class="text-slate-400 text-sm mono">100% Acc | 0 WPM</p>
-                <div class="mt-4 pt-4 border-t border-white/5 text-left">
+                <div class="mt-4 pt-4 border-t border-white/5">
                     <p class="text-[10px] text-slate-500 font-bold uppercase">Scientific Note:</p>
                     <p class="text-xs text-slate-300 mt-1">Keyboards excel here due to physical tactile feedback allowing for rapid blind-typing.</p>
                 </div>
             </div>
 
             <!-- R2 Stat -->
-            <div class="stat-card p-6 rounded-3xl text-center relative overflow-hidden">
+            <div class="stat-card p-6 rounded-3xl relative overflow-hidden">
                 <div class="absolute top-0 right-0 w-24 h-24 bg-rose-500/10 rounded-full blur-2xl"></div>
                 <h3 class="text-rose-400 font-bold uppercase tracking-widest text-xs mb-4">R2: Precision</h3>
                 <p id="res-r2-time" class="mono text-4xl font-black text-white mb-2">0.00s</p>
                 <p id="res-r2-miss" class="text-slate-400 text-sm mono">0 Misses</p>
-                <div class="mt-4 pt-4 border-t border-white/5 text-left">
+                <div class="mt-4 pt-4 border-t border-white/5">
                     <p class="text-[10px] text-slate-500 font-bold uppercase">Scientific Note:</p>
                     <p class="text-xs text-slate-300 mt-1">Mice provide pixel-perfect cursors. Touchscreens suffer from the "fat-finger" occlusion effect.</p>
                 </div>
             </div>
 
             <!-- R3 Stat -->
-            <div class="stat-card p-6 rounded-3xl text-center relative overflow-hidden">
+            <div class="stat-card p-6 rounded-3xl relative overflow-hidden">
                 <div class="absolute top-0 right-0 w-24 h-24 bg-purple-500/10 rounded-full blur-2xl"></div>
                 <h3 class="text-purple-400 font-bold uppercase tracking-widest text-xs mb-4">R3: Intuitive</h3>
                 <p id="res-r3-time" class="mono text-4xl font-black text-white mb-2">0.00s</p>
                 <p class="text-slate-400 text-sm mono">90%+ Cleared</p>
-                <div class="mt-4 pt-4 border-t border-white/5 text-left">
+                <div class="mt-4 pt-4 border-t border-white/5">
                     <p class="text-[10px] text-slate-500 font-bold uppercase">Scientific Note:</p>
                     <p class="text-xs text-slate-300 mt-1">Touchscreens dominate through multi-touch capabilities and natural human gesturing.</p>
                 </div>
@@ -293,7 +297,7 @@
             <p class="text-slate-300 text-sm">Compare your results with the opposing device group to complete the Book B assignment!</p>
         </div>
 
-        <button onclick="location.reload()" class="mt-10 px-8 py-3 bg-white/10 hover:bg-white/20 border border-white/20 text-white rounded-xl font-bold text-xs uppercase tracking-widest transition-all">
+        <button onclick="location.reload()" class="mt-10 mb-8 px-8 py-4 bg-white/10 hover:bg-white/20 border border-white/20 text-white rounded-xl font-bold text-xs uppercase tracking-widest transition-all w-full sm:w-auto">
             Restart Lab
         </button>
     </main>
@@ -317,6 +321,7 @@
             document.querySelectorAll('.screen').forEach(s => s.classList.remove('active'));
             document.getElementById(`screen-${screenId}`).classList.add('active');
             state.currentScreen = screenId;
+            window.scrollTo({ top: 0, behavior: 'smooth' });
         }
 
         function startGame() {
