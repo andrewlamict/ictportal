@@ -1,368 +1,368 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>ICT Learning Portal | S.2, S.3 & DSE</title>
-    <script src="https://cdn.tailwindcss.com"></script>
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.18.5/xlsx.full.min.js"></script>
-    <script src="https://cdn.jsdelivr.net/npm/canvas-confetti@1.6.0/dist/confetti.browser.min.js"></script>
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
-    <style>
-        @import url('https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;600;800&display=swap');
-        body { font-family: 'Outfit', sans-serif; scroll-behavior: smooth; }
-        .glass { background: rgba(255, 255, 255, 0.03); backdrop-filter: blur(12px); border: 1px solid rgba(255, 255, 255, 0.1); }
-        .page-transition { transition: all 0.3s ease-in-out; }
-        
-        /* Trainer Specific Styles */
-        .option-btn { transition: all 0.2s cubic-bezier(0.175, 0.885, 0.32, 1.275); }
-        .option-btn.selected { background: rgba(99, 102, 241, 0.2); border-color: #6366f1; }
-        .option-btn.correct { background: rgba(16, 185, 129, 0.2) !important; border-color: #10b981 !important; color: #34d399 !important; }
-        .option-btn.wrong { background: rgba(239, 68, 68, 0.2) !important; border-color: #ef4444 !important; color: #f87171 !important; }
-        .topic-pill { transition: all 0.2s ease; cursor: pointer; border: 1px solid rgba(255,255,255,0.1); }
-        .topic-pill.active { background: rgba(168, 85, 247, 0.3); border-color: #a855f7; color: white; }
-    </style>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>ICT Learning Portal | S.2, S.3 & DSE</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.18.5/xlsx.full.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/canvas-confetti@1.6.0/dist/confetti.browser.min.js"></script>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;600;800&display=swap');
+        body { font-family: 'Outfit', sans-serif; scroll-behavior: smooth; }
+        .glass { background: rgba(255, 255, 255, 0.03); backdrop-filter: blur(12px); border: 1px solid rgba(255, 255, 255, 0.1); }
+        .page-transition { transition: all 0.3s ease-in-out; }
+        
+        /* Trainer Specific Styles */
+        .option-btn { transition: all 0.2s cubic-bezier(0.175, 0.885, 0.32, 1.275); }
+        .option-btn.selected { background: rgba(99, 102, 241, 0.2); border-color: #6366f1; }
+        .option-btn.correct { background: rgba(16, 185, 129, 0.2) !important; border-color: #10b981 !important; color: #34d399 !important; }
+        .option-btn.wrong { background: rgba(239, 68, 68, 0.2) !important; border-color: #ef4444 !important; color: #f87171 !important; }
+        .topic-pill { transition: all 0.2s ease; cursor: pointer; border: 1px solid rgba(255,255,255,0.1); }
+        .topic-pill.active { background: rgba(168, 85, 247, 0.3); border-color: #a855f7; color: white; }
+    </style>
 </head>
 <body class="bg-slate-950 text-slate-100 min-h-screen overflow-x-hidden">
 
-    <!-- Navigation -->
-    <nav class="glass sticky top-0 z-[100] px-6 py-4">
-        <div class="max-w-6xl mx-auto flex justify-between items-center">
-            <h1 class="text-2xl font-black bg-gradient-to-r from-blue-400 to-indigo-400 bg-clip-text text-transparent cursor-pointer tracking-tighter" onclick="showPage('home')">
-                ICT PORTAL
-            </h1>
-            <div class="hidden md:flex space-x-6">
-                <button onclick="showPage('python')" class="text-xs font-bold uppercase tracking-widest hover:text-blue-400 transition">Python</button>
-                <button onclick="showPage('database')" class="text-xs font-bold uppercase tracking-widest hover:text-emerald-400 transition">Database</button>
-                <button onclick="showPage('concepts')" class="text-xs font-bold uppercase tracking-widest hover:text-purple-400 transition">Concepts</button>
-                <button onclick="showPage('dse')" class="text-xs font-black uppercase tracking-widest px-4 py-2 bg-orange-600 rounded-lg hover:bg-orange-500 transition shadow-lg shadow-orange-500/20">DSE Resources</button>
-            </div>
-            <button class="md:hidden text-2xl" onclick="toggleMobileMenu()">
-                <i class="fas fa-bars"></i>
-            </button>
-        </div>
-        <!-- Mobile Menu Container -->
-        <div id="mobile-nav" class="hidden md:hidden flex flex-col space-y-4 mt-6 border-t border-white/10 pt-4 pb-2">
-            <button onclick="showPage('python'); toggleMobileMenu()" class="text-xs font-bold uppercase tracking-widest hover:text-blue-400 transition text-left">Python</button>
-            <button onclick="showPage('database'); toggleMobileMenu()" class="text-xs font-bold uppercase tracking-widest hover:text-emerald-400 transition text-left">Database</button>
-            <button onclick="showPage('concepts'); toggleMobileMenu()" class="text-xs font-bold uppercase tracking-widest hover:text-purple-400 transition text-left">Concepts</button>
-            <button onclick="showPage('dse'); toggleMobileMenu()" class="text-xs font-black uppercase tracking-widest px-4 py-2 bg-orange-600 rounded-lg hover:bg-orange-500 transition shadow-lg shadow-orange-500/20 text-left w-max">DSE Resources</button>
-        </div>
-    </nav>
+    <!-- Navigation -->
+    <nav class="glass sticky top-0 z-[100] px-6 py-4">
+        <div class="max-w-6xl mx-auto flex justify-between items-center">
+            <h1 class="text-2xl font-black bg-gradient-to-r from-blue-400 to-indigo-400 bg-clip-text text-transparent cursor-pointer tracking-tighter" onclick="showPage('home')">
+                ICT PORTAL
+            </h1>
+            <div class="hidden md:flex space-x-6">
+                <button onclick="showPage('python')" class="text-xs font-bold uppercase tracking-widest hover:text-blue-400 transition">Python</button>
+                <button onclick="showPage('database')" class="text-xs font-bold uppercase tracking-widest hover:text-emerald-400 transition">Database</button>
+                <button onclick="showPage('concepts')" class="text-xs font-bold uppercase tracking-widest hover:text-purple-400 transition">Concepts</button>
+                <button onclick="showPage('dse')" class="text-xs font-black uppercase tracking-widest px-4 py-2 bg-orange-600 rounded-lg hover:bg-orange-500 transition shadow-lg shadow-orange-500/20">DSE Resources</button>
+            </div>
+            <button class="md:hidden text-2xl" onclick="toggleMobileMenu()">
+                <i class="fas fa-bars"></i>
+            </button>
+        </div>
+        <!-- Mobile Menu Container -->
+        <div id="mobile-nav" class="hidden md:hidden flex flex-col space-y-4 mt-6 border-t border-white/10 pt-4 pb-2">
+            <button onclick="showPage('python'); toggleMobileMenu()" class="text-xs font-bold uppercase tracking-widest hover:text-blue-400 transition text-left">Python</button>
+            <button onclick="showPage('database'); toggleMobileMenu()" class="text-xs font-bold uppercase tracking-widest hover:text-emerald-400 transition text-left">Database</button>
+            <button onclick="showPage('concepts'); toggleMobileMenu()" class="text-xs font-bold uppercase tracking-widest hover:text-purple-400 transition text-left">Concepts</button>
+            <button onclick="showPage('dse'); toggleMobileMenu()" class="text-xs font-black uppercase tracking-widest px-4 py-2 bg-orange-600 rounded-lg hover:bg-orange-500 transition shadow-lg shadow-orange-500/20 text-left w-max">DSE Resources</button>
+        </div>
+    </nav>
 
-    <!-- Main Content Area -->
-    <main class="max-w-6xl mx-auto px-6 py-12">
-        
-        <!-- HOME PAGE -->
-        <div id="page-home" class="page-content">
-            <header class="text-center mb-16">
-                <h2 class="text-5xl md:text-7xl font-extrabold mb-6 tracking-tighter">Master Your <span class="text-blue-500">ICT</span> Journey</h2>
-                <p class="text-slate-400 text-lg max-w-2xl mx-auto leading-relaxed">Choose a specialized track to begin your technical acceleration.</p>
-            </header>
+    <!-- Main Content Area -->
+    <main class="max-w-6xl mx-auto px-6 py-12">
+        
+        <!-- HOME PAGE -->
+        <div id="page-home" class="page-content">
+            <header class="text-center mb-16">
+                <h2 class="text-5xl md:text-7xl font-extrabold mb-6 tracking-tighter">Master Your <span class="text-blue-500">ICT</span> Journey</h2>
+                <p class="text-slate-400 text-lg max-w-2xl mx-auto leading-relaxed">Choose a specialized track to begin your technical acceleration.</p>
+            </header>
 
-            <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
-                <div onclick="showPage('python')" class="glass p-8 rounded-3xl hover:border-blue-500/50 transition-all cursor-pointer group">
-                    <div class="text-blue-500 text-4xl mb-6 group-hover:scale-110 transition"><i class="fab fa-python"></i></div>
-                    <h3 class="text-xl font-black mb-2 uppercase tracking-tight">S.2 Python</h3>
-                    <p class="text-slate-400 text-sm leading-relaxed">Coding basics, syntax, and algorithmic logic for S.2.</p>
-                </div>
+            <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
+                <div onclick="showPage('python')" class="glass p-8 rounded-3xl hover:border-blue-500/50 transition-all cursor-pointer group">
+                    <div class="text-blue-500 text-4xl mb-6 group-hover:scale-110 transition"><i class="fab fa-python"></i></div>
+                    <h3 class="text-xl font-black mb-2 uppercase tracking-tight">S.2 Python</h3>
+                    <p class="text-slate-400 text-sm leading-relaxed">Coding basics, syntax, and algorithmic logic for S.2.</p>
+                </div>
 
-                <div onclick="showPage('database')" class="glass p-8 rounded-3xl hover:border-emerald-500/50 transition-all cursor-pointer group">
-                    <div class="text-emerald-500 text-4xl mb-6 group-hover:scale-110 transition"><i class="fas fa-database"></i></div>
-                    <h3 class="text-xl font-black mb-2 uppercase tracking-tight">S.3 Database</h3>
-                    <p class="text-slate-400 text-sm leading-relaxed">Tables, relationships, and SQL queries for S.3.</p>
-                </div>
+                <div onclick="showPage('database')" class="glass p-8 rounded-3xl hover:border-emerald-500/50 transition-all cursor-pointer group">
+                    <div class="text-emerald-500 text-4xl mb-6 group-hover:scale-110 transition"><i class="fas fa-database"></i></div>
+                    <h3 class="text-xl font-black mb-2 uppercase tracking-tight">S.3 Database</h3>
+                    <p class="text-slate-400 text-sm leading-relaxed">Tables, relationships, and SQL queries for S.3.</p>
+                </div>
 
-                <div onclick="showPage('concepts')" class="glass p-8 rounded-3xl hover:border-purple-500/50 transition-all cursor-pointer group">
-                    <div class="text-purple-500 text-4xl mb-6 group-hover:scale-110 transition"><i class="fas fa-book"></i></div>
-                    <h3 class="text-xl font-black mb-2 uppercase tracking-tight">Concepts</h3>
-                    <p class="text-slate-400 text-sm leading-relaxed">Core ICT concepts, systems, and implications.</p>
-                </div>
+                <div onclick="showPage('concepts')" class="glass p-8 rounded-3xl hover:border-purple-500/50 transition-all cursor-pointer group">
+                    <div class="text-purple-500 text-4xl mb-6 group-hover:scale-110 transition"><i class="fas fa-book"></i></div>
+                    <h3 class="text-xl font-black mb-2 uppercase tracking-tight">Concepts</h3>
+                    <p class="text-slate-400 text-sm leading-relaxed">Core ICT concepts, systems, and implications.</p>
+                </div>
 
-                <div onclick="showPage('dse')" class="glass p-8 rounded-3xl border-orange-500/30 bg-orange-500/5 hover:border-orange-500/60 transition-all cursor-pointer group">
-                    <div class="text-orange-500 text-4xl mb-6 group-hover:scale-110 transition"><i class="fas fa-graduation-cap"></i></div>
-                    <h3 class="text-xl font-black mb-2 uppercase tracking-tight">DSE Portal</h3>
-                    <p class="text-slate-400 text-sm leading-relaxed">Access Past Papers and MC Practice Forms.</p>
-                </div>
-            </div>
-        </div>
+                <div onclick="showPage('dse')" class="glass p-8 rounded-3xl border-orange-500/30 bg-orange-500/5 hover:border-orange-500/60 transition-all cursor-pointer group">
+                    <div class="text-orange-500 text-4xl mb-6 group-hover:scale-110 transition"><i class="fas fa-graduation-cap"></i></div>
+                    <h3 class="text-xl font-black mb-2 uppercase tracking-tight">DSE Portal</h3>
+                    <p class="text-slate-400 text-sm leading-relaxed">Access Past Papers and MC Practice Forms.</p>
+                </div>
+            </div>
+        </div>
 
-        <!-- S.2 PYTHON PAGE -->
-        <div id="page-python" class="page-content hidden">
-            <button onclick="showPage('home')" class="mb-6 text-blue-400 font-bold text-xs uppercase tracking-widest hover:underline transition">
-                <i class="fas fa-arrow-left mr-2"></i>Back to Home
-            </button>
-            <h2 class="text-4xl font-black mb-8 text-blue-400 uppercase tracking-tight">S.2 Python Programming</h2>
-            
-            <div class="grid gap-6">
-                <a href="simplepythoncompiler.html" class="block group">
-                    <div class="glass p-8 rounded-3xl border-white/5 group-hover:border-blue-500/50 group-hover:bg-blue-500/5 transition-all duration-300">
-                        <div class="flex justify-between items-center">
-                            <div>
-                                <h3 class="font-black text-xl mb-2 uppercase tracking-tight text-white group-hover:text-blue-400 transition-colors">Module 1: Syntax & Variables</h3>
-                                <p class="text-slate-400 text-sm">Interactive coding lab: Variables, print statements, and data types.</p>
-                            </div>
-                            <div class="w-12 h-12 rounded-full bg-blue-500/10 flex items-center justify-center text-blue-400 group-hover:scale-110 transition-transform">
-                                <i class="fas fa-code"></i>
-                            </div>
-                        </div>
-                    </div>
-                </a>
-                
-                <a href="if.html" class="block group">
-                    <div class="glass p-8 rounded-3xl border-white/5 group-hover:border-blue-500/50 group-hover:bg-blue-500/5 transition-all duration-300">
-                        <div class="flex justify-between items-center">
-                            <div>
-                                <h3 class="font-black text-xl mb-2 uppercase tracking-tight text-white group-hover:text-blue-400 transition-colors">Module 2: Flow Control</h3>
-                                <p class="text-slate-400 text-sm">Learning 'if' statements and logical operators.</p>
-                            </div>
-                            <div class="w-12 h-12 rounded-full bg-blue-500/10 flex items-center justify-center text-blue-400 group-hover:scale-110 transition-transform">
-                                <i class="fas fa-code"></i>
-                            </div>
-                        </div>
-                    </div>
-                </a>
-            </div>
-        </div>
+        <!-- S.2 PYTHON PAGE -->
+        <div id="page-python" class="page-content hidden max-w-4xl mx-auto">
+            <button onclick="showPage('home')" class="mb-6 text-blue-400 font-bold text-xs uppercase tracking-widest hover:underline transition">
+                <i class="fas fa-arrow-left mr-2"></i>Back to Home
+            </button>
+            <h2 class="text-4xl font-black mb-8 text-blue-400 uppercase tracking-tight">S.2 Python Programming</h2>
+            
+            <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+                <a href="simplepythoncompiler.html" class="block group">
+                    <div class="glass p-8 rounded-3xl border-white/5 group-hover:border-blue-500/50 group-hover:bg-blue-500/5 transition-all duration-300">
+                        <div class="flex justify-between items-center">
+                            <div>
+                                <h3 class="font-black text-xl mb-2 uppercase tracking-tight text-white group-hover:text-blue-400 transition-colors">Module 1: Syntax & Variables</h3>
+                                <p class="text-slate-400 text-sm">Interactive coding lab: Variables, print statements, and data types.</p>
+                            </div>
+                            <div class="w-12 h-12 rounded-full bg-blue-500/10 flex items-center justify-center text-blue-400 group-hover:scale-110 transition-transform">
+                                <i class="fas fa-code"></i>
+                            </div>
+                        </div>
+                    </div>
+                </a>
+                
+                <a href="if.html" class="block group">
+                    <div class="glass p-8 rounded-3xl border-white/5 group-hover:border-blue-500/50 group-hover:bg-blue-500/5 transition-all duration-300">
+                        <div class="flex justify-between items-center">
+                            <div>
+                                <h3 class="font-black text-xl mb-2 uppercase tracking-tight text-white group-hover:text-blue-400 transition-colors">Module 2: Flow Control</h3>
+                                <p class="text-slate-400 text-sm">Learning 'if' statements and logical operators.</p>
+                            </div>
+                            <div class="w-12 h-12 rounded-full bg-blue-500/10 flex items-center justify-center text-blue-400 group-hover:scale-110 transition-transform">
+                                <i class="fas fa-code"></i>
+                            </div>
+                        </div>
+                    </div>
+                </a>
+            </div>
+        </div>
 
-        <!-- S.3 DATABASE PAGE -->
-        <div id="page-database" class="page-content hidden">
-            <button onclick="showPage('home')" class="mb-6 text-emerald-400 font-bold text-xs uppercase tracking-widest hover:underline transition">
-                <i class="fas fa-arrow-left mr-2"></i>Back to Home
-            </button>
-            <h2 class="text-4xl font-black mb-8 text-emerald-400 uppercase tracking-tight">S.3 Database & SQL</h2>
-            
-            <div class="grid gap-6">
-                <a href="sqllab1.html" class="block group">
-                    <div class="glass p-8 rounded-3xl border-white/5 group-hover:border-emerald-500/50 group-hover:bg-emerald-500/5 transition-all duration-300">
-                        <div class="flex justify-between items-center">
-                            <div>
-                                <h3 class="font-black text-xl mb-2 uppercase tracking-tight text-white group-hover:text-emerald-400 transition-colors">SQL Lesson 1: Create & Insert</h3>
-                                <p class="text-slate-400 text-sm">Learn to define table structures and populate data using SQL commands.</p>
-                            </div>
-                            <div class="w-12 h-12 rounded-full bg-emerald-500/10 flex items-center justify-center text-emerald-400 group-hover:scale-110 transition-transform">
-                                <i class="fas fa-plus-square"></i>
-                            </div>
-                        </div>
-                    </div>
-                </a>
+        <!-- S.3 DATABASE PAGE -->
+        <div id="page-database" class="page-content hidden max-w-4xl mx-auto">
+            <button onclick="showPage('home')" class="mb-6 text-emerald-400 font-bold text-xs uppercase tracking-widest hover:underline transition">
+                <i class="fas fa-arrow-left mr-2"></i>Back to Home
+            </button>
+            <h2 class="text-4xl font-black mb-8 text-emerald-400 uppercase tracking-tight">S.3 Database & SQL</h2>
+            
+            <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+                <a href="sqllab1.html" class="block group">
+                    <div class="glass p-8 rounded-3xl border-white/5 group-hover:border-emerald-500/50 group-hover:bg-emerald-500/5 transition-all duration-300">
+                        <div class="flex justify-between items-center">
+                            <div>
+                                <h3 class="font-black text-xl mb-2 uppercase tracking-tight text-white group-hover:text-emerald-400 transition-colors">SQL Lesson 1: Create & Insert</h3>
+                                <p class="text-slate-400 text-sm">Learn to define table structures and populate data using SQL commands.</p>
+                            </div>
+                            <div class="w-12 h-12 rounded-full bg-emerald-500/10 flex items-center justify-center text-emerald-400 group-hover:scale-110 transition-transform">
+                                <i class="fas fa-plus-square"></i>
+                            </div>
+                        </div>
+                    </div>
+                </a>
 
-                <a href="sqllab2.html" class="block group">
-                    <div class="glass p-8 rounded-3xl border-white/5 group-hover:border-emerald-500/50 group-hover:bg-emerald-500/5 transition-all duration-300">
-                        <div class="flex justify-between items-center">
-                            <div>
-                                <h3 class="font-black text-xl mb-2 uppercase tracking-tight text-white group-hover:text-emerald-400 transition-colors">Interactive Select Stage</h3>
-                                <p class="text-slate-400 text-sm">Master data retrieval techniques, filtering, and sorting with SELECT queries.</p>
-                            </div>
-                            <div class="w-12 h-12 rounded-full bg-emerald-500/10 flex items-center justify-center text-emerald-400 group-hover:scale-110 transition-transform">
-                                <i class="fas fa-search"></i>
-                            </div>
-                        </div>
-                    </div>
-                </a>
-            </div>
-        </div>
+                <a href="sqllab2.html" class="block group">
+                    <div class="glass p-8 rounded-3xl border-white/5 group-hover:border-emerald-500/50 group-hover:bg-emerald-500/5 transition-all duration-300">
+                        <div class="flex justify-between items-center">
+                            <div>
+                                <h3 class="font-black text-xl mb-2 uppercase tracking-tight text-white group-hover:text-emerald-400 transition-colors">Interactive Select Stage</h3>
+                                <p class="text-slate-400 text-sm">Master data retrieval techniques, filtering, and sorting with SELECT queries.</p>
+                            </div>
+                            <div class="w-12 h-12 rounded-full bg-emerald-500/10 flex items-center justify-center text-emerald-400 group-hover:scale-110 transition-transform">
+                                <i class="fas fa-search"></i>
+                            </div>
+                        </div>
+                    </div>
+                </a>
+            </div>
+        </div>
 
-        <!-- CONCEPTS PAGE -->
-        <div id="page-concepts" class="page-content hidden">
-            <button onclick="showPage('home')" class="mb-6 text-purple-400 font-bold text-xs uppercase tracking-widest"><i class="fas fa-arrow-left mr-2"></i>Back</button>
-            <h2 class="text-4xl font-black mb-8 text-purple-400 uppercase tracking-tight">ICT Concepts</h2>
-            <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-                <div class="glass p-6 rounded-3xl border-white/5 hover:border-purple-500/50 hover:bg-purple-500/5 transition-all cursor-pointer group">
-                    <h3 class="font-black text-lg mb-1 uppercase tracking-tight text-white group-hover:text-purple-400 transition-colors">Book A1</h3>
-                    <p class="text-slate-400 text-sm">Information Processing</p>
-                </div>
-                <div class="glass p-6 rounded-3xl border-white/5 hover:border-purple-500/50 hover:bg-purple-500/5 transition-all cursor-pointer group">
-                    <h3 class="font-black text-lg mb-1 uppercase tracking-tight text-white group-hover:text-purple-400 transition-colors">Book A2</h3>
-                    <p class="text-slate-400 text-sm">Information Processing</p>
-                </div>
-                <div onclick="showPage('concepts-book-b')" class="glass p-6 rounded-3xl border-white/5 hover:border-purple-500/50 hover:bg-purple-500/5 transition-all cursor-pointer group">
-                    <h3 class="font-black text-lg mb-1 uppercase tracking-tight text-white group-hover:text-purple-400 transition-colors">Book B</h3>
-                    <p class="text-slate-400 text-sm">Computer System Fundamentals</p>
-                </div>
-                <div class="glass p-6 rounded-3xl border-white/5 hover:border-purple-500/50 hover:bg-purple-500/5 transition-all cursor-pointer group">
-                    <h3 class="font-black text-lg mb-1 uppercase tracking-tight text-white group-hover:text-purple-400 transition-colors">Book C1</h3>
-                    <p class="text-slate-400 text-sm">Internet and its Application</p>
-                </div>
-                <div class="glass p-6 rounded-3xl border-white/5 hover:border-purple-500/50 hover:bg-purple-500/5 transition-all cursor-pointer group">
-                    <h3 class="font-black text-lg mb-1 uppercase tracking-tight text-white group-hover:text-purple-400 transition-colors">Book C2</h3>
-                    <p class="text-slate-400 text-sm">Internet and its Application</p>
-                </div>
-                <div class="glass p-6 rounded-3xl border-white/5 hover:border-purple-500/50 hover:bg-purple-500/5 transition-all cursor-pointer group">
-                    <h3 class="font-black text-lg mb-1 uppercase tracking-tight text-white group-hover:text-purple-400 transition-colors">Book D1 & D2</h3>
-                    <p class="text-slate-400 text-sm">Basic Programming</p>
-                </div>
-                <div class="glass p-6 rounded-3xl border-white/5 hover:border-purple-500/50 hover:bg-purple-500/5 transition-all cursor-pointer group">
-                    <h3 class="font-black text-lg mb-1 uppercase tracking-tight text-white group-hover:text-purple-400 transition-colors">Book E</h3>
-                    <p class="text-slate-400 text-sm">Social Implications</p>
-                </div>
-                <div class="glass p-6 rounded-3xl border-white/5 hover:border-purple-500/50 hover:bg-purple-500/5 transition-all cursor-pointer group">
-                    <h3 class="font-black text-lg mb-1 uppercase tracking-tight text-white group-hover:text-purple-400 transition-colors">Elective Book A</h3>
-                    <p class="text-slate-400 text-sm">Database</p>
-                </div>
-                <div class="glass p-6 rounded-3xl border-white/5 hover:border-purple-500/50 hover:bg-purple-500/5 transition-all cursor-pointer group">
-                    <h3 class="font-black text-lg mb-1 uppercase tracking-tight text-white group-hover:text-purple-400 transition-colors">Elective Book C</h3>
-                    <p class="text-slate-400 text-sm">Python Programming</p>
-                </div>
-            </div>
-        </div>
+        <!-- CONCEPTS PAGE -->
+        <div id="page-concepts" class="page-content hidden">
+            <button onclick="showPage('home')" class="mb-6 text-purple-400 font-bold text-xs uppercase tracking-widest hover:underline transition"><i class="fas fa-arrow-left mr-2"></i>Back</button>
+            <h2 class="text-4xl font-black mb-8 text-purple-400 uppercase tracking-tight">ICT Concepts</h2>
+            <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+                <div class="glass p-6 rounded-3xl border-white/5 hover:border-purple-500/50 hover:bg-purple-500/5 transition-all cursor-pointer group">
+                    <h3 class="font-black text-lg mb-1 uppercase tracking-tight text-white group-hover:text-purple-400 transition-colors">Book A1</h3>
+                    <p class="text-slate-400 text-sm">Information Processing</p>
+                </div>
+                <div class="glass p-6 rounded-3xl border-white/5 hover:border-purple-500/50 hover:bg-purple-500/5 transition-all cursor-pointer group">
+                    <h3 class="font-black text-lg mb-1 uppercase tracking-tight text-white group-hover:text-purple-400 transition-colors">Book A2</h3>
+                    <p class="text-slate-400 text-sm">Information Processing</p>
+                </div>
+                <div onclick="showPage('concepts-book-b')" class="glass p-6 rounded-3xl border-white/5 hover:border-purple-500/50 hover:bg-purple-500/5 transition-all cursor-pointer group">
+                    <h3 class="font-black text-lg mb-1 uppercase tracking-tight text-white group-hover:text-purple-400 transition-colors">Book B</h3>
+                    <p class="text-slate-400 text-sm">Computer System Fundamentals</p>
+                </div>
+                <div class="glass p-6 rounded-3xl border-white/5 hover:border-purple-500/50 hover:bg-purple-500/5 transition-all cursor-pointer group">
+                    <h3 class="font-black text-lg mb-1 uppercase tracking-tight text-white group-hover:text-purple-400 transition-colors">Book C1</h3>
+                    <p class="text-slate-400 text-sm">Internet and its Application</p>
+                </div>
+                <div class="glass p-6 rounded-3xl border-white/5 hover:border-purple-500/50 hover:bg-purple-500/5 transition-all cursor-pointer group">
+                    <h3 class="font-black text-lg mb-1 uppercase tracking-tight text-white group-hover:text-purple-400 transition-colors">Book C2</h3>
+                    <p class="text-slate-400 text-sm">Internet and its Application</p>
+                </div>
+                <div class="glass p-6 rounded-3xl border-white/5 hover:border-purple-500/50 hover:bg-purple-500/5 transition-all cursor-pointer group">
+                    <h3 class="font-black text-lg mb-1 uppercase tracking-tight text-white group-hover:text-purple-400 transition-colors">Book D1 & D2</h3>
+                    <p class="text-slate-400 text-sm">Basic Programming</p>
+                </div>
+                <div class="glass p-6 rounded-3xl border-white/5 hover:border-purple-500/50 hover:bg-purple-500/5 transition-all cursor-pointer group">
+                    <h3 class="font-black text-lg mb-1 uppercase tracking-tight text-white group-hover:text-purple-400 transition-colors">Book E</h3>
+                    <p class="text-slate-400 text-sm">Social Implications</p>
+                </div>
+                <div class="glass p-6 rounded-3xl border-white/5 hover:border-purple-500/50 hover:bg-purple-500/5 transition-all cursor-pointer group">
+                    <h3 class="font-black text-lg mb-1 uppercase tracking-tight text-white group-hover:text-purple-400 transition-colors">Elective Book A</h3>
+                    <p class="text-slate-400 text-sm">Database</p>
+                </div>
+                <div class="glass p-6 rounded-3xl border-white/5 hover:border-purple-500/50 hover:bg-purple-500/5 transition-all cursor-pointer group">
+                    <h3 class="font-black text-lg mb-1 uppercase tracking-tight text-white group-hover:text-purple-400 transition-colors">Elective Book C</h3>
+                    <p class="text-slate-400 text-sm">Python Programming</p>
+                </div>
+            </div>
+        </div>
 
-        <!-- CONCEPTS: BOOK B SUBTOPICS PAGE -->
-        <div id="page-concepts-book-b" class="page-content hidden">
-            <button onclick="showPage('concepts')" class="mb-6 text-purple-400 font-bold text-xs uppercase tracking-widest hover:underline transition">
-                <i class="fas fa-arrow-left mr-2"></i>Back to Concepts
-            </button>
-            <h2 class="text-4xl font-black mb-8 text-purple-400 uppercase tracking-tight">Book B: Computer System Fundamentals</h2>
-            
-            <div class="grid gap-6">
-                <a href="b1_scanner.html" class="block group">
-                    <div class="glass p-8 rounded-3xl border-white/5 group-hover:border-purple-500/50 group-hover:bg-purple-500/5 transition-all duration-300">
-                        <div class="flex justify-between items-center">
-                            <div>
-                                <h3 class="font-black text-xl mb-2 uppercase tracking-tight text-white group-hover:text-purple-400 transition-colors">1. DIY Scanner</h3>
-                                <p class="text-slate-400 text-sm">Explore input devices through a DIY scanner project.</p>
-                            </div>
-                            <div class="w-12 h-12 rounded-full bg-purple-500/10 flex items-center justify-center text-purple-400 group-hover:scale-110 transition-transform">
-                                <i class="fas fa-print"></i>
-                            </div>
-                        </div>
-                    </div>
-                </a>
-            </div>
-        </div>
+        <!-- CONCEPTS: BOOK B SUBTOPICS PAGE -->
+        <div id="page-concepts-book-b" class="page-content hidden max-w-5xl mx-auto">
+            <button onclick="showPage('concepts')" class="mb-6 text-purple-400 font-bold text-xs uppercase tracking-widest hover:underline transition">
+                <i class="fas fa-arrow-left mr-2"></i>Back to Concepts
+            </button>
+            <h2 class="text-4xl font-black mb-8 text-purple-400 uppercase tracking-tight">Book B: Computer System Fundamentals</h2>
+            
+            <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+                <a href="b1_scanner.html" class="block group">
+                    <div class="glass p-8 rounded-3xl border-white/5 group-hover:border-purple-500/50 group-hover:bg-purple-500/5 transition-all duration-300">
+                        <div class="flex justify-between items-center">
+                            <div>
+                                <h3 class="font-black text-xl mb-2 uppercase tracking-tight text-white group-hover:text-purple-400 transition-colors">1. DIY Scanner</h3>
+                                <p class="text-slate-400 text-sm">Explore input devices through a DIY scanner project.</p>
+                            </div>
+                            <div class="w-12 h-12 rounded-full bg-purple-500/10 flex items-center justify-center text-purple-400 group-hover:scale-110 transition-transform">
+                                <i class="fas fa-print"></i>
+                            </div>
+                        </div>
+                    </div>
+                </a>
+            </div>
+        </div>
 
-        <!-- DSE PAGE (With Login Gateway) -->
-        <div id="page-dse" class="page-content hidden">
-            <button onclick="showPage('home')" class="mb-6 text-orange-400 font-bold text-xs uppercase tracking-widest"><i class="fas fa-arrow-left mr-2"></i>Back to Home</button>
-            <h2 class="text-4xl font-black mb-8 text-orange-400 uppercase tracking-tight">DSE Specialized Resources</h2>
+        <!-- DSE PAGE (With Login Gateway) -->
+        <div id="page-dse" class="page-content hidden">
+            <button onclick="showPage('home')" class="mb-6 text-orange-400 font-bold text-xs uppercase tracking-widest hover:underline transition"><i class="fas fa-arrow-left mr-2"></i>Back to Home</button>
+            <h2 class="text-4xl font-black mb-8 text-orange-400 uppercase tracking-tight">DSE Specialized Resources</h2>
 
-            <!-- Login Gateway -->
-            <div id="dse-login-gateway" class="glass p-12 rounded-3xl max-w-md mx-auto text-center border-orange-500/20">
-                <div class="w-16 h-16 bg-orange-500/10 rounded-full flex items-center justify-center mx-auto mb-6 text-orange-400">
-                    <i class="fas fa-lock text-2xl"></i>
-                </div>
-                <h3 class="text-xl font-black mb-6 uppercase tracking-tight">Restricted Access</h3>
-                <div class="space-y-4">
-                    <input type="text" id="dse-user" placeholder="Username" class="w-full bg-white/5 border border-white/10 rounded-xl px-4 py-3 text-sm focus:outline-none focus:border-orange-500 transition">
-                    <input type="password" id="dse-pass" placeholder="Password" class="w-full bg-white/5 border border-white/10 rounded-xl px-4 py-3 text-sm focus:outline-none focus:border-orange-500 transition">
-                    <button onclick="handleDseLogin()" class="w-full bg-orange-600 hover:bg-orange-500 py-3 rounded-xl font-black text-xs uppercase tracking-widest transition shadow-lg shadow-orange-600/20">Sign In</button>
-                    <p id="login-error" class="text-rose-500 text-[10px] font-bold uppercase hidden pt-2">Invalid Credentials</p>
-                </div>
-            </div>
+            <!-- Login Gateway -->
+            <div id="dse-login-gateway" class="glass p-12 rounded-3xl max-w-md mx-auto text-center border-orange-500/20">
+                <div class="w-16 h-16 bg-orange-500/10 rounded-full flex items-center justify-center mx-auto mb-6 text-orange-400">
+                    <i class="fas fa-lock text-2xl"></i>
+                </div>
+                <h3 class="text-xl font-black mb-6 uppercase tracking-tight">Restricted Access</h3>
+                <div class="space-y-4">
+                    <input type="text" id="dse-user" placeholder="Username" class="w-full bg-white/5 border border-white/10 rounded-xl px-4 py-3 text-sm focus:outline-none focus:border-orange-500 transition">
+                    <input type="password" id="dse-pass" placeholder="Password" class="w-full bg-white/5 border border-white/10 rounded-xl px-4 py-3 text-sm focus:outline-none focus:border-orange-500 transition">
+                    <button onclick="handleDseLogin()" class="w-full bg-orange-600 hover:bg-orange-500 py-3 rounded-xl font-black text-xs uppercase tracking-widest transition shadow-lg shadow-orange-600/20">Sign In</button>
+                    <p id="login-error" class="text-rose-500 text-[10px] font-bold uppercase hidden pt-2">Invalid Credentials</p>
+                </div>
+            </div>
 
-            <!-- Content Area (Hidden by Default) -->
-            <div id="dse-protected-content" class="hidden space-y-8 animate-in fade-in duration-500">
-                <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
-                    <!-- Google Drive Link -->
-                    <div class="glass p-10 rounded-3xl border-emerald-500/20 bg-emerald-500/5 flex flex-col justify-between gap-6">
-                        <div>
-                            <h3 class="text-2xl font-black text-white mb-2 uppercase tracking-tight">DSE Resource Repository</h3>
-                            <p class="text-slate-400 text-sm">Access comprehensive study notes, past papers, and marking schemes.</p>
-                        </div>
-                        <a href="https://drive.google.com/drive/folders/1G6nJZTG4lF-YCoRj5_qAPYyx35h0D4zT?usp=drive_link" target="_blank" class="px-8 py-4 bg-emerald-600 hover:bg-emerald-500 rounded-2xl font-black text-xs text-center uppercase tracking-widest transition shadow-xl shadow-emerald-600/20 flex items-center justify-center gap-3">
-                            <i class="fab fa-google-drive text-lg"></i> Open Drive Folder
-                        </a>
-                    </div>
+            <!-- Content Area (Hidden by Default) -->
+            <div id="dse-protected-content" class="hidden space-y-8 animate-in fade-in duration-500">
+                <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+                    <!-- Google Drive Link -->
+                    <div class="glass p-10 rounded-3xl border-emerald-500/20 bg-emerald-500/5 flex flex-col justify-between gap-6">
+                        <div>
+                            <h3 class="text-2xl font-black text-white mb-2 uppercase tracking-tight">DSE Resource Repository</h3>
+                            <p class="text-slate-400 text-sm">Access comprehensive study notes, past papers, and marking schemes.</p>
+                        </div>
+                        <a href="https://drive.google.com/drive/folders/1G6nJZTG4lF-YCoRj5_qAPYyx35h0D4zT?usp=drive_link" target="_blank" class="px-8 py-4 bg-emerald-600 hover:bg-emerald-500 rounded-2xl font-black text-xs text-center uppercase tracking-widest transition shadow-xl shadow-emerald-600/20 flex items-center justify-center gap-3">
+                            <i class="fab fa-google-drive text-lg"></i> Open Drive Folder
+                        </a>
+                    </div>
 
-                    <!-- NEW: MC Trainer Redirect -->
-                    <div class="glass p-10 rounded-3xl border-blue-500/20 bg-blue-500/5 flex flex-col justify-between gap-6">
-                        <div>
-                            <h3 class="text-2xl font-black text-white mb-2 uppercase tracking-tight">DSE MC Trainer</h3>
-                            <p class="text-slate-400 text-sm">Interactive MC practice engine with randomized questions and instant feedback.</p>
-                        </div>
-                        <a href="mctrainer.html" class="px-8 py-4 bg-blue-600 hover:bg-blue-500 rounded-2xl font-black text-xs text-center uppercase tracking-widest transition shadow-xl shadow-blue-600/20 flex items-center justify-center gap-3">
-                            <i class="fas fa-bolt text-lg"></i> Launch MC Trainer
-                        </a>
-                    </div>
-                </div>
+                    <!-- NEW: MC Trainer Redirect -->
+                    <div class="glass p-10 rounded-3xl border-blue-500/20 bg-blue-500/5 flex flex-col justify-between gap-6">
+                        <div>
+                            <h3 class="text-2xl font-black text-white mb-2 uppercase tracking-tight">DSE MC Trainer</h3>
+                            <p class="text-slate-400 text-sm">Interactive MC practice engine with randomized questions and instant feedback.</p>
+                        </div>
+                        <a href="mctrainer.html" class="px-8 py-4 bg-blue-600 hover:bg-blue-500 rounded-2xl font-black text-xs text-center uppercase tracking-widest transition shadow-xl shadow-blue-600/20 flex items-center justify-center gap-3">
+                            <i class="fas fa-bolt text-lg"></i> Launch MC Trainer
+                        </a>
+                    </div>
+                </div>
 
-                <!-- Google Forms Grid -->
-                <div>
-                    <h4 class="text-xs font-black text-slate-500 uppercase tracking-[0.2em] mb-6 flex items-center gap-3">
-                        <div class="h-px flex-grow bg-white/5"></div>
-                        ICT DSE MC Practice Forms
-                        <div class="h-px flex-grow bg-white/5"></div>
-                    </h4>
-                    <div class="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-6 gap-3" id="mc-forms-grid">
-                        <!-- JS will populate these buttons -->
-                    </div>
-                </div>
-            </div>
-        </div>
+                <!-- Google Forms Grid -->
+                <div>
+                    <h4 class="text-xs font-black text-slate-500 uppercase tracking-[0.2em] mb-6 flex items-center gap-3">
+                        <div class="h-px flex-grow bg-white/5"></div>
+                        ICT DSE MC Practice Forms
+                        <div class="h-px flex-grow bg-white/5"></div>
+                    </h4>
+                    <div class="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-6 gap-3" id="mc-forms-grid">
+                        <!-- JS will populate these buttons -->
+                    </div>
+                </div>
+            </div>
+        </div>
 
-        <div id="page-lab" class="page-content hidden">
-            <button onclick="showPage('home')" class="mb-6 text-indigo-400 font-bold text-xs uppercase tracking-widest"><i class="fas fa-arrow-left mr-2"></i>Back</button>
-            <h2 class="text-4xl font-black mb-8 text-indigo-400 uppercase tracking-tight">Practice Lab</h2>
-            <div class="glass p-8 rounded-3xl">This module has been moved to the DSE portal or is currently under maintenance.</div>
-        </div>
+        <div id="page-lab" class="page-content hidden">
+            <button onclick="showPage('home')" class="mb-6 text-indigo-400 font-bold text-xs uppercase tracking-widest hover:underline transition"><i class="fas fa-arrow-left mr-2"></i>Back</button>
+            <h2 class="text-4xl font-black mb-8 text-indigo-400 uppercase tracking-tight">Practice Lab</h2>
+            <div class="glass p-8 rounded-3xl">This module has been moved to the DSE portal or is currently under maintenance.</div>
+        </div>
 
-    </main>
+    </main>
 
-    <footer class="mt-20 border-t border-white/5 py-12 text-center">
-        <p class="text-slate-600 text-[10px] font-bold uppercase tracking-[0.2em]">&copy; 2024 ICT LEARNING PORTAL | ACCELERATED EDUCATION</p>
-    </footer>
+    <footer class="mt-20 border-t border-white/5 py-12 text-center">
+        <p class="text-slate-600 text-[10px] font-bold uppercase tracking-[0.2em]">&copy; 2024 ICT LEARNING PORTAL | ACCELERATED EDUCATION</p>
+    </footer>
 
-    <script>
-        const mcForms = [
-            { year: "2012 Sample", url: "https://forms.gle/Ck7mDDnd8N27swix8" },
-            { year: "2012 Practice", url: "https://forms.gle/RWm4fXWu2WtVULvx8" },
-            { year: "2012", url: "https://forms.gle/yTm5CVk7sSeEP81o9" },
-            { year: "2013", url: "https://forms.gle/UYYwT2EsyCQK31Qo6" },
-            { year: "2014", url: "https://forms.gle/nDhfX35acK8QTiSz9" },
-            { year: "2015", url: "https://forms.gle/HLKn4KSvofA8ThV58" },
-            { year: "2016", url: "https://forms.gle/W4vu237PJjBJL2Rj7" },
-            { year: "2017", url: "https://forms.gle/xfxtJ9WWBE7CMRDe9" },
-            { year: "2018", url: "https://forms.gle/4szeqDviydbbun3m8" },
-            { year: "2019", url: "https://forms.gle/3iTWP3xJ9izoTFea9" },
-            { year: "2020", url: "https://forms.gle/EBFPGG1KQty6g4fN7" },
-            { year: "2021", url: "https://forms.gle/s7HVww426jHmyCwL9" },
-            { year: "2022", url: "https://forms.gle/QkX9AZqBKmGWdFwS7" },
-            { year: "2023", url: "https://forms.gle/kcgnyW21GySs6ziV8" },
-            { year: "2024", url: "https://forms.gle/UDfWgEwKieUN5aeM6" },
-            { year: "2025 Sample", url: "https://forms.gle/ipqyV4j6nY5unZJg9" },
-            { year: "2025", url: "https://forms.gle/YDzqGi87wPqSkJ9A8" }
-        ];
+    <script>
+        const mcForms = [
+            { year: "2012 Sample", url: "https://forms.gle/Ck7mDDnd8N27swix8" },
+            { year: "2012 Practice", url: "https://forms.gle/RWm4fXWu2WtVULvx8" },
+            { year: "2012", url: "https://forms.gle/yTm5CVk7sSeEP81o9" },
+            { year: "2013", url: "https://forms.gle/UYYwT2EsyCQK31Qo6" },
+            { year: "2014", url: "https://forms.gle/nDhfX35acK8QTiSz9" },
+            { year: "2015", url: "https://forms.gle/HLKn4KSvofA8ThV58" },
+            { year: "2016", url: "https://forms.gle/W4vu237PJjBJL2Rj7" },
+            { year: "2017", url: "https://forms.gle/xfxtJ9WWBE7CMRDe9" },
+            { year: "2018", url: "https://forms.gle/4szeqDviydbbun3m8" },
+            { year: "2019", url: "https://forms.gle/3iTWP3xJ9izoTFea9" },
+            { year: "2020", url: "https://forms.gle/EBFPGG1KQty6g4fN7" },
+            { year: "2021", url: "https://forms.gle/s7HVww426jHmyCwL9" },
+            { year: "2022", url: "https://forms.gle/QkX9AZqBKmGWdFwS7" },
+            { year: "2023", url: "https://forms.gle/kcgnyW21GySs6ziV8" },
+            { year: "2024", url: "https://forms.gle/UDfWgEwKieUN5aeM6" },
+            { year: "2025 Sample", url: "https://forms.gle/ipqyV4j6nY5unZJg9" },
+            { year: "2025", url: "https://forms.gle/YDzqGi87wPqSkJ9A8" }
+        ];
 
-        function populateMCForms() {
-            const grid = document.getElementById('mc-forms-grid');
-            grid.innerHTML = mcForms.map(form => `
-                <a href="${form.url}" target="_blank" class="glass px-3 py-4 rounded-xl text-center hover:border-orange-500/40 hover:bg-orange-500/5 transition group">
-                    <span class="block text-[10px] text-slate-500 font-black uppercase tracking-widest group-hover:text-orange-400 mb-1">${form.year}</span>
-                    <i class="fas fa-external-link-alt text-[8px] opacity-30"></i>
-                </a>
-            `).join('');
-        }
+        function populateMCForms() {
+            const grid = document.getElementById('mc-forms-grid');
+            grid.innerHTML = mcForms.map(form => `
+                <a href="${form.url}" target="_blank" class="glass px-3 py-4 rounded-xl text-center hover:border-orange-500/40 hover:bg-orange-500/5 transition group">
+                    <span class="block text-[10px] text-slate-500 font-black uppercase tracking-widest group-hover:text-orange-400 mb-1">${form.year}</span>
+                    <i class="fas fa-external-link-alt text-[8px] opacity-30"></i>
+                </a>
+            `).join('');
+        }
 
-        function handleDseLogin() {
-            const user = document.getElementById('dse-user').value;
-            const pass = document.getElementById('dse-pass').value;
-            const error = document.getElementById('login-error');
+        function handleDseLogin() {
+            const user = document.getElementById('dse-user').value;
+            const pass = document.getElementById('dse-pass').value;
+            const error = document.getElementById('login-error');
 
-            if (user === 'stccstudent' && pass === 'student') {
-                document.getElementById('dse-login-gateway').classList.add('hidden');
-                document.getElementById('dse-protected-content').classList.remove('hidden');
-                confetti({ particleCount: 100, spread: 70, origin: { y: 0.6 }, colors: ['#ea580c', '#fb923c', '#ffffff'] });
-            } else {
-                error.classList.remove('hidden');
-                setTimeout(() => error.classList.add('hidden'), 3000);
-            }
-        }
+            if (user === 'stccstudent' && pass === 'student') {
+                document.getElementById('dse-login-gateway').classList.add('hidden');
+                document.getElementById('dse-protected-content').classList.remove('hidden');
+                confetti({ particleCount: 100, spread: 70, origin: { y: 0.6 }, colors: ['#ea580c', '#fb923c', '#ffffff'] });
+            } else {
+                error.classList.remove('hidden');
+                setTimeout(() => error.classList.add('hidden'), 3000);
+            }
+        }
 
-        function showPage(pageId) {
-            document.querySelectorAll('.page-content').forEach(p => p.classList.add('hidden'));
-            const target = document.getElementById('page-' + pageId);
-            if (target) {
-                target.classList.remove('hidden');
-                window.scrollTo({ top: 0, behavior: 'smooth' });
-            }
-        }
+        function showPage(pageId) {
+            document.querySelectorAll('.page-content').forEach(p => p.classList.add('hidden'));
+            const target = document.getElementById('page-' + pageId);
+            if (target) {
+                target.classList.remove('hidden');
+                window.scrollTo({ top: 0, behavior: 'smooth' });
+            }
+        }
 
-        function toggleMobileMenu() {
-            const nav = document.getElementById('mobile-nav');
-            if (nav) nav.classList.toggle('hidden');
-        }
+        function toggleMobileMenu() {
+            const nav = document.getElementById('mobile-nav');
+            if (nav) nav.classList.toggle('hidden');
+        }
 
-        window.onload = populateMCForms;
-    </script>
+        window.onload = populateMCForms;
+    </script>
 </body>
 </html>
