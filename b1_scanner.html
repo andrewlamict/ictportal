@@ -1,0 +1,272 @@
+<!DOCTYPE html>
+<html lang="zh-Hant">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>ICT 課堂：掃描器 6 大規格 + OCR & 翻譯實驗室</title>
+  <!-- 載入免費免登入的獨立 OCR 引擎 -->
+  <script src="https://cdn.jsdelivr.net/npm/tesseract.js@5/dist/tesseract.min.js"></script>
+  <style>
+    body { font-family: system-ui, -apple-system, sans-serif; background: #f0f2f5; padding: 15px; color: #1c1e21; margin: 0; }
+    .container { max-width: 1000px; margin: 0 auto; background: #ffffff; padding: 20px; border-radius: 12px; box-shadow: 0 4px 12px rgba(0,0,0,0.1); }
+    h1 { color: #0d6efd; text-align: center; font-size: 1.6em; margin-bottom: 5px; }
+    p.subtitle { text-align: center; color: #666; margin-top: 0; font-size: 0.95em; }
+    
+    .controls-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(240px, 1fr)); gap: 12px; background: #f8f9fa; padding: 15px; border-radius: 8px; border: 1px solid #dee2e6; margin-bottom: 20px; }
+    .control-group { display: flex; flex-direction: column; }
+    label { font-weight: bold; margin-bottom: 4px; font-size: 0.85em; color: #495057; }
+    select, input, button { padding: 8px; border: 1px solid #ced4da; border-radius: 6px; font-size: 0.95em; background: white; }
+    
+    .preview-container { text-align: center; border: 2px dashed #adb5bd; padding: 15px; border-radius: 8px; background: #fafafa; margin-bottom: 20px; }
+    canvas { max-width: 100%; height: auto; border: 1px solid #333; image-rendering: pixelated; background: #fff; }
+    
+    .metrics-card { background: #e7f5ff; border: 1px solid #a5d8ff; padding: 15px; border-radius: 8px; margin-bottom: 20px; }
+    .metrics-card h3 { margin-top: 0; color: #1864ab; font-size: 1.1em; }
+    .metrics-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(180px, 1fr)); gap: 12px; }
+    .metric-item { background: white; padding: 10px; border-radius: 6px; border: 1px solid #bac8d3; text-align: center; }
+    .metric-value { font-size: 1.1em; font-weight: bold; color: #0d6efd; margin-top: 4px; }
+
+    /* OCR & 翻譯區域樣式 */
+    .ocr-section { background: #fff9db; border: 1px solid #ffe066; padding: 15px; border-radius: 8px; }
+    .ocr-section h3 { margin-top: 0; color: #f59f00; font-size: 1.1em; }
+    .ocr-btn { background: #f59f00; color: white; font-weight: bold; border: none; cursor: pointer; padding: 10px; font-size: 1em; }
+    .ocr-btn:hover { background: #f08c00; }
+    .ocr-results-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 15px; margin-top: 15px; }
+    @media (max-width: 768px) { .ocr-results-grid { grid-template-columns: 1fr; } }
+    textarea { width: 100%; height: 120px; padding: 8px; border-radius: 6px; border: 1px solid #ccc; font-family: inherit; box-sizing: border-box; }
+    .status-text { color: #d9480f; font-weight: bold; margin-top: 8px; }
+  </style>
+</head>
+<body>
+
+<div class="container">
+  <h1>📷 掃描器 6 大規格 + OCR & 翻譯實驗室</h1>
+  <p class="subtitle">調整硬體規格觀察圖片變化，並體驗光學字符識別 (OCR) 與文本翻譯</p>
+
+  <div class="controls-grid">
+    <!-- 1. Document Size -->
+    <div class="control-group">
+      <label for="docSize">1. 文件尺寸 (Document Size):</label>
+      <select id="docSize">
+        <option value="A4" selected>A4 標準文件</option>
+        <option value="A5">A5 小冊子 (裁切)</option>
+        <option value="ID">身分證/卡片 (極小)</option>
+      </select>
+    </div>
+
+    <!-- 2. Pixel Density -->
+    <div class="control-group">
+      <label for="dpiSelect">2. 像素密度 (Pixel Density):</label>
+      <select id="dpiSelect">
+        <option value="72">72 DPI (低解析度)</option>
+        <option value="150">150 DPI (日常文件)</option>
+        <option value="300" selected>300 DPI (標準印刷)</option>
+        <option value="600">600 DPI (高精度照片)</option>
+      </select>
+    </div>
+
+    <!-- 3. Color Depth -->
+    <div class="control-group">
+      <label for="colorDepth">3. 色彩深度 (Color Depth):</label>
+      <select id="colorDepth">
+        <option value="24" selected>24-bit 全彩 (Color)</option>
+        <option value="8">8-bit 灰階 (Grayscale)</option>
+        <option value="1">1-bit 黑白 (Binary)</option>
+      </select>
+    </div>
+
+    <!-- 4. File Format -->
+    <div class="control-group">
+      <label for="fileFormat">4. 檔案格式 (File Format):</label>
+      <select id="fileFormat">
+        <option value="image/jpeg">JPEG (有損壓縮)</option>
+        <option value="image/png">PNG (無損壓縮)</option>
+      </select>
+    </div>
+
+    <!-- 5. Interface -->
+    <div class="control-group">
+      <label for="interfaceType">5. 傳輸介面 (Interface):</label>
+      <select id="interfaceType">
+        <option value="480">USB 2.0 (480 Mbps)</option>
+        <option value="5000">USB 3.0 (5 Gbps)</option>
+        <option value="54">Wi-Fi 4 (54 Mbps)</option>
+      </select>
+    </div>
+
+    <!-- Source Image -->
+    <div class="control-group">
+      <label for="imageLoader">6. 拍攝/上傳紙本文件照片:</label>
+      <input type="file" id="imageLoader" accept="image/*" capture="environment">
+    </div>
+  </div>
+
+  <div class="preview-container">
+    <canvas id="scannerCanvas"></canvas>
+  </div>
+
+  <!-- 硬體效能數據面板 -->
+  <div class="metrics-card">
+    <h3>📊 記憶體與效能分析面板 (Memory & Speed)</h3>
+    <div class="metrics-grid">
+      <div class="metric-item"><div>總像素</div><div class="metric-value" id="pixelOutput">0 MP</div></div>
+      <div class="metric-item"><div>記憶體大小</div><div class="metric-value" id="memoryOutput">0 KB</div></div>
+      <div class="metric-item"><div>傳輸耗時</div><div class="metric-value" id="transferOutput">0.00 秒</div></div>
+    </div>
+  </div>
+
+  <!-- OCR 與翻譯實驗區 -->
+  <div class="ocr-section">
+    <h3>🔍 OCR 光學字符識別與翻譯實驗區</h3>
+    <div style="display: flex; gap: 10px; flex-wrap: wrap; align-items: center;">
+      <button class="ocr-btn" onclick="runOCR()">🚀 開始對上方掃描影像執行 OCR 辨識</button>
+      <select id="ocrLang">
+        <option value="chi_tra+eng" selected>辨識語言：繁體中文 + 英文</option>
+        <option value="eng">辨識語言：純英文</option>
+      </select>
+    </div>
+    <div id="status" class="status-text">狀態：等待執行 OCR...</div>
+
+    <div class="ocr-results-grid">
+      <div>
+        <label><b>1. OCR 提煉出來的可編輯文字 (Extracted Text):</b></label>
+        <textarea id="ocrOutput" placeholder="OCR 辨識結果將顯示於此..."></textarea>
+      </div>
+      <div>
+        <label><b>2. 即時翻譯結果 (Translation Result):</b></label>
+        <textarea id="translateOutput" placeholder="翻譯文字將顯示於此..."></textarea>
+      </div>
+    </div>
+  </div>
+</div>
+
+<script>
+  const canvas = document.getElementById('scannerCanvas');
+  const ctx = canvas.getContext('2d');
+
+  const docSize = document.getElementById('docSize');
+  const dpiSelect = document.getElementById('dpiSelect');
+  const colorDepth = document.getElementById('colorDepth');
+  const fileFormat = document.getElementById('fileFormat');
+  const interfaceType = document.getElementById('interfaceType');
+  const imageLoader = document.getElementById('imageLoader');
+
+  let img = new Image();
+  // 預設預載一張印有文字的測試圖
+  img.src = 'https://dummyimage.com/800x500/ffffff/000000.png&text=Hello+ICT+Class!+OCR+Test+123';
+  img.crossOrigin = "Anonymous";
+  img.onload = updateScanner;
+
+  imageLoader.addEventListener('change', (e) => {
+    const file = e.target.files[0];
+    if (file) {
+      const reader = new FileReader();
+      reader.onload = (event) => {
+        img = new Image();
+        img.onload = updateScanner;
+        img.src = event.target.result;
+      };
+      reader.readAsDataURL(file);
+    }
+  });
+
+  [docSize, dpiSelect, colorDepth, fileFormat, interfaceType].forEach(el => {
+    el.addEventListener('change', updateScanner);
+  });
+
+  function updateScanner() {
+    if (!img.width) return;
+
+    let cropRatioW = 1.0, cropRatioH = 1.0;
+    if (docSize.value === 'A5') { cropRatioW = 0.7; cropRatioH = 0.7; }
+    if (docSize.value === 'ID') { cropRatioW = 0.4; cropRatioH = 0.3; }
+
+    const cropW = img.width * cropRatioW;
+    const cropH = img.height * cropRatioH;
+
+    const scale = parseInt(dpiSelect.value) / 300;
+    const renderW = Math.round(cropW * scale);
+    const renderH = Math.round(cropH * scale);
+
+    canvas.width = renderW;
+    canvas.height = renderH;
+
+    ctx.drawImage(img, 0, 0, cropW, cropH, 0, 0, renderW, renderH);
+
+    const imgData = ctx.getImageData(0, 0, renderW, renderH);
+    const data = imgData.data;
+    const depth = parseInt(colorDepth.value);
+
+    for (let i = 0; i < data.length; i += 4) {
+      const avg = (data[i] + data[i + 1] + data[i + 2]) / 3;
+      if (depth === 8) {
+        data[i] = data[i+1] = data[i+2] = avg;
+      } else if (depth === 1) {
+        const val = avg > 128 ? 255 : 0;
+        data[i] = data[i+1] = data[i+2] = val;
+      }
+    }
+    ctx.putImageData(imgData, 0, 0);
+
+    const dataUrl = canvas.toDataURL(fileFormat.value, 0.85);
+    const base64Str = dataUrl.split(',')[1] || '';
+    const bytes = Math.round(base64Str.length * 0.75);
+    
+    const memoryText = bytes > 1024 * 1024 
+      ? (bytes / (1024 * 1024)).toFixed(2) + ' MB'
+      : (bytes / 1024).toFixed(1) + ' KB';
+
+    const speedMbps = parseFloat(interfaceType.value);
+    const bits = bytes * 8;
+    const transferSeconds = (bits / (speedMbps * 1000000)).toFixed(3);
+
+    const totalPixels = (renderW * renderH) / 1000000;
+    document.getElementById('pixelOutput').innerText = `${renderW}x${renderH} (${totalPixels.toFixed(2)} MP)`;
+    document.getElementById('memoryOutput').innerText = memoryText;
+    document.getElementById('transferOutput').innerText = transferSeconds < 0.001 ? '< 0.001 秒' : `${transferSeconds} 秒`;
+  }
+
+  // --- OCR 與翻譯核心邏輯 ---
+  async function runOCR() {
+    const status = document.getElementById('status');
+    const ocrOutput = document.getElementById('ocrOutput');
+    const translateOutput = document.getElementById('translateOutput');
+    const lang = document.getElementById('ocrLang').value;
+
+    status.innerText = '⏳ 正在讀取並初始化 OCR 引擎 (首次執行需下載語言包)...';
+    ocrOutput.value = '';
+    translateOutput.value = '';
+
+    try {
+      // 1. 將 Canvas 當前的影像丟入 Tesseract OCR 辨識
+      const imageUrl = canvas.toDataURL('image/png');
+      const worker = await Tesseract.createWorker(lang);
+      
+      status.innerText = '🔍 正在分析圖像文字陣列...';
+      const ret = await worker.recognize(imageUrl);
+      
+      const extractedText = ret.data.text.trim();
+      ocrOutput.value = extractedText || '[未辨識出文字，請嘗試提高 DPI 或調高對比度]';
+      status.innerText = '✅ OCR 辨識完成！正在執行翻譯...';
+      
+      await worker.terminate();
+
+      // 2. 免費免費 API 執行即時翻譯 (MyMemory API)
+      if (extractedText) {
+        const response = await fetch(`https://api.mymemory.translated.net/get?q=${encodeURIComponent(extractedText)}&langpair=Autodetect|zh-TW`);
+        const data = await response.json();
+        translateOutput.value = data.responseData.translatedText;
+        status.innerText = '🎉 OCR 與翻譯全部完成！';
+      } else {
+        status.innerText = '⚠️ 沒有提取到文字，跳過翻譯。';
+      }
+
+    } catch (err) {
+      console.error(err);
+      status.innerText = '❌ 辨識失敗：請確保網路連線正常（需下載 OCR 核心資料庫）。';
+    }
+  }
+</script>
+
+</body>
+</html>
