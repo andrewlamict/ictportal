@@ -1,0 +1,665 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>Input Device Showdown | ICT Lab</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;600;800;900&display=swap');
+        @import url('https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;700&display=swap');
+        
+        body { 
+            font-family: 'Outfit', sans-serif; 
+            background-color: #020617; /* slate-950 */
+            color: #f1f5f9; /* slate-100 */
+            overflow: hidden; /* Prevent scrolling during game */
+            touch-action: none; /* Crucial for canvas multi-touch round */
+        }
+        
+        .glass { 
+            background: rgba(255, 255, 255, 0.03); 
+            backdrop-filter: blur(16px); 
+            -webkit-backdrop-filter: blur(16px);
+            border: 1px solid rgba(255, 255, 255, 0.1); 
+        }
+
+        .mono { font-family: 'JetBrains Mono', monospace; }
+        
+        .screen {
+            display: none;
+            opacity: 0;
+            transition: opacity 0.4s ease-in-out;
+        }
+        
+        .screen.active {
+            display: flex;
+            opacity: 1;
+        }
+
+        /* Round 1 Styles */
+        #r1-target span { transition: color 0.1s, background-color 0.1s; }
+        .char-correct { color: #10b981; } /* Emerald */
+        .char-wrong { color: #ef4444; background-color: rgba(239, 68, 68, 0.2); border-radius: 2px;}
+        .char-current { border-bottom: 2px solid #3b82f6; } /* Blue */
+
+        /* Round 2 Styles */
+        #r2-area { cursor: crosshair; }
+        .tiny-target {
+            position: absolute;
+            width: 12px;
+            height: 12px;
+            background-color: #ef4444;
+            border-radius: 50%;
+            transform: translate(-50%, -50%);
+            box-shadow: 0 0 10px #ef4444, 0 0 20px #ef4444;
+            transition: all 0.1s;
+        }
+
+        /* Round 3 Styles */
+        #r3-canvas {
+            background-image: repeating-linear-gradient(45deg, #1e293b 25%, transparent 25%, transparent 75%, #1e293b 75%, #1e293b), repeating-linear-gradient(45deg, #1e293b 25%, #0f172a 25%, #0f172a 75%, #1e293b 75%, #1e293b);
+            background-position: 0 0, 10px 10px;
+            background-size: 20px 20px;
+            border-radius: 1rem;
+            cursor: pointer;
+        }
+        
+        .stat-card {
+            background: linear-gradient(145deg, rgba(255,255,255,0.05) 0%, rgba(255,255,255,0.01) 100%);
+            border-top: 1px solid rgba(255,255,255,0.1);
+            border-left: 1px solid rgba(255,255,255,0.1);
+        }
+    </style>
+</head>
+<body class="min-h-screen w-screen flex flex-col relative">
+
+    <!-- Header -->
+    <header class="glass fixed top-0 w-full z-50 px-6 py-4 flex justify-between items-center">
+        <div class="flex items-center gap-3">
+            <i class="fas fa-gamepad text-blue-500 text-2xl"></i>
+            <h1 class="text-xl font-black tracking-widest uppercase">Input Lab</h1>
+        </div>
+        <div class="flex items-center gap-4">
+            <div id="global-timer" class="mono text-2xl font-bold text-slate-300">00.00s</div>
+        </div>
+    </header>
+
+    <!-- INTRO SCREEN -->
+    <main id="screen-intro" class="screen active flex-col items-center justify-center flex-grow pt-20 px-6 text-center w-full max-w-4xl mx-auto">
+        <div class="inline-block p-4 rounded-full bg-blue-500/10 border border-blue-500/20 mb-6">
+            <div class="flex gap-4 text-blue-400 text-4xl">
+                <i class="fas fa-keyboard"></i>
+                <i class="fas fa-mouse"></i>
+                <span class="text-slate-600">vs</span>
+                <i class="fas fa-mobile-alt text-purple-400"></i>
+                <i class="fas fa-hand-pointer text-purple-400"></i>
+            </div>
+        </div>
+        <h2 class="text-5xl md:text-7xl font-black mb-6 tracking-tighter bg-gradient-to-r from-blue-400 via-indigo-400 to-purple-400 bg-clip-text text-transparent">
+            DEVICE SHOWDOWN
+        </h2>
+        <p class="text-slate-400 text-lg md:text-xl max-w-2xl mx-auto mb-12 leading-relaxed">
+            Welcome to the ICT Input Device Lab. You will face 3 extreme tests designed to push your hardware to the limit. 
+            Will Keyboard & Mouse reign supreme, or will Touchscreen gestures steal the win?
+        </p>
+
+        <div class="grid grid-cols-1 md:grid-cols-3 gap-4 mb-12 w-full text-left">
+            <div class="glass p-6 rounded-2xl border-white/5">
+                <h3 class="font-bold text-blue-400 mb-2 uppercase tracking-wide text-sm"><i class="fas fa-font mr-2"></i>Round 1</h3>
+                <p class="text-slate-300 font-bold mb-1">Speed Typing</p>
+                <p class="text-slate-500 text-xs">50 words. Punctuation matters.</p>
+            </div>
+            <div class="glass p-6 rounded-2xl border-white/5">
+                <h3 class="font-bold text-rose-400 mb-2 uppercase tracking-wide text-sm"><i class="fas fa-crosshairs mr-2"></i>Round 2</h3>
+                <p class="text-slate-300 font-bold mb-1">Micro Precision</p>
+                <p class="text-slate-500 text-xs">Target and hit 10 tiny dots.</p>
+            </div>
+            <div class="glass p-6 rounded-2xl border-white/5">
+                <h3 class="font-bold text-purple-400 mb-2 uppercase tracking-wide text-sm"><i class="fas fa-paint-brush mr-2"></i>Round 3</h3>
+                <p class="text-slate-300 font-bold mb-1">Intuitive Wipe</p>
+                <p class="text-slate-500 text-xs">Clear the board as fast as possible.</p>
+            </div>
+        </div>
+
+        <button onclick="startGame()" class="px-10 py-5 bg-white text-black rounded-full font-black text-lg uppercase tracking-widest hover:scale-105 hover:shadow-[0_0_30px_rgba(255,255,255,0.3)] transition-all duration-300">
+            Initialize Test Sequence
+        </button>
+    </main>
+
+    <!-- ROUND 1: TYPING -->
+    <main id="screen-r1" class="screen flex-col items-center justify-center flex-grow pt-20 px-6 w-full max-w-4xl mx-auto relative">
+        <div class="absolute top-24 text-center w-full left-0 opacity-20 pointer-events-none">
+            <h2 class="text-[120px] font-black tracking-tighter text-blue-500">ROUND 1</h2>
+        </div>
+        
+        <div class="z-10 w-full glass p-8 md:p-12 rounded-3xl border-blue-500/20 shadow-2xl shadow-blue-900/20">
+            <div class="flex justify-between items-end mb-6">
+                <div>
+                    <h3 class="text-3xl font-black text-white tracking-tight mb-2">Text Input Challenge</h3>
+                    <p class="text-slate-400 text-sm">Type the text exactly as shown. Case and punctuation matter.</p>
+                </div>
+                <div class="text-right hidden md:block">
+                    <p class="text-xs text-blue-400 font-bold uppercase tracking-widest">Expected Winner</p>
+                    <p class="text-slate-300"><i class="fas fa-keyboard mr-2"></i>Keyboard</p>
+                </div>
+            </div>
+
+            <!-- Target Text Display -->
+            <div id="r1-target" class="mono text-lg md:text-xl leading-relaxed text-slate-500 mb-8 p-6 bg-slate-900/50 rounded-2xl border border-white/5 shadow-inner select-none">
+                <!-- Populated by JS -->
+            </div>
+
+            <!-- Hidden Input for mobile keyboard popping, actual visible input is styled -->
+            <textarea id="r1-input" class="w-full h-32 bg-slate-900/80 text-white mono text-lg p-6 rounded-2xl border-2 border-slate-700 focus:outline-none focus:border-blue-500 transition-colors resize-none shadow-inner" placeholder="Click 'Start Round' to begin typing..." disabled autocomplete="off" autocorrect="off" autocapitalize="off" spellcheck="false"></textarea>
+            
+            <div class="mt-8 flex justify-between items-center">
+                <div class="flex gap-6">
+                    <div class="text-sm">
+                        <span class="block text-slate-500 uppercase tracking-widest text-[10px] font-bold">Accuracy</span>
+                        <span id="r1-acc" class="mono font-bold text-xl">100%</span>
+                    </div>
+                    <div class="text-sm">
+                        <span class="block text-slate-500 uppercase tracking-widest text-[10px] font-bold">WPM</span>
+                        <span id="r1-wpm" class="mono font-bold text-xl">0</span>
+                    </div>
+                </div>
+                <button id="r1-start-btn" onclick="startR1Logic()" class="px-8 py-3 bg-blue-600 hover:bg-blue-500 text-white rounded-xl font-bold uppercase tracking-widest transition-all">Start Round</button>
+            </div>
+        </div>
+    </main>
+
+    <!-- ROUND 2: PRECISION -->
+    <main id="screen-r2" class="screen flex-col items-center justify-center flex-grow pt-20 px-6 w-full max-w-5xl mx-auto relative">
+        <div class="absolute top-24 text-center w-full left-0 opacity-20 pointer-events-none z-0">
+            <h2 class="text-[120px] font-black tracking-tighter text-rose-500">ROUND 2</h2>
+        </div>
+
+        <div class="z-10 w-full flex flex-col md:flex-row gap-6 h-[70vh]">
+            <!-- Info Panel -->
+            <div class="glass p-8 rounded-3xl border-rose-500/20 md:w-1/3 flex flex-col justify-between">
+                <div>
+                    <h3 class="text-3xl font-black text-white tracking-tight mb-2">Micro Precision</h3>
+                    <p class="text-slate-400 text-sm mb-6">A tiny target will appear in the grid. Click/Tap it 10 times as fast as you can. Beware of the fat-finger effect!</p>
+                    
+                    <div class="space-y-4 mb-6">
+                        <div class="bg-black/30 p-4 rounded-xl border border-white/5">
+                            <span class="block text-slate-500 uppercase tracking-widest text-[10px] font-bold mb-1">Targets Hit</span>
+                            <span id="r2-score" class="mono font-bold text-3xl text-rose-400">0/10</span>
+                        </div>
+                        <div class="bg-black/30 p-4 rounded-xl border border-white/5">
+                            <span class="block text-slate-500 uppercase tracking-widest text-[10px] font-bold mb-1">Misses (Penalty)</span>
+                            <span id="r2-misses" class="mono font-bold text-2xl text-slate-300">0</span>
+                        </div>
+                    </div>
+                </div>
+                
+                <button id="r2-start-btn" onclick="startR2Logic()" class="w-full py-4 bg-rose-600 hover:bg-rose-500 text-white rounded-xl font-bold uppercase tracking-widest transition-all shadow-[0_0_20px_rgba(225,29,72,0.3)]">Start Round</button>
+            </div>
+
+            <!-- Game Area -->
+            <div id="r2-area" class="flex-grow bg-slate-900 border border-slate-700 rounded-3xl relative overflow-hidden shadow-inner">
+                <!-- Target injected via JS -->
+                <div id="r2-overlay" class="absolute inset-0 bg-black/80 flex items-center justify-center z-20 backdrop-blur-sm">
+                    <p class="text-slate-400 font-bold uppercase tracking-widest">Awaiting Start...</p>
+                </div>
+            </div>
+        </div>
+    </main>
+
+    <!-- ROUND 3: INTUITIVE -->
+    <main id="screen-r3" class="screen flex-col items-center justify-center flex-grow pt-20 px-6 w-full max-w-5xl mx-auto relative">
+        <div class="absolute top-24 text-center w-full left-0 opacity-20 pointer-events-none z-0">
+            <h2 class="text-[120px] font-black tracking-tighter text-purple-500">ROUND 3</h2>
+        </div>
+
+        <div class="z-10 w-full flex flex-col md:flex-row gap-6 h-[70vh]">
+            <!-- Info Panel -->
+            <div class="glass p-8 rounded-3xl border-purple-500/20 md:w-1/3 flex flex-col justify-between">
+                <div>
+                    <h3 class="text-3xl font-black text-white tracking-tight mb-2">Intuitive Wipe</h3>
+                    <p class="text-slate-400 text-sm mb-6">The canvas is covered in dust. Erase 90% of it to reveal the circuit underneath. <strong class="text-purple-400">Hint: Multi-touch is supported!</strong></p>
+                    
+                    <div class="bg-black/30 p-4 rounded-xl border border-white/5 mb-6 relative overflow-hidden">
+                        <span class="block text-slate-500 uppercase tracking-widest text-[10px] font-bold mb-2 relative z-10">Area Cleared</span>
+                        <div class="flex justify-between items-end relative z-10">
+                            <span id="r3-progress-text" class="mono font-bold text-3xl text-purple-400">0%</span>
+                            <span class="mono text-slate-500 text-sm">/ 90%</span>
+                        </div>
+                        <!-- Progress bar background -->
+                        <div id="r3-progress-bar" class="absolute bottom-0 left-0 h-1 bg-purple-500 w-0 transition-all duration-300"></div>
+                    </div>
+                </div>
+                
+                <button id="r3-start-btn" onclick="startR3Logic()" class="w-full py-4 bg-purple-600 hover:bg-purple-500 text-white rounded-xl font-bold uppercase tracking-widest transition-all shadow-[0_0_20px_rgba(168,85,247,0.3)]">Start Round</button>
+            </div>
+
+            <!-- Canvas Area -->
+            <div class="flex-grow relative rounded-3xl overflow-hidden border border-slate-700 shadow-inner bg-slate-900">
+                <canvas id="r3-canvas" class="absolute inset-0 w-full h-full z-10"></canvas>
+                <div id="r3-overlay" class="absolute inset-0 bg-black/80 flex items-center justify-center z-20 backdrop-blur-sm pointer-events-none">
+                    <p class="text-slate-400 font-bold uppercase tracking-widest">Awaiting Start...</p>
+                </div>
+            </div>
+        </div>
+    </main>
+
+    <!-- RESULTS SCREEN -->
+    <main id="screen-results" class="screen flex-col items-center justify-center flex-grow pt-20 px-6 w-full max-w-4xl mx-auto">
+        <h2 class="text-5xl md:text-6xl font-black mb-2 tracking-tighter text-white">TEST COMPLETE</h2>
+        <p class="text-slate-400 mb-10 uppercase tracking-widest text-sm">Diagnostic Results Generated</p>
+
+        <div class="grid grid-cols-1 md:grid-cols-3 gap-6 w-full mb-10">
+            <!-- R1 Stat -->
+            <div class="stat-card p-6 rounded-3xl text-center relative overflow-hidden">
+                <div class="absolute top-0 right-0 w-24 h-24 bg-blue-500/10 rounded-full blur-2xl"></div>
+                <h3 class="text-blue-400 font-bold uppercase tracking-widest text-xs mb-4">R1: Text Input</h3>
+                <p id="res-r1-time" class="mono text-4xl font-black text-white mb-2">0.00s</p>
+                <p id="res-r1-acc" class="text-slate-400 text-sm mono">100% Acc | 0 WPM</p>
+                <div class="mt-4 pt-4 border-t border-white/5 text-left">
+                    <p class="text-[10px] text-slate-500 font-bold uppercase">Scientific Note:</p>
+                    <p class="text-xs text-slate-300 mt-1">Keyboards excel here due to physical tactile feedback allowing for rapid blind-typing.</p>
+                </div>
+            </div>
+
+            <!-- R2 Stat -->
+            <div class="stat-card p-6 rounded-3xl text-center relative overflow-hidden">
+                <div class="absolute top-0 right-0 w-24 h-24 bg-rose-500/10 rounded-full blur-2xl"></div>
+                <h3 class="text-rose-400 font-bold uppercase tracking-widest text-xs mb-4">R2: Precision</h3>
+                <p id="res-r2-time" class="mono text-4xl font-black text-white mb-2">0.00s</p>
+                <p id="res-r2-miss" class="text-slate-400 text-sm mono">0 Misses</p>
+                <div class="mt-4 pt-4 border-t border-white/5 text-left">
+                    <p class="text-[10px] text-slate-500 font-bold uppercase">Scientific Note:</p>
+                    <p class="text-xs text-slate-300 mt-1">Mice provide pixel-perfect cursors. Touchscreens suffer from the "fat-finger" occlusion effect.</p>
+                </div>
+            </div>
+
+            <!-- R3 Stat -->
+            <div class="stat-card p-6 rounded-3xl text-center relative overflow-hidden">
+                <div class="absolute top-0 right-0 w-24 h-24 bg-purple-500/10 rounded-full blur-2xl"></div>
+                <h3 class="text-purple-400 font-bold uppercase tracking-widest text-xs mb-4">R3: Intuitive</h3>
+                <p id="res-r3-time" class="mono text-4xl font-black text-white mb-2">0.00s</p>
+                <p class="text-slate-400 text-sm mono">90%+ Cleared</p>
+                <div class="mt-4 pt-4 border-t border-white/5 text-left">
+                    <p class="text-[10px] text-slate-500 font-bold uppercase">Scientific Note:</p>
+                    <p class="text-xs text-slate-300 mt-1">Touchscreens dominate through multi-touch capabilities and natural human gesturing.</p>
+                </div>
+            </div>
+        </div>
+
+        <div class="glass p-6 rounded-2xl border-emerald-500/30 bg-emerald-500/5 text-center w-full max-w-2xl mx-auto">
+            <h3 class="text-emerald-400 font-black text-xl mb-2">Total Lab Time: <span id="res-total" class="mono">0.00s</span></h3>
+            <p class="text-slate-300 text-sm">Compare your results with the opposing device group to complete the Book B assignment!</p>
+        </div>
+
+        <button onclick="location.reload()" class="mt-10 px-8 py-3 bg-white/10 hover:bg-white/20 border border-white/20 text-white rounded-xl font-bold text-xs uppercase tracking-widest transition-all">
+            Restart Lab
+        </button>
+    </main>
+
+    <script>
+        // Global Game State
+        const state = {
+            currentScreen: 'intro',
+            globalStartTime: 0,
+            roundStartTime: 0,
+            roundTimerInterval: null,
+            results: {
+                r1_time: 0, r1_acc: 0, r1_wpm: 0,
+                r2_time: 0, r2_misses: 0,
+                r3_time: 0
+            }
+        };
+
+        // Navigation
+        function showScreen(screenId) {
+            document.querySelectorAll('.screen').forEach(s => s.classList.remove('active'));
+            document.getElementById(`screen-${screenId}`).classList.add('active');
+            state.currentScreen = screenId;
+        }
+
+        function startGame() {
+            showScreen('r1');
+            initR1();
+        }
+
+        // Global Timer Formatting
+        function updateTimerUI(elapsedMs) {
+            const secs = (elapsedMs / 1000).toFixed(2);
+            document.getElementById('global-timer').innerText = `${secs}s`;
+        }
+
+        function startTimer() {
+            state.roundStartTime = Date.now();
+            state.roundTimerInterval = setInterval(() => {
+                updateTimerUI(Date.now() - state.roundStartTime);
+            }, 50);
+        }
+
+        function stopTimer() {
+            clearInterval(state.roundTimerInterval);
+            const finalTime = Date.now() - state.roundStartTime;
+            updateTimerUI(finalTime);
+            return finalTime;
+        }
+
+        /* --- ROUND 1: TYPING LOGIC --- */
+        const r1TargetText = "Hardware refers to the physical parts of a computer system. Input devices allow us to enter data. A keyboard is excellent for text, while a mouse offers precise control.";
+        let r1TargetChars = [];
+        let r1CurrentErrors = 0;
+        let r1TotalKeystrokes = 0;
+
+        function initR1() {
+            const targetDiv = document.getElementById('r1-target');
+            targetDiv.innerHTML = '';
+            r1TargetChars = r1TargetText.split('');
+            
+            r1TargetChars.forEach((char, index) => {
+                const span = document.createElement('span');
+                span.innerText = char;
+                span.id = `char-${index}`;
+                targetDiv.appendChild(span);
+            });
+            
+            document.getElementById('r1-input').value = '';
+            document.getElementById('r1-input').disabled = true;
+        }
+
+        function startR1Logic() {
+            document.getElementById('r1-start-btn').style.display = 'none';
+            const inputEl = document.getElementById('r1-input');
+            inputEl.disabled = false;
+            inputEl.focus();
+            inputEl.placeholder = "Start typing...";
+            
+            // Highlight first char
+            document.getElementById('char-0').classList.add('char-current');
+            
+            r1CurrentErrors = 0;
+            r1TotalKeystrokes = 0;
+            startTimer();
+
+            inputEl.addEventListener('input', handleR1Input);
+        }
+
+        function handleR1Input(e) {
+            const inputVal = e.target.value;
+            const inputChars = inputVal.split('');
+            r1TotalKeystrokes++;
+            let errors = 0;
+
+            // Reset all spans
+            for (let i = 0; i < r1TargetChars.length; i++) {
+                const span = document.getElementById(`char-${i}`);
+                span.className = ''; 
+                
+                if (i < inputChars.length) {
+                    if (inputChars[i] === r1TargetChars[i]) {
+                        span.classList.add('char-correct');
+                    } else {
+                        span.classList.add('char-wrong');
+                        errors++;
+                    }
+                } else if (i === inputChars.length) {
+                    span.classList.add('char-current');
+                }
+            }
+
+            r1CurrentErrors = errors;
+
+            // Stats Update
+            const accuracy = r1TotalKeystrokes === 0 ? 100 : Math.max(0, Math.round(((r1TotalKeystrokes - errors) / r1TotalKeystrokes) * 100));
+            document.getElementById('r1-acc').innerText = `${accuracy}%`;
+
+            const elapsedMins = (Date.now() - state.roundStartTime) / 60000;
+            const words = inputVal.length / 5; // Standard WPM calc
+            const wpm = elapsedMins > 0 ? Math.round(words / elapsedMins) : 0;
+            document.getElementById('r1-wpm').innerText = wpm;
+
+            // Check Win Condition
+            if (inputVal === r1TargetText) {
+                inputEl = document.getElementById('r1-input');
+                inputEl.disabled = true;
+                inputEl.removeEventListener('input', handleR1Input);
+                
+                state.results.r1_time = stopTimer();
+                state.results.r1_acc = accuracy;
+                state.results.r1_wpm = wpm;
+                
+                setTimeout(() => {
+                    showScreen('r2');
+                    initR2();
+                }, 1500);
+            }
+        }
+
+        /* --- ROUND 2: PRECISION LOGIC --- */
+        let r2TargetsHit = 0;
+        let r2Misses = 0;
+        const R2_MAX_TARGETS = 10;
+        let r2TargetElement = null;
+
+        function initR2() {
+            document.getElementById('global-timer').innerText = "00.00s";
+        }
+
+        function startR2Logic() {
+            document.getElementById('r2-start-btn').style.display = 'none';
+            document.getElementById('r2-overlay').style.display = 'none';
+            
+            const area = document.getElementById('r2-area');
+            
+            // Add miss listener to background
+            area.addEventListener('mousedown', handleR2Miss);
+            area.addEventListener('touchstart', handleR2Miss, {passive: false});
+
+            startTimer();
+            spawnNextR2Target();
+        }
+
+        function handleR2Miss(e) {
+            // Only count as miss if they didn't click the target directly
+            if (e.target.id === 'r2-area') {
+                e.preventDefault(); // Prevent double firing on touch
+                r2Misses++;
+                document.getElementById('r2-misses').innerText = r2Misses;
+                
+                // Visual penalty flash
+                const area = document.getElementById('r2-area');
+                area.style.backgroundColor = 'rgba(239, 68, 68, 0.2)';
+                setTimeout(() => { area.style.backgroundColor = ''; }, 100);
+            }
+        }
+
+        function spawnNextR2Target() {
+            const area = document.getElementById('r2-area');
+            
+            if (r2TargetElement) {
+                area.removeChild(r2TargetElement);
+            }
+
+            if (r2TargetsHit >= R2_MAX_TARGETS) {
+                endR2();
+                return;
+            }
+
+            // Create tiny target (12x12 px to make it hard for touch, easy for mouse)
+            r2TargetElement = document.createElement('div');
+            r2TargetElement.className = 'tiny-target';
+            
+            // Random position (keep away from extreme edges)
+            const padding = 20;
+            const x = padding + Math.random() * (area.clientWidth - padding * 2);
+            const y = padding + Math.random() * (area.clientHeight - padding * 2);
+            
+            r2TargetElement.style.left = `${x}px`;
+            r2TargetElement.style.top = `${y}px`;
+            
+            // Handle target hit
+            const hitLogic = (e) => {
+                e.preventDefault();
+                e.stopPropagation(); // Stop miss counter
+                r2TargetsHit++;
+                document.getElementById('r2-score').innerText = `${r2TargetsHit}/${R2_MAX_TARGETS}`;
+                spawnNextR2Target();
+            };
+
+            r2TargetElement.addEventListener('mousedown', hitLogic);
+            r2TargetElement.addEventListener('touchstart', hitLogic, {passive: false});
+            
+            area.appendChild(r2TargetElement);
+        }
+
+        function endR2() {
+            const area = document.getElementById('r2-area');
+            area.removeEventListener('mousedown', handleR2Miss);
+            area.removeEventListener('touchstart', handleR2Miss);
+            
+            state.results.r2_time = stopTimer();
+            state.results.r2_misses = r2Misses;
+            
+            setTimeout(() => {
+                showScreen('r3');
+                initR3();
+            }, 1000);
+        }
+
+        /* --- ROUND 3: INTUITIVE WIPE (MULTI-TOUCH) LOGIC --- */
+        let canvas, ctx;
+        let r3IsDrawing = false;
+        let r3TotalPixels = 0;
+        let r3ClearedPixels = 0;
+        let r3CheckInterval;
+
+        function initR3() {
+            document.getElementById('global-timer').innerText = "00.00s";
+            canvas = document.getElementById('r3-canvas');
+            ctx = canvas.getContext('2d', { willReadFrequently: true });
+            
+            // Setup Canvas Size to match container
+            const rect = canvas.parentElement.getBoundingClientRect();
+            canvas.width = rect.width;
+            canvas.height = rect.height;
+            
+            // Fill with "dust"
+            ctx.fillStyle = '#64748b'; // slate-500
+            ctx.fillRect(0, 0, canvas.width, canvas.height);
+            
+            // Add grid pattern overlay to make it look like an obscure layer
+            ctx.strokeStyle = '#475569';
+            ctx.lineWidth = 1;
+            for(let i=0; i<canvas.width; i+=20) { ctx.beginPath(); ctx.moveTo(i,0); ctx.lineTo(i,canvas.height); ctx.stroke(); }
+            for(let i=0; i<canvas.height; i+=20) { ctx.beginPath(); ctx.moveTo(0,i); ctx.lineTo(canvas.width,i); ctx.stroke(); }
+
+            // Calculate total opaque area based on a downscaled grid for performance
+            r3TotalPixels = Math.floor(canvas.width / 10) * Math.floor(canvas.height / 10);
+            
+            // Erase configuration
+            ctx.globalCompositeOperation = 'destination-out';
+            ctx.lineJoin = 'round';
+            ctx.lineCap = 'round';
+            ctx.lineWidth = 60; // Size of eraser
+        }
+
+        function startR3Logic() {
+            document.getElementById('r3-start-btn').style.display = 'none';
+            document.getElementById('r3-overlay').style.display = 'none';
+            
+            startTimer();
+
+            // Mouse Events
+            canvas.addEventListener('mousedown', (e) => { r3IsDrawing = true; erasePoint(e.offsetX, e.offsetY); });
+            canvas.addEventListener('mousemove', (e) => { if (r3IsDrawing) erasePoint(e.offsetX, e.offsetY); });
+            window.addEventListener('mouseup', () => r3IsDrawing = false);
+
+            // Touch Events (MULTI-TOUCH SUPPORTED)
+            canvas.addEventListener('touchstart', handleTouch, {passive: false});
+            canvas.addEventListener('touchmove', handleTouch, {passive: false});
+            
+            // Start checking progress periodically
+            r3CheckInterval = setInterval(checkR3Progress, 500);
+        }
+
+        function handleTouch(e) {
+            e.preventDefault(); // Prevent scrolling
+            const rect = canvas.getBoundingClientRect();
+            // Iterate over ALL active touches to give tablet users a massive advantage
+            for (let i = 0; i < e.touches.length; i++) {
+                const touch = e.touches[i];
+                const x = touch.clientX - rect.left;
+                const y = touch.clientY - rect.top;
+                erasePoint(x, y);
+            }
+        }
+
+        function erasePoint(x, y) {
+            ctx.beginPath();
+            ctx.arc(x, y, ctx.lineWidth / 2, 0, Math.PI * 2);
+            ctx.fill();
+        }
+
+        function checkR3Progress() {
+            // Sample image data sparsely to calculate cleared percentage efficiently
+            const imgData = ctx.getImageData(0, 0, canvas.width, canvas.height).data;
+            let opaqueCount = 0;
+            
+            // Check every 10th pixel (x and y)
+            for (let y = 0; y < canvas.height; y += 10) {
+                for (let x = 0; x < canvas.width; x += 10) {
+                    const index = (y * canvas.width + x) * 4;
+                    if (imgData[index + 3] > 10) { // Alpha channel > threshold
+                        opaqueCount++;
+                    }
+                }
+            }
+            
+            const currentTotal = Math.floor(canvas.width / 10) * Math.floor(canvas.height / 10);
+            const clearedCount = currentTotal - opaqueCount;
+            let percent = (clearedCount / currentTotal) * 100;
+            if (percent > 100) percent = 100;
+            
+            document.getElementById('r3-progress-text').innerText = `${Math.floor(percent)}%`;
+            document.getElementById('r3-progress-bar').style.width = `${percent}%`;
+
+            // Win condition: 90% cleared
+            if (percent >= 90) {
+                endR3();
+            }
+        }
+
+        function endR3() {
+            clearInterval(r3CheckInterval);
+            
+            // Remove listeners
+            canvas.replaceWith(canvas.cloneNode(true)); // Quick way to strip listeners
+            
+            state.results.r3_time = stopTimer();
+            
+            setTimeout(() => {
+                showResults();
+            }, 1000);
+        }
+
+        /* --- RESULTS LOGIC --- */
+        function showResults() {
+            document.getElementById('global-timer').style.display = 'none';
+            showScreen('results');
+            
+            const formatTime = (ms) => (ms / 1000).toFixed(2) + 's';
+            
+            document.getElementById('res-r1-time').innerText = formatTime(state.results.r1_time);
+            document.getElementById('res-r1-acc').innerText = `${state.results.r1_acc}% Acc | ${state.results.r1_wpm} WPM`;
+            
+            document.getElementById('res-r2-time').innerText = formatTime(state.results.r2_time);
+            document.getElementById('res-r2-miss').innerText = `${state.results.r2_misses} Misses`;
+            
+            document.getElementById('res-r3-time').innerText = formatTime(state.results.r3_time);
+            
+            const total = state.results.r1_time + state.results.r2_time + state.results.r3_time;
+            document.getElementById('res-total').innerText = formatTime(total);
+        }
+
+    </script>
+</body>
+</html>
