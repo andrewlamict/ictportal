@@ -1,0 +1,902 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>Printer Mayhem! | Cartoon ICT Lab</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Fredoka:wght@400;600;700&family=Outfit:wght@400;700;900&display=swap');
+
+        html, body {
+            height: 100vh;
+            width: 100vw;
+            overflow: hidden !important; /* Prevents app scrolling */
+            position: fixed;
+            top: 0;
+            left: 0;
+            margin: 0;
+            padding: 0;
+        }
+
+        body { 
+            font-family: 'Fredoka', sans-serif; 
+            background: #1e1b4b; /* Fun purple night */
+            background-image: radial-gradient(#312e81 2px, transparent 2px);
+            background-size: 24px 24px;
+            color: #ffffff; 
+            user-select: none;
+            touch-action: none;
+        }
+
+        .comic-border {
+            border: 4px solid #000000;
+            box-shadow: 6px 6px 0px #000000;
+        }
+
+        .comic-border-sm {
+            border: 3px solid #000000;
+            box-shadow: 4px 4px 0px #000000;
+        }
+
+        /* Draggable Cartoon Document Icons */
+        .doc-card {
+            cursor: grab;
+            touch-action: none;
+            transition: transform 0.15s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+            z-index: 50;
+        }
+
+        .doc-card:hover {
+            transform: translateY(-3px) rotate(-1deg) scale(1.02);
+        }
+
+        .doc-card:active, .doc-card.dragging {
+            cursor: grabbing;
+            transform: scale(1.08) rotate(3deg);
+            box-shadow: 8px 8px 0px #000000;
+        }
+
+        /* Cartoon Printer Character Cards */
+        .printer-bot {
+            transition: all 0.2s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+        }
+
+        .printer-bot.drag-over {
+            transform: scale(1.05) rotate(-1deg);
+            box-shadow: 0 0 0px 5px #facc15, 6px 6px 0px #000000 !important;
+            background-color: #fef08a !important;
+            color: #000 !important;
+        }
+
+        /* Animations */
+        @keyframes bounceSlow {
+            0%, 100% { transform: translateY(0); }
+            50% { transform: translateY(-5px); }
+        }
+
+        .animate-bounce-slow {
+            animation: bounceSlow 2s ease-in-out infinite;
+        }
+
+        @keyframes wiggle {
+            0%, 100% { transform: rotate(-3deg); }
+            50% { transform: rotate(3deg); }
+        }
+
+        .animate-wiggle {
+            animation: wiggle 0.3s ease-in-out infinite;
+        }
+
+        @keyframes explode {
+            0% { transform: scale(0.5); opacity: 0; }
+            50% { transform: scale(1.1); opacity: 1; }
+            100% { transform: scale(1); opacity: 1; }
+        }
+
+        .animate-pop {
+            animation: explode 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275) forwards;
+        }
+
+        /* Googly Eyes */
+        .googly-eye {
+            width: 14px;
+            height: 14px;
+            background: white;
+            border: 2px solid black;
+            border-radius: 50%;
+            position: relative;
+            display: inline-block;
+        }
+
+        .pupil {
+            width: 6px;
+            height: 6px;
+            background: black;
+            border-radius: 50%;
+            position: absolute;
+            top: 2px;
+            left: 2px;
+            transition: all 0.1s ease;
+        }
+
+        /* Comic Text Overlay */
+        .comic-text {
+            font-family: 'Fredoka', cursive;
+            text-shadow: 2px 2px 0px #000;
+        }
+
+        .svg-container {
+            filter: drop-shadow(2px 3px 0px #000);
+        }
+    </style>
+</head>
+<body class="h-screen w-screen flex flex-col justify-between relative overflow-hidden p-2">
+
+    <!-- Cartoon Header -->
+    <header class="bg-amber-400 text-black comic-border w-full z-50 px-4 py-2 flex justify-between items-center rounded-2xl mb-2 flex-shrink-0">
+        <div class="flex items-center gap-3">
+            <div class="w-10 h-10 rounded-xl bg-pink-500 comic-border-sm flex items-center justify-center text-white text-xl animate-bounce-slow">
+                <i class="fas fa-desktop"></i>
+            </div>
+            <div>
+                <h1 class="text-lg md:text-xl font-black tracking-wider uppercase comic-text text-white">PRINTER MAYHEM! 🖨️</h1>
+                <p class="text-[10px] text-black font-bold uppercase tracking-wide">Top: Computer Task 💻 | Bottom: Printer Studio 🖨️</p>
+            </div>
+        </div>
+
+        <div class="flex items-center gap-3">
+            <div class="bg-white text-black px-3 py-1 rounded-xl comic-border-sm flex items-center gap-2">
+                <i class="fas fa-star text-amber-500 text-sm"></i>
+                <span id="score-display" class="font-extrabold text-sm md:text-base">Stars: 0/5</span>
+            </div>
+            <button onclick="toggleSound()" id="sound-btn" class="w-9 h-9 rounded-xl bg-purple-500 text-white comic-border-sm flex items-center justify-center hover:bg-purple-600 transition">
+                <i class="fas fa-volume-up text-xs"></i>
+            </button>
+            <button onclick="resetLab()" class="px-3 py-1 rounded-xl bg-rose-500 text-white comic-border-sm hover:bg-rose-600 font-extrabold text-xs uppercase tracking-wider transition">
+                Reset 🔄
+            </button>
+        </div>
+    </header>
+
+    <!-- MAIN CARTOON STAGE (TOP COMPUTER & BOTTOM PRINTERS) -->
+    <main class="flex-grow max-w-[1400px] mx-auto w-full flex flex-col justify-between items-stretch relative z-10 overflow-hidden">
+        
+        <!-- TOP SECTION: COMPUTER MONITOR DISPLAYING TASK-BY-TASK -->
+        <section class="bg-indigo-900 comic-border p-3 rounded-3xl flex flex-col justify-between shadow-2xl relative mb-2 flex-shrink-0">
+            
+            <!-- Computer Monitor Frame Bar -->
+            <div class="flex justify-between items-center border-b-4 border-black pb-1.5 mb-2">
+                <div class="flex items-center gap-2">
+                    <div class="w-3.5 h-3.5 rounded-full bg-rose-500 border-2 border-black"></div>
+                    <div class="w-3.5 h-3.5 rounded-full bg-amber-400 border-2 border-black"></div>
+                    <div class="w-3.5 h-3.5 rounded-full bg-emerald-400 border-2 border-black"></div>
+                    <span class="text-xs font-black text-amber-300 ml-2 tracking-wide uppercase"><i class="fas fa-laptop text-cyan-300 mr-1.5"></i>Computer Task Monitor</span>
+                </div>
+                <span id="task-progress-badge" class="text-[11px] font-black uppercase text-black bg-amber-400 px-3 py-0.5 rounded-full comic-border-sm">
+                    Task 1 of 5
+                </span>
+            </div>
+
+            <!-- ACTIVE DRAGGABLE TASK CONTAINER -->
+            <div class="flex flex-col md:flex-row items-center justify-between gap-3 py-1 px-2">
+                
+                <div class="text-left max-w-xl">
+                    <div class="flex items-center gap-2 mb-1">
+                        <span id="task-tag" class="text-[10px] font-black uppercase text-purple-900 bg-amber-300 px-2 py-0.5 rounded-md comic-border-sm">500 POS Receipts</span>
+                        <span id="task-hint" class="text-[10px] font-bold text-indigo-200">Heat Paper Needed | Zero Ink Budget</span>
+                    </div>
+                    <h2 id="task-title" class="text-lg md:text-xl font-black text-white comic-text">Grocery Store POS Receipt</h2>
+                    <p id="task-instruction" class="text-xs font-bold text-indigo-200 mt-1 leading-snug">
+                        👇 Drag this document file card from the computer screen down to the correct printer!
+                    </p>
+                </div>
+
+                <!-- DRAGGABLE CARD SLOT -->
+                <div id="active-card-slot" class="flex-shrink-0 w-full md:w-auto flex justify-center">
+                    <!-- Dynamic Single Active Task Card inserted here -->
+                </div>
+
+            </div>
+
+            <!-- Status Banner -->
+            <div class="mt-2 pt-1.5 border-t-4 border-black text-center">
+                <span id="spooler-status" class="inline-block bg-yellow-300 text-black font-black text-xs uppercase tracking-wider px-4 py-1 rounded-full comic-border-sm animate-bounce-slow w-full">
+                    🚀 Drag the file card below -> Drop on a printer monster!
+                </span>
+            </div>
+        </section>
+
+        <!-- BOTTOM SECTION: THE FIVE DISTINCT PRINTERS -->
+        <section class="bg-slate-900/90 comic-border p-3 rounded-3xl flex flex-col justify-between shadow-2xl relative flex-grow overflow-hidden">
+            
+            <!-- Section Title -->
+            <div class="flex justify-between items-center border-b-4 border-black pb-1.5 mb-2 flex-shrink-0">
+                <span class="text-xs font-black text-yellow-300 uppercase tracking-wider"><i class="fas fa-print mr-1.5 text-pink-400"></i>Printer Hardware Studio</span>
+                <span class="text-[10px] font-black uppercase text-slate-400">Drag file onto any printer to see the result!</span>
+            </div>
+
+            <!-- THE 5 DISTINCT VISUAL PRINTERS GRID -->
+            <div class="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-5 lg:grid-cols-5 gap-2 flex-grow items-stretch overflow-hidden">
+                
+                <!-- 1. THERMAL PRINTER (Convenience Store POS Receipt Machine) -->
+                <div data-printer="thermal" class="printer-bot drop-zone bg-amber-400 text-black p-2 rounded-2xl comic-border flex flex-col items-center text-center relative overflow-hidden justify-between">
+                    <div class="w-full flex flex-col items-center">
+                        <div class="flex justify-between items-center w-full mb-1">
+                            <span class="text-[10px] font-black uppercase tracking-wider">Thermal Printer</span>
+                            <div class="flex gap-0.5">
+                                <div class="googly-eye"><div class="pupil"></div></div>
+                                <div class="googly-eye"><div class="pupil"></div></div>
+                            </div>
+                        </div>
+                        <!-- Realistic Convenience Store POS Receipt Printer SVG -->
+                        <div class="w-24 h-20 my-1 svg-container flex items-center justify-center">
+                            <svg viewBox="0 0 100 80" class="w-full h-full">
+                                <!-- Main Dark Charcoal POS Box Body -->
+                                <rect x="15" y="25" width="70" height="48" rx="6" fill="#1e293b" stroke="#000000" stroke-width="3"/>
+                                <!-- Top Paper Compartment Lid -->
+                                <path d="M 15 35 L 85 35 L 78 20 L 22 20 Z" fill="#334155" stroke="#000000" stroke-width="2.5"/>
+                                <!-- Slanted Front Dispenser Mouth (7-Eleven / POS Terminal Style) -->
+                                <polygon points="25,20 75,20 80,35 20,35" fill="#0f172a" stroke="#000000" stroke-width="2"/>
+                                <!-- Paper Exit Slot Line -->
+                                <rect x="28" y="21" width="44" height="4" rx="1" fill="#000000"/>
+                                <!-- Emerging Jagged Thermal Receipt Paper -->
+                                <polygon points="30,5 70,5 70,21 66,18 62,21 58,18 54,21 50,18 46,21 42,18 38,21 34,18 30,21" fill="#ffffff" stroke="#000000" stroke-width="1.5"/>
+                                <!-- Printed Receipt Barcode Lines -->
+                                <line x1="35" y1="8" x2="65" y2="8" stroke="#000" stroke-width="1.5"/>
+                                <line x1="35" y1="11" x2="52" y2="11" stroke="#000" stroke-width="1.5"/>
+                                <line x1="35" y1="14" x2="60" y2="14" stroke="#000" stroke-width="1.5"/>
+                                <!-- Convenience Store Cover Release Latch -->
+                                <rect x="76" y="42" width="6" height="14" rx="1.5" fill="#38bdf8" stroke="#000000" stroke-width="1.5"/>
+                                <!-- POS Status Indicator Panel -->
+                                <rect x="22" y="44" width="48" height="20" rx="3" fill="#0f172a" stroke="#000000" stroke-width="2"/>
+                                <!-- Power, Error, Paper LEDs -->
+                                <circle cx="29" cy="54" r="3" fill="#22c55e" stroke="#000000" stroke-width="1"/>
+                                <circle cx="38" cy="54" r="3" fill="#ef4444" stroke="#000000" stroke-width="1"/>
+                                <circle cx="47" cy="54" r="3" fill="#f97316" stroke="#000000" stroke-width="1"/>
+                                <!-- Feed Button -->
+                                <rect x="56" y="49" width="10" height="10" rx="2" fill="#64748b" stroke="#000000" stroke-width="1.5"/>
+                            </svg>
+                        </div>
+                    </div>
+
+                    <!-- Output Tray -->
+                    <div class="w-full flex-grow bg-amber-100 rounded-xl comic-border-sm relative overflow-hidden flex flex-col items-center justify-center p-1 mt-1 shadow-inner min-h-[70px]">
+                        <div id="output-thermal" class="w-full h-full flex flex-col items-center justify-center text-[9px] text-black font-extrabold uppercase text-center">
+                            <i class="fas fa-chevron-down text-sm mb-0.5 animate-bounce"></i>
+                            Receipt Slot
+                        </div>
+                    </div>
+                </div>
+
+                <!-- 2. INKJET PRINTER -->
+                <div data-printer="inkjet" class="printer-bot drop-zone bg-cyan-400 text-black p-2 rounded-2xl comic-border flex flex-col items-center text-center relative overflow-hidden justify-between">
+                    <div class="w-full flex flex-col items-center">
+                        <div class="flex justify-between items-center w-full mb-1">
+                            <span class="text-[10px] font-black uppercase tracking-wider">Inkjet Printer</span>
+                            <div class="flex gap-0.5">
+                                <div class="googly-eye"><div class="pupil"></div></div>
+                                <div class="googly-eye"><div class="pupil"></div></div>
+                            </div>
+                        </div>
+                        <!-- Inkjet Printer SVG Illustration -->
+                        <div class="w-24 h-20 my-1 svg-container flex items-center justify-center">
+                            <svg viewBox="0 0 100 80" class="w-full h-full">
+                                <polygon points="30,8 70,8 75,35 25,35" fill="#cbd5e1" stroke="#000" stroke-width="3"/>
+                                <rect x="35" y="12" width="30" height="20" fill="#ffffff" stroke="#000" stroke-width="2"/>
+                                <rect x="10" y="32" width="80" height="38" rx="6" fill="#0284c7" stroke="#000" stroke-width="3"/>
+                                <rect x="18" y="42" width="64" height="20" fill="#0369a1" stroke="#000" stroke-width="2"/>
+                                <rect x="22" y="47" width="8" height="10" rx="1" fill="#06b6d4" stroke="#000" stroke-width="1"/>
+                                <rect x="32" y="47" width="8" height="10" rx="1" fill="#ec4899" stroke="#000" stroke-width="1"/>
+                                <rect x="42" y="47" width="8" height="10" rx="1" fill="#eab308" stroke="#000" stroke-width="1"/>
+                                <rect x="52" y="47" width="8" height="10" rx="1" fill="#0f172a" stroke="#000" stroke-width="1"/>
+                                <polygon points="20,62 80,62 85,74 15,74" fill="#38bdf8" stroke="#000" stroke-width="2"/>
+                            </svg>
+                        </div>
+                    </div>
+
+                    <!-- Output Tray -->
+                    <div class="w-full flex-grow bg-cyan-100 rounded-xl comic-border-sm relative overflow-hidden flex flex-col items-center justify-center p-1 mt-1 shadow-inner min-h-[70px]">
+                        <div id="output-inkjet" class="w-full h-full flex flex-col items-center justify-center text-[9px] text-black font-extrabold uppercase text-center">
+                            <i class="fas fa-chevron-down text-sm mb-0.5 animate-bounce"></i>
+                            Inkjet Tray
+                        </div>
+                    </div>
+                </div>
+
+                <!-- 3. LASER PRINTER -->
+                <div data-printer="laser" class="printer-bot drop-zone bg-rose-400 text-black p-2 rounded-2xl comic-border flex flex-col items-center text-center relative overflow-hidden justify-between">
+                    <div class="w-full flex flex-col items-center">
+                        <div class="flex justify-between items-center w-full mb-1">
+                            <span class="text-[10px] font-black uppercase tracking-wider">Laser Printer</span>
+                            <div class="flex gap-0.5">
+                                <div class="googly-eye"><div class="pupil"></div></div>
+                                <div class="googly-eye"><div class="pupil"></div></div>
+                            </div>
+                        </div>
+                        <!-- Laser Office Printer SVG Illustration -->
+                        <div class="w-24 h-20 my-1 svg-container flex items-center justify-center">
+                            <svg viewBox="0 0 100 80" class="w-full h-full">
+                                <rect x="12" y="18" width="76" height="56" rx="6" fill="#e2e8f0" stroke="#000" stroke-width="3"/>
+                                <path d="M 22 18 L 78 18 L 70 30 L 30 30 Z" fill="#94a3b8" stroke="#000" stroke-width="2"/>
+                                <rect x="62" y="34" width="20" height="12" fill="#1e293b" stroke="#000" stroke-width="1.5"/>
+                                <rect x="64" y="36" width="10" height="8" fill="#22c55e"/>
+                                <circle cx="78" cy="40" r="2" fill="#ef4444" stroke="#000" stroke-width="1"/>
+                                <rect x="20" y="34" width="38" height="20" rx="2" fill="#cbd5e1" stroke="#000" stroke-width="2"/>
+                                <rect x="18" y="58" width="64" height="12" rx="2" fill="#64748b" stroke="#000" stroke-width="2"/>
+                                <rect x="42" y="62" width="16" height="3" rx="1.5" fill="#1e293b"/>
+                            </svg>
+                        </div>
+                    </div>
+
+                    <!-- Output Tray -->
+                    <div class="w-full flex-grow bg-rose-100 rounded-xl comic-border-sm relative overflow-hidden flex flex-col items-center justify-center p-1 mt-1 shadow-inner min-h-[70px]">
+                        <div id="output-laser" class="w-full h-full flex flex-col items-center justify-center text-[9px] text-black font-extrabold uppercase text-center">
+                            <i class="fas fa-chevron-down text-sm mb-0.5 animate-bounce"></i>
+                            Laser Output
+                        </div>
+                    </div>
+                </div>
+
+                <!-- 4. PLOTTER -->
+                <div data-printer="plotter" class="printer-bot drop-zone bg-emerald-400 text-black p-2 rounded-2xl comic-border flex flex-col items-center text-center relative overflow-hidden justify-between">
+                    <div class="w-full flex flex-col items-center">
+                        <div class="flex justify-between items-center w-full mb-1">
+                            <span class="text-[10px] font-black uppercase tracking-wider">Plotter</span>
+                            <div class="flex gap-0.5">
+                                <div class="googly-eye"><div class="pupil"></div></div>
+                                <div class="googly-eye"><div class="pupil"></div></div>
+                            </div>
+                        </div>
+                        <!-- Large Format Plotter SVG Illustration -->
+                        <div class="w-24 h-20 my-1 svg-container flex items-center justify-center">
+                            <svg viewBox="0 0 100 80" class="w-full h-full">
+                                <line x1="18" y1="45" x2="14" y2="74" stroke="#000" stroke-width="4"/>
+                                <line x1="82" y1="45" x2="86" y2="74" stroke="#000" stroke-width="4"/>
+                                <line x1="8" y1="74" x2="20" y2="74" stroke="#000" stroke-width="3"/>
+                                <line x1="80" y1="74" x2="92" y2="74" stroke="#000" stroke-width="3"/>
+                                <circle cx="10" cy="76" r="2.5" fill="#000"/>
+                                <circle cx="90" cy="76" r="2.5" fill="#000"/>
+                                <path d="M 20 50 Q 50 68 80 50" fill="none" stroke="#047857" stroke-width="3"/>
+                                <rect x="6" y="24" width="88" height="22" rx="4" fill="#10b981" stroke="#000" stroke-width="3"/>
+                                <rect x="12" y="16" width="76" height="10" rx="3" fill="#e2e8f0" stroke="#000" stroke-width="2"/>
+                                <line x1="12" y1="35" x2="88" y2="35" stroke="#000" stroke-width="2.5"/>
+                                <rect x="42" y="28" width="14" height="14" rx="2" fill="#f59e0b" stroke="#000" stroke-width="2"/>
+                                <polygon points="47,42 51,42 49,47" fill="#000"/>
+                            </svg>
+                        </div>
+                    </div>
+
+                    <!-- Output Tray -->
+                    <div class="w-full flex-grow bg-emerald-100 rounded-xl comic-border-sm relative overflow-hidden flex flex-col items-center justify-center p-1 mt-1 shadow-inner min-h-[70px]">
+                        <div id="output-plotter" class="w-full h-full flex flex-col items-center justify-center text-[9px] text-black font-extrabold uppercase text-center">
+                            <i class="fas fa-chevron-down text-sm mb-0.5 animate-bounce"></i>
+                            Plotter Roll
+                        </div>
+                    </div>
+                </div>
+
+                <!-- 5. 3D PRINTER -->
+                <div data-printer="3d" class="printer-bot drop-zone bg-purple-400 text-black p-2 rounded-2xl comic-border flex flex-col items-center text-center relative overflow-hidden justify-between col-span-2 sm:col-span-1 md:col-span-1">
+                    <div class="w-full flex flex-col items-center">
+                        <div class="flex justify-between items-center w-full mb-1">
+                            <span class="text-[10px] font-black uppercase tracking-wider">3D Printer</span>
+                            <div class="flex gap-0.5">
+                                <div class="googly-eye"><div class="pupil"></div></div>
+                                <div class="googly-eye"><div class="pupil"></div></div>
+                            </div>
+                        </div>
+                        <!-- 3D Printer FDM SVG Illustration -->
+                        <div class="w-24 h-20 my-1 svg-container flex items-center justify-center">
+                            <svg viewBox="0 0 100 80" class="w-full h-full">
+                                <rect x="15" y="60" width="70" height="16" rx="3" fill="#3b0764" stroke="#000" stroke-width="3"/>
+                                <circle cx="75" cy="68" r="4" fill="#a855f7" stroke="#000" stroke-width="1.5"/>
+                                <rect x="22" y="55" width="56" height="5" fill="#ec4899" stroke="#000" stroke-width="1.5"/>
+                                <rect x="20" y="16" width="6" height="44" fill="#64748b" stroke="#000" stroke-width="2"/>
+                                <rect x="74" y="16" width="6" height="44" fill="#64748b" stroke="#000" stroke-width="2"/>
+                                <rect x="18" y="14" width="64" height="6" fill="#3b0764" stroke="#000" stroke-width="2"/>
+                                <circle cx="50" cy="8" r="7" fill="#a855f7" stroke="#000" stroke-width="2"/>
+                                <circle cx="50" cy="8" r="3" fill="#3b0764"/>
+                                <line x1="20" y1="36" x2="80" y2="36" stroke="#000" stroke-width="3"/>
+                                <rect x="42" y="30" width="14" height="12" rx="2" fill="#eab308" stroke="#000" stroke-width="2"/>
+                                <polygon points="47,42 51,42 49,48" fill="#ef4444"/>
+                                <polygon points="42,55 56,55 52,47 46,47" fill="#c084fc" stroke="#000" stroke-width="1.5"/>
+                            </svg>
+                        </div>
+                    </div>
+
+                    <!-- Output Tray -->
+                    <div class="w-full flex-grow bg-purple-100 rounded-xl comic-border-sm relative overflow-hidden flex flex-col items-center justify-center p-1 mt-1 shadow-inner min-h-[70px]">
+                        <div id="output-3d" class="w-full h-full flex flex-col items-center justify-center text-[9px] text-black font-extrabold uppercase text-center">
+                            <i class="fas fa-chevron-down text-sm mb-0.5 animate-bounce"></i>
+                            Build Plate
+                        </div>
+                    </div>
+                </div>
+
+            </div>
+        </section>
+    </main>
+
+    <!-- POPUP MODAL FOR EXPLANATION / CARTOON RESULT -->
+    <div id="result-modal" class="fixed inset-0 bg-black/85 backdrop-blur-sm z-50 flex items-center justify-center p-4 hidden">
+        <div class="bg-amber-300 text-black comic-border p-6 rounded-3xl max-w-md w-full text-center relative animate-pop">
+            
+            <div id="modal-badge" class="w-16 h-16 rounded-2xl bg-white comic-border-sm flex items-center justify-center text-3xl mb-3 mx-auto shadow-md">
+                🎉
+            </div>
+
+            <h3 id="modal-title" class="text-3xl font-black comic-text uppercase text-black mb-1">Awesome!</h3>
+            <p id="modal-desc" class="text-black font-bold text-sm leading-tight mb-4"></p>
+
+            <div id="modal-card-box" class="bg-white p-4 rounded-2xl comic-border-sm text-left text-xs mb-5">
+                <p id="modal-printer-name" class="font-black text-purple-700 text-sm mb-1 uppercase"></p>
+                <p id="modal-explanation" class="text-slate-800 font-bold leading-relaxed"></p>
+            </div>
+
+            <button id="modal-next-btn" onclick="nextTask()" class="w-full py-3.5 bg-rose-500 hover:bg-rose-600 text-white font-black text-base uppercase tracking-wider rounded-xl comic-border-sm shadow-md transition">
+                Next Task 🚀
+            </button>
+        </div>
+    </div>
+
+    <script>
+        // Web Audio Synthesizer for Fun Cartoon Sounds
+        let soundEnabled = true;
+        const audioCtx = new (window.AudioContext || window.webkitAudioContext)();
+
+        function playSound(type) {
+            if (!soundEnabled) return;
+            try {
+                const osc = audioCtx.createOscillator();
+                const gain = audioCtx.createGain();
+                osc.connect(gain);
+                gain.connect(audioCtx.destination);
+                const now = audioCtx.currentTime;
+
+                if (type === 'yay') {
+                    osc.type = 'triangle';
+                    osc.frequency.setValueAtTime(300, now);
+                    osc.frequency.exponentialRampToValueAtTime(600, now + 0.15);
+                    osc.frequency.exponentialRampToValueAtTime(900, now + 0.3);
+                    gain.gain.setValueAtTime(0.3, now);
+                    gain.gain.exponentialRampToValueAtTime(0.01, now + 0.35);
+                    osc.start(now);
+                    osc.stop(now + 0.35);
+                } else if (type === 'boom') {
+                    osc.type = 'sawtooth';
+                    osc.frequency.setValueAtTime(200, now);
+                    osc.frequency.linearRampToValueAtTime(60, now + 0.4);
+                    gain.gain.setValueAtTime(0.4, now);
+                    gain.gain.exponentialRampToValueAtTime(0.01, now + 0.4);
+                    osc.start(now);
+                    osc.stop(now + 0.4);
+                } else if (type === 'pop') {
+                    osc.type = 'sine';
+                    osc.frequency.setValueAtTime(400, now);
+                    osc.frequency.exponentialRampToValueAtTime(800, now + 0.08);
+                    gain.gain.setValueAtTime(0.2, now);
+                    gain.gain.exponentialRampToValueAtTime(0.01, now + 0.08);
+                    osc.start(now);
+                    osc.stop(now + 0.08);
+                }
+            } catch(e) {}
+        }
+
+        function toggleSound() {
+            soundEnabled = !soundEnabled;
+            document.getElementById('sound-btn').innerHTML = soundEnabled ? '<i class="fas fa-volume-up text-xs"></i>' : '<i class="fas fa-volume-mute text-xs"></i>';
+        }
+
+        // CARTOON COMPUTER TASKS DATA (SEQUENTIAL TASK-BY-TASK)
+        const tasks = [
+            {
+                id: "doc-receipt",
+                title: "Grocery POS Receipts",
+                fileTitle: "POS_Receipt.dat",
+                icon: "fa-receipt",
+                bgColor: "bg-amber-300",
+                textColor: "text-amber-900",
+                tag: "500 POS Receipts",
+                desc: "Heat Paper Needed | Zero Ink Budget!",
+                instruction: "👇 Need 500 quick receipts printed on heat-sensitive roll paper with $0 ink budget!",
+                correctPrinter: "thermal",
+                correctHTML: `
+                    <div class="w-full bg-white text-black p-1.5 text-[7px] font-mono comic-border-sm animate-pop flex flex-col justify-between transform rotate-1">
+                        <div class="font-bold border-b border-black">🧾 YUMMY MART</div>
+                        <div>1x MILK $3.00<br>1x PIZZA $8.00<br>TOTAL: $11.00</div>
+                        <div class="text-[6px] font-black bg-yellow-300 text-center">HEAT PRINTED!</div>
+                    </div>`,
+                correctExplanation: "Thermal printers are perfect for convenience stores! They use micro-heating pins directly on heat-sensitive paper, needing no ink or toner cartridges.",
+                outputs: {
+                    inkjet: {
+                        html: `<div class="bg-cyan-200 text-black font-black text-[8px] p-1.5 comic-border-sm animate-wiggle">💸 INK OVERFLOW!<br>Spent $100 of liquid ink for cheap receipts!</div>`,
+                        explanation: "Inkjet printers squirt expensive liquid paint everywhere! Liquid ink costs way too much for temporary grocery receipts!"
+                    },
+                    laser: {
+                        html: `<div class="bg-red-500 text-white font-black text-[8px] p-1.5 comic-border-sm animate-pop">🔥 SCORCHED BLACK!<br>Larry's fuser heat burned the roll!</div>`,
+                        explanation: "KABOOM! The Laser printer's super hot fuser roller (180°C) turned the entire heat-sensitive receipt paper pitch black!"
+                    },
+                    plotter: {
+                        html: `<div class="bg-emerald-200 text-black font-black text-[8px] p-1.5 comic-border-sm animate-wiggle">🖊️ POKED HOLES!<br>Penelope's pen ripped thin paper!</div>`,
+                        explanation: "Ouch! The Plotter's robotic drawing pen poked holes through thin receipt paper! It prefers giant banners."
+                    },
+                    '3d': {
+                        html: `<div class="bg-purple-200 text-black font-black text-[8px] p-1.5 comic-border-sm">⏰ 4 HOURS LATER...<br>Still extruding 1 receipt!</div>`,
+                        explanation: "3D printers take hours to extrude plastic layers! They can't print quick paper receipts!"
+                    }
+                }
+            },
+            {
+                id: "doc-exam",
+                title: "3,000 School Exams",
+                fileTitle: "3000_FinalExams.pdf",
+                icon: "fa-file-alt",
+                bgColor: "bg-rose-300",
+                textColor: "text-rose-900",
+                tag: "3,000 Exam Copies",
+                desc: "High Speed & Lowest Cost/Page",
+                instruction: "👇 School Principal needs 3,000 monochrome exam sheets printed before 8:00 AM!",
+                correctPrinter: "laser",
+                correctHTML: `
+                    <div class="w-full bg-white text-black p-1.5 text-[7px] font-mono comic-border-sm animate-pop border-2 border-red-500">
+                        <div class="font-black bg-rose-500 text-white text-center text-[6px] mb-1">⚡ LASER SPEED EXAM</div>
+                        <div>Q1. What is CPU?<br>Q2. Define RAM.<br>Q3. Explain ROM.</div>
+                        <div class="text-[5px] text-slate-500 mt-1">Cost: $0.001 / page</div>
+                    </div>`,
+                correctExplanation: "Laser Printer zipped through 3,000 pages! Laser printers use static electricity drums and toner powder to print blazing fast at lowest cost per page.",
+                outputs: {
+                    thermal: {
+                        html: `<div class="bg-amber-200 text-black font-black text-[8px] p-1.5 comic-border-sm">☀️ FADED TO BLANK!<br>Exams faded in sun light!</div>`,
+                        explanation: "Oh no! Thermal printer paper fades in sunlight. Students pulled out blank sheets of paper for their exams!"
+                    },
+                    inkjet: {
+                        html: `<div class="bg-cyan-500 text-white font-black text-[8px] p-1.5 comic-border-sm animate-wiggle">💧 SNEEZED OUT OF INK!<br>Inky ran dry on page 50!</div>`,
+                        explanation: "ACHOO! Inkjet printer ran out of liquid ink cartridges on page 50! Replacing ink cartridges for 3,000 pages costs $800!"
+                    },
+                    plotter: {
+                        html: `<div class="bg-emerald-200 text-black font-black text-[8px] p-1.5 comic-border-sm">🐢 TOO SLOW!<br>Took 5 minutes per page!</div>`,
+                        explanation: "Yawn! Plotters move their pen arm line by line. It takes days to print 3,000 exam sheets!"
+                    },
+                    '3d': {
+                        html: `<div class="bg-purple-300 text-black font-black text-[8px] p-1.5 comic-border-sm">🧱 PLASTIC BRICK!<br>Extruded a solid block!</div>`,
+                        explanation: "3D printer extruded a heavy plastic brick! You can't write an exam on a plastic brick!"
+                    }
+                }
+            },
+            {
+                id: "doc-banner",
+                title: "3-Meter Music Festival Banner",
+                fileTitle: "MusicFestival_Banner.svg",
+                icon: "fa-[#000]",
+                icon: "fa-bullhorn",
+                bgColor: "bg-emerald-300",
+                textColor: "text-emerald-900",
+                tag: "3-Meter Outdoor Banner",
+                desc: "Giant Format Vector Continuous Media",
+                instruction: "👇 Event organizer needs a 3-meter wide large-format outdoor banner for a concert!",
+                correctPrinter: "plotter",
+                correctHTML: `
+                    <div class="w-full bg-gradient-to-r from-purple-800 via-emerald-600 to-teal-700 text-white p-1 text-[7px] font-mono comic-border-sm animate-pop flex flex-col items-center justify-center relative">
+                        <i class="fas fa-music text-amber-300 text-xl mb-0.5"></i>
+                        <span class="font-black text-amber-300">3M CONCERT BANNER</span>
+                    </div>`,
+                correctExplanation: "Plotter loved this! Plotters handle wide continuous media rolls and vector graphics to print massive banners and posters.",
+                outputs: {
+                    thermal: {
+                        html: `<div class="bg-amber-200 text-black font-black text-[8px] p-1.5 comic-border-sm">✂️ TRUNCATED!<br>Cut off by tiny roll!</div>`,
+                        explanation: "Thermal printer paper rolls are only 3 inches wide! The 3-meter concert banner got chopped into a tiny receipt stripe!"
+                    },
+                    laser: {
+                        html: `<div class="bg-rose-200 text-black font-black text-[8px] p-1.5 comic-border-sm">📄 JAMMED TRAY!<br>3-Meter banner too giant for A4!</div>`,
+                        explanation: "CRUNCH! Laser printer paper trays only take small A4/A3 sheets. It jammed trying to swallow a giant 3-meter outdoor roll!"
+                    },
+                    inkjet: {
+                        html: `<div class="bg-cyan-200 text-black font-black text-[8px] p-1.5 comic-border-sm">💦 INK BLED!<br>Liquid ink smudged graphics!</div>`,
+                        explanation: "SPLAT! Standard desktop Inkjet printers can't fit giant 3-meter wide banner rolls! You need a large-format Plotter!"
+                    },
+                    '3d': {
+                        html: `<div class="bg-purple-200 text-black font-black text-[8px] p-1.5 comic-border-sm">🏠 PLASTIC STAGE!<br>Built a mini plastic stage!</div>`,
+                        explanation: "3D printer built a miniature plastic toy stage instead of printing a 3-meter long vinyl banner!"
+                    }
+                }
+            },
+            {
+                id: "doc-photo",
+                title: "Glossy Family Portrait",
+                fileTitle: "Family_Portrait.raw",
+                icon: "fa-camera",
+                bgColor: "bg-cyan-300",
+                textColor: "text-cyan-900",
+                tag: "Glossy Photo",
+                desc: "Vibrant Liquid Color Blending",
+                instruction: "👇 Studio photographer needs smooth color depth & rich blending on glossy photo paper!",
+                correctPrinter: "inkjet",
+                correctHTML: `
+                    <div class="w-full bg-gradient-to-tr from-pink-500 via-purple-500 to-cyan-400 p-1 comic-border-sm animate-pop flex flex-col items-center justify-center text-white">
+                        <i class="fas fa-portrait text-2xl mb-1 drop-shadow"></i>
+                        <span class="font-black text-[6px] bg-black/60 px-1 rounded">GLOSSY PHOTO</span>
+                    </div>`,
+                correctExplanation: "Inkjet Printer did a masterclass! Inkjets squirt microscopic liquid CMYK droplets onto glossy paper for gorgeous photo gradients.",
+                outputs: {
+                    thermal: {
+                        html: `<div class="bg-amber-200 text-black font-black text-[8px] p-1.5 comic-border-sm">🏁 GRAINY DOTS!<br>Black & white receipt photo!</div>`,
+                        explanation: "Thermal printers can only burn single-color heat spots! The family photo looks like a 1980s receipt!"
+                    },
+                    laser: {
+                        html: `<div class="bg-rose-200 text-black font-black text-[8px] p-1.5 comic-border-sm">🏁 STRIPY LINES!<br>Toner created color bands!</div>`,
+                        explanation: "Laser printer dry toner powder melts on top of paper and can't blend smooth photo skin tones like liquid ink!"
+                    },
+                    plotter: {
+                        html: `<div class="bg-emerald-200 text-black font-black text-[8px] p-1.5 comic-border-sm">🖊️ SCRATCHES!<br>Pen scratched glossy paper!</div>`,
+                        explanation: "Plotter tried drawing a photo with colored markers! It scratched the glossy photo paper!"
+                    },
+                    '3d': {
+                        html: `<div class="bg-purple-200 text-black font-black text-[8px] p-1.5 comic-border-sm">🟫 PLASTIC SHEET!<br>Extruded flat plastic slab!</div>`,
+                        explanation: "3D printer extruded a flat piece of plastic! That's not a glossy photo print!"
+                    }
+                }
+            },
+            {
+                id: "doc-prosthetic",
+                title: "Plastic Prosthetic Hand",
+                fileTitle: "Robot_Hand_CAD.stl",
+                icon: "fa-cube",
+                bgColor: "bg-purple-300",
+                textColor: "text-purple-900",
+                tag: "3D Plastic Hand",
+                desc: "Extrude Tangible 3D Object",
+                instruction: "👇 Surgeon needs a physical plastic hand replacement built directly from a 3D CAD mesh model!",
+                correctPrinter: "3d",
+                correctHTML: `
+                    <div class="w-full bg-purple-900 text-white p-1 comic-border-sm animate-pop flex flex-col items-center justify-center relative border-2 border-purple-400">
+                        <i class="fas fa-hand-paper text-purple-300 text-3xl animate-bounce"></i>
+                        <span class="font-black text-[6px] bg-purple-500 px-1 rounded mt-1">PLASTIC 3D HAND</span>
+                    </div>`,
+                correctExplanation: "3D Printer melted PLA plastic filament layer-by-layer to build a real physical 3D hand model!",
+                outputs: {
+                    thermal: {
+                        html: `<div class="bg-amber-200 text-black font-black text-[8px] p-1.5 comic-border-sm">📄 FLAT PAPER!<br>Receipt with hand drawing!</div>`,
+                        explanation: "Thermal printer printed a receipt picture of a hand! The patient can't grab anything with a paper receipt!"
+                    },
+                    laser: {
+                        html: `<div class="bg-rose-200 text-black font-black text-[8px] p-1.5 comic-border-sm">📄 FLAT PAPER!<br>Laser printed 2D picture!</div>`,
+                        explanation: "Laser printer printed a flat 2D picture of a hand on paper! A 2D paper picture isn't a physical plastic hand!"
+                    },
+                    inkjet: {
+                        html: `<div class="bg-cyan-200 text-black font-black text-[8px] p-1.5 comic-border-sm">📄 FLAT PAPER!<br>Inky sprayed 2D picture!</div>`,
+                        explanation: "Inkjet printer sprayed a colorful 2D picture of a hand on paper! You need a 3D Printer to build physical 3D objects!"
+                    },
+                    plotter: {
+                        html: `<div class="bg-emerald-200 text-black font-black text-[8px] p-1.5 comic-border-sm">✏️ STICK FIGURE!<br>Penelope drew 2D line hand!</div>`,
+                        explanation: "Plotter drew a 2D line drawing of a hand on paper! You need 3D plastic extrusion!"
+                    }
+                }
+            }
+        ];
+
+        let currentTaskIndex = 0;
+        let score = 0;
+
+        // Render Current Active Task Card in the Computer Display
+        function renderActiveTask() {
+            if (currentTaskIndex >= tasks.length) {
+                // ALL TASKS COMPLETED
+                document.getElementById('task-progress-badge').innerText = "All Tasks Done!";
+                document.getElementById('task-title').innerText = "🎉 All Computer Tasks Completed!";
+                document.getElementById('task-instruction').innerText = "Great job testing all hardware printers!";
+                document.getElementById('task-tag').innerText = "Score 5/5";
+                document.getElementById('task-hint').innerText = "Laboratory Shift Completed";
+                document.getElementById('active-card-slot').innerHTML = `
+                    <div class="bg-amber-400 text-black font-black p-3 rounded-2xl comic-border-sm text-center">
+                        <p class="text-base">🏆 ALL STARS EARNED!</p>
+                        <button onclick="resetLab()" class="mt-2 bg-rose-500 text-white text-xs px-3 py-1 rounded-lg comic-border-sm">Play Again 🔄</button>
+                    </div>`;
+                return;
+            }
+
+            const curTask = tasks[currentTaskIndex];
+            document.getElementById('task-progress-badge').innerText = `Task ${currentTaskIndex + 1} of ${tasks.length}`;
+            document.getElementById('task-title').innerText = curTask.title;
+            document.getElementById('task-tag').innerText = curTask.tag;
+            document.getElementById('task-hint').innerText = curTask.desc;
+            document.getElementById('task-instruction').innerText = curTask.instruction;
+
+            const slot = document.getElementById('active-card-slot');
+            slot.innerHTML = '';
+
+            const fileDiv = document.createElement('div');
+            fileDiv.id = curTask.id;
+            fileDiv.className = `doc-card ${curTask.bgColor} text-black p-3 rounded-2xl comic-border-sm flex items-center gap-3 w-64 shadow-lg animate-pop`;
+            fileDiv.innerHTML = `
+                <div class="w-10 h-10 rounded-xl bg-white comic-border-sm flex items-center justify-center text-xl flex-shrink-0">
+                    <i class="fas ${curTask.icon}"></i>
+                </div>
+                <div class="text-left overflow-hidden">
+                    <span class="font-black text-xs truncate block">${curTask.fileTitle}</span>
+                    <span class="text-[9px] font-black uppercase text-purple-900 bg-white/70 px-1 rounded inline-block">${curTask.tag}</span>
+                </div>
+            `;
+
+            attachDragListeners(fileDiv, curTask);
+            slot.appendChild(fileDiv);
+        }
+
+        // Mouse & Touch Dragging Mechanics
+        let activeDoc = null;
+        let isDragging = false;
+        let draggedClone = null;
+
+        function attachDragListeners(element, docData) {
+            const handleStart = (e) => {
+                e.preventDefault();
+                playSound('pop');
+                activeDoc = docData;
+                isDragging = true;
+
+                const clientX = e.touches ? e.touches[0].clientX : e.clientX;
+                const clientY = e.touches ? e.touches[0].clientY : e.clientY;
+
+                // Create Cartoon Dragging Clone
+                draggedClone = element.cloneNode(true);
+                draggedClone.style.position = 'fixed';
+                draggedClone.style.left = `${clientX - 90}px`;
+                draggedClone.style.top = `${clientY - 25}px`;
+                draggedClone.style.width = '180px';
+                draggedClone.style.zIndex = '1000';
+                draggedClone.classList.add('dragging');
+                document.body.appendChild(draggedClone);
+
+                document.getElementById('spooler-status').innerText = `🚀 CARRIER ACTIVE: ${docData.fileTitle} -> Drop on a Printer!`;
+
+                document.addEventListener('mousemove', handleMove);
+                document.addEventListener('touchmove', handleMove, {passive: false});
+                document.addEventListener('mouseup', handleEnd);
+                document.addEventListener('touchend', handleEnd);
+            };
+
+            element.addEventListener('mousedown', handleStart);
+            element.addEventListener('touchstart', handleStart, {passive: false});
+        }
+
+        function handleMove(e) {
+            if (!isDragging || !draggedClone) return;
+            e.preventDefault();
+
+            const clientX = e.touches ? e.touches[0].clientX : e.clientX;
+            const clientY = e.touches ? e.touches[0].clientY : e.clientY;
+
+            draggedClone.style.left = `${clientX - 90}px`;
+            draggedClone.style.top = `${clientY - 25}px`;
+
+            // Make googly eyes follow the dragged element!
+            const pupils = document.querySelectorAll('.pupil');
+            pupils.forEach(pupil => {
+                const rect = pupil.getBoundingClientRect();
+                const angle = Math.atan2(clientY - rect.top, clientX - rect.left);
+                pupil.style.transform = `translate(${Math.cos(angle) * 3}px, ${Math.sin(angle) * 3}px)`;
+            });
+
+            // Highlight drop zone under cursor
+            document.querySelectorAll('.drop-zone').forEach(zone => {
+                const rect = zone.getBoundingClientRect();
+                if (clientX >= rect.left && clientX <= rect.right && clientY >= rect.top && clientY <= rect.bottom) {
+                    zone.classList.add('drag-over');
+                } else {
+                    zone.classList.remove('drag-over');
+                }
+            });
+        }
+
+        function handleEnd(e) {
+            if (!isDragging) return;
+            isDragging = false;
+
+            document.removeEventListener('mousemove', handleMove);
+            document.removeEventListener('touchmove', handleMove);
+            document.removeEventListener('mouseup', handleEnd);
+            document.removeEventListener('touchend', handleEnd);
+
+            const clientX = e.changedTouches ? e.changedTouches[0].clientX : e.clientX;
+            const clientY = e.changedTouches ? e.changedTouches[0].clientY : e.clientY;
+
+            if (draggedClone) {
+                draggedClone.remove();
+                draggedClone = null;
+            }
+
+            let droppedPrinter = null;
+            document.querySelectorAll('.drop-zone').forEach(zone => {
+                const rect = zone.getBoundingClientRect();
+                if (clientX >= rect.left && clientX <= rect.right && clientY >= rect.top && clientY <= rect.bottom) {
+                    droppedPrinter = zone.getAttribute('data-printer');
+                }
+                zone.classList.remove('drag-over');
+            });
+
+            if (droppedPrinter && activeDoc) {
+                processPrintJob(activeDoc, droppedPrinter);
+            } else {
+                document.getElementById('spooler-status').innerText = "🚀 Drag the file card above -> Drop on a printer!";
+            }
+
+            activeDoc = null;
+        }
+
+        function processPrintJob(doc, printer) {
+            const outputTray = document.getElementById(`output-${printer}`);
+            const isCorrect = printer === doc.correctPrinter;
+
+            const modal = document.getElementById('result-modal');
+            const badge = document.getElementById('modal-badge');
+            const title = document.getElementById('modal-title');
+            const desc = document.getElementById('modal-desc');
+            const printerName = document.getElementById('modal-printer-name');
+            const explanation = document.getElementById('modal-explanation');
+
+            if (isCorrect) {
+                playSound('yay');
+                score++;
+                document.getElementById('score-display').innerText = `Stars: ${score}/5`;
+
+                outputTray.innerHTML = doc.correctHTML;
+
+                badge.innerText = "🎉";
+                title.innerText = "YAY! PERFECT MATCH!";
+                title.className = "text-3xl font-black comic-text uppercase text-emerald-600 mb-1";
+                desc.innerText = `[${doc.fileTitle}] printed flawlessly on ${printer.toUpperCase()}!`;
+                printerName.innerText = `🤖 ${printer.toUpperCase()} PRINTER SPECS:`;
+                explanation.innerText = doc.correctExplanation;
+            } else {
+                playSound('boom');
+                const outData = doc.outputs[printer] || { html: "ERROR", explanation: "Hardware error!" };
+                outputTray.innerHTML = outData.html;
+
+                badge.innerText = "💥";
+                title.innerText = "KABOOM! FAULT!";
+                title.className = "text-3xl font-black comic-text uppercase text-rose-600 mb-1";
+                desc.innerText = `OH NO! Feeding [${doc.fileTitle}] to ${printer.toUpperCase()} caused a hilarious disaster!`;
+                printerName.innerText = `⚠️ WHY IT FAILED:`;
+                explanation.innerText = outData.explanation;
+            }
+
+            document.getElementById('spooler-status').innerText = `Completed print run on ${printer.toUpperCase()}!`;
+            modal.classList.remove('hidden');
+        }
+
+        function closeModal() {
+            playSound('pop');
+            document.getElementById('result-modal').classList.add('hidden');
+            currentTaskIndex++;
+            renderActiveTask();
+        }
+
+        function nextTask() {
+            closeModal();
+        }
+
+        function resetLab() {
+            playSound('pop');
+            currentTaskIndex = 0;
+            score = 0;
+            document.getElementById('score-display').innerText = `Stars: 0/5`;
+            document.getElementById('spooler-status').innerText = "🚀 Drag the file card above -> Drop on a printer!";
+
+            document.querySelectorAll('.drop-zone').forEach(zone => {
+                const printer = zone.getAttribute('data-printer');
+                document.getElementById(`output-${printer}`).innerHTML = `
+                    <div class="w-full h-full flex flex-col items-center justify-center text-[9px] text-black font-extrabold uppercase text-center">
+                        <i class="fas fa-chevron-down text-sm mb-0.5 animate-bounce"></i>
+                        Drop Here!
+                    </div>`;
+            });
+
+            renderActiveTask();
+        }
+
+        // Init
+        renderActiveTask();
+    </script>
+</body>
+</html>
