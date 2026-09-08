@@ -1,0 +1,1021 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Sensor Academy Explorer</title>
+  
+  <!-- Tailwind CSS -->
+  <script src="https://cdn.tailwindcss.com"></script>
+  
+  <!-- FontAwesome Icons -->
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+  
+  <!-- Google Fonts: Inter & JetBrains Mono -->
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&family=JetBrains+Mono:wght@500;700&display=swap" rel="stylesheet">
+
+  <script>
+    tailwind.config = {
+      theme: {
+        extend: {
+          fontFamily: {
+            sans: ['Inter', 'sans-serif'],
+            mono: ['JetBrains Mono', 'monospace']
+          },
+          colors: {
+            cyber: {
+              bg: '#080c14',
+              card: '#0f172a',
+              border: '#1e293b',
+              accent: '#00f0ff',
+              green: '#10b981',
+              purple: '#8b5cf6',
+              gold: '#f59e0b'
+            }
+          }
+        }
+      }
+    }
+  </script>
+
+  <style>
+    body {
+      background-color: #080c14;
+      color: #f1f5f9;
+      font-family: 'Inter', sans-serif;
+    }
+
+    .glass-panel {
+      background: rgba(15, 23, 42, 0.85);
+      backdrop-filter: blur(12px);
+      border: 1px solid rgba(255, 255, 255, 0.08);
+    }
+
+    .tab-active {
+      background-color: #00f0ff !important;
+      color: #080c14 !important;
+      font-weight: 700 !important;
+      border-color: #00f0ff !important;
+      box-shadow: 0 0 15px rgba(0, 240, 255, 0.4);
+    }
+
+    .btn-act:active {
+      transform: scale(0.97);
+    }
+
+    /* Custom scrollbar */
+    ::-webkit-scrollbar {
+      width: 6px;
+      height: 6px;
+    }
+    ::-webkit-scrollbar-track {
+      background: #080c14;
+    }
+    ::-webkit-scrollbar-thumb {
+      background: #1e293b;
+      border-radius: 4px;
+    }
+    ::-webkit-scrollbar-thumb:hover {
+      background: #00f0ff;
+    }
+  </style>
+</head>
+<body class="min-h-screen flex flex-col justify-between p-3 sm:p-6 select-none">
+
+  <div class="max-w-7xl mx-auto w-full space-y-4">
+    <!-- Header -->
+    <header class="glass-panel p-4 rounded-2xl flex flex-col sm:flex-row items-center justify-between gap-4 border border-cyber-border">
+      <div class="flex items-center gap-3">
+        <div class="w-12 h-12 rounded-xl bg-gradient-to-br from-cyan-500 to-blue-600 flex items-center justify-center text-cyber-bg text-2xl shadow-lg shadow-cyan-500/20">
+          <i class="fa-solid fa-microchip"></i>
+        </div>
+        <div>
+          <h1 class="text-xl sm:text-2xl font-black tracking-tight text-white flex items-center gap-2">
+            SENSOR ACADEMY <span class="text-xs font-mono px-2 py-0.5 rounded-full bg-cyber-accent/20 text-cyber-accent border border-cyber-accent/30">EXPLORER</span>
+          </h1>
+          <p class="text-xs text-slate-400">Interactive Hands-On Lab • Discover How Sensors Work in Real Life</p>
+        </div>
+      </div>
+
+      <div class="flex items-center gap-2 text-xs font-mono text-slate-400 bg-slate-900/80 px-3 py-2 rounded-xl border border-cyber-border">
+        <span class="w-2.5 h-2.5 rounded-full bg-emerald-400 animate-pulse"></span>
+        <span>LAB STATUS: <strong class="text-emerald-400">ONLINE</strong></span>
+      </div>
+    </header>
+
+    <!-- Navigation Tabs -->
+    <nav class="flex items-center gap-2 overflow-x-auto pb-2 border-b border-cyber-border/60 text-xs font-mono">
+      <button onclick="selectSensor('light')" id="tab-light" class="tab-btn px-4 py-2.5 rounded-xl border border-cyber-border bg-cyber-card text-gray-300 hover:text-white flex items-center gap-2 flex-shrink-0 btn-act transition-all">
+        <i class="fa-regular fa-sun text-amber-400 text-sm"></i>
+        <span>1. Light (LDR)</span>
+      </button>
+      <button onclick="selectSensor('ultrasonic')" id="tab-ultrasonic" class="tab-btn px-4 py-2.5 rounded-xl border border-cyber-border bg-cyber-card text-gray-300 hover:text-white flex items-center gap-2 flex-shrink-0 btn-act transition-all">
+        <i class="fa-solid fa-wifi text-cyber-accent text-sm"></i>
+        <span>2. Ultrasonic Radar</span>
+      </button>
+      <button onclick="selectSensor('compass')" id="tab-compass" class="tab-btn px-4 py-2.5 rounded-xl border border-cyber-border bg-cyber-card text-gray-300 hover:text-white flex items-center gap-2 flex-shrink-0 btn-act transition-all">
+        <i class="fa-solid fa-compass text-cyber-green text-sm"></i>
+        <span>3. Digital Compass</span>
+      </button>
+      <button onclick="selectSensor('temp')" id="tab-temp" class="tab-btn px-4 py-2.5 rounded-xl border border-cyber-border bg-cyber-card text-gray-300 hover:text-white flex items-center gap-2 flex-shrink-0 btn-act transition-all">
+        <i class="fa-solid fa-temperature-high text-red-400 text-sm"></i>
+        <span>4. Temp & Moisture</span>
+      </button>
+      <button onclick="selectSensor('gyro')" id="tab-gyro" class="tab-btn px-4 py-2.5 rounded-xl border border-cyber-border bg-cyber-card text-gray-300 hover:text-white flex items-center gap-2 flex-shrink-0 btn-act transition-all">
+        <i class="fa-solid fa-mobile-screen-button text-cyber-purple text-sm"></i>
+        <span>5. Smartphone Gyro</span>
+      </button>
+    </nav>
+
+    <!-- Main Playground Workspace -->
+    <main class="grid grid-cols-1 lg:grid-cols-12 gap-5">
+      
+      <!-- Interactive Canvas & Visual Simulation (Left 7 Cols) -->
+      <section class="lg:col-span-7 flex flex-col gap-4">
+        <div id="canvas-container" class="relative w-full h-[360px] sm:h-[420px] bg-slate-950 rounded-2xl overflow-hidden border border-cyber-border flex items-center justify-center shadow-xl">
+          <!-- Main HTML Canvas -->
+          <canvas id="playground-canvas" class="w-full h-full block cursor-crosshair"></canvas>
+
+          <!-- Top Badge Overlay -->
+          <div class="absolute top-3 left-3 bg-slate-900/90 border border-cyber-border px-3 py-1.5 rounded-xl text-xs font-mono text-gray-300 flex items-center gap-2 backdrop-blur-md">
+            <i id="canvas-badge-icon" class="fa-solid fa-circle text-cyber-accent text-[10px]"></i>
+            <span id="canvas-badge-text">Interactive Simulation</span>
+          </div>
+        </div>
+
+        <!-- Real-World Trigger Banner -->
+        <div class="glass-panel p-4 rounded-2xl border border-cyber-border flex items-center gap-3">
+          <div id="usage-icon-box" class="w-10 h-10 rounded-xl bg-cyber-card border border-cyber-border text-cyber-accent flex items-center justify-center text-xl flex-shrink-0">
+            <i class="fa-solid fa-lightbulb"></i>
+          </div>
+          <div class="flex-grow">
+            <span class="text-[10px] font-mono uppercase tracking-wider text-slate-400 block">Real-World Action Event</span>
+            <p id="usage-trigger-text" class="text-xs sm:text-sm font-semibold text-white">Select a scenario to test sensor output...</p>
+          </div>
+          <div class="text-right font-mono flex-shrink-0">
+            <span class="text-[10px] text-slate-400 block">SENSOR VALUE</span>
+            <span id="sensor-reading-val" class="text-xs sm:text-sm font-bold text-cyber-accent">--</span>
+          </div>
+        </div>
+      </section>
+
+      <!-- Interactive Scenario Controls & Educational Drawer (Right 5 Cols) -->
+      <section class="lg:col-span-5 flex flex-col gap-4">
+        
+        <!-- Scenario Selector Box -->
+        <div class="glass-panel p-4 rounded-2xl border border-cyber-border space-y-3">
+          <div class="flex items-center justify-between border-b border-cyber-border pb-2">
+            <h2 id="panel-title" class="text-sm font-bold text-white flex items-center gap-2">
+              <i class="fa-solid fa-sliders text-cyber-accent"></i> 1-Click Try Real-Life Cases
+            </h2>
+            <span id="sensor-type-tag" class="text-[10px] font-mono px-2 py-0.5 rounded bg-slate-800 text-slate-300 border border-slate-700">LDR Resistor</span>
+          </div>
+
+          <div id="scenarios-container" class="space-y-2.5">
+            <!-- Dynamic 1-Click Buttons Populated via JS -->
+          </div>
+        </div>
+
+        <!-- How It Works Explanation Box -->
+        <div class="glass-panel p-4 rounded-2xl border border-cyber-border space-y-2.5">
+          <h3 class="text-xs font-bold font-mono text-cyber-accent uppercase tracking-wider flex items-center gap-2">
+            <i class="fa-solid fa-circle-info"></i> How Does It Work in Real Life?
+          </h3>
+          <p id="sensor-simple-desc" class="text-xs text-gray-300 leading-relaxed">
+            Select a sensor from the top bar to inspect its real-world function!
+          </p>
+        </div>
+
+      </section>
+    </main>
+
+    <!-- Bottom Sensor Summary Cards -->
+    <section class="pt-2">
+      <h3 class="text-xs font-mono uppercase text-slate-400 tracking-wider mb-3">Explore All 5 Core Sensors</h3>
+      <div class="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-5 gap-3">
+        
+        <div onclick="selectSensor('light')" class="glass-panel p-3.5 rounded-xl border border-cyber-border hover:border-amber-400/50 transition-all cursor-pointer group btn-act">
+          <div class="flex items-center space-x-2 text-amber-400 font-bold text-xs mb-1">
+            <i class="fa-regular fa-sun text-sm"></i>
+            <span>Light (LDR)</span>
+          </div>
+          <p class="text-gray-400 text-[11px] leading-snug">Auto-turns on streetlights at dark & charges solar panels.</p>
+        </div>
+
+        <div onclick="selectSensor('ultrasonic')" class="glass-panel p-3.5 rounded-xl border border-cyber-border hover:border-cyber-accent/50 transition-all cursor-pointer group btn-act">
+          <div class="flex items-center space-x-2 text-cyber-accent font-bold text-xs mb-1">
+            <i class="fa-solid fa-wifi text-sm"></i>
+            <span>Ultrasonic Radar</span>
+          </div>
+          <p class="text-gray-400 text-[11px] leading-snug">Bounces sound echoes to assist car reverse parking.</p>
+        </div>
+
+        <div onclick="selectSensor('compass')" class="glass-panel p-3.5 rounded-xl border border-cyber-border hover:border-cyber-green/50 transition-all cursor-pointer group btn-act">
+          <div class="flex items-center space-x-2 text-cyber-green font-bold text-xs mb-1">
+            <i class="fa-solid fa-compass text-sm"></i>
+            <span>Digital Compass</span>
+          </div>
+          <p class="text-gray-400 text-[11px] leading-snug">Senses Earth's magnetic field to guide ships & maps.</p>
+        </div>
+
+        <div onclick="selectSensor('temp')" class="glass-panel p-3.5 rounded-xl border border-cyber-border hover:border-red-400/50 transition-all cursor-pointer group btn-act">
+          <div class="flex items-center space-x-2 text-red-400 font-bold text-xs mb-1">
+            <i class="fa-solid fa-temperature-high text-sm"></i>
+            <span>Temp & Moisture</span>
+          </div>
+          <p class="text-gray-400 text-[11px] leading-snug">Triggers fans, heaters & misters in smart greenhouses.</p>
+        </div>
+
+        <div onclick="selectSensor('gyro')" class="glass-panel p-3.5 rounded-xl border border-cyber-border hover:border-cyber-purple/50 transition-all cursor-pointer group btn-act">
+          <div class="flex items-center space-x-2 text-cyber-purple font-bold text-xs mb-1">
+            <i class="fa-solid fa-mobile-screen-button text-sm"></i>
+            <span>Smartphone Gyro</span>
+          </div>
+          <p class="text-gray-400 text-[11px] leading-snug">Detects tilt to auto-rotate screen for video & gaming.</p>
+        </div>
+
+      </div>
+    </section>
+  </div>
+
+  <!-- Footer -->
+  <footer class="mt-6 text-center text-[11px] text-slate-500 font-mono">
+    Sensor Academy Explorer • STEM Educational Toolkit
+  </footer>
+
+  <script>
+    /* =========================================================================
+       AUDIO SYNTHESIZER (Web Audio API)
+       ========================================================================= */
+    let audioCtx = null;
+
+    function initAudio() {
+      if (!audioCtx) {
+        audioCtx = new (window.AudioContext || window.webkitAudioContext)();
+      }
+    }
+
+    function playSound(type) {
+      try {
+        initAudio();
+        if (!audioCtx) return;
+
+        const osc = audioCtx.createOscillator();
+        const gain = audioCtx.createGain();
+        osc.connect(gain);
+        gain.connect(audioCtx.destination);
+
+        const now = audioCtx.currentTime;
+
+        if (type === 'click') {
+          osc.type = 'sine';
+          osc.frequency.setValueAtTime(600, now);
+          osc.frequency.exponentialRampToValueAtTime(800, now + 0.05);
+          gain.gain.setValueAtTime(0.15, now);
+          gain.gain.linearRampToValueAtTime(0.01, now + 0.05);
+          osc.start(now);
+          osc.stop(now + 0.05);
+        } else if (type === 'beep') {
+          osc.type = 'square';
+          osc.frequency.setValueAtTime(880, now);
+          gain.gain.setValueAtTime(0.1, now);
+          gain.gain.linearRampToValueAtTime(0.01, now + 0.08);
+          osc.start(now);
+          osc.stop(now + 0.08);
+        } else if (type === 'ping') {
+          osc.type = 'sine';
+          osc.frequency.setValueAtTime(1200, now);
+          osc.frequency.exponentialRampToValueAtTime(400, now + 0.2);
+          gain.gain.setValueAtTime(0.2, now);
+          gain.gain.linearRampToValueAtTime(0.01, now + 0.2);
+          osc.start(now);
+          osc.stop(now + 0.2);
+        } else if (type === 'success') {
+          osc.type = 'triangle';
+          osc.frequency.setValueAtTime(440, now);
+          osc.frequency.setValueAtTime(554.37, now + 0.08);
+          osc.frequency.setValueAtTime(659.25, now + 0.16);
+          gain.gain.setValueAtTime(0.15, now);
+          gain.gain.linearRampToValueAtTime(0.01, now + 0.3);
+          osc.start(now);
+          osc.stop(now + 0.3);
+        }
+      } catch (e) {
+        // Audio fallback
+      }
+    }
+
+    /* =========================================================================
+       PLAYGROUND STATE & DATA
+       ========================================================================= */
+    const state = {
+      activeSensor: 'light',
+      canvas: null,
+      ctx: null,
+      animationId: null,
+
+      // Sensor 1: Light
+      light: { level: 'dark', lux: 120, lightsOn: true, solarCharge: 10 },
+      // Sensor 2: Ultrasonic
+      ultrasonic: { distCm: 25, status: 'PARKED SAFELY', animCarX: 100 },
+      // Sensor 3: Compass
+      compass: { heading: 0, dirName: 'NORTH' },
+      // Sensor 4: Temp & Moisture
+      temp: { degreesC: 32, humidity: 80, fanRunning: true, heaterOn: false, mistOn: false },
+      // Sensor 5: Gyroscope (Smartphone Screen Auto-Rotate)
+      gyro: { angleDeg: 0, modeName: 'Portrait Mode', orientation: 'PORTRAIT' }
+    };
+
+    const SENSOR_DATA = {
+      light: {
+        title: "Light Sensor (LDR / Photoresistor)",
+        typeTag: "Photoresistor / LDR",
+        icon: "fa-regular fa-sun text-amber-400",
+        simpleDesc: "The Light Sensor measures brightness in Lux. In real life, it automatically turns on streetlights when it gets dark and collects solar power when sunny!",
+        scenarios: [
+          { label: "🌙 Night Time (Dark) -> Lights ON", id: "light-night", action: () => setLightScenario('dark') },
+          { label: "☀️ Midday Sun (Bright) -> Solar Charge", id: "light-sun", action: () => setLightScenario('bright') },
+          { label: "🌅 Sunset (Dim) -> Low Brightness", id: "light-sunset", action: () => setLightScenario('sunset') },
+          { label: "🔦 Flashlight Beam Test", id: "light-torch", action: () => setLightScenario('torch') }
+        ]
+      },
+      ultrasonic: {
+        title: "Ultrasonic Distance Sensor (HC-SR04)",
+        typeTag: "Sound Wave Transceiver",
+        icon: "fa-solid fa-wifi text-cyber-accent",
+        simpleDesc: "The Ultrasonic Sensor sends high-pitch sound waves and measures how long the sound echo takes to bounce back. It calculates distance to prevent car crashes!",
+        scenarios: [
+          { label: "🚗 Far Away (180 cm)", id: "ultra-far", action: () => setUltrasonicScenario(180) },
+          { label: "⚠️ Getting Close (60 cm)", id: "ultra-mid", action: () => setUltrasonicScenario(60) },
+          { label: "🛑 Safe Park (20 cm)", id: "ultra-close", action: () => setUltrasonicScenario(20) },
+          { label: "💥 Warning Danger! (5 cm)", id: "ultra-danger", action: () => setUltrasonicScenario(5) }
+        ]
+      },
+      compass: {
+        title: "Digital Compass (Magnetometer)",
+        typeTag: "Magnetic Hall Sensor",
+        icon: "fa-solid fa-compass text-cyber-green",
+        simpleDesc: "The Digital Compass senses Earth's invisible magnetic field to find North (0°). Ships, airplanes, and smartphone maps use it for navigation!",
+        scenarios: [
+          { label: "🧭 Head North (0°)", id: "compass-n", action: () => setCompassScenario(0, 'NORTH') },
+          { label: "🧭 Head East (90°)", id: "compass-e", action: () => setCompassScenario(90, 'EAST') },
+          { label: "🧭 Head South (180°)", id: "compass-s", action: () => setCompassScenario(180, 'SOUTH') },
+          { label: "🧭 Head West (270°)", id: "compass-w", action: () => setCompassScenario(270, 'WEST') }
+        ]
+      },
+      temp: {
+        title: "Temperature & Humidity Sensor (DHT11)",
+        typeTag: "Climate Thermistor",
+        icon: "fa-solid fa-temperature-high text-red-400",
+        simpleDesc: "This sensor measures room temperature and air humidity. In smart greenhouses and homes, it automatically turns on fans, heaters, or humidifiers!",
+        scenarios: [
+          { label: "🔥 Heat Wave (36°C) -> Fan ON", id: "temp-hot", action: () => setTempScenario(36, 45) },
+          { label: "❄️ Cold Snap (12°C) -> Heater ON", id: "temp-cold", action: () => setTempScenario(12, 45) },
+          { label: "💧 Dry Air (24°C, 20% RH) -> Humidifier ON", id: "temp-dry", action: () => setTempScenario(24, 20) },
+          { label: "🌱 Perfect Climate (22°C, 50% RH)", id: "temp-ideal", action: () => setTempScenario(22, 50) }
+        ]
+      },
+      gyro: {
+        title: "Smartphone Gyroscope (Screen Auto-Rotate)",
+        typeTag: "3-Axis MEMS Gyroscope",
+        icon: "fa-solid fa-mobile-screen-button text-cyber-purple",
+        simpleDesc: "The Gyroscope inside your smartphone detects when you tilt or turn your phone! When you hold it sideways, it signals the phone to automatically switch screen mode for full-screen video and gaming.",
+        scenarios: [
+          { label: "📱 Hold Upright (0°) -> Portrait Feed", id: "gyro-portrait", action: () => setGyroScenario(0, 'Portrait Feed', 'PORTRAIT') },
+          { label: "🎬 Turn Right (90°) -> Widescreen Video", id: "gyro-landscape-r", action: () => setGyroScenario(90, 'Landscape Widescreen Video', 'LANDSCAPE') },
+          { label: "🎮 Turn Left (-90°) -> Gaming Mode", id: "gyro-landscape-l", action: () => setGyroScenario(-90, 'Landscape Game Mode', 'LANDSCAPE') },
+          { label: "🙃 Flip Upside Down (180°) -> Guard Lock", id: "gyro-upside", action: () => setGyroScenario(180, 'Upside Down Guard', 'REVERSE_PORTRAIT') }
+        ]
+      }
+    };
+
+    function selectSensor(key) {
+      playSound('click');
+      state.activeSensor = key;
+
+      // Update Navigation Tabs
+      document.querySelectorAll('.tab-btn').forEach(btn => btn.classList.remove('tab-active'));
+      const activeTab = document.getElementById(`tab-${key}`);
+      if (activeTab) activeTab.classList.add('tab-active');
+
+      const info = SENSOR_DATA[key];
+      if (!info) return;
+
+      document.getElementById('canvas-badge-text').innerText = info.title.split('(')[0];
+      document.getElementById('canvas-badge-icon').className = info.icon;
+      document.getElementById('panel-title').innerHTML = `<i class="${info.icon}"></i> 1-Click Try Real-Life Cases`;
+      document.getElementById('sensor-type-tag').innerText = info.typeTag;
+      document.getElementById('sensor-simple-desc').innerText = info.simpleDesc;
+
+      // Generate 1-Click Scenario Buttons
+      const scenariosBox = document.getElementById('scenarios-container');
+      scenariosBox.innerHTML = '';
+
+      info.scenarios.forEach(sc => {
+        const btn = document.createElement('button');
+        btn.id = sc.id;
+        btn.className = "w-full py-3 px-4 bg-cyber-card border border-cyber-border hover:border-cyber-accent text-left text-white font-bold rounded-xl flex items-center justify-between transition-all btn-act shadow-md hover:shadow-cyber-accent/20 text-xs sm:text-sm";
+        btn.innerHTML = `<span>${sc.label}</span> <i class="fa-solid fa-circle-play text-cyber-accent text-base"></i>`;
+        btn.onclick = () => {
+          playSound('click');
+          sc.action();
+        };
+        scenariosBox.appendChild(btn);
+      });
+
+      // Trigger initial default scenario
+      if (key === 'light') setLightScenario('dark');
+      else if (key === 'ultrasonic') setUltrasonicScenario(20);
+      else if (key === 'compass') setCompassScenario(0, 'NORTH');
+      else if (key === 'temp') setTempScenario(36, 45);
+      else if (key === 'gyro') setGyroScenario(0, 'Portrait Feed', 'PORTRAIT');
+    }
+
+    // 1. Light Sensor
+    function setLightScenario(type) {
+      state.light.level = type;
+      if (type === 'dark') {
+        state.light.lux = 15;
+        state.light.lightsOn = true;
+        state.light.solarCharge = 5;
+        updateUsageBanner("Dark Night detected (<50 Lux) -> Sensor automatically switches ON Streetlights!", "15 LUX [DARK]", "fa-solid fa-moon", "text-amber-300");
+        playSound('beep');
+      } else if (type === 'bright') {
+        state.light.lux = 850;
+        state.light.lightsOn = false;
+        state.light.solarCharge = 95;
+        updateUsageBanner("Midday Sun detected (>500 Lux) -> Streetlights turn OFF, Solar Charging ACTIVE!", "850 LUX [BRIGHT]", "fa-solid fa-sun", "text-amber-400");
+        playSound('success');
+      } else if (type === 'sunset') {
+        state.light.lux = 180;
+        state.light.lightsOn = false;
+        state.light.solarCharge = 40;
+        updateUsageBanner("Sunset Dim light detected (~180 Lux) -> Standby mode active.", "180 LUX [DIM]", "fa-solid fa-cloud-sun", "text-orange-400");
+        playSound('ping');
+      } else if (type === 'torch') {
+        state.light.lux = 600;
+        state.light.lightsOn = false;
+        state.light.solarCharge = 70;
+        updateUsageBanner("Flashlight beam detected! Photons hit semiconductor -> High Lux Reading!", "600 LUX [BEAM]", "fa-solid fa-bolt", "text-yellow-300");
+        playSound('ping');
+      }
+    }
+
+    // 2. Ultrasonic Sensor
+    function setUltrasonicScenario(cm) {
+      state.ultrasonic.distCm = cm;
+      if (cm > 100) {
+        state.ultrasonic.status = 'CLEAR PATH';
+        updateUsageBanner(`Echo return time: ${(cm * 0.058).toFixed(1)} ms -> Path Clear!`, `${cm} CM [SAFE]`, "fa-solid fa-shield-halved", "text-emerald-400");
+        playSound('ping');
+      } else if (cm > 40) {
+        state.ultrasonic.status = 'APPROACHING';
+        updateUsageBanner(`Echo return time: ${(cm * 0.058).toFixed(1)} ms -> Beep pulse accelerating!`, `${cm} CM [CAUTION]`, "fa-solid fa-triangle-exclamation", "text-amber-400");
+        playSound('beep');
+      } else if (cm > 10) {
+        state.ultrasonic.status = 'PARKED SAFELY';
+        updateUsageBanner(`Echo return time: ${(cm * 0.058).toFixed(1)} ms -> Perfect distance! Brakes applied.`, `${cm} CM [PARKED]`, "fa-[#]", "text-cyber-accent");
+        playSound('success');
+      } else {
+        state.ultrasonic.status = 'WARNING DANGER!';
+        updateUsageBanner(`Echo return time: ${(cm * 0.058).toFixed(1)} ms -> TOO CLOSE! Emergency Brake!`, `${cm} CM [DANGER]`, "fa-solid fa-circle-radiation", "text-red-500");
+        playSound('beep');
+      }
+    }
+
+    // 3. Digital Compass Sensor
+    function setCompassScenario(deg, dirLabel) {
+      state.compass.heading = deg;
+      state.compass.dirName = dirLabel;
+      updateUsageBanner(`Magnetic field detected! Heading aligned to ${deg}° (${dirLabel}).`, `${deg}° [${dirLabel}]`, "fa-solid fa-compass", "text-cyber-green");
+      playSound('ping');
+    }
+
+    // 4. Temp & Humidity Sensor
+    function setTempScenario(tempC, rh) {
+      state.temp.degreesC = tempC;
+      state.temp.humidity = rh;
+      state.temp.fanRunning = tempC > 28;
+      state.temp.heaterOn = tempC < 18;
+      state.temp.mistOn = rh < 35;
+
+      if (tempC > 28) {
+        updateUsageBanner(`High Heat (${tempC}°C > 28°C) -> Greenhouse Cooling Fan ON!`, `${tempC}°C / ${rh}% RH`, "fa-solid fa-fan", "text-cyan-400");
+        playSound('beep');
+      } else if (tempC < 18) {
+        updateUsageBanner(`Cold Snap (${tempC}°C < 18°C) -> Greenhouse Heating Lamps ON!`, `${tempC}°C / ${rh}% RH`, "fa-solid fa-snowflake", "text-red-400");
+        playSound('ping');
+      } else if (rh < 35) {
+        updateUsageBanner(`Low Air Moisture (${rh}% < 35%) -> Humidifier / Mister Machine ON!`, `${tempC}°C / ${rh}% RH`, "fa-solid fa-droplet", "text-blue-400");
+        playSound('beep');
+      } else {
+        updateUsageBanner(`Climate balanced (${tempC}°C, ${rh}% RH) -> Systems Normal.`, `${tempC}°C / ${rh}% RH`, "fa-solid fa-seedling", "text-emerald-400");
+        playSound('success');
+      }
+    }
+
+    // 5. Gyroscope Sensor (Smartphone Auto-Rotate)
+    function setGyroScenario(angle, modeLabel, orientation) {
+      state.gyro.angleDeg = angle;
+      state.gyro.modeName = modeLabel;
+      state.gyro.orientation = orientation;
+
+      if (orientation === 'LANDSCAPE') {
+        updateUsageBanner(`Phone rotated ${angle}°! Gyroscope signals OS -> Screen switches to Widescreen Mode!`, `TILT: ${angle}° [${orientation}]`, "fa-solid fa-mobile-screen-button", "text-cyber-purple");
+        playSound('success');
+      } else if (orientation === 'REVERSE_PORTRAIT') {
+        updateUsageBanner("Phone flipped 180°! Gyroscope detects upside-down orientation -> Guard screen active.", `TILT: 180° [UPSIDE DOWN]`, "fa-solid fa-mobile-screen", "text-red-400");
+        playSound('ping');
+      } else {
+        updateUsageBanner("Phone held upright (0°)! Gyroscope maintains standard Vertical Portrait screen.", `TILT: 0° [PORTRAIT]`, "fa-solid fa-mobile-screen-button", "text-cyber-accent");
+        playSound('click');
+      }
+    }
+
+    function updateUsageBanner(msg, valText, iconClass, colorClass) {
+      document.getElementById('usage-trigger-text').innerText = msg;
+      document.getElementById('sensor-reading-val').innerText = valText;
+      document.getElementById('usage-icon-box').innerHTML = `<i class="${iconClass}"></i>`;
+      document.getElementById('usage-icon-box').className = `w-10 h-10 rounded-xl bg-cyber-card border border-cyber-border ${colorClass} flex items-center justify-center text-xl flex-shrink-0`;
+    }
+
+    function renderLoop() {
+      const canvas = state.canvas;
+      if (!canvas) return;
+      const ctx = state.ctx;
+      if (!ctx) return;
+
+      const w = canvas.width;
+      const h = canvas.height;
+
+      ctx.clearRect(0, 0, w, h);
+
+      const sensor = state.activeSensor;
+      if (sensor === 'light') drawLightScene(ctx, w, h);
+      else if (sensor === 'ultrasonic') drawUltrasonicScene(ctx, w, h);
+      else if (sensor === 'compass') drawCompassScene(ctx, w, h);
+      else if (sensor === 'temp') drawTempScene(ctx, w, h);
+      else if (sensor === 'gyro') drawGyroScene(ctx, w, h);
+
+      state.animationId = requestAnimationFrame(renderLoop);
+    }
+
+    // 1. Light Scene
+    function drawLightScene(ctx, w, h) {
+      const isDark = state.light.lightsOn;
+      const lux = state.light.lux;
+
+      // Background Sky
+      const skyGrad = ctx.createLinearGradient(0, 0, 0, h);
+      if (isDark) {
+        skyGrad.addColorStop(0, '#030712');
+        skyGrad.addColorStop(1, '#0b1329');
+      } else {
+        skyGrad.addColorStop(0, '#0284c7');
+        skyGrad.addColorStop(1, '#38bdf8');
+      }
+      ctx.fillStyle = skyGrad;
+      ctx.fillRect(0, 0, w, h);
+
+      // Sun or Moon
+      if (!isDark) {
+        ctx.fillStyle = "#fbbf24";
+        ctx.beginPath();
+        ctx.arc(w - 70, 70, 35, 0, Math.PI * 2);
+        ctx.fill();
+        ctx.fillStyle = "rgba(251, 191, 36, 0.2)";
+        ctx.beginPath();
+        ctx.arc(w - 70, 70, 55, 0, Math.PI * 2);
+        ctx.fill();
+      } else {
+        ctx.fillStyle = "#fef08a";
+        ctx.beginPath();
+        ctx.arc(w - 70, 70, 25, 0, Math.PI * 2);
+        ctx.fill();
+      }
+
+      // Ground
+      ctx.fillStyle = "#0f172a";
+      ctx.fillRect(0, h - 80, w, 80);
+
+      // Street Lamp Pole
+      const poleX = 120;
+      ctx.fillStyle = "#475569";
+      ctx.fillRect(poleX - 5, h - 180, 10, 100);
+
+      // Street Lamp Bulb & Beam
+      ctx.fillStyle = "#334155";
+      ctx.beginPath();
+      ctx.arc(poleX, h - 185, 15, Math.PI, 0);
+      ctx.fill();
+
+      if (isDark) {
+        // Light Beam Cone
+        const beamGrad = ctx.createLinearGradient(poleX, h - 180, poleX, h - 80);
+        beamGrad.addColorStop(0, "rgba(250, 204, 21, 0.8)");
+        beamGrad.addColorStop(1, "rgba(250, 204, 21, 0.05)");
+
+        ctx.fillStyle = beamGrad;
+        ctx.beginPath();
+        ctx.moveTo(poleX - 10, h - 180);
+        ctx.lineTo(poleX + 10, h - 180);
+        ctx.lineTo(poleX + 80, h - 80);
+        ctx.lineTo(poleX - 80, h - 80);
+        ctx.closePath();
+        ctx.fill();
+
+        ctx.fillStyle = "#facc15";
+        ctx.font = "bold 12px JetBrains Mono";
+        ctx.textAlign = "center";
+        ctx.fillText("STREETLIGHT: ON", poleX, h - 200);
+      } else {
+        ctx.fillStyle = "#94a3b8";
+        ctx.font = "bold 12px JetBrains Mono";
+        ctx.textAlign = "center";
+        ctx.fillText("STREETLIGHT: OFF", poleX, h - 200);
+      }
+
+      // Photocell LDR Chip Graphic
+      const chipX = w / 2 + 50;
+      const chipY = h - 140;
+
+      ctx.fillStyle = "#1e293b";
+      ctx.fillRect(chipX - 40, chipY - 30, 80, 60);
+      ctx.strokeStyle = "#00f0ff";
+      ctx.lineWidth = 2;
+      ctx.strokeRect(chipX - 40, chipY - 30, 80, 60);
+
+      // LDR Squiggle
+      ctx.strokeStyle = "#f59e0b";
+      ctx.lineWidth = 3;
+      ctx.beginPath();
+      ctx.moveTo(chipX - 25, chipY - 15);
+      ctx.lineTo(chipX + 25, chipY - 15);
+      ctx.lineTo(chipX - 25, chipY);
+      ctx.lineTo(chipX + 25, chipY);
+      ctx.lineTo(chipX - 25, chipY + 15);
+      ctx.lineTo(chipX + 25, chipY + 15);
+      ctx.stroke();
+
+      ctx.fillStyle = "#ffffff";
+      ctx.font = "bold 12px Outfit";
+      ctx.fillText(`LDR LUX: ${lux}`, chipX, chipY + 50);
+    }
+
+    // 2. Ultrasonic Radar Scene
+    function drawUltrasonicScene(ctx, w, h) {
+      ctx.fillStyle = "#090d16";
+      ctx.fillRect(0, 0, w, h);
+
+      const wallX = w - 90;
+      const distCm = state.ultrasonic.distCm;
+
+      // Wall Barrier
+      ctx.fillStyle = "#334155";
+      ctx.fillRect(wallX, 60, 30, h - 120);
+      ctx.strokeStyle = "#ef4444";
+      ctx.lineWidth = 2;
+      ctx.strokeRect(wallX, 60, 30, h - 120);
+
+      // Smoothly animate car position based on distCm (Large dist = far left, Small dist = close to wall on right)
+      const minCarX = 70;
+      const maxCarX = wallX - 45;
+      const ratio = Math.min(1, Math.max(0, distCm / 200));
+      const targetCarX = maxCarX - ratio * (maxCarX - minCarX);
+      if (state.ultrasonic.animCarX === undefined) state.ultrasonic.animCarX = targetCarX;
+      state.ultrasonic.animCarX += (targetCarX - state.ultrasonic.animCarX) * 0.12;
+      const carX = state.ultrasonic.animCarX;
+
+      // Car Body
+      ctx.fillStyle = "#3b82f6";
+      ctx.beginPath();
+      ctx.roundRect(carX - 50, h / 2 - 30, 80, 60, 10);
+      ctx.fill();
+
+      // Car Wheels
+      ctx.fillStyle = "#020617";
+      ctx.fillRect(carX - 40, h / 2 - 36, 18, 6);
+      ctx.fillRect(carX + 10, h / 2 - 36, 18, 6);
+      ctx.fillRect(carX - 40, h / 2 + 30, 18, 6);
+      ctx.fillRect(carX + 10, h / 2 + 30, 18, 6);
+
+      // Sensor Module on bumper
+      ctx.fillStyle = "#00f0ff";
+      ctx.fillRect(carX + 30, h / 2 - 12, 12, 24);
+
+      // Distance Line
+      const bumperX = carX + 42;
+      ctx.strokeStyle = "#64748b";
+      ctx.setLineDash([4, 4]);
+      ctx.beginPath();
+      ctx.moveTo(bumperX, h / 2 + 50);
+      ctx.lineTo(wallX, h / 2 + 50);
+      ctx.stroke();
+      ctx.setLineDash([]);
+
+      // Sonar Waves Ping Animation
+      const pingCount = 3;
+      const waveMax = Math.max(10, wallX - bumperX);
+
+      ctx.strokeStyle = distCm < 15 ? "#ef4444" : "#00f0ff";
+      ctx.lineWidth = 2;
+
+      for (let i = 1; i <= pingCount; i++) {
+        const radius = ((Date.now() / 10 + i * 30) % 100) / 100 * Math.min(waveMax, 180);
+        ctx.beginPath();
+        ctx.arc(bumperX, h / 2, radius, -Math.PI / 3, Math.PI / 3);
+        ctx.stroke();
+      }
+
+      ctx.fillStyle = "#ffffff";
+      ctx.font = "bold 13px JetBrains Mono";
+      ctx.textAlign = "center";
+      ctx.fillText(`MEASURED DISTANCE: ${distCm} CM`, w / 2, h - 25);
+    }
+
+    // 3. Digital Compass Scene
+    function drawCompassScene(ctx, w, h) {
+      ctx.fillStyle = "#090d16";
+      ctx.fillRect(0, 0, w, h);
+
+      const cx = w / 2;
+      const cy = h / 2;
+      const radius = 100;
+      const heading = state.compass.heading;
+
+      // Dial Outer Ring
+      ctx.strokeStyle = "#10b981";
+      ctx.lineWidth = 4;
+      ctx.beginPath();
+      ctx.arc(cx, cy, radius, 0, Math.PI * 2);
+      ctx.stroke();
+
+      // Cardinal Points
+      ctx.fillStyle = "#10b981";
+      ctx.font = "bold 14px JetBrains Mono";
+      ctx.textAlign = "center";
+      ctx.fillText("N", cx, cy - radius + 20);
+      ctx.fillText("S", cx, cy + radius - 10);
+      ctx.fillText("E", cx + radius - 18, cy + 5);
+      ctx.fillText("W", cx - radius + 18, cy + 5);
+
+      // Rotating Needle
+      ctx.save();
+      ctx.translate(cx, cy);
+      ctx.rotate(heading * Math.PI / 180);
+
+      // North Red Needle
+      ctx.fillStyle = "#ef4444";
+      ctx.beginPath();
+      ctx.moveTo(0, -radius + 30);
+      ctx.lineTo(-12, 0);
+      ctx.lineTo(12, 0);
+      ctx.closePath();
+      ctx.fill();
+
+      // South White Needle
+      ctx.fillStyle = "#f8fafc";
+      ctx.beginPath();
+      ctx.moveTo(0, radius - 30);
+      ctx.lineTo(-12, 0);
+      ctx.lineTo(12, 0);
+      ctx.closePath();
+      ctx.fill();
+
+      ctx.restore();
+
+      ctx.fillStyle = "#ffffff";
+      ctx.font = "bold 14px Outfit";
+      ctx.fillText(`HEADING: ${heading}° (${state.compass.dirName})`, cx, h - 25);
+    }
+
+    // 4. Temp & Moisture Scene
+    function drawTempScene(ctx, w, h) {
+      ctx.fillStyle = "#090d16";
+      ctx.fillRect(0, 0, w, h);
+
+      const temp = state.temp.degreesC;
+      const rh = state.temp.humidity;
+
+      // Greenhouse Box
+      ctx.strokeStyle = "#38bdf8";
+      ctx.lineWidth = 2;
+      ctx.strokeRect(50, 50, w - 100, h - 90);
+
+      // 1. Cooling Fan (Top Left)
+      const fanX = 100;
+      const fanY = 95;
+      ctx.save();
+      ctx.translate(fanX, fanY);
+      if (state.temp.fanRunning) {
+        ctx.rotate((Date.now() / 100) % (Math.PI * 2));
+      }
+      ctx.fillStyle = state.temp.fanRunning ? "#00f0ff" : "#64748b";
+      for (let i = 0; i < 4; i++) {
+        ctx.rotate(Math.PI / 2);
+        ctx.fillRect(-4, -18, 8, 18);
+      }
+      ctx.restore();
+
+      ctx.fillStyle = state.temp.fanRunning ? "#00f0ff" : "#64748b";
+      ctx.font = "bold 10px JetBrains Mono";
+      ctx.textAlign = "center";
+      ctx.fillText(`FAN: ${state.temp.fanRunning ? 'ACTIVE' : 'OFF'}`, fanX, fanY + 32);
+
+      // 2. Humidifier / Mister Machine (Top Center)
+      const mistX = w / 2;
+      const mistY = 85;
+      ctx.fillStyle = state.temp.mistOn ? "#38bdf8" : "#64748b";
+      ctx.fillRect(mistX - 25, mistY - 15, 50, 20);
+      ctx.fillRect(mistX - 8, mistY + 5, 16, 8);
+
+      if (state.temp.mistOn) {
+        // Spray droplets animation
+        ctx.fillStyle = "rgba(56, 189, 248, 0.7)";
+        for (let i = 0; i < 12; i++) {
+          const dropX = mistX + (Math.sin(Date.now() / 200 + i) * 30);
+          const dropY = mistY + 15 + ((Date.now() / 5 + i * 20) % 90);
+          ctx.beginPath();
+          ctx.arc(dropX, dropY, 2.5, 0, Math.PI * 2);
+          ctx.fill();
+        }
+      }
+
+      ctx.fillStyle = state.temp.mistOn ? "#38bdf8" : "#64748b";
+      ctx.font = "bold 10px JetBrains Mono";
+      ctx.fillText(`HUMIDIFIER: ${state.temp.mistOn ? 'ACTIVE' : 'OFF'}`, mistX, mistY + 32);
+
+      // 3. Heater Lamp (Top Right)
+      const heatX = w - 100;
+      const heatY = 95;
+      ctx.fillStyle = state.temp.heaterOn ? "#ef4444" : "#64748b";
+      ctx.beginPath();
+      ctx.arc(heatX, heatY, 16, 0, Math.PI * 2);
+      ctx.fill();
+
+      if (state.temp.heaterOn) {
+        ctx.strokeStyle = "rgba(239, 68, 68, 0.4)";
+        ctx.lineWidth = 3;
+        ctx.beginPath();
+        ctx.arc(heatX, heatY, 24, 0, Math.PI * 2);
+        ctx.stroke();
+      }
+
+      ctx.fillStyle = state.temp.heaterOn ? "#ef4444" : "#64748b";
+      ctx.font = "bold 10px JetBrains Mono";
+      ctx.fillText(`HEATER: ${state.temp.heaterOn ? 'ACTIVE' : 'OFF'}`, heatX, heatY + 32);
+
+      // Plant in center
+      const plantX = w / 2;
+      const plantY = h - 65;
+      ctx.fillStyle = "#10b981";
+      ctx.beginPath();
+      ctx.arc(plantX, plantY - 20, 22, 0, Math.PI * 2);
+      ctx.fill();
+      ctx.fillStyle = "#78350f";
+      ctx.fillRect(plantX - 12, plantY, 24, 20);
+
+      // Gauges Readout
+      ctx.fillStyle = "#ffffff";
+      ctx.font = "bold 13px JetBrains Mono";
+      ctx.fillText(`TEMP: ${temp}°C  |  HUMIDITY: ${rh}% RH`, w / 2, 32);
+    }
+
+    // 5. Gyroscope Scene: Smartphone Auto-Rotate Demonstration
+    function drawGyroScene(ctx, w, h) {
+      ctx.fillStyle = "#090d16";
+      ctx.fillRect(0, 0, w, h);
+
+      const cx = w / 2;
+      const cy = h / 2;
+      const angle = state.gyro.angleDeg;
+      const isLandscape = state.gyro.orientation === 'LANDSCAPE';
+      const isUpsideDown = state.gyro.orientation === 'REVERSE_PORTRAIT';
+
+      // Title & Instruction
+      ctx.fillStyle = "#8b5cf6";
+      ctx.font = "bold 12px JetBrains Mono";
+      ctx.textAlign = "center";
+      ctx.fillText(`INTERNAL MEMS GYROSCOPE TILT: ${angle}°`, cx, 28);
+
+      // Save context for rotating phone hardware
+      ctx.save();
+      ctx.translate(cx, cy);
+      ctx.rotate(angle * Math.PI / 180);
+
+      // Phone Body
+      const phoneW = 110;
+      const phoneH = 200;
+
+      // Outer Frame
+      ctx.fillStyle = "#1e293b";
+      ctx.beginPath();
+      ctx.roundRect(-phoneW / 2, -phoneH / 2, phoneW, phoneH, 18);
+      ctx.fill();
+      ctx.strokeStyle = "#8b5cf6";
+      ctx.lineWidth = 3;
+      ctx.stroke();
+
+      // Speaker / Camera Notch
+      ctx.fillStyle = "#0b0f19";
+      ctx.beginPath();
+      ctx.arc(0, -phoneH / 2 + 12, 4, 0, Math.PI * 2);
+      ctx.fill();
+
+      // Screen Bezel
+      const screenW = phoneW - 14;
+      const screenH = phoneH - 32;
+      const screenX = -screenW / 2;
+      const screenY = -screenH / 2 + 5;
+
+      ctx.fillStyle = "#020617";
+      ctx.fillRect(screenX, screenY, screenW, screenH);
+
+      // Screen Content inside Phone Display
+      if (isLandscape) {
+        // Landscape Mode Display (Video / Game view)
+        ctx.fillStyle = "#0284c7";
+        ctx.fillRect(screenX + 3, screenY + 3, screenW - 6, screenH - 6);
+
+        // Play Symbol
+        ctx.fillStyle = "#ffffff";
+        ctx.beginPath();
+        ctx.moveTo(-8, -12);
+        ctx.lineTo(12, 0);
+        ctx.lineTo(-8, 12);
+        ctx.closePath();
+        ctx.fill();
+
+        ctx.fillStyle = "#00f0ff";
+        ctx.font = "bold 9px JetBrains Mono";
+        ctx.fillText("HD VIDEO MODE", 0, 30);
+      } else if (isUpsideDown) {
+        // Upside Down Guard Mode
+        ctx.fillStyle = "#991b1b";
+        ctx.fillRect(screenX + 3, screenY + 3, screenW - 6, screenH - 6);
+
+        ctx.fillStyle = "#ffffff";
+        ctx.font = "bold 10px JetBrains Mono";
+        ctx.fillText("🔒 LOCKED", 0, 0);
+      } else {
+        // Vertical Portrait Mode
+        ctx.fillStyle = "#0f172a";
+        ctx.fillRect(screenX + 3, screenY + 3, screenW - 6, screenH - 6);
+
+        // App Cards Vertical Layout
+        ctx.fillStyle = "#00f0ff";
+        ctx.fillRect(screenX + 8, screenY + 15, screenW - 16, 20);
+        ctx.fillStyle = "#8b5cf6";
+        ctx.fillRect(screenX + 8, screenY + 45, screenW - 16, 20);
+        ctx.fillStyle = "#10b981";
+        ctx.fillRect(screenX + 8, screenY + 75, screenW - 16, 20);
+
+        ctx.fillStyle = "#ffffff";
+        ctx.font = "bold 9px JetBrains Mono";
+        ctx.fillText("PORTRAIT FEED", 0, -40);
+      }
+
+      ctx.restore();
+
+      // Display Output Label
+      ctx.fillStyle = isLandscape ? "#00f0ff" : "#ffffff";
+      ctx.font = "bold 13px Outfit";
+      ctx.fillText(`DISPLAY OUTPUT: ${state.gyro.modeName.toUpperCase()}`, cx, h - 18);
+    }
+
+    /* =========================================================================
+       RESIZE & INITIALIZATION
+       ========================================================================= */
+    function resizeCanvas() {
+      const container = document.getElementById('canvas-container');
+      if (!container || !state.canvas) return;
+
+      state.canvas.width = container.clientWidth;
+      state.canvas.height = container.clientHeight;
+    }
+
+    window.onload = function () {
+      state.canvas = document.getElementById('playground-canvas');
+
+      // Defensive check to avoid TypeError: Cannot read properties of null
+      if (!state.canvas) {
+        console.error("Canvas element '#playground-canvas' was not found in the DOM.");
+        return;
+      }
+
+      state.ctx = state.canvas.getContext('2d');
+
+      resizeCanvas();
+      window.addEventListener('resize', resizeCanvas);
+
+      // Default to Light Sensor Lab
+      selectSensor('light');
+
+      // Start render loop
+      renderLoop();
+    };
+  </script>
+</body>
+</html>
