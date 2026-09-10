@@ -979,55 +979,224 @@
             const desc = document.getElementById('engine-step-desc');
 
             // -----------------------------------------------------------------
-            // 1. INKJET PRINTER ANIMATION
+            // 1. INKJET PRINTER ANIMATION (ENHANCED: Belt Drive, Encoder, Progressive Printing)
             // -----------------------------------------------------------------
             if (e === 'inkjet') {
-                desc.innerText = "Printhead sweeps left-right while micro-nozzles spray liquid CMYK ink drops.";
+                desc.innerText = "Printhead sweeps horizontally along encoder rail while CMYK micro-nozzles fire drops, progressively printing row-by-row as paper feeds!";
 
-                // Paper Feed Sheet
+                const marginX = w * 0.18;
+                const minX = marginX + 30;
+                const maxX = w - marginX - 30;
+                const railY = h * 0.42;
+
+                // Motion Cycle: Left-to-Right pass, Pause & Step, Right-to-Left pass, Pause & Step
+                const cycleTime = 3.6; // seconds per full L-R-L cycle
+                const localT = t % cycleTime;
+                
+                let headX = minX;
+                let isSpraying = false;
+                let passDirection = "RIGHT ➔";
+
+                if (localT < 1.5) {
+                    // Pass 1: Moving Right with smooth easing
+                    const p = localT / 1.5;
+                    const eased = p < 0.5 ? 2 * p * p : 1 - Math.pow(-2 * p + 2, 2) / 2;
+                    headX = minX + (maxX - minX) * eased;
+                    isSpraying = true;
+                    passDirection = "SWEEPING RIGHT ➔";
+                } else if (localT < 1.8) {
+                    // Pause at right end & Paper stepper motor feeds paper
+                    headX = maxX;
+                    isSpraying = false;
+                    passDirection = "📄 PAPER FEED STEP";
+                } else if (localT < 3.3) {
+                    // Pass 2: Moving Left
+                    const p = (localT - 1.8) / 1.5;
+                    const eased = p < 0.5 ? 2 * p * p : 1 - Math.pow(-2 * p + 2, 2) / 2;
+                    headX = maxX - (maxX - minX) * eased;
+                    isSpraying = true;
+                    passDirection = "⬅ SWEEPING LEFT";
+                } else {
+                    // Pause at left end & Paper stepper motor feeds paper
+                    headX = minX;
+                    isSpraying = false;
+                    passDirection = "📄 PAPER FEED STEP";
+                }
+
+                // Overall paper print height progress based on total time
+                const paperWidth = w * 0.56;
+                const paperHeight = h * 0.72;
+                const paperX = (w - paperWidth) / 2;
+                const paperY = h * 0.14;
+
+                // 1. PAPER SHEET (Fed through rollers)
                 ctx.fillStyle = '#ffffff';
-                ctx.fillRect(w * 0.2, h * 0.2, w * 0.6, h * 0.7);
-
-                // Print Rail
-                ctx.fillStyle = '#334155';
-                ctx.fillRect(w * 0.1, h * 0.35, w * 0.8, 12);
-
-                // Printhead Carriage Motion
-                const headX = w * 0.25 + (Math.sin(t * 3) + 1) * 0.5 * (w * 0.5);
-
-                // Micro Ink Droplets Falling
-                const colors = ['#06b6d4', '#ec4899', '#facc15', '#000000'];
-                colors.forEach((c, idx) => {
-                    const dropX = headX - 20 + idx * 12;
-                    ctx.fillStyle = c;
-                    for (let i = 0; i < 3; i++) {
-                        const dropY = h * 0.38 + ((t * 80 + i * 15) % 35);
-                        ctx.beginPath();
-                        ctx.arc(dropX, dropY, 3, 0, Math.PI * 2);
-                        ctx.fill();
-                    }
-                });
-
-                // Printed Lines on Paper
-                ctx.fillStyle = '#ec4899';
-                ctx.fillRect(w * 0.22, h * 0.48, w * 0.56, 12);
-                ctx.fillStyle = '#06b6d4';
-                ctx.fillRect(w * 0.22, h * 0.56, w * 0.56, 12);
-                ctx.fillStyle = '#facc15';
-                ctx.fillRect(w * 0.22, h * 0.64, w * 0.4, 12);
-
-                // Moving Printhead Box
-                ctx.fillStyle = '#ec4899';
+                ctx.shadowColor = 'rgba(0, 0, 0, 0.4)';
+                ctx.shadowBlur = 12;
+                ctx.fillRect(paperX, paperY, paperWidth, paperHeight);
+                ctx.shadowBlur = 0;
                 ctx.strokeStyle = '#000000';
-                ctx.lineWidth = 3;
-                ctx.fillRect(headX - 30, h * 0.28, 60, 40);
-                ctx.strokeRect(headX - 30, h * 0.28, 60, 40);
+                ctx.lineWidth = 2;
+                ctx.strokeRect(paperX, paperY, paperWidth, paperHeight);
 
-                // CMYK Cartridges
-                colors.forEach((c, idx) => {
-                    ctx.fillStyle = c;
-                    ctx.fillRect(headX - 22 + idx * 11, h * 0.30, 8, 18);
+                // 2. PROGRESSIVE PRINTED IMAGE (Revealed band-by-band as time advances)
+                const printProgressHeight = Math.min(paperHeight - 40, ((t * 22) % (paperHeight - 20)));
+                const currentPrintedY = paperY + 20;
+
+                ctx.save();
+                // Clip to already printed band area
+                ctx.beginPath();
+                ctx.rect(paperX + 15, currentPrintedY, paperWidth - 30, printProgressHeight);
+                ctx.clip();
+
+                // Draw rich photo sample being printed on paper
+                const photoGrad = ctx.createLinearGradient(paperX, currentPrintedY, paperX + paperWidth, currentPrintedY + paperHeight);
+                photoGrad.addColorStop(0, '#38bdf8');
+                photoGrad.addColorStop(0.5, '#ec4899');
+                photoGrad.addColorStop(1, '#facc15');
+                ctx.fillStyle = photoGrad;
+                ctx.fillRect(paperX + 15, currentPrintedY, paperWidth - 30, paperHeight - 40);
+
+                // Photo Details (Sun & Mountain Graphic)
+                ctx.fillStyle = '#ffffff';
+                ctx.beginPath();
+                ctx.arc(paperX + paperWidth * 0.7, currentPrintedY + 40, 24, 0, Math.PI * 2);
+                ctx.fill();
+
+                ctx.fillStyle = '#1e1b4b';
+                ctx.beginPath();
+                ctx.moveTo(paperX + 20, currentPrintedY + 110);
+                ctx.lineTo(paperX + paperWidth * 0.4, currentPrintedY + 50);
+                ctx.lineTo(paperX + paperWidth * 0.65, currentPrintedY + 110);
+                ctx.closePath();
+                ctx.fill();
+
+                // CMYK Alignment Test Grid Lines
+                ctx.strokeStyle = 'rgba(255, 255, 255, 0.6)';
+                ctx.lineWidth = 1;
+                for (let ly = currentPrintedY; ly < currentPrintedY + paperHeight; ly += 16) {
+                    ctx.beginPath(); ctx.moveTo(paperX + 15, ly); ctx.lineTo(paperX + paperWidth - 15, ly); ctx.stroke();
+                }
+                ctx.restore();
+
+                // Active Spray Line Overlay (High-res dot band under head)
+                const activeLineY = currentPrintedY + printProgressHeight - 4;
+                if (activeLineY > paperY && activeLineY < paperY + paperHeight - 10) {
+                    ctx.fillStyle = 'rgba(236, 72, 153, 0.4)';
+                    ctx.fillRect(paperX + 15, activeLineY - 2, paperWidth - 30, 6);
+                }
+
+                // 3. PAPER FEED ROLLERS & STEPPER GEARS
+                ctx.fillStyle = '#1e293b';
+                for (let rx = paperX + 20; rx < paperX + paperWidth - 10; rx += 45) {
+                    ctx.fillRect(rx, railY - 28, 22, 8);
+                    ctx.fillRect(rx, railY + 32, 22, 8);
+                }
+
+                // 4. TIMING BELT & ENCODER STRIP
+                ctx.strokeStyle = '#94a3b8';
+                ctx.lineWidth = 2;
+                ctx.beginPath(); ctx.moveTo(marginX, railY - 14); ctx.lineTo(w - marginX, railY - 14); ctx.stroke();
+
+                ctx.strokeStyle = '#475569';
+                ctx.lineWidth = 1;
+                for (let ex = marginX; ex < w - marginX; ex += 4) {
+                    ctx.beginPath(); ctx.moveTo(ex, railY - 16); ctx.lineTo(ex, railY - 12); ctx.stroke();
+                }
+
+                // Rubber Timing Belt Loop
+                ctx.strokeStyle = '#0f172a';
+                ctx.lineWidth = 3;
+                ctx.beginPath(); ctx.moveTo(marginX, railY - 4); ctx.lineTo(w - marginX, railY - 4); ctx.stroke();
+                ctx.beginPath(); ctx.moveTo(marginX, railY + 12); ctx.lineTo(w - marginX, railY + 12); ctx.stroke();
+
+                // Motor Pulleys on Left/Right Ends
+                const spin = t * 10;
+                [marginX, w - marginX].forEach(px => {
+                    ctx.save();
+                    ctx.translate(px, railY + 4);
+                    ctx.rotate(spin);
+                    ctx.fillStyle = '#0284c7';
+                    ctx.beginPath(); ctx.arc(0, 0, 10, 0, Math.PI * 2); ctx.fill();
+                    ctx.strokeStyle = '#000000'; ctx.lineWidth = 2; ctx.stroke();
+                    ctx.fillStyle = '#ffffff';
+                    ctx.fillRect(-2, -8, 4, 16);
+                    ctx.restore();
                 });
+
+                // Steel Guide Rail
+                ctx.fillStyle = '#cbd5e1';
+                ctx.fillRect(marginX - 10, railY, w - marginX * 2 + 20, 8);
+                ctx.strokeStyle = '#000000';
+                ctx.lineWidth = 1.5;
+                ctx.strokeRect(marginX - 10, railY, w - marginX * 2 + 20, 8);
+
+                // Flexible Ink Supply Ribbon Cable
+                ctx.strokeStyle = '#06b6d4';
+                ctx.lineWidth = 4;
+                ctx.beginPath();
+                ctx.moveTo(marginX, railY - 22);
+                ctx.quadraticCurveTo((headX + marginX) / 2, railY - 35, headX - 20, railY - 12);
+                ctx.stroke();
+
+                // 5. CMYK MICROSCOPIC SPRAY JETS
+                const CMYK = [
+                    { color: '#06b6d4', label: 'C' },
+                    { color: '#ec4899', label: 'M' },
+                    { color: '#facc15', label: 'Y' },
+                    { color: '#000000', label: 'K' }
+                ];
+
+                if (isSpraying) {
+                    CMYK.forEach((ink, idx) => {
+                        const nozzleX = headX - 22 + idx * 14;
+                        ctx.fillStyle = ink.color;
+
+                        for (let d = 0; d < 6; d++) {
+                            const dropY = railY + 22 + ((t * 120 + d * 7 + idx * 3) % 24);
+                            const spraySpread = (Math.random() - 0.5) * 3;
+                            ctx.beginPath();
+                            ctx.arc(nozzleX + spraySpread, dropY, 1.8, 0, Math.PI * 2);
+                            ctx.fill();
+                        }
+                    });
+                }
+
+                // 6. MOVING PRINTHEAD CARRIAGE BOX
+                ctx.fillStyle = '#1e293b';
+                ctx.strokeStyle = '#facc15';
+                ctx.lineWidth = 3;
+                ctx.fillRect(headX - 32, railY - 24, 64, 46);
+                ctx.strokeRect(headX - 32, railY - 24, 64, 46);
+
+                // CMYK Cartridges mounted in carriage
+                CMYK.forEach((ink, idx) => {
+                    const cx = headX - 26 + idx * 13;
+                    ctx.fillStyle = ink.color;
+                    ctx.fillRect(cx, railY - 20, 10, 22);
+                    ctx.strokeStyle = '#000000';
+                    ctx.lineWidth = 1;
+                    ctx.strokeRect(cx, railY - 20, 10, 22);
+
+                    ctx.fillStyle = (ink.color === '#facc15' || ink.color === '#06b6d4') ? '#000000' : '#ffffff';
+                    ctx.font = 'bold 7px JetBrains Mono';
+                    ctx.fillText(ink.label, cx + 2.5, railY - 8);
+                });
+
+                // Nozzle Plate
+                ctx.fillStyle = '#475569';
+                ctx.fillRect(headX - 28, railY + 22, 56, 5);
+
+                // 7. STATUS OVERLAY
+                ctx.fillStyle = 'rgba(15, 23, 42, 0.85)';
+                ctx.fillRect(paperX + 8, paperY + 8, 190, 22);
+                ctx.strokeStyle = '#06b6d4';
+                ctx.lineWidth = 1;
+                ctx.strokeRect(paperX + 8, paperY + 8, 190, 22);
+
+                ctx.fillStyle = '#38bdf8';
+                ctx.font = 'bold 8.5px JetBrains Mono';
+                ctx.fillText(`HEAD: ${passDirection}`, paperX + 12, paperY + 22);
             }
 
             // -----------------------------------------------------------------
