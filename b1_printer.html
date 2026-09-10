@@ -137,16 +137,7 @@
             animation: float 3s ease-in-out infinite;
         }
 
-        @keyframes pulseGlow {
-            0%, 100% { filter: drop-shadow(0 0 5px rgba(250, 204, 21, 0.5)); }
-            50% { filter: drop-shadow(0 0 15px rgba(250, 204, 21, 0.9)); }
-        }
-
-        .pulse-glow {
-            animation: pulseGlow 1.5s infinite;
-        }
-
-        /* Custom Scrollbar for Modal or Sidebar */
+        /* Custom Scrollbar */
         ::-webkit-scrollbar {
             width: 8px;
         }
@@ -172,33 +163,25 @@
                 <h1 class="text-base sm:text-xl font-black tracking-wide uppercase comic-text text-white flex items-center gap-2">
                     PRINTER MAYHEM! <span class="hidden sm:inline-block text-xs bg-black text-amber-300 px-2 py-0.5 rounded-lg border border-amber-300 font-mono">ICT LAB</span>
                 </h1>
-                <p class="text-[10px] sm:text-xs text-black font-bold uppercase tracking-wider hidden sm:block">Learn How Printers Work • ICT STEM Playground</p>
+                <p class="text-[10px] sm:text-xs text-black font-bold uppercase tracking-wider hidden sm:block">Learn How Printers Work • Interactive STEM Visualizer</p>
             </div>
         </div>
 
         <!-- Navigation Tab Switcher -->
         <nav class="flex items-center gap-1 sm:gap-2">
-            <button onclick="switchTab('dispatch')" id="tab-dispatch" class="px-2 sm:px-3 py-1.5 rounded-xl border-2 border-black font-bold text-xs flex items-center gap-1.5 bg-pink-500 text-white shadow-[2px_2px_0px_#000] hover:scale-105 transition-all">
+            <button onclick="switchTab('dispatch')" id="tab-dispatch" class="px-3 sm:px-4 py-2 rounded-xl border-2 border-black font-extrabold text-xs sm:text-sm flex items-center gap-2 bg-pink-500 text-white shadow-[3px_3px_0px_#000] hover:scale-105 transition-all">
                 <i class="fas fa-truck-fast"></i>
-                <span class="hidden md:inline">1. Job Dispatch</span>
+                <span>1. Job Dispatch</span>
             </button>
-            <button onclick="switchTab('inside')" id="tab-inside" class="px-2 sm:px-3 py-1.5 rounded-xl border-2 border-black font-bold text-xs flex items-center gap-1.5 bg-slate-800 text-slate-300 shadow-[2px_2px_0px_#000] hover:scale-105 transition-all">
+            <button onclick="switchTab('inside')" id="tab-inside" class="px-3 sm:px-4 py-2 rounded-xl border-2 border-black font-extrabold text-xs sm:text-sm flex items-center gap-2 bg-slate-800 text-slate-300 shadow-[3px_3px_0px_#000] hover:scale-105 transition-all">
                 <i class="fas fa-microchip"></i>
-                <span class="hidden md:inline">2. Inside Engine</span>
-            </button>
-            <button onclick="switchTab('fixit')" id="tab-fixit" class="px-2 sm:px-3 py-1.5 rounded-xl border-2 border-black font-bold text-xs flex items-center gap-1.5 bg-slate-800 text-slate-300 shadow-[2px_2px_0px_#000] hover:scale-105 transition-all">
-                <i class="fas fa-wrench"></i>
-                <span class="hidden md:inline">3. Fix-It Shop</span>
-            </button>
-            <button onclick="switchTab('quiz')" id="tab-quiz" class="px-2 sm:px-3 py-1.5 rounded-xl border-2 border-black font-bold text-xs flex items-center gap-1.5 bg-slate-800 text-slate-300 shadow-[2px_2px_0px_#000] hover:scale-105 transition-all">
-                <i class="fas fa-graduation-cap"></i>
-                <span class="hidden md:inline">4. Tech Quiz</span>
+                <span>2. Engine Visualizer</span>
             </button>
         </nav>
 
         <!-- Stats Counter -->
         <div class="flex items-center gap-2">
-            <div class="bg-white text-black px-2.5 py-1 rounded-xl comic-border-sm flex items-center gap-1.5 text-xs font-black">
+            <div class="bg-white text-black px-2.5 py-1 sm:px-3 sm:py-1.5 rounded-xl comic-border-sm flex items-center gap-1.5 text-xs sm:text-sm font-black">
                 <i class="fas fa-star text-amber-500"></i>
                 <span id="score-val">0</span>
             </div>
@@ -249,158 +232,75 @@
     <main id="view-inside" class="flex-grow hidden grid-cols-1 md:grid-cols-12 gap-3 my-2 overflow-hidden">
         <!-- Sidebar Selector -->
         <section class="md:col-span-4 bg-slate-900/90 comic-border rounded-2xl p-3 flex flex-col justify-between overflow-y-auto gap-2">
-            <h2 class="text-sm font-black text-amber-400 uppercase tracking-wide flex items-center gap-2 border-b-2 border-slate-800 pb-2">
-                <i class="fas fa-microchip"></i> Choose Printer Engine
-            </h2>
-            <div class="space-y-2 flex-grow">
-                <button onclick="selectEngine('inkjet')" id="eng-btn-inkjet" class="w-full text-left p-2.5 rounded-xl border-2 border-black bg-amber-400 text-black font-bold text-xs flex items-center justify-between shadow-[3px_3px_0px_#000] hover:scale-[1.02] transition-all">
-                    <span class="flex items-center gap-2"><i class="fas fa-spray-can text-pink-600 text-base"></i> Inkjet Printer</span>
-                    <span class="bg-black text-white px-1.5 py-0.5 rounded text-[10px]">CMYK Liquid</span>
-                </button>
-                <button onclick="selectEngine('laser')" id="eng-btn-laser" class="w-full text-left p-2.5 rounded-xl border-2 border-black bg-slate-800 text-white font-bold text-xs flex items-center justify-between shadow-[3px_3px_0px_#000] hover:scale-[1.02] transition-all">
-                    <span class="flex items-center gap-2"><i class="fas fa-bolt text-cyan-400 text-base"></i> Laser Printer</span>
-                    <span class="bg-black text-white px-1.5 py-0.5 rounded text-[10px]">Toner & Heat</span>
-                </button>
-                <button onclick="selectEngine('thermal')" id="eng-btn-thermal" class="w-full text-left p-2.5 rounded-xl border-2 border-black bg-slate-800 text-white font-bold text-xs flex items-center justify-between shadow-[3px_3px_0px_#000] hover:scale-[1.02] transition-all">
-                    <span class="flex items-center gap-2"><i class="fas fa-fire text-red-400 text-base"></i> Thermal Printer</span>
-                    <span class="bg-black text-white px-1.5 py-0.5 rounded text-[10px]">Heat Paper</span>
-                </button>
-                <button onclick="selectEngine('3d')" id="eng-btn-3d" class="w-full text-left p-2.5 rounded-xl border-2 border-black bg-slate-800 text-white font-bold text-xs flex items-center justify-between shadow-[3px_3px_0px_#000] hover:scale-[1.02] transition-all">
-                    <span class="flex items-center gap-2"><i class="fas fa-cube text-purple-400 text-base"></i> 3D Printer</span>
-                    <span class="bg-black text-white px-1.5 py-0.5 rounded text-[10px]">PLA Extruder</span>
-                </button>
-                <button onclick="selectEngine('plotter')" id="eng-btn-plotter" class="w-full text-left p-2.5 rounded-xl border-2 border-black bg-slate-800 text-white font-bold text-xs flex items-center justify-between shadow-[3px_3px_0px_#000] hover:scale-[1.02] transition-all">
-                    <span class="flex items-center gap-2"><i class="fas fa-scroll text-blue-400 text-base"></i> Plotter</span>
-                    <span class="bg-black text-white px-1.5 py-0.5 rounded text-[10px]">Vector Roll</span>
-                </button>
+            <div>
+                <h2 class="text-sm font-black text-amber-400 uppercase tracking-wide flex items-center gap-2 border-b-2 border-slate-800 pb-2 mb-2">
+                    <i class="fas fa-microchip"></i> Choose Printer Mechanism
+                </h2>
+                <div class="space-y-2">
+                    <button onclick="selectEngine('inkjet')" id="eng-btn-inkjet" class="w-full text-left p-2.5 rounded-xl border-2 border-black bg-amber-400 text-black font-bold text-xs flex items-center justify-between shadow-[3px_3px_0px_#000] hover:scale-[1.02] transition-all">
+                        <span class="flex items-center gap-2"><i class="fas fa-spray-can text-pink-600 text-base"></i> Inkjet Printer</span>
+                        <span class="bg-black text-white px-1.5 py-0.5 rounded text-[10px]">CMYK Liquid</span>
+                    </button>
+                    <button onclick="selectEngine('laser')" id="eng-btn-laser" class="w-full text-left p-2.5 rounded-xl border-2 border-black bg-slate-800 text-white font-bold text-xs flex items-center justify-between shadow-[3px_3px_0px_#000] hover:scale-[1.02] transition-all">
+                        <span class="flex items-center gap-2"><i class="fas fa-bolt text-cyan-400 text-base"></i> Laser Printer</span>
+                        <span class="bg-black text-white px-1.5 py-0.5 rounded text-[10px]">Toner & Drum</span>
+                    </button>
+                    <button onclick="selectEngine('thermal')" id="eng-btn-thermal" class="w-full text-left p-2.5 rounded-xl border-2 border-black bg-slate-800 text-white font-bold text-xs flex items-center justify-between shadow-[3px_3px_0px_#000] hover:scale-[1.02] transition-all">
+                        <span class="flex items-center gap-2"><i class="fas fa-fire text-red-400 text-base"></i> Thermal Printer</span>
+                        <span class="bg-black text-white px-1.5 py-0.5 rounded text-[10px]">Heat Element</span>
+                    </button>
+                    <button onclick="selectEngine('3d')" id="eng-btn-3d" class="w-full text-left p-2.5 rounded-xl border-2 border-black bg-slate-800 text-white font-bold text-xs flex items-center justify-between shadow-[3px_3px_0px_#000] hover:scale-[1.02] transition-all">
+                        <span class="flex items-center gap-2"><i class="fas fa-cube text-purple-400 text-base"></i> 3D Printer</span>
+                        <span class="bg-black text-white px-1.5 py-0.5 rounded text-[10px]">PLA Extruder</span>
+                    </button>
+                    <button onclick="selectEngine('plotter')" id="eng-btn-plotter" class="w-full text-left p-2.5 rounded-xl border-2 border-black bg-slate-800 text-white font-bold text-xs flex items-center justify-between shadow-[3px_3px_0px_#000] hover:scale-[1.02] transition-all">
+                        <span class="flex items-center gap-2"><i class="fas fa-scroll text-blue-400 text-base"></i> Plotter</span>
+                        <span class="bg-black text-white px-1.5 py-0.5 rounded text-[10px]">Vector Gantry</span>
+                    </button>
+                </div>
             </div>
 
             <!-- Tech Details Box -->
-            <div id="engine-tech-info" class="bg-indigo-950 p-3 rounded-xl border border-indigo-700 text-xs space-y-1">
-                <span class="text-amber-400 font-bold block uppercase font-mono text-[10px]">🔍 Key Mechanism</span>
-                <p id="engine-info-text" class="text-slate-300 leading-relaxed">Select an engine to see how it operates frame-by-frame!</p>
+            <div id="engine-tech-info" class="bg-indigo-950 p-3 rounded-xl border border-indigo-700 text-xs space-y-1.5">
+                <span id="engine-tech-heading" class="text-amber-400 font-black block uppercase font-mono text-[11px] flex items-center gap-1.5">
+                    <i class="fas fa-circle-info"></i> How It Works
+                </span>
+                <p id="engine-info-text" class="text-slate-200 text-[11px] leading-relaxed">
+                    Select an engine to see how it operates frame-by-frame!
+                </p>
             </div>
         </section>
 
         <!-- Main Animation & Simulation Display Screen -->
-        <section class="md:col-span-8 bg-slate-950 comic-border rounded-2xl p-4 flex flex-col justify-between relative overflow-hidden">
-            <div class="flex justify-between items-center mb-2 z-10">
-                <h3 id="engine-title" class="text-base font-black text-white uppercase tracking-wide flex items-center gap-2">
+        <section class="md:col-span-8 bg-slate-950 comic-border rounded-2xl p-3 sm:p-4 flex flex-col justify-between relative overflow-hidden">
+            <div class="flex flex-wrap justify-between items-center mb-2 z-10 gap-2">
+                <h3 id="engine-title" class="text-sm sm:text-base font-black text-white uppercase tracking-wide flex items-center gap-2">
                     <i class="fas fa-gear text-amber-400 animate-spin"></i> Inkjet Engine Visualizer
                 </h3>
                 <div class="flex gap-2">
-                    <button onclick="triggerEngineAction()" id="engine-action-btn" class="bg-emerald-500 hover:bg-emerald-600 text-white text-xs font-black px-3 py-1.5 rounded-xl border-2 border-black shadow-[3px_3px_0px_#000] active:translate-y-0.5 transition-all">
-                        <i class="fas fa-play"></i> Start Print Cycle
+                    <button onclick="toggleEngineAnimation()" id="engine-action-btn" class="bg-emerald-500 hover:bg-emerald-600 text-white text-xs font-black px-3.5 py-1.5 rounded-xl border-2 border-black shadow-[3px_3px_0px_#000] active:translate-y-0.5 transition-all flex items-center gap-1.5">
+                        <i id="engine-btn-icon" class="fas fa-play"></i> <span id="engine-btn-text">Start Simulation</span>
+                    </button>
+                    <button onclick="resetEngineAnimation()" class="bg-slate-800 hover:bg-slate-700 text-amber-300 text-xs font-black px-2.5 py-1.5 rounded-xl border-2 border-black shadow-[2px_2px_0px_#000]">
+                        <i class="fas fa-rotate"></i> Reset
                     </button>
                 </div>
             </div>
 
             <!-- Interactive Canvas Visualizer -->
-            <div class="flex-grow w-full h-[280px] sm:h-[320px] bg-slate-900 rounded-xl border-2 border-slate-800 relative flex items-center justify-center overflow-hidden">
+            <div class="flex-grow w-full h-[260px] sm:h-[320px] bg-slate-900 rounded-xl border-2 border-slate-800 relative flex items-center justify-center overflow-hidden">
                 <canvas id="engine-canvas" class="w-full h-full block"></canvas>
             </div>
 
             <!-- Educational Step Overlay Indicator -->
             <div class="mt-2 bg-slate-900 border border-slate-700 p-2.5 rounded-xl flex items-center justify-between text-xs">
                 <div class="flex items-center gap-2">
-                    <span id="engine-step-badge" class="bg-pink-500 text-white font-mono px-2 py-0.5 rounded text-[11px] font-bold">STEP 1</span>
-                    <span id="engine-step-desc" class="text-slate-200 font-semibold">Ready for print command...</span>
+                    <span id="engine-step-badge" class="bg-pink-500 text-white font-mono px-2 py-0.5 rounded text-[11px] font-bold">CYCLE ACTIVE</span>
+                    <span id="engine-step-desc" class="text-slate-200 font-semibold text-[11px]">Ready for print command...</span>
                 </div>
-                <div class="text-[11px] font-mono text-cyan-400">
+                <div class="text-[11px] font-mono text-cyan-400 hidden sm:block">
                     Resolution: <span id="engine-dpi-val">1200 DPI</span>
                 </div>
-            </div>
-        </section>
-    </main>
-
-    <!-- MAIN CONTENT VIEW 3: FIX-IT SHOP MINI-GAMES -->
-    <main id="view-fixit" class="flex-grow hidden grid-cols-1 md:grid-cols-12 gap-3 my-2 overflow-hidden">
-        <!-- Workshop Selector -->
-        <section class="md:col-span-4 bg-slate-900/90 comic-border rounded-2xl p-3 flex flex-col justify-between">
-            <div>
-                <h2 class="text-sm font-black text-amber-400 uppercase tracking-wide flex items-center gap-2 border-b-2 border-slate-800 pb-2 mb-3">
-                    <i class="fas fa-screwdriver-wrench"></i> Repair & Maintenance Lab
-                </h2>
-                <div class="space-y-2">
-                    <button onclick="loadFixGame('paperjam')" id="fix-btn-paperjam" class="w-full text-left p-3 rounded-xl border-2 border-black bg-pink-500 text-white font-bold text-xs flex items-center justify-between shadow-[3px_3px_0px_#000] hover:scale-[1.02] transition-all">
-                        <span class="flex items-center gap-2"><i class="fas fa-file-circle-exclamation text-base"></i> Fix Paper Jam!</span>
-                        <span class="bg-black text-amber-300 px-2 py-0.5 rounded text-[10px]">Tug Paper</span>
-                    </button>
-                    <button onclick="loadFixGame('toner')" id="fix-btn-toner" class="w-full text-left p-3 rounded-xl border-2 border-black bg-slate-800 text-white font-bold text-xs flex items-center justify-between shadow-[3px_3px_0px_#000] hover:scale-[1.02] transition-all">
-                        <span class="flex items-center gap-2"><i class="fas fa-wine-bottle text-base text-cyan-400"></i> Shake Low Toner!</span>
-                        <span class="bg-black text-amber-300 px-2 py-0.5 rounded text-[10px]">Mix Powder</span>
-                    </button>
-                    <button onclick="loadFixGame('nozzles')" id="fix-btn-nozzles" class="w-full text-left p-3 rounded-xl border-2 border-black bg-slate-800 text-white font-bold text-xs flex items-center justify-between shadow-[3px_3px_0px_#000] hover:scale-[1.02] transition-all">
-                        <span class="flex items-center gap-2"><i class="fas fa-shower text-base text-yellow-400"></i> Unclog Nozzles!</span>
-                        <span class="bg-black text-amber-300 px-2 py-0.5 rounded text-[10px]">Purge Ink</span>
-                    </button>
-                </div>
-            </div>
-
-            <!-- Practical Tip Box -->
-            <div class="bg-amber-400/10 border border-amber-400/30 p-3 rounded-xl text-xs space-y-1 text-amber-200">
-                <span class="font-bold flex items-center gap-1 text-amber-400"><i class="fas fa-lightbulb"></i> ICT Lab Safety Tip:</span>
-                <p id="fix-tip-text">Always power off and let laser printer fuser rollers cool down before reaching inside to clear stuck paper!</p>
-            </div>
-        </section>
-
-        <!-- Interactive Workshop Station -->
-        <section class="md:col-span-8 bg-slate-950 comic-border rounded-2xl p-4 flex flex-col justify-between relative overflow-hidden">
-            <div class="flex justify-between items-center mb-2 z-10">
-                <h3 id="fix-game-title" class="text-base font-black text-pink-400 uppercase tracking-wide flex items-center gap-2">
-                    <i class="fas fa-wrench"></i> Emergency Paper Jam Extraction!
-                </h3>
-                <span id="fix-status-badge" class="bg-red-500 text-white text-xs font-black px-2.5 py-1 rounded-lg border border-black font-mono">
-                    STATUS: STUCK!
-                </span>
-            </div>
-
-            <!-- Mini Game Interactive Area -->
-            <div id="fix-interactive-area" class="flex-grow w-full bg-slate-900 rounded-xl border-2 border-slate-800 relative flex flex-col items-center justify-center p-4 overflow-hidden">
-                <!-- Dynamically rendered mini-game canvas/DOM content -->
-            </div>
-
-            <!-- Bottom Progress & Action Controls -->
-            <div class="mt-3 flex items-center justify-between gap-3">
-                <div class="flex-grow bg-slate-900 h-5 rounded-full border border-slate-700 p-0.5 overflow-hidden">
-                    <div id="fix-progress-bar" class="bg-gradient-to-r from-amber-400 to-emerald-400 h-full rounded-full transition-all duration-300" style="width: 0%"></div>
-                </div>
-                <button onclick="interactFixGame()" id="fix-action-btn" class="bg-amber-400 hover:bg-amber-500 text-black font-black text-xs px-4 py-2 rounded-xl border-2 border-black shadow-[3px_3px_0px_#000] active:translate-y-0.5 transition-all">
-                    PULL PAPER!
-                </button>
-            </div>
-        </section>
-    </main>
-
-    <!-- MAIN CONTENT VIEW 4: TECH QUIZ LAB -->
-    <main id="view-quiz" class="flex-grow hidden grid-cols-1 md:grid-cols-12 gap-3 my-2 overflow-hidden">
-        <section class="md:col-span-8 md:col-start-3 bg-slate-900/90 comic-border rounded-2xl p-4 sm:p-6 flex flex-col justify-between relative overflow-hidden">
-            <div class="flex justify-between items-center border-b-2 border-slate-800 pb-3">
-                <h2 class="text-base sm:text-lg font-black text-amber-400 uppercase tracking-wide flex items-center gap-2">
-                    <i class="fas fa-brain"></i> ICT Printer Master Quiz
-                </h2>
-                <span id="quiz-progress-num" class="bg-indigo-950 text-cyan-300 font-mono text-xs px-3 py-1 rounded-xl border border-indigo-700">
-                    Question 1 / 5
-                </span>
-            </div>
-
-            <!-- Quiz Question Card -->
-            <div class="my-4 space-y-4">
-                <div id="quiz-question-box" class="bg-slate-950 p-4 rounded-xl border-2 border-slate-800 text-sm sm:text-base font-bold text-white leading-relaxed">
-                    Loading question...
-                </div>
-
-                <div id="quiz-options-container" class="grid grid-cols-1 gap-2.5">
-                    <!-- Option buttons populated by JS -->
-                </div>
-            </div>
-
-            <!-- Explanation & Next Control -->
-            <div id="quiz-feedback-box" class="hidden bg-emerald-950/80 border border-emerald-500/50 p-3 rounded-xl text-xs text-emerald-200 flex justify-between items-center">
-                <span id="quiz-feedback-text">Correct! Laser printers use static electricity and melted toner.</span>
-                <button onclick="nextQuizQuestion()" class="bg-amber-400 hover:bg-amber-500 text-black font-black px-3 py-1.5 rounded-lg border border-black shadow-[2px_2px_0px_#000] transition-all">
-                    Next <i class="fas fa-arrow-right"></i>
-                </button>
             </div>
         </section>
     </main>
@@ -409,7 +309,7 @@
     <footer class="bg-indigo-950 border-2 border-black rounded-xl p-2 px-3 flex flex-col sm:flex-row justify-between items-center gap-1 text-[11px] font-mono text-indigo-300 flex-shrink-0">
         <div class="flex items-center gap-2">
             <span class="w-2.5 h-2.5 rounded-full bg-emerald-400 animate-ping"></span>
-            <span>ICT LAB BUS SPEED: <strong class="text-white">480 Mbps (USB 2.0 / Wi-Fi)</strong></span>
+            <span>ICT LAB STATUS: <strong class="text-white">ONLINE • INTERACTIVE SIMULATOR</strong></span>
         </div>
         <div class="text-center sm:text-right text-indigo-400">
             Printer Mayhem! • Interactive Computer Science Lab
@@ -457,7 +357,7 @@
 
     <script>
         /* =========================================================================
-           SYNTHETIC AUDIO ENGINE (Web Audio API - No External Assets)
+           SYNTHETIC AUDIO ENGINE (Web Audio API)
            ========================================================================= */
         let audioCtx = null;
 
@@ -489,9 +389,9 @@
                     osc.stop(now + 0.05);
                 } else if (type === 'success') {
                     osc.type = 'triangle';
-                    osc.frequency.setValueAtTime(523.25, now); // C5
-                    osc.frequency.setValueAtTime(659.25, now + 0.08); // E5
-                    osc.frequency.setValueAtTime(783.99, now + 0.16); // G5
+                    osc.frequency.setValueAtTime(523.25, now);
+                    osc.frequency.setValueAtTime(659.25, now + 0.08);
+                    osc.frequency.setValueAtTime(783.99, now + 0.16);
                     gain.gain.setValueAtTime(0.2, now);
                     gain.gain.linearRampToValueAtTime(0.01, now + 0.3);
                     osc.start(now);
@@ -513,13 +413,11 @@
                     osc.start(now);
                     osc.stop(now + 0.3);
                 }
-            } catch (e) {
-                // Silent fallback if audio context blocked
-            }
+            } catch (e) {}
         }
 
         /* =========================================================================
-           GLOBAL STATE & PRINTER DATA DEFINITIONS
+           GLOBAL STATE & DATA DEFINITIONS
            ========================================================================= */
         const state = {
             score: 0,
@@ -543,49 +441,11 @@
                 { id: 'plotter', name: 'Plotter', icon: 'fa-scroll', color: 'bg-blue-400', badge: 'Large Format', desc: 'Vector Pens Roll' }
             ],
 
-            // Inside Visualizer Engine State
+            // Engine Visualizer State
             selectedEngine: 'inkjet',
-            engineRunning: false,
-            engineStep: 1,
-
-            // Fix-It Workshop State
-            activeFixGame: 'paperjam',
-            fixProgress: 0,
-
-            // Quiz State
-            quizIndex: 0,
-            quizQuestions: [
-                {
-                    q: "Which printer type uses liquid CMYK ink droplets sprayed through tiny nozzles?",
-                    options: ["Laser Printer", "Inkjet Printer", "Thermal Printer", "3D Printer"],
-                    correct: 1,
-                    explain: "Inkjet printers spray precise microscopic drops of Cyan, Magenta, Yellow, and Black (CMYK) liquid ink!"
-                },
-                {
-                    q: "What component in a Laser Printer melts the powdered toner permanently onto paper?",
-                    options: ["Extruder Nozzle", "Fuser Roller Unit", "Vector Pen", "Printhead Carriage"],
-                    correct: 1,
-                    explain: "The fuser uses high temperature and pressure rollers to melt toner powder into the paper fibers!"
-                },
-                {
-                    q: "Why do Supermarket Receipts turn black when exposed to heat or friction?",
-                    options: ["They use liquid dye", "They use heat-sensitive thermal paper", "They are printed with laser light", "They use carbon powder"],
-                    correct: 1,
-                    explain: "Thermal printers heat special chemically-treated paper that turns dark when heated, needing zero ink!"
-                },
-                {
-                    q: "Which printer uses continuous roll paper and vector pens to draw large architectural blueprints without losing line quality?",
-                    options: ["Plotter", "Inkjet Printer", "Thermal Printer", "3D Printer"],
-                    correct: 0,
-                    explain: "Plotters use motorized vector pens on continuous paper rolls to draw ultra-sharp blueprints and large posters!"
-                },
-                {
-                    q: "What material do standard desktop 3D printers melt and extrude layer-by-layer?",
-                    options: ["Powdered Laser Toner", "PLA/ABS Plastic Filament", "Liquid CMYK Cartridge", "Heat Sensitive Paper"],
-                    correct: 1,
-                    explain: "3D printers feed plastic filament (like PLA or ABS) into a heated nozzle to build 3D objects!"
-                }
-            ]
+            animating: false,
+            animTimer: 0,
+            animFrameId: null
         };
 
         /* =========================================================================
@@ -595,40 +455,32 @@
             playSound('click');
             state.activeTab = tabId;
 
-            // Hide all views
+            // Hide views
             document.getElementById('view-dispatch').classList.add('hidden');
             document.getElementById('view-inside').classList.add('hidden');
-            document.getElementById('view-fixit').classList.add('hidden');
-            document.getElementById('view-quiz').classList.add('hidden');
 
             // Reset tab styling
-            ['dispatch', 'inside', 'fixit', 'quiz'].forEach(t => {
+            ['dispatch', 'inside'].forEach(t => {
                 const btn = document.getElementById(`tab-${t}`);
                 if (btn) {
-                    btn.className = "px-2 sm:px-3 py-1.5 rounded-xl border-2 border-black font-bold text-xs flex items-center gap-1.5 bg-slate-800 text-slate-300 shadow-[2px_2px_0px_#000] hover:scale-105 transition-all";
+                    btn.className = "px-3 sm:px-4 py-2 rounded-xl border-2 border-black font-extrabold text-xs sm:text-sm flex items-center gap-2 bg-slate-800 text-slate-300 shadow-[3px_3px_0px_#000] hover:scale-105 transition-all";
                 }
             });
 
-            // Activate chosen view
+            // Activate tab
             const activeBtn = document.getElementById(`tab-${tabId}`);
             if (activeBtn) {
-                activeBtn.className = "px-2 sm:px-3 py-1.5 rounded-xl border-2 border-black font-bold text-xs flex items-center gap-1.5 bg-pink-500 text-white shadow-[2px_2px_0px_#000] hover:scale-105 transition-all";
+                activeBtn.className = "px-3 sm:px-4 py-2 rounded-xl border-2 border-black font-extrabold text-xs sm:text-sm flex items-center gap-2 bg-pink-500 text-white shadow-[3px_3px_0px_#000] hover:scale-105 transition-all";
             }
 
             const activeView = document.getElementById(`view-${tabId}`);
             if (activeView) {
                 activeView.classList.remove('hidden');
-                if (tabId === 'inside' || tabId === 'dispatch') {
-                    activeView.classList.add('grid');
-                }
+                activeView.classList.add('grid');
             }
 
             if (tabId === 'inside') {
-                initEngineCanvas();
-            } else if (tabId === 'fixit') {
-                renderFixGameUI();
-            } else if (tabId === 'quiz') {
-                renderQuizQuestion();
+                setTimeout(initEngineCanvas, 50);
             }
         }
 
@@ -669,7 +521,7 @@
                     card.classList.remove('dragging');
                 });
 
-                // Touch drag support fallback for tablet/mobile
+                // Touch drag support fallback for mobile/tablet
                 card.addEventListener('touchstart', handleTouchStart, {passive: false});
                 card.addEventListener('touchmove', handleTouchMove, {passive: false});
                 card.addEventListener('touchend', handleTouchEnd, {passive: false});
@@ -699,7 +551,6 @@
                     <span class="text-[10px] text-slate-400 font-bold">${bot.desc}</span>
                 `;
 
-                // Drop Events
                 zone.addEventListener('dragover', (e) => {
                     e.preventDefault();
                     zone.classList.add('drag-over');
@@ -720,7 +571,7 @@
             });
         }
 
-        // Touch event handlers for mobile devices
+        // Mobile Touch Handlers
         let activeTouchElement = null;
         function handleTouchStart(e) {
             activeTouchElement = e.currentTarget;
@@ -772,12 +623,10 @@
             const jId = job.id;
             const pId = printer.id;
 
-            // JOB 1: High-Res Glossy Photo
-            if (jId === 'job1') {
+            if (jId === 'job1') { // Glossy Photo
                 if (pId === 'inkjet') {
                     return `
                     <div class="relative w-full max-w-[280px] bg-white rounded-lg p-2.5 shadow-2xl comic-border-sm text-slate-900 flex flex-col items-center">
-                        <div class="absolute inset-0 bg-gradient-to-tr from-transparent via-white/30 to-transparent pointer-events-none rounded-lg"></div>
                         <div class="w-full bg-slate-100 rounded p-1 mb-2 border border-slate-200 flex justify-between items-center text-[9px] font-mono font-bold text-slate-600">
                             <span><i class="fas fa-camera text-pink-500"></i> HIGH-GLOSS PHOTO PAPER</span>
                             <span class="text-emerald-600 font-extrabold">CMYK 4800 DPI</span>
@@ -787,81 +636,24 @@
                             <svg class="absolute bottom-0 inset-x-0 w-full h-16" viewBox="0 0 100 40" preserveAspectRatio="none">
                                 <polygon points="0,40 25,10 50,40" fill="#312e81"/>
                                 <polygon points="30,40 65,5 100,40" fill="#1e1b4b"/>
-                                <polygon points="15,14 25,10 32,14" fill="#ffffff"/>
-                                <polygon points="55,10 65,5 72,10" fill="#ffffff"/>
                             </svg>
                             <div class="relative z-10 text-[10px] font-black text-white drop-shadow-[0_2px_2px_rgba(0,0,0,0.8)]">
-                                Vibrant Color Spectrum
+                                Vibrant Inkjet Glossy Photo
                             </div>
                         </div>
-                        <div class="w-full text-center mt-1 text-[10px] font-bold text-slate-500">
-                            Microscopic liquid ink droplets blended perfectly on glossy paper!
-                        </div>
                     </div>`;
-                } else if (pId === 'laser') {
+                } else {
                     return `
-                    <div class="relative w-full max-w-[280px] bg-amber-50 rounded-lg p-2.5 shadow-2xl comic-border-sm text-slate-900 flex flex-col items-center border-amber-500">
-                        <div class="w-full bg-amber-100 rounded p-1 mb-2 border border-amber-300 flex justify-between items-center text-[9px] font-mono font-bold text-amber-800">
-                            <span><i class="fas fa-triangle-exclamation text-amber-600"></i> LASER TONER ON GLOSSY PAPER</span>
-                            <span class="text-amber-700">DULL FINISH</span>
-                        </div>
-                        <div class="w-full h-32 rounded border border-amber-300 relative overflow-hidden bg-slate-300 flex flex-col justify-center items-center p-2 opacity-80 filter contrast-75 brightness-90">
-                            <div class="text-slate-700 font-black text-xs text-center">
-                                <i class="fas fa-image text-3xl mb-1 text-slate-500"></i><br>
-                                Flat Toner Sheen & Muted Colors
-                            </div>
-                        </div>
-                        <div class="w-full text-center mt-1 text-[10px] font-bold text-amber-900">
-                            ⚠️ Toner powder sits on surface; heat plastic photo coating melted slightly!
-                        </div>
-                    </div>`;
-                } else if (pId === 'thermal') {
-                    return `
-                    <div class="relative w-full max-w-[220px] bg-slate-100 rounded p-3 shadow-2xl comic-border-sm text-slate-900 flex flex-col items-center">
-                        <div class="w-full text-[9px] font-mono font-bold text-slate-500 border-b border-dashed border-slate-400 pb-1 mb-2 text-center">
-                            THERMAL PAPER MONOCHROME
-                        </div>
-                        <div class="w-full h-28 bg-slate-200 border border-slate-400 rounded p-2 flex flex-col items-center justify-center relative overflow-hidden">
-                            <div class="absolute inset-0 bg-[radial-gradient(#000_1px,transparent_1px)] [background-size:4px_4px] opacity-40"></div>
-                            <i class="fas fa-image text-4xl text-slate-800 relative z-10 mb-1"></i>
-                            <span class="text-[9px] font-mono font-bold text-black bg-white px-1 relative z-10">NO COLOR - B&W DITHERED</span>
-                        </div>
-                        <div class="w-full text-center mt-1 text-[9px] font-bold text-slate-600">
-                            Thermal paper can only turn black! All color spectrum lost!
-                        </div>
-                    </div>`;
-                } else if (pId === '3d') {
-                    return `
-                    <div class="relative w-full max-w-[260px] bg-purple-950 text-purple-200 p-3 rounded-xl border-2 border-purple-500 flex flex-col items-center">
-                        <div class="w-full text-[9px] font-mono text-purple-300 mb-1 text-center font-bold">PLASTIC 3D SLAB PRINT</div>
-                        <div class="w-full h-28 bg-purple-900 rounded border-2 border-purple-400 flex flex-col items-center justify-center p-2 relative">
-                            <div class="absolute inset-0 bg-[repeating-linear-gradient(0deg,#000,#000_2px,transparent_2px,transparent_4px)] opacity-30"></div>
-                            <i class="fas fa-cube text-3xl text-purple-300 mb-1 relative z-10"></i>
-                            <span class="text-[10px] font-bold text-purple-100 relative z-10 text-center">Thick Plastic Tile with Embossed Image Outline</span>
-                        </div>
-                        <div class="w-full text-center mt-1 text-[9px] text-purple-300 font-semibold">
-                            Took 45 minutes to extrude a solid plastic picture plaque!
-                        </div>
-                    </div>`;
-                } else if (pId === 'plotter') {
-                    return `
-                    <div class="relative w-full max-w-[280px] bg-blue-900 text-white rounded p-3 comic-border-sm flex flex-col items-center">
-                        <div class="w-full text-[9px] font-mono text-blue-200 mb-1 font-bold">PLOTTER VECTOR OUTLINE ONLY</div>
-                        <div class="w-full h-28 bg-blue-950 border border-blue-400 rounded p-2 flex flex-col items-center justify-center">
-                            <svg viewBox="0 0 100 50" class="w-full h-full stroke-cyan-300 fill-none stroke-2">
-                                <path d="M 10 40 L 30 10 L 50 40 L 70 15 L 90 40 Z" />
-                                <circle cx="20" cy="15" r="5" />
-                            </svg>
-                        </div>
-                        <div class="w-full text-center mt-1 text-[9px] text-blue-200 font-semibold">
-                            Vector pens only drew the wireframe outlines—no photo shading!
+                    <div class="relative w-full max-w-[260px] bg-amber-50 rounded-lg p-2.5 shadow-2xl comic-border-sm text-slate-900 flex flex-col items-center border-amber-500">
+                        <div class="text-[10px] font-bold text-amber-800 mb-2">❌ Incompatible Photo Print</div>
+                        <div class="w-full h-28 bg-slate-200 rounded border border-amber-300 flex items-center justify-center text-center text-xs font-bold text-slate-600 p-2">
+                            ${printer.name} cannot produce photo-quality liquid ink gradients!
                         </div>
                     </div>`;
                 }
             }
 
-            // JOB 2: 500-Page School Report
-            if (jId === 'job2') {
+            if (jId === 'job2') { // 500-Page Report
                 if (pId === 'laser') {
                     return `
                     <div class="relative w-full max-w-[260px] bg-white text-slate-900 p-3 rounded shadow-2xl comic-border-sm flex flex-col items-center">
@@ -869,292 +661,108 @@
                             <span>📄 SCHOOL SCIENCE REPORT</span>
                             <span class="bg-cyan-100 text-cyan-800 px-1 rounded">FAST 500 PAGES</span>
                         </div>
-                        <div class="w-full space-y-1.5 text-[8px] font-sans leading-tight">
-                            <div class="font-bold text-[10px] text-slate-800">1. Executive Summary</div>
-                            <div class="text-slate-600 bg-slate-50 p-1 rounded border border-slate-200 font-mono text-[7.5px]">
-                                The electrophotographic process utilizes static electricity to transfer powdered toner onto paper fibers with razor-sharp precision...
-                            </div>
-                            <div class="flex items-end gap-1 h-8 bg-slate-100 p-1 rounded border border-slate-200">
-                                <div class="bg-indigo-600 w-1/4 h-full rounded-t"></div>
-                                <div class="bg-cyan-500 w-1/4 h-3/4 rounded-t"></div>
-                                <div class="bg-emerald-500 w-1/4 h-1/2 rounded-t"></div>
-                                <div class="bg-amber-500 w-1/4 h-full rounded-t"></div>
-                            </div>
+                        <div class="w-full space-y-1.5 text-[8px] font-mono text-slate-600 bg-slate-50 p-2 rounded border border-slate-200">
+                            1. Introduction to Electrophotography<br>
+                            Fused toner powder creates ultra-crisp black text instantly...
                         </div>
                         <div class="w-full text-center mt-2 text-[9px] font-black text-emerald-700 bg-emerald-50 py-0.5 rounded border border-emerald-300">
-                            ✨ High-speed, crystal-clear 1200 DPI text with fused toner!
+                            ✨ Crystal-clear 1200 DPI text printed in seconds!
                         </div>
                     </div>`;
-                } else if (pId === 'inkjet') {
+                } else {
                     return `
-                    <div class="relative w-full max-w-[260px] bg-amber-50 text-slate-900 p-3 rounded shadow-2xl comic-border-sm flex flex-col items-center border-amber-600">
-                        <div class="w-full border-b-2 border-amber-800 pb-1 mb-1 flex justify-between items-center text-[9px] font-mono font-bold text-amber-900">
-                            <span>⚠️ WET INK OVER-SATURATION</span>
-                            <span class="bg-red-200 text-red-900 px-1 rounded">SLOW & SMUDGED</span>
-                        </div>
-                        <div class="w-full space-y-1 text-[8px] font-sans relative">
-                            <div class="font-bold text-[10px] text-slate-900 blur-[0.6px]">1. Executive Summary (Smudged)</div>
-                            <div class="text-slate-800 bg-amber-100 p-1.5 rounded border border-amber-300 font-mono text-[7px] leading-tight filter blur-[0.4px]">
-                                The quick brown fox jumped over... [INK BLEEDING THROUGH PAPER]
-                            </div>
-                            <div class="w-full h-3 bg-gradient-to-r from-pink-500/40 via-cyan-500/40 to-yellow-500/40 rounded blur-sm"></div>
-                        </div>
-                        <div class="w-full text-center mt-2 text-[9px] font-bold text-red-800 bg-red-100 p-1 rounded border border-red-300">
-                            Inkjet takes 10x longer for 500 pages; paper is wet and warped!
-                        </div>
-                    </div>`;
-                } else if (pId === 'thermal') {
-                    return `
-                    <div class="relative w-full max-w-[220px] bg-slate-100 text-slate-900 p-2 rounded shadow-2xl comic-border-sm flex flex-col items-center">
-                        <div class="w-full text-[8px] font-mono text-center font-bold border-b border-slate-400 pb-1 mb-1">
-                            RECEIPT ROLL FORMAT (500 PAGES)
-                        </div>
-                        <div class="w-full h-28 overflow-y-auto bg-white p-1.5 border border-slate-300 text-[7px] font-mono space-y-1 leading-none">
-                            <div>========================</div>
-                            <div class="font-bold">PAGE 1 OF 500 (RECEIPT)</div>
-                            <div>Text chopped off at edge...</div>
-                            <div>Text chopped off at edge...</div>
-                            <div>========================</div>
-                            <div>PAGE 2 OF 500...</div>
-                        </div>
-                        <div class="w-full text-center mt-1 text-[9px] font-bold text-amber-800 bg-amber-100 p-0.5 rounded">
-                            500 pages created a 50-meter long receipt strip!
-                        </div>
-                    </div>`;
-                } else if (pId === '3d') {
-                    return `
-                    <div class="relative w-full max-w-[260px] bg-slate-900 text-purple-300 p-3 rounded-xl border-2 border-purple-500 flex flex-col items-center">
-                        <div class="text-[9px] font-mono font-bold mb-1">3D PLASTIC TEXT SHEET</div>
-                        <div class="w-full h-24 bg-purple-950 rounded p-2 flex items-center justify-center text-center text-[10px] font-mono border border-purple-400">
-                            Embossed 3D Plastic Lettering<br>
-                            <span class="text-amber-400 font-bold">Estimated Print Time: 3.5 Days per page!</span>
-                        </div>
-                        <div class="w-full text-center mt-1 text-[9px] text-purple-200">
-                            Extruding text in plastic for a 500-page report is wildly impractical!
-                        </div>
-                    </div>`;
-                } else if (pId === 'plotter') {
-                    return `
-                    <div class="relative w-full max-w-[260px] bg-blue-950 text-cyan-200 p-3 rounded border-2 border-cyan-500 flex flex-col items-center">
-                        <div class="text-[9px] font-mono font-bold mb-1">VECTOR PEN DRAWN TEXT</div>
-                        <div class="w-full h-24 bg-blue-900 rounded p-2 flex items-center justify-center text-center text-[9px] font-mono border border-blue-400">
-                            Pen drawing font outlines...<br>
-                            <span class="text-cyan-300">Plotter vector pens are meant for graphics, not dense text body!</span>
-                        </div>
-                        <div class="w-full text-center mt-1 text-[9px] text-blue-300">
-                            Too slow for multi-page documents!
+                    <div class="relative w-full max-w-[260px] bg-amber-50 text-slate-900 p-3 rounded comic-border-sm flex flex-col items-center">
+                        <div class="text-[10px] font-bold text-red-700 mb-1">❌ Very Slow / Impractical</div>
+                        <div class="w-full h-24 bg-white p-2 rounded border border-amber-300 text-[9px] font-mono text-slate-600 flex items-center justify-center text-center">
+                            ${printer.name} is not suitable for high-speed 500-page document printing!
                         </div>
                     </div>`;
                 }
             }
 
-            // JOB 3: Supermarket Store Receipt
-            if (jId === 'job3') {
+            if (jId === 'job3') { // Store Receipt
                 if (pId === 'thermal') {
                     return `
                     <div class="relative w-full max-w-[220px] bg-slate-50 text-slate-900 p-3 shadow-2xl comic-border-sm flex flex-col items-center font-mono">
-                        <div class="w-full text-[8px] text-slate-400 font-bold text-center tracking-widest border-b border-slate-300 pb-1 mb-1">
-                            vvvv TORN RECEIPT EDGE vvvv
+                        <div class="w-full text-[8px] text-slate-400 font-bold text-center border-b border-slate-300 pb-1 mb-1">
+                            RECEIPT ROLL
                         </div>
                         <div class="w-full bg-white p-2 rounded border border-slate-200 space-y-1 text-[8.5px]">
-                            <div class="text-center font-black text-[10px] text-slate-900">🛒 SUPER ICT MART</div>
-                            <div class="text-center text-[7px] text-slate-500">2026-09-08 • TRANS #88219</div>
-                            <div class="border-t border-b border-dashed border-slate-300 py-1 space-y-0.5">
-                                <div class="flex justify-between"><span>1x USB Flash Drive</span><span>$12.50</span></div>
-                                <div class="flex justify-between"><span>2x Thermal Paper Roll</span><span>$4.00</span></div>
-                                <div class="flex justify-between"><span>1x Robot Sticker Set</span><span>$2.50</span></div>
-                            </div>
-                            <div class="flex justify-between font-black text-[10px] pt-0.5">
-                                <span>TOTAL PAID:</span>
-                                <span>$19.00</span>
-                            </div>
-                            <div class="w-full h-6 bg-[repeating-linear-gradient(90deg,#000,#000_2px,transparent_2px,transparent_4px)] mt-1"></div>
+                            <div class="text-center font-black text-[10px]">🛒 ICT SUPERMART</div>
+                            <div class="flex justify-between"><span>USB Drive</span><span>$12.50</span></div>
+                            <div class="flex justify-between"><span>Thermal Paper</span><span>$4.00</span></div>
+                            <div class="flex justify-between font-bold border-t pt-1"><span>TOTAL:</span><span>$16.50</span></div>
                         </div>
-                        <div class="w-full text-center mt-1 text-[9px] font-black text-emerald-700 bg-emerald-100 p-0.5 rounded border border-emerald-300">
-                            ✨ Instant heat response! Zero ink cartridges needed!
+                        <div class="w-full text-center mt-1 text-[9px] font-black text-emerald-700 bg-emerald-100 p-0.5 rounded">
+                            ✨ Zero ink needed! Chemical heat paper activated!
                         </div>
                     </div>`;
                 } else if (pId === 'laser') {
                     return `
-                    <div class="relative w-full max-w-[220px] bg-slate-950 text-white p-3 rounded shadow-2xl comic-border-sm flex flex-col items-center border-red-500">
-                        <div class="w-full bg-red-600 text-white text-[8px] font-mono font-black text-center py-0.5 rounded mb-1">
-                            🔥 SCORCHED THERMAL PAPER!
-                        </div>
-                        <div class="w-full h-32 bg-black rounded border-2 border-red-600 flex flex-col items-center justify-center p-2 text-center relative overflow-hidden">
-                            <i class="fas fa-fire-flame-curled text-amber-500 text-3xl mb-1 animate-bounce"></i>
-                            <span class="text-[10px] font-mono font-black text-red-400">PAPER TURNED JET BLACK!</span>
-                            <span class="text-[8px] font-mono text-slate-300 mt-1">Fuser roller heat (~200°C) chemically blackened the entire thermal roll!</span>
-                        </div>
-                        <div class="w-full text-center mt-1 text-[9px] font-bold text-red-400 bg-red-950 p-1 rounded border border-red-800">
-                            Receipt is completely ruined and illegible!
+                    <div class="relative w-full max-w-[220px] bg-slate-950 text-white p-3 rounded comic-border-sm flex flex-col items-center border-red-500">
+                        <div class="text-[9px] font-black text-red-400 mb-1">🔥 SCORCHED PAPER!</div>
+                        <div class="w-full h-24 bg-black rounded p-2 text-center text-[9px] text-red-300 flex items-center justify-center">
+                            Laser fuser heat (~200°C) turned thermal paper completely black!
                         </div>
                     </div>`;
-                } else if (pId === 'inkjet') {
+                } else {
                     return `
-                    <div class="relative w-full max-w-[220px] bg-amber-50 text-slate-900 p-2.5 rounded shadow-2xl comic-border-sm flex flex-col items-center">
-                        <div class="w-full text-[8px] font-mono text-center font-bold text-amber-900 border-b border-amber-300 pb-1 mb-1">
-                            INCOMPATIBLE RECEIPT FEED
-                        </div>
-                        <div class="w-full h-24 bg-white p-2 rounded border border-amber-300 flex flex-col items-center justify-center text-center">
-                            <i class="fas fa-droplet text-cyan-500 text-2xl mb-1"></i>
-                            <span class="text-[8.5px] font-mono text-slate-800 font-bold">Liquid ink smudged & soaked thin thermal strip</span>
-                        </div>
-                        <div class="w-full text-center mt-1 text-[9px] font-bold text-amber-800">
-                            Inkjet is too slow and costly for store receipts!
-                        </div>
-                    </div>`;
-                } else if (pId === '3d') {
-                    return `
-                    <div class="relative w-full max-w-[240px] bg-purple-950 text-purple-200 p-3 rounded-xl border border-purple-500 flex flex-col items-center">
-                        <div class="text-[9px] font-mono font-bold mb-1">PLASTIC RECEIPT SLAB</div>
-                        <div class="w-full h-24 bg-purple-900 rounded p-2 flex flex-col items-center justify-center text-center text-[9px] font-mono">
-                            <i class="fas fa-barcode text-2xl text-purple-300 mb-1"></i>
-                            Heavy plastic strip printed layer-by-layer!
-                        </div>
-                        <div class="w-full text-center mt-1 text-[9px] text-purple-300">
-                            Customers can't fold or pocket a plastic slab receipt!
-                        </div>
-                    </div>`;
-                } else if (pId === 'plotter') {
-                    return `
-                    <div class="relative w-full max-w-[240px] bg-blue-950 text-blue-200 p-3 rounded border border-blue-500 flex flex-col items-center">
-                        <div class="text-[9px] font-mono font-bold mb-1">PLOTTER PEN TEAR</div>
-                        <div class="w-full h-24 bg-blue-900 rounded p-2 flex flex-col items-center justify-center text-center text-[9px] font-mono">
-                            <i class="fas fa-file-circle-xmark text-2xl text-cyan-400 mb-1"></i>
-                            Sharp vector pens ripped narrow paper strip!
-                        </div>
-                        <div class="w-full text-center mt-1 text-[9px] text-blue-300">
-                            Plotters are for wide blueprints, not receipt paper!
-                        </div>
+                    <div class="relative w-full max-w-[220px] bg-amber-50 text-slate-900 p-3 rounded comic-border-sm flex flex-col items-center">
+                        <div class="text-[9px] font-bold text-amber-900 mb-1">❌ Incompatible Printer</div>
+                        <div class="text-[9px] text-slate-600 text-center">Receipts require instant thermal rolls without ink cartridges.</div>
                     </div>`;
                 }
             }
 
-            // JOB 4: 3D Plastic Toy Dragon
-            if (jId === 'job4') {
+            if (jId === 'job4') { // 3D Toy Dragon
                 if (pId === '3d') {
                     return `
-                    <div class="relative w-full max-w-[260px] bg-slate-900 text-white p-3 rounded-xl border-2 border-purple-500 shadow-2xl flex flex-col items-center">
-                        <div class="w-full flex justify-between items-center text-[9px] font-mono text-purple-300 font-bold border-b border-purple-800 pb-1 mb-1.5">
-                            <span>🐲 SOLID 3D OBJECT OUTPUT</span>
-                            <span class="bg-purple-800 text-purple-100 px-1 rounded">PLA PLASTIC</span>
+                    <div class="relative w-full max-w-[260px] bg-slate-900 text-white p-3 rounded-xl border-2 border-purple-500 flex flex-col items-center">
+                        <div class="w-full text-[9px] font-mono text-purple-300 font-bold mb-1">🐲 SOLID 3D PLASTIC MODEL</div>
+                        <div class="w-full h-28 bg-slate-950 rounded border border-purple-400/50 flex items-center justify-center">
+                            <i class="fas fa-dragon text-5xl text-purple-400 drop-shadow-[0_0_10px_#c084fc]"></i>
                         </div>
-                        <div class="w-full h-32 bg-slate-950 rounded border border-purple-400/50 flex flex-col items-center justify-center relative overflow-hidden p-2">
-                            <div class="absolute bottom-2 inset-x-4 h-3 bg-cyan-900/40 border border-cyan-400/50 rounded transform rotate-12"></div>
-                            <svg viewBox="0 0 100 80" class="w-24 h-24 relative z-10 drop-shadow-[0_4px_8px_rgba(168,85,247,0.5)]">
-                                <path d="M 50 15 L 75 30 L 75 60 L 50 75 L 25 60 L 25 30 Z" fill="#9333ea" stroke="#c084fc" stroke-width="2"/>
-                                <path d="M 50 15 L 50 75" stroke="#c084fc" stroke-width="1.5"/>
-                                <path d="M 50 45 L 75 30" stroke="#c084fc" stroke-width="1.5"/>
-                                <path d="M 50 45 L 25 30" stroke="#c084fc" stroke-width="1.5"/>
-                                <polygon points="35,25 20,10 30,20" fill="#facc15"/>
-                                <polygon points="65,25 80,10 70,20" fill="#facc15"/>
-                            </svg>
-                            <span class="text-[8px] font-mono text-cyan-300 bg-slate-900/80 px-1 rounded border border-cyan-500/50 relative z-10 mt-1">
-                                0.15mm Layer Lines • Support Raft Built
-                            </span>
-                        </div>
-                        <div class="w-full text-center mt-2 text-[9px] font-black text-purple-300 bg-purple-950 p-1 rounded border border-purple-800">
-                            ✨ Real physical 3D plastic figurine created from PLA filament!
+                        <div class="w-full text-center mt-2 text-[9px] font-black text-purple-300 bg-purple-950 p-1 rounded">
+                            ✨ Real physical 3D plastic figurine built layer-by-layer!
                         </div>
                     </div>`;
                 } else {
-                    let pName = printer.name;
                     return `
-                    <div class="relative w-full max-w-[260px] bg-white text-slate-900 p-3 rounded shadow-2xl comic-border-sm flex flex-col items-center">
-                        <div class="w-full text-[9px] font-mono font-bold text-red-600 border-b border-red-200 pb-1 mb-1 text-center">
-                            ❌ 2D FLAT PAPER PRINT OUT
-                        </div>
-                        <div class="w-full h-28 bg-slate-100 border border-slate-300 rounded p-2 flex flex-col items-center justify-center relative">
-                            <i class="fas fa-dragon text-4xl text-purple-600 mb-1"></i>
-                            <span class="text-[9px] font-bold text-slate-700">FLAT 2D DRAGON IMAGE ON PAPER</span>
-                            <span class="text-[7.5px] font-mono text-red-600 mt-0.5">Where is the real toy? This is just paper!</span>
-                        </div>
-                        <div class="w-full text-center mt-1 text-[9px] font-bold text-red-700 bg-red-50 p-1 rounded border border-red-200">
-                            Traditional paper printers (${pName}) cannot build physical 3D plastic objects!
+                    <div class="relative w-full max-w-[260px] bg-white text-slate-900 p-3 rounded comic-border-sm flex flex-col items-center">
+                        <div class="text-[10px] font-bold text-red-600 mb-1">❌ Flat Paper Print Only</div>
+                        <div class="w-full h-24 bg-slate-100 rounded border border-slate-300 flex items-center justify-center text-center text-[9px] font-mono text-slate-600 p-2">
+                            ${printer.name} printed a flat picture on paper! No 3D object was built!
                         </div>
                     </div>`;
                 }
             }
 
-            // JOB 5: Architect Blueprints Poster
-            if (jId === 'job5') {
+            if (jId === 'job5') { // Blueprint Poster
                 if (pId === 'plotter') {
                     return `
-                    <div class="relative w-full max-w-[280px] bg-blue-950 text-white p-3 rounded-lg border-2 border-blue-400 shadow-2xl flex flex-col items-center">
-                        <div class="w-full flex justify-between items-center text-[9px] font-mono text-cyan-300 font-bold border-b border-blue-800 pb-1 mb-1.5">
-                            <span>📐 WIDE-FORMAT ARCHITECT BLUEPRINT</span>
-                            <span class="bg-blue-800 text-blue-100 px-1 rounded">VECTOR PEN</span>
-                        </div>
-                        <div class="w-full h-32 bg-blue-900 rounded border border-blue-400 relative overflow-hidden p-1.5 flex flex-col justify-between">
-                            <div class="absolute inset-0 bg-[linear-gradient(to_right,#3b82f6_1px,transparent_1px),linear-gradient(to_bottom,#3b82f6_1px,transparent_1px)] bg-[size:12px_12px] opacity-30"></div>
-                            <svg viewBox="0 0 100 60" class="w-full h-full stroke-white fill-none stroke-1 relative z-10">
-                                <rect x="5" y="5" width="90" height="50" stroke-width="1.5" />
-                                <line x1="35" y1="5" x2="35" y2="55" />
-                                <line x1="35" y1="30" x2="95" y2="30" />
-                                <path d="M 35 20 A 10 10 0 0 1 45 30" stroke="#facc15" stroke-dasharray="2,2"/>
+                    <div class="relative w-full max-w-[280px] bg-blue-950 text-white p-3 rounded-lg border-2 border-blue-400 flex flex-col items-center">
+                        <div class="w-full text-[9px] font-mono text-cyan-300 font-bold mb-1">📐 ARCHITECTURAL BLUEPRINT</div>
+                        <div class="w-full h-28 bg-blue-900 rounded border border-blue-400 p-2 relative overflow-hidden">
+                            <svg viewBox="0 0 100 50" class="w-full h-full stroke-white fill-none stroke-1">
+                                <rect x="5" y="5" width="90" height="40" stroke-width="1.5" />
+                                <line x1="35" y1="5" x2="35" y2="45" />
                                 <text x="10" y="25" fill="#ffffff" font-size="5" font-family="monospace">LAB 101</text>
-                                <text x="50" y="20" fill="#ffffff" font-size="5" font-family="monospace">SERVER ROOM</text>
                             </svg>
-                            <div class="w-full flex justify-between text-[7px] font-mono text-cyan-300 relative z-10 bg-blue-950/80 px-1 rounded">
-                                <span>SCALE: 1:50</span>
-                                <span>VECTOR CONTINUOUS ROLL</span>
-                            </div>
                         </div>
-                        <div class="w-full text-center mt-2 text-[9px] font-black text-cyan-300 bg-blue-900 p-1 rounded border border-blue-700">
-                            ✨ Continuous pen vector lines draw infinite blueprint posters without pixellation!
-                        </div>
-                    </div>`;
-                } else if (pId === 'laser') {
-                    return `
-                    <div class="relative w-full max-w-[260px] bg-white text-slate-900 p-3 rounded shadow-2xl comic-border-sm flex flex-col items-center">
-                        <div class="w-full text-[9px] font-mono font-bold text-amber-800 border-b border-amber-200 pb-1 mb-1 text-center">
-                            ⚠️ SCALED DOWN TO TINY A4 SHEET
-                        </div>
-                        <div class="w-full h-28 bg-slate-100 border border-slate-300 rounded p-2 flex flex-col items-center justify-center relative">
-                            <div class="w-16 h-20 bg-blue-900 text-[5px] text-white font-mono p-1 rounded border border-slate-400 flex flex-col items-center justify-center text-center">
-                                [Blueprint Micro-Scaled]
-                                Unreadable 2pt text lines!
-                            </div>
-                        </div>
-                        <div class="w-full text-center mt-1 text-[9px] font-bold text-amber-900 bg-amber-50 p-1 rounded border border-amber-200">
-                            Standard A4 laser printers cannot accommodate wide architectural poster rolls!
-                        </div>
-                    </div>`;
-                } else if (pId === 'inkjet') {
-                    return `
-                    <div class="relative w-full max-w-[260px] bg-blue-900 text-white p-3 rounded comic-border-sm flex flex-col items-center">
-                        <div class="w-full text-[9px] font-mono font-bold text-amber-300 mb-1 text-center">
-                            INK BANDING STRIPES & MISALIGNMENT
-                        </div>
-                        <div class="w-full h-28 bg-blue-950 rounded p-2 border border-blue-400 relative overflow-hidden flex flex-col justify-center items-center">
-                            <div class="absolute inset-0 bg-[repeating-linear-gradient(0deg,transparent,transparent_6px,rgba(255,255,255,0.4)_6px,rgba(255,255,255,0.4)_8px)]"></div>
-                            <span class="text-[9px] font-mono font-bold text-yellow-300 relative z-10 bg-black/60 px-1 rounded">
-                                Ran out of Cyan ink mid-poster!
-                            </span>
-                        </div>
-                        <div class="w-full text-center mt-1 text-[9px] text-blue-200">
-                            Large poster prints drain desktop inkjet cartridges almost immediately!
+                        <div class="w-full text-center mt-2 text-[9px] font-black text-cyan-300 bg-blue-900 p-1 rounded">
+                            ✨ Smooth vector pen lines drawn across wide continuous paper roll!
                         </div>
                     </div>`;
                 } else {
                     return `
-                    <div class="relative w-full max-w-[260px] bg-slate-900 text-slate-300 p-3 rounded-xl border border-slate-700 flex flex-col items-center">
-                        <div class="text-[9px] font-mono font-bold text-red-400 mb-1">BLUEPRINT PRINT FAILURE</div>
-                        <div class="w-full h-24 bg-slate-950 rounded p-2 flex flex-col items-center justify-center text-center text-[9px] font-mono">
-                            <i class="fas fa-scroll text-3xl text-amber-400 mb-1"></i>
-                            Printer incompatible with wide blueprint vector formats!
-                        </div>
-                        <div class="w-full text-center mt-1 text-[9px] text-slate-400">
-                            Use a Plotter for wide vector line drawings.
-                        </div>
+                    <div class="relative w-full max-w-[260px] bg-slate-900 text-white p-3 rounded comic-border-sm flex flex-col items-center">
+                        <div class="text-[10px] font-bold text-amber-400 mb-1">❌ Paper Format Too Small</div>
+                        <div class="text-[9px] text-slate-300 text-center">Standard office paper cannot fit wide architectural blueprints.</div>
                     </div>`;
                 }
             }
 
-            return `
-            <div class="bg-slate-800 text-white p-4 rounded-xl border border-slate-700 text-center text-xs">
-                Rendered output preview for ${job.title} on ${printer.name}.
-            </div>`;
+            return `<div class="p-3 text-xs">Print preview loaded.</div>`;
         }
 
         function showOutputModal(job, printer, isCorrect) {
@@ -1167,19 +775,18 @@
 
             title.innerText = job.title;
             subtitle.innerText = `Processed by ${printer.name}`;
-
             tray.innerHTML = getRealisticOutputHTML(job, printer, isCorrect);
 
             if (isCorrect) {
                 playSound('success');
                 badge.className = "px-3 py-1 rounded-xl text-xs font-black uppercase font-mono mb-2 border-2 border-black bg-emerald-400 text-black";
                 badge.innerText = "SUCCESSFUL PRINT!";
-                desc.innerHTML = `✨ <strong>Success!</strong> The <strong>${printer.name}</strong> produced an authentic, high-quality output for <strong>${job.title}</strong>! ${job.desc}`;
+                desc.innerHTML = `✨ <strong>Success!</strong> The <strong>${printer.name}</strong> is the ideal printer for <strong>${job.title}</strong>! ${job.desc}`;
             } else {
                 playSound('error');
                 badge.className = "px-3 py-1 rounded-xl text-xs font-black uppercase font-mono mb-2 border-2 border-black bg-red-500 text-white";
                 badge.innerText = "PRINT ERROR / MISMATCH!";
-                desc.innerHTML = `⚠️ <strong>Printer Mismatch Real Result:</strong> See the actual physical output above! ${printer.name} failed to process <strong>${job.title}</strong> correctly. <br><span class="text-amber-300 text-[11px]">Required Printer: ${job.targetPrinter.toUpperCase()} PRINTER</span>`;
+                desc.innerHTML = `⚠️ <strong>Mismatch Result:</strong> ${printer.name} failed to handle <strong>${job.title}</strong> correctly. <br><span class="text-amber-300 text-[11px]">Required Printer: ${job.targetPrinter.toUpperCase()} PRINTER</span>`;
             }
 
             modal.classList.remove('hidden');
@@ -1187,16 +794,13 @@
 
         function closeOutputModal() {
             playSound('click');
-            const modal = document.getElementById('output-modal');
-            modal.classList.add('hidden');
+            document.getElementById('output-modal').classList.add('hidden');
 
             if (pendingMatchResult) {
                 const { job, isCorrect, printer } = pendingMatchResult;
                 if (isCorrect) {
                     state.score += 100;
                     document.getElementById('score-val').innerText = state.score;
-
-                    // Remove matched job
                     state.jobs = state.jobs.filter(j => j.id !== job.id);
                     renderDispatchBoard();
 
@@ -1204,12 +808,12 @@
 
                     if (state.jobs.length === 0) {
                         setTimeout(() => {
-                            showToast("🎉 Queue Cleared!", "All print jobs successfully completed! Reloading new queue...", "text-amber-500");
+                            showToast("🎉 Queue Cleared!", "All jobs completed! Reloading new queue...", "text-amber-500");
                             resetDispatchJobs();
                         }, 800);
                     }
                 } else {
-                    showToast("❌ Print Failed!", `${job.title} returned to spooler queue. Try another printer!`, "text-red-500");
+                    showToast("❌ Print Failed!", `${job.title} returned to queue. Try another printer!`, "text-red-500");
                 }
                 pendingMatchResult = null;
             }
@@ -1226,34 +830,51 @@
             renderDispatchBoard();
         }
 
+        function showToast(title, desc, colorClass = "text-pink-600") {
+            const toast = document.getElementById('toast-banner');
+            const toastTitle = document.getElementById('toast-title');
+            const toastDesc = document.getElementById('toast-desc');
+            const toastIcon = document.getElementById('toast-icon');
+
+            if (toast && toastTitle && toastDesc) {
+                toastTitle.innerText = title;
+                toastDesc.innerText = desc;
+                toastIcon.className = `text-2xl ${colorClass}`;
+                toast.classList.remove('translate-x-full');
+                setTimeout(() => {
+                    toast.classList.add('translate-x-full');
+                }, 3000);
+            }
+        }
+
         /* =========================================================================
-           TAB 2: INSIDE ENGINE INTERACTIVE VISUALIZER
+           TAB 2: INSIDE ENGINE INTERACTIVE VISUALIZER (ALL 5 ENGINES ANIMATED)
            ========================================================================= */
-        const engineInfo = {
+        const engineDetails = {
             inkjet: {
-                title: "Inkjet Printer Simulation",
-                info: "Micro-nozzles spray thousands of tiny CMYK liquid ink drops per second onto paper as the printhead carriage travels left and right.",
-                dpi: "4800 x 1200 DPI"
+                title: "Inkjet Engine Simulation",
+                dpi: "4800 x 1200 DPI",
+                info: "Micro-nozzles squirt microscopic CMYK (Cyan, Magenta, Yellow, Black) liquid ink droplets onto paper as the motor carriage sweeps across."
             },
             laser: {
-                title: "Laser Printer Simulation",
-                info: "A laser beam draws an electrostatic charge on a rotating OPC drum. Powdered toner sticks to charges, then melted onto paper by high-heat fuser rollers!",
-                dpi: "1200 x 1200 DPI"
+                title: "Laser Printer Engine Simulation",
+                dpi: "1200 x 1200 DPI",
+                info: "1. Laser creates glowing latent electrostatic charges on OPC drum. 2. Black toner powder sticks to charges. 3. Transferred onto paper as powdery/semi-transparent text before 200°C fuser melts it solid!"
             },
             thermal: {
-                title: "Thermal Printer Simulation",
-                info: "A heated thermal printhead selectively presses against chemically-coated paper. Heat turns the special paper black instantly!",
-                dpi: "203 DPI"
+                title: "Thermal Printer Engine Simulation",
+                dpi: "203 DPI",
+                info: "A thermal printhead array selectively heats chemically-coated paper. As paper passes under hot pins, dark black words emerge instantly on the right without any ink!"
             },
             '3d': {
-                title: "3D Printer Simulation",
-                info: "Plastic filament spool is fed into a hot-end nozzle (~200°C), laying melted plastic layer-by-layer to form solid 3D models.",
-                dpi: "0.1mm Layer Height"
+                title: "3D Printer (FDM) Simulation",
+                dpi: "0.1mm Layer Height",
+                info: "Plastic PLA filament is pushed through a 210°C heated hot-end nozzle. The X/Y/Z carriage extrudes melted plastic layer upon layer to build solid 3D models."
             },
             plotter: {
-                title: "Plotter Simulation",
-                info: "Moves robotic vector pens across continuous roll paper to draw precise architectural blueprints and giant posters without line pixellation.",
-                dpi: "Vector Pen Roll"
+                title: "Wide-Format Vector Plotter Simulation",
+                dpi: "Vector Continuous Roll",
+                info: "Plotters use motorized X-carriages and Y-gantries to move physical ink pens. The pen lowers (PEN DOWN) to draw continuous, non-pixelated architectural blueprint lines."
             }
         };
 
@@ -1264,59 +885,49 @@
             ['inkjet', 'laser', 'thermal', '3d', 'plotter'].forEach(e => {
                 const btn = document.getElementById(`eng-btn-${e}`);
                 if (btn) {
-                    if (e === type) {
-                        btn.className = "w-full text-left p-2.5 rounded-xl border-2 border-black bg-amber-400 text-black font-bold text-xs flex items-center justify-between shadow-[3px_3px_0px_#000] hover:scale-[1.02] transition-all";
-                    } else {
-                        btn.className = "w-full text-left p-2.5 rounded-xl border-2 border-black bg-slate-800 text-white font-bold text-xs flex items-center justify-between shadow-[3px_3px_0px_#000] hover:scale-[1.02] transition-all";
-                    }
+                    btn.className = (e === type)
+                        ? "w-full text-left p-2.5 rounded-xl border-2 border-black bg-amber-400 text-black font-bold text-xs flex items-center justify-between shadow-[3px_3px_0px_#000] hover:scale-[1.02] transition-all"
+                        : "w-full text-left p-2.5 rounded-xl border-2 border-black bg-slate-800 text-white font-bold text-xs flex items-center justify-between shadow-[3px_3px_0px_#000] hover:scale-[1.02] transition-all";
                 }
             });
 
-            const data = engineInfo[type];
-            document.getElementById('engine-title').innerHTML = `<i class="fas fa-gear text-amber-400 animate-spin"></i> ${data.title}`;
-            document.getElementById('engine-info-text').innerText = data.info;
-            document.getElementById('engine-dpi-val').innerText = data.dpi;
+            const info = engineDetails[type];
+            document.getElementById('engine-title').innerHTML = `<i class="fas fa-gear text-amber-400 animate-spin"></i> ${info.title}`;
+            document.getElementById('engine-info-text').innerText = info.info;
+            document.getElementById('engine-dpi-val').innerText = info.dpi;
 
-            state.engineStep = 1;
-            updateEngineStepDesc();
-            drawEngineCanvas();
-        }
-
-        function triggerEngineAction() {
-            playSound('whir');
-            state.engineRunning = true;
-            state.engineStep = (state.engineStep % 3) + 1;
-            updateEngineStepDesc();
-            drawEngineCanvas();
-        }
-
-        function updateEngineStepDesc() {
-            const badge = document.getElementById('engine-step-badge');
-            const desc = document.getElementById('engine-step-desc');
-            badge.innerText = `STEP ${state.engineStep}`;
-
-            const engine = state.selectedEngine;
-            if (engine === 'inkjet') {
-                if (state.engineStep === 1) desc.innerText = "Step 1: Paper feeds under rail carriage.";
-                else if (state.engineStep === 2) desc.innerText = "Step 2: Printhead sprays CMYK micro-droplets.";
-                else desc.innerText = "Step 3: Vibrant photo output complete!";
-            } else if (engine === 'laser') {
-                if (state.engineStep === 1) desc.innerText = "Step 1: Laser draws static electric image on drum.";
-                else if (state.engineStep === 2) desc.innerText = "Step 2: Powdered toner transfers to paper.";
-                else desc.innerText = "Step 3: Fuser heat-rollers melt toner permanently!";
-            } else if (engine === 'thermal') {
-                if (state.engineStep === 1) desc.innerText = "Step 1: Heat-sensitive receipt roll feeds forward.";
-                else if (state.engineStep === 2) desc.innerText = "Step 2: Thermal printhead heats paper surface black.";
-                else desc.innerText = "Step 3: Receipt paper cut and ejected!";
-            } else if (engine === '3d') {
-                if (state.engineStep === 1) desc.innerText = "Step 1: Extruder heats PLA filament to 210°C.";
-                else if (state.engineStep === 2) desc.innerText = "Step 2: Nozzle traces layer cross-section on bed.";
-                else desc.innerText = "Step 3: 3D model height grows layer by layer!";
-            } else {
-                if (state.engineStep === 1) desc.innerText = "Step 1: Inked ribbon position aligned over carbon page.";
-                else if (state.engineStep === 2) desc.innerText = "Step 2: Solenoid pins fire physically onto ribbon.";
-                else desc.innerText = "Step 3: Text impression stamped through all carbon layers!";
+            state.animTimer = 0;
+            if (!state.animating) {
+                toggleEngineAnimation(); // Auto start simulation
             }
+        }
+
+        function toggleEngineAnimation() {
+            state.animating = !state.animating;
+            const btnText = document.getElementById('engine-btn-text');
+            const btnIcon = document.getElementById('engine-btn-icon');
+            const badge = document.getElementById('engine-step-badge');
+
+            if (state.animating) {
+                playSound('whir');
+                btnText.innerText = "Pause Simulation";
+                btnIcon.className = "fas fa-pause";
+                badge.innerText = "ACTIVE CYCLE";
+                badge.className = "bg-emerald-500 text-black font-mono px-2 py-0.5 rounded text-[11px] font-black animate-pulse";
+                startAnimLoop();
+            } else {
+                btnText.innerText = "Resume Simulation";
+                btnIcon.className = "fas fa-play";
+                badge.innerText = "PAUSED";
+                badge.className = "bg-amber-400 text-black font-mono px-2 py-0.5 rounded text-[11px] font-black";
+                if (state.animFrameId) cancelAnimationFrame(state.animFrameId);
+            }
+        }
+
+        function resetEngineAnimation() {
+            playSound('click');
+            state.animTimer = 0;
+            drawEngineFrame();
         }
 
         function initEngineCanvas() {
@@ -1325,15 +936,33 @@
             const container = canvas.parentElement;
             canvas.width = container.clientWidth;
             canvas.height = container.clientHeight;
-            drawEngineCanvas();
+
+            if (!state.animating) {
+                toggleEngineAnimation();
+            }
         }
 
-        function drawEngineCanvas() {
+        function startAnimLoop() {
+            if (state.animFrameId) cancelAnimationFrame(state.animFrameId);
+
+            function loop() {
+                if (state.animating) {
+                    state.animTimer += 0.03;
+                    drawEngineFrame();
+                    state.animFrameId = requestAnimationFrame(loop);
+                }
+            }
+            state.animFrameId = requestAnimationFrame(loop);
+        }
+
+        function drawEngineFrame() {
             const canvas = document.getElementById('engine-canvas');
             if (!canvas) return;
             const ctx = canvas.getContext('2d');
             const w = canvas.width;
             const h = canvas.height;
+            const t = state.animTimer;
+            const e = state.selectedEngine;
 
             ctx.clearRect(0, 0, w, h);
 
@@ -1347,94 +976,386 @@
                 ctx.beginPath(); ctx.moveTo(0, y); ctx.lineTo(w, y); ctx.stroke();
             }
 
-            const e = state.selectedEngine;
-            const step = state.engineStep;
+            const desc = document.getElementById('engine-step-desc');
 
+            // -----------------------------------------------------------------
+            // 1. INKJET PRINTER ANIMATION
+            // -----------------------------------------------------------------
             if (e === 'inkjet') {
-                // Paper
-                ctx.fillStyle = '#ffffff';
-                ctx.fillRect(w * 0.15, h * 0.4, w * 0.7, h * 0.5);
+                desc.innerText = "Printhead sweeps left-right while micro-nozzles spray liquid CMYK ink drops.";
 
-                // Printhead Rail
-                ctx.fillStyle = '#475569';
-                ctx.fillRect(w * 0.1, h * 0.25, w * 0.8, 10);
+                // Paper Feed Sheet
+                ctx.fillStyle = '#ffffff';
+                ctx.fillRect(w * 0.2, h * 0.2, w * 0.6, h * 0.7);
+
+                // Print Rail
+                ctx.fillStyle = '#334155';
+                ctx.fillRect(w * 0.1, h * 0.35, w * 0.8, 12);
+
+                // Printhead Carriage Motion
+                const headX = w * 0.25 + (Math.sin(t * 3) + 1) * 0.5 * (w * 0.5);
+
+                // Micro Ink Droplets Falling
+                const colors = ['#06b6d4', '#ec4899', '#facc15', '#000000'];
+                colors.forEach((c, idx) => {
+                    const dropX = headX - 20 + idx * 12;
+                    ctx.fillStyle = c;
+                    for (let i = 0; i < 3; i++) {
+                        const dropY = h * 0.38 + ((t * 80 + i * 15) % 35);
+                        ctx.beginPath();
+                        ctx.arc(dropX, dropY, 3, 0, Math.PI * 2);
+                        ctx.fill();
+                    }
+                });
+
+                // Printed Lines on Paper
+                ctx.fillStyle = '#ec4899';
+                ctx.fillRect(w * 0.22, h * 0.48, w * 0.56, 12);
+                ctx.fillStyle = '#06b6d4';
+                ctx.fillRect(w * 0.22, h * 0.56, w * 0.56, 12);
+                ctx.fillStyle = '#facc15';
+                ctx.fillRect(w * 0.22, h * 0.64, w * 0.4, 12);
 
                 // Moving Printhead Box
-                const headX = step === 2 ? w * 0.5 : (step === 3 ? w * 0.7 : w * 0.2);
                 ctx.fillStyle = '#ec4899';
                 ctx.strokeStyle = '#000000';
                 ctx.lineWidth = 3;
-                ctx.fillRect(headX - 30, h * 0.2, 60, 40);
-                ctx.strokeRect(headX - 30, h * 0.2, 60, 40);
+                ctx.fillRect(headX - 30, h * 0.28, 60, 40);
+                ctx.strokeRect(headX - 30, h * 0.28, 60, 40);
 
-                // CMYK Cartridges Indicator
-                const colors = ['#06b6d4', '#ec4899', '#facc15', '#000000'];
+                // CMYK Cartridges
                 colors.forEach((c, idx) => {
                     ctx.fillStyle = c;
-                    ctx.fillRect(headX - 22 + idx * 11, h * 0.22, 8, 15);
+                    ctx.fillRect(headX - 22 + idx * 11, h * 0.30, 8, 18);
                 });
+            }
 
-                if (step >= 2) {
-                    // Droplets Animation
-                    colors.forEach((c, idx) => {
-                        ctx.fillStyle = c;
-                        ctx.beginPath();
-                        ctx.arc(headX - 22 + idx * 11 + 4, h * 0.32 + 15, 3, 0, Math.PI * 2);
-                        ctx.fill();
-                    });
+            // -----------------------------------------------------------------
+            // 2. LASER PRINTER ANIMATION (ENHANCED: Latent image -> Transferred toner -> Fused)
+            // -----------------------------------------------------------------
+            else if (e === 'laser') {
+                desc.innerText = "1. Laser creates latent static charge → 2. Toner sticks to drum → 3. Transferred onto paper as powdery text → 4. 200°C Fuser melts it solid!";
 
-                    // Printed lines on paper
-                    ctx.fillStyle = '#ec4899';
-                    ctx.fillRect(w * 0.2, h * 0.45, headX - w * 0.15, 8);
-                    ctx.fillStyle = '#06b6d4';
-                    ctx.fillRect(w * 0.2, h * 0.52, headX - w * 0.15, 8);
-                }
-            } else if (e === 'laser') {
-                // OPC Drum Roller
+                // Paper Tray
+                ctx.fillStyle = '#334155';
+                ctx.fillRect(w * 0.02, h * 0.55, w * 0.16, h * 0.35);
+                ctx.fillStyle = '#94a3b8';
+                ctx.font = 'bold 9px JetBrains Mono';
+                ctx.fillText('PAPER TRAY', w * 0.03, h * 0.86);
+
+                const paperProgress = (t * 40) % (w * 0.72);
+                const paperX = w * 0.08 + paperProgress;
+                const paperY = h * 0.60;
+                const paperW = 120;
+                const paperH = 65;
+
+                // Paper Sheet
+                ctx.fillStyle = '#ffffff';
+                ctx.strokeStyle = '#000000';
+                ctx.lineWidth = 2;
+                ctx.fillRect(paperX, paperY, paperW, paperH);
+                ctx.strokeRect(paperX, paperY, paperW, paperH);
+
+                // Laser Diode Box
+                ctx.fillStyle = '#0284c7';
+                ctx.fillRect(w * 0.32, h * 0.04, 85, 26);
+                ctx.strokeStyle = '#000000';
+                ctx.strokeRect(w * 0.32, h * 0.04, 85, 26);
+                ctx.fillStyle = '#ffffff';
+                ctx.font = 'bold 9px JetBrains Mono';
+                ctx.fillText('1. LASER BEAM', w * 0.33, h * 0.11);
+
+                // Laser Beam
+                const laserTargetX = w * 0.44 + Math.sin(t * 8) * 12;
+                ctx.strokeStyle = '#06b6d4';
+                ctx.lineWidth = 3;
+                ctx.beginPath();
+                ctx.moveTo(w * 0.40, h * 0.13);
+                ctx.lineTo(laserTargetX, h * 0.30);
+                ctx.stroke();
+
+                // OPC Drum Cylinder
+                const drumCenterX = w * 0.44;
+                const drumCenterY = h * 0.42;
+                const drumRadius = 42;
+
+                ctx.save();
+                ctx.translate(drumCenterX, drumCenterY);
+                ctx.rotate(t * 2);
+
                 ctx.fillStyle = '#10b981';
                 ctx.strokeStyle = '#000000';
                 ctx.lineWidth = 3;
                 ctx.beginPath();
-                ctx.arc(w * 0.35, h * 0.4, 45, 0, Math.PI * 2);
+                ctx.arc(0, 0, drumRadius, 0, Math.PI * 2);
                 ctx.fill();
                 ctx.stroke();
 
-                // Laser Beam Line
-                ctx.strokeStyle = '#06b6d4';
-                ctx.lineWidth = 3;
-                ctx.beginPath();
-                ctx.moveTo(w * 0.1, h * 0.15);
-                ctx.lineTo(w * 0.35, h * 0.28);
-                ctx.stroke();
+                // Drum Surface Labels showing Latent Charge + Powdered Toner
+                for (let a = 0; a < Math.PI * 2; a += Math.PI / 2) {
+                    ctx.save();
+                    ctx.rotate(a);
+                    // Glowing latent electro-static charge (+ + +)
+                    ctx.fillStyle = '#a5f3fc';
+                    ctx.font = 'bold 9px JetBrains Mono';
+                    ctx.fillText('+++ CHARGE +++', -36, -8);
+                    
+                    // Powdered toner adhering to drum
+                    ctx.fillStyle = '#1e293b';
+                    ctx.fillText('░░ TONER ░░', -32, 6);
+                    ctx.restore();
+                }
+                ctx.restore();
 
-                // Laser Unit
-                ctx.fillStyle = '#3b82f6';
-                ctx.fillRect(w * 0.05, h * 0.1, 60, 30);
-
-                // Fuser Heating Rollers
-                ctx.fillStyle = step === 3 ? '#ef4444' : '#f59e0b';
-                ctx.beginPath();
-                ctx.arc(w * 0.75, h * 0.32, 25, 0, Math.PI * 2);
-                ctx.fill();
-                ctx.arc(w * 0.75, h * 0.52, 25, 0, Math.PI * 2);
-                ctx.fill();
-
-                // Paper passing through
                 ctx.fillStyle = '#ffffff';
-                ctx.fillRect(w * 0.1, h * 0.41, w * 0.8, 6);
-            } else if (e === '3d') {
-                // Build Plate
-                ctx.fillStyle = '#334155';
-                ctx.fillRect(w * 0.2, h * 0.75, w * 0.6, 12);
+                ctx.font = 'bold 9px Fredoka';
+                ctx.fillText('2. OPC DRUM (CHARGE & TONER)', drumCenterX - 65, drumCenterY - 48);
 
-                // Nozzle Body
-                const nozzleX = w * 0.5;
-                const nozzleY = step === 3 ? h * 0.45 : (step === 2 ? h * 0.55 : h * 0.65);
+                // Toner Hopper
+                ctx.fillStyle = '#1e293b';
+                ctx.fillRect(w * 0.21, h * 0.24, 60, 38);
+                ctx.strokeStyle = '#facc15';
+                ctx.strokeRect(w * 0.21, h * 0.24, 60, 38);
+                ctx.fillStyle = '#facc15';
+                ctx.font = 'bold 9px JetBrains Mono';
+                ctx.fillText('TONER', w * 0.23, h * 0.34);
+
+                // Fuser Rollers
+                const fuserX = w * 0.70;
+                const glow = Math.abs(Math.sin(t * 6));
+                ctx.fillStyle = `rgba(239, 68, 68, ${0.7 + glow * 0.3})`;
+                ctx.strokeStyle = '#000000';
+                ctx.lineWidth = 2;
+
+                ctx.beginPath(); ctx.arc(fuserX, paperY - 12, 22, 0, Math.PI * 2); ctx.fill(); ctx.stroke();
+                ctx.beginPath(); ctx.arc(fuserX, paperY + paperH + 12, 22, 0, Math.PI * 2); ctx.fill(); ctx.stroke();
+
+                ctx.fillStyle = '#ef4444';
+                ctx.font = 'bold 9px JetBrains Mono';
+                ctx.fillText('4. 200°C HEAT FUSER', fuserX - 52, paperY - 38);
+
+                // TEXT STAGES ON PAPER:
+                // Stage A: Before Drum -> Blank paper
+                // Stage B: Between Drum & Fuser -> Translucent / Powdery Unfused Toner ("Transparency Word")
+                // Stage C: After Fuser -> Solid, crisp opaque black fused text!
+                if (paperX + paperW > drumCenterX - 10) {
+                    const textX = paperX + 12;
+                    const textY = paperY + 28;
+
+                    if (paperX < fuserX - 25) {
+                        // UNFUSED TONER (Translucent / Powdered appearance)
+                        ctx.save();
+                        ctx.fillStyle = 'rgba(30, 41, 59, 0.45)'; // Semi-transparent powdery gray
+                        ctx.font = 'bold 9px JetBrains Mono';
+                        ctx.fillText('░ SCIENCE REPORT ░', textX, textY);
+                        ctx.fillRect(textX, textY + 5, 75, 10);
+                        
+                        ctx.fillStyle = '#0284c7';
+                        ctx.font = 'bold 8px JetBrains Mono';
+                        ctx.fillText('3. UNFUSED TONER (POWDERY)', textX, textY + 28);
+                        ctx.restore();
+                    } else {
+                        // FUSED TONER (Solid black, melted permanently onto paper)
+                        ctx.save();
+                        ctx.fillStyle = '#000000'; // 100% Solid Opaque
+                        ctx.font = 'bold 9px JetBrains Mono';
+                        ctx.fillText('█ SCIENCE REPORT █', textX, textY);
+                        ctx.fillRect(textX, textY + 5, 75, 10);
+
+                        ctx.fillStyle = '#10b981';
+                        ctx.font = 'bold 8px JetBrains Mono';
+                        ctx.fillText('✓ MELTED & FUSED SOLID!', textX, textY + 28);
+                        ctx.restore();
+                    }
+                }
+
+                ctx.fillStyle = '#1e293b';
+                ctx.fillRect(w * 0.82, h * 0.58, w * 0.16, h * 0.32);
+                ctx.fillStyle = '#a5f3fc';
+                ctx.font = 'bold 9px JetBrains Mono';
+                ctx.fillText('OUTPUT TRAY', w * 0.83, h * 0.86);
+            }
+
+            // -----------------------------------------------------------------
+            // 3. THERMAL PRINTER ANIMATION (ENHANCED: Visible print emerging past pins)
+            // -----------------------------------------------------------------
+            else if (e === 'thermal') {
+                desc.innerText = "Paper feeds rightward from roll under hot thermal pins. As paper passes the pins, heat triggers a chemical reaction revealing dark text!";
+
+                // Paper Roll Source with rotation animation
+                const rollX = w * 0.16;
+                const rollY = h * 0.48;
+                const rollRadius = 35;
+
+                ctx.save();
+                ctx.fillStyle = '#334155';
+                ctx.fillRect(rollX - 45, rollY - 45, 90, 90);
+                ctx.strokeStyle = '#000000';
+                ctx.lineWidth = 3;
+                ctx.strokeRect(rollX - 45, rollY - 45, 90, 90);
+
+                // Rotating Paper Roll
+                ctx.save();
+                ctx.translate(rollX, rollY);
+                ctx.rotate(t * 2);
+                ctx.fillStyle = '#f8fafc';
+                ctx.strokeStyle = '#000000';
+                ctx.lineWidth = 3;
+                ctx.beginPath(); ctx.arc(0, 0, rollRadius, 0, Math.PI * 2); ctx.fill(); ctx.stroke();
                 
+                // Roll core lines to show rotation
+                ctx.strokeStyle = '#cbd5e1';
+                ctx.lineWidth = 2;
+                ctx.beginPath(); ctx.moveTo(-rollRadius + 5, 0); ctx.lineTo(rollRadius - 5, 0); ctx.stroke();
+                ctx.beginPath(); ctx.moveTo(0, -rollRadius + 5); ctx.lineTo(0, rollRadius - 5); ctx.stroke();
+                
+                ctx.fillStyle = '#475569';
+                ctx.beginPath(); ctx.arc(0, 0, 10, 0, Math.PI * 2); ctx.fill();
+                ctx.restore();
+
+                ctx.fillStyle = '#facc15';
+                ctx.font = 'bold 9px Fredoka';
+                ctx.fillText('1. THERMAL ROLL (ROTATING)', rollX - 54, rollY - 52);
+                ctx.restore();
+
+                // Paper Strip scrolling rightwards
+                const paperY = rollY - 22;
+                const paperH = 75;
+                const paperLeft = rollX + 25;
+                const paperRight = w * 0.94;
+                const headX = w * 0.42;
+
+                // Paper feeds dynamically with time
+                const scrollSpeed = 35; // px per sec
+                const paperScroll = (t * scrollSpeed);
+
+                // Base Paper Feed Background Sheet
+                ctx.fillStyle = '#ffffff';
+                ctx.strokeStyle = '#000000';
+                ctx.lineWidth = 2;
+                ctx.fillRect(paperLeft, paperY, paperRight - paperLeft, paperH);
+                ctx.strokeRect(paperLeft, paperY, paperRight - paperLeft, paperH);
+
+                // Paper edge teeth / tear line at output end
+                ctx.fillStyle = '#cbd5e1';
+                for (let ty = paperY; ty < paperY + paperH; ty += 8) {
+                    ctx.beginPath();
+                    ctx.moveTo(paperRight, ty);
+                    ctx.lineTo(paperRight + 6, ty + 4);
+                    ctx.lineTo(paperRight, ty + 8);
+                    ctx.fill();
+                }
+
+                // Grid/Feed marks on blank paper (moving right)
+                ctx.strokeStyle = '#e2e8f0';
+                ctx.lineWidth = 1;
+                const feedMarkOffset = paperScroll % 20;
+                for (let fx = paperLeft + feedMarkOffset; fx < paperRight; fx += 20) {
+                    ctx.beginPath(); ctx.moveTo(fx, paperY); ctx.lineTo(fx, paperY + 6); ctx.stroke();
+                    ctx.beginPath(); ctx.moveTo(fx, paperY + paperH - 6); ctx.lineTo(fx, paperY + paperH); ctx.stroke();
+                }
+
+                // Hot Pins Housing (Thermal Printhead)
+                ctx.fillStyle = '#0f172a';
+                ctx.strokeStyle = '#facc15';
+                ctx.lineWidth = 3;
+                ctx.fillRect(headX - 25, paperY - 48, 50, 44);
+                ctx.strokeRect(headX - 25, paperY - 48, 50, 44);
+
+                ctx.fillStyle = '#ffffff';
+                ctx.font = 'bold 8px JetBrains Mono';
+                ctx.fillText('2. HOT PINS', headX - 20, paperY - 28);
+
+                // Heat elements glowing (active burning)
+                for (let p = 0; p < 8; p++) {
+                    const pinGlow = (Math.sin(t * 15 + p * 2) > -0.2);
+                    ctx.fillStyle = pinGlow ? '#ef4444' : '#f59e0b';
+                    ctx.fillRect(headX - 20 + p * 5, paperY - 4, 4, 8);
+                    if (pinGlow) {
+                        ctx.fillStyle = 'rgba(239, 68, 68, 0.3)';
+                        ctx.fillRect(headX - 20 + p * 5 - 1, paperY + 4, 6, paperH - 8);
+                    }
+                }
+
+                // Label for Blank Zone before Head
+                ctx.fillStyle = '#64748b';
+                ctx.font = 'bold 8px JetBrains Mono';
+                ctx.fillText('BLANK CHEMICAL PAPER', paperLeft + 5, paperY + 40);
+
+                // DYNAMIC CONTINUOUS RECEIPT CONTENT (Attached to paper, reveals as it moves past headX)
+                ctx.save();
+                // CLIP region: ONLY show printed dark text AFTER passing headX (where heat triggers chemical reaction)
+                ctx.beginPath();
+                ctx.rect(headX + 1, paperY, paperRight - (headX + 1), paperH);
+                ctx.clip();
+
+                // Generate repeating receipt content scrolled by paperScroll
+                const receiptWidth = 260; // loop length
+                const localScroll = paperScroll % receiptWidth;
+
+                // Render multiple instances of receipt items so it scrolls infinitely out
+                for (let loop = -1; loop <= 2; loop++) {
+                    const startX = headX + (loop * receiptWidth) + localScroll;
+
+                    ctx.fillStyle = '#0f172a';
+                    ctx.font = 'bold 9.5px JetBrains Mono';
+
+                    // Receipt Elements
+                    ctx.fillText('🛒 ICT SUPERMARKET', startX + 10, paperY + 16);
+                    ctx.fillText('1x USB Flash Drive  $12.50', startX + 10, paperY + 30);
+                    ctx.fillText('1x Thermal Roll     $ 4.00', startX + 10, paperY + 42);
+                    ctx.fillText('TOTAL PAID:         $16.50', startX + 10, paperY + 54);
+
+                    // Barcode
+                    for (let b = 0; b < 24; b++) {
+                        const bw = (b % 3 === 0) ? 3 : 1;
+                        ctx.fillRect(startX + 180 + b * 3.5, paperY + 16, bw, 34);
+                    }
+
+                    // Stamp line
+                    ctx.fillStyle = '#0284c7';
+                    ctx.font = 'bold 8px JetBrains Mono';
+                    ctx.fillText('*** NO INK USED - HEAT ACTIVATED ***', startX + 10, paperY + 68);
+                }
+
+                ctx.restore();
+
+                // Heat reaction indicator tag right at the head
+                ctx.fillStyle = '#10b981';
+                ctx.font = 'bold 9px JetBrains Mono';
+                ctx.fillText('3. HEAT TURNS PAPER BLACK →', headX + 15, paperY - 12);
+            }
+            // -----------------------------------------------------------------
+            // 4. 3D PRINTER (FDM) ANIMATION
+            // -----------------------------------------------------------------
+            else if (e === '3d') {
+                desc.innerText = "Plastic filament feeds into 210°C heated hot-end nozzle, extruding plastic layers to build a 3D object!";
+
+                const spoolX = w * 0.15;
+                const spoolY = h * 0.25;
                 ctx.fillStyle = '#8b5cf6';
-                ctx.fillRect(nozzleX - 20, nozzleY - 40, 40, 30);
-                
-                // Hot Tip
+                ctx.strokeStyle = '#000000';
+                ctx.lineWidth = 4;
+                ctx.beginPath(); ctx.arc(spoolX, spoolY, 32, 0, Math.PI * 2); ctx.fill(); ctx.stroke();
+
+                ctx.fillStyle = '#1e1b4b';
+                ctx.beginPath(); ctx.arc(spoolX, spoolY, 12, 0, Math.PI * 2); ctx.fill();
+
+                const nozzleX = w * 0.45 + Math.sin(t * 4) * 45;
+                const currentHeight = (t * 6) % 50;
+                const nozzleY = h * 0.65 - currentHeight;
+
+                ctx.strokeStyle = '#c084fc';
+                ctx.lineWidth = 4;
+                ctx.beginPath();
+                ctx.moveTo(spoolX + 25, spoolY + 15);
+                ctx.lineTo(nozzleX, nozzleY - 30);
+                ctx.stroke();
+
+                ctx.fillStyle = '#475569';
+                ctx.fillRect(nozzleX - 22, nozzleY - 35, 44, 25);
+                ctx.strokeRect(nozzleX - 22, nozzleY - 35, 44, 25);
+
                 ctx.fillStyle = '#f59e0b';
                 ctx.beginPath();
                 ctx.moveTo(nozzleX - 10, nozzleY - 10);
@@ -1443,243 +1364,159 @@
                 ctx.closePath();
                 ctx.fill();
 
-                // Built layers
-                if (step >= 2) {
-                    ctx.fillStyle = '#a855f7';
-                    ctx.fillRect(nozzleX - 35, h * 0.72, 70, 8);
-                }
-                if (step === 3) {
-                    ctx.fillRect(nozzleX - 25, h * 0.64, 50, 8);
-                    ctx.fillRect(nozzleX - 15, h * 0.56, 30, 8);
-                }
-            } else if (e === 'plotter') {
-                // Continuous Roll Paper
-                ctx.fillStyle = '#1e3a8a';
-                ctx.fillRect(w * 0.15, h * 0.3, w * 0.7, h * 0.5);
-
-                // Grid/Blueprint lines on paper
-                ctx.strokeStyle = '#3b82f6';
-                ctx.lineWidth = 1;
-                for (let bx = w * 0.2; bx < w * 0.8; bx += 20) {
-                    ctx.beginPath(); ctx.moveTo(bx, h * 0.3); ctx.lineTo(bx, h * 0.8); ctx.stroke();
-                }
-
-                // Plotter Rail & Pen Carriage
-                ctx.fillStyle = '#475569';
-                ctx.fillRect(w * 0.1, h * 0.2, w * 0.8, 12);
-
-                const penX = step === 2 ? w * 0.6 : (step === 3 ? w * 0.75 : w * 0.25);
-                ctx.fillStyle = '#3b82f6';
-                ctx.strokeStyle = '#000';
-                ctx.lineWidth = 2;
-                ctx.fillRect(penX - 15, h * 0.18, 30, 35);
-                ctx.strokeRect(penX - 15, h * 0.18, 30, 35);
-
-                // Vector Lines drawn
-                if (step >= 2) {
-                    ctx.strokeStyle = '#ffffff';
-                    ctx.lineWidth = 3;
-                    ctx.beginPath();
-                    ctx.moveTo(w * 0.2, h * 0.6);
-                    ctx.lineTo(penX, h * 0.4);
-                    ctx.lineTo(penX, h * 0.7);
-                    ctx.stroke();
-                }
-            } else {
-                // Generic Engine Schematic Fallback
                 ctx.fillStyle = '#ffffff';
-                ctx.fillRect(w * 0.2, h * 0.3, w * 0.6, h * 0.4);
-                ctx.fillStyle = '#f59e0b';
-                ctx.font = 'bold 16px Fredoka';
-                ctx.fillText(`${e.toUpperCase()} MECHANISM ACTIVE`, w * 0.3, h * 0.5);
+                ctx.font = 'bold 8px Mono';
+                ctx.fillText('210°C', nozzleX - 12, nozzleY - 20);
+
+                ctx.fillStyle = '#a855f7';
+                ctx.fillRect(nozzleX - 3, nozzleY, 6, 6);
+
+                ctx.fillStyle = '#334155';
+                ctx.fillRect(w * 0.2, h * 0.8, w * 0.6, 12);
+                ctx.strokeRect(w * 0.2, h * 0.8, w * 0.6, 12);
+
+                const layerCount = Math.floor(currentHeight / 6) + 1;
+                for (let l = 0; l < layerCount; l++) {
+                    const layerY = h * 0.79 - l * 6;
+                    const layerWidth = 80 - l * 4;
+                    ctx.fillStyle = '#a855f7';
+                    ctx.fillRect(w * 0.45 - layerWidth / 2, layerY, layerWidth, 5);
+                    ctx.strokeStyle = '#c084fc';
+                    ctx.lineWidth = 1;
+                    ctx.strokeRect(w * 0.45 - layerWidth / 2, layerY, layerWidth, 5);
+                }
             }
-        }
 
-        /* =========================================================================
-           TAB 3: FIX-IT SHOP MINI-GAMES
-           ========================================================================= */
-        function loadFixGame(gameType) {
-            playSound('click');
-            state.activeFixGame = gameType;
-            state.fixProgress = 0;
+            // -----------------------------------------------------------------
+            // 5. PLOTTER ANIMATION (ENHANCED: Realistic Vector Drawing Trajectory)
+            // -----------------------------------------------------------------
+            else if (e === 'plotter') {
+                desc.innerText = "Plotter gantry & carriage move physical ink pens along X/Y coordinates to draw continuous vector blueprint geometry.";
 
-            ['paperjam', 'toner', 'nozzles'].forEach(g => {
-                const btn = document.getElementById(`fix-btn-${g}`);
-                if (btn) {
-                    if (g === gameType) {
-                        btn.className = "w-full text-left p-3 rounded-xl border-2 border-black bg-pink-500 text-white font-bold text-xs flex items-center justify-between shadow-[3px_3px_0px_#000] hover:scale-[1.02] transition-all";
-                    } else {
-                        btn.className = "w-full text-left p-3 rounded-xl border-2 border-black bg-slate-800 text-white font-bold text-xs flex items-center justify-between shadow-[3px_3px_0px_#000] hover:scale-[1.02] transition-all";
+                const bedX = w * 0.10;
+                const bedY = h * 0.12;
+                const bedW = w * 0.80;
+                const bedH = h * 0.78;
+
+                // Plotter Frame Bed
+                ctx.fillStyle = '#0f172a';
+                ctx.fillRect(bedX - 10, bedY - 10, bedW + 20, bedH + 20);
+                ctx.strokeStyle = '#334155';
+                ctx.lineWidth = 3;
+                ctx.strokeRect(bedX - 10, bedY - 10, bedW + 20, bedH + 20);
+
+                // Blueprint Roll Paper
+                ctx.fillStyle = '#1e3a8a';
+                ctx.fillRect(bedX, bedY, bedW, bedH);
+
+                // Blueprint Grid lines
+                ctx.strokeStyle = 'rgba(59, 130, 246, 0.4)';
+                ctx.lineWidth = 1;
+                for (let gx = bedX; gx < bedX + bedW; gx += 20) {
+                    ctx.beginPath(); ctx.moveTo(gx, bedY); ctx.lineTo(gx, bedY + bedH); ctx.stroke();
+                }
+                for (let gy = bedY; gy < bedY + bedH; gy += 20) {
+                    ctx.beginPath(); ctx.moveTo(bedX, gy); ctx.lineTo(bedX + bedW, gy); ctx.stroke();
+                }
+
+                // Architectural Blueprint Vector Path Waypoints
+                const points = [
+                    // Outer Wall Box
+                    { x: bedX + 40, y: bedY + 30, penDown: false },
+                    { x: bedX + bedW - 40, y: bedY + 30, penDown: true },
+                    { x: bedX + bedW - 40, y: bedY + bedH - 30, penDown: true },
+                    { x: bedX + 40, y: bedY + bedH - 30, penDown: true },
+                    { x: bedX + 40, y: bedY + 30, penDown: true },
+
+                    // Inner Room Dividers
+                    { x: bedX + bedW * 0.5, y: bedY + 30, penDown: false },
+                    { x: bedX + bedW * 0.5, y: bedY + bedH - 30, penDown: true },
+                    { x: bedX + 40, y: bedY + bedH * 0.5, penDown: false },
+                    { x: bedX + bedW * 0.5, y: bedY + bedH * 0.5, penDown: true },
+
+                    // Arch Door Swing Arc
+                    { x: bedX + bedW * 0.25, y: bedY + bedH * 0.5, penDown: false },
+                    { x: bedX + bedW * 0.25, y: bedY + bedH * 0.35, penDown: true },
+                    { x: bedX + bedW * 0.35, y: bedY + bedH * 0.5, penDown: true }
+                ];
+
+                const cycleLen = points.length - 1;
+                const pathProgress = (t * 0.8) % cycleLen;
+                const currIdx = Math.floor(pathProgress);
+                const subT = pathProgress - currIdx;
+
+                const pStart = points[currIdx];
+                const pEnd = points[currIdx + 1];
+
+                // Interpolate current Pen Position
+                const penX = pStart.x + (pEnd.x - pStart.x) * subT;
+                const penY = pStart.y + (pEnd.y - pStart.y) * subT;
+                const isPenDown = pEnd.penDown;
+
+                // DRAW ALREADY COMPLETED VECTOR LINES
+                for (let i = 0; i < currIdx; i++) {
+                    if (points[i + 1].penDown) {
+                        ctx.strokeStyle = '#ffffff';
+                        ctx.lineWidth = 2.5;
+                        ctx.beginPath();
+                        ctx.moveTo(points[i].x, points[i].y);
+                        ctx.lineTo(points[i + 1].x, points[i + 1].y);
+                        ctx.stroke();
                     }
                 }
-            });
 
-            renderFixGameUI();
-        }
+                // DRAW CURRENT IN-PROGRESS VECTOR LINE
+                if (isPenDown) {
+                    ctx.strokeStyle = '#38bdf8'; // Glowing active vector line
+                    ctx.lineWidth = 3;
+                    ctx.beginPath();
+                    ctx.moveTo(pStart.x, pStart.y);
+                    ctx.lineTo(penX, penY);
+                    ctx.stroke();
+                }
 
-        function renderFixGameUI() {
-            const title = document.getElementById('fix-game-title');
-            const badge = document.getElementById('fix-status-badge');
-            const area = document.getElementById('fix-interactive-area');
-            const actionBtn = document.getElementById('fix-action-btn');
-            const tip = document.getElementById('fix-tip-text');
+                // Y-AXIS MOTORIZED GANTRY BAR
+                ctx.fillStyle = '#334155';
+                ctx.fillRect(bedX - 8, penY - 6, bedW + 16, 12);
+                ctx.strokeStyle = '#000000';
+                ctx.lineWidth = 1;
+                ctx.strokeRect(bedX - 8, penY - 6, bedW + 16, 12);
 
-            document.getElementById('fix-progress-bar').style.width = `${state.fixProgress}%`;
+                // X-AXIS PEN CARRIAGE
+                ctx.fillStyle = '#0284c7';
+                ctx.strokeStyle = '#ffffff';
+                ctx.lineWidth = 2;
+                ctx.fillRect(penX - 16, penY - 20, 32, 28);
+                ctx.strokeRect(penX - 16, penY - 20, 32, 28);
 
-            if (state.activeFixGame === 'paperjam') {
-                title.innerHTML = `<i class="fas fa-file-circle-exclamation"></i> Emergency Paper Jam Extraction!`;
-                badge.className = "bg-red-500 text-white text-xs font-black px-2.5 py-1 rounded-lg border border-black font-mono";
-                badge.innerText = state.fixProgress >= 100 ? "STATUS: CLEARED!" : "STATUS: STUCK!";
-                actionBtn.innerText = "PULL PAPER! 📄";
-                tip.innerText = "Pneumatic rollers can crumble paper if pulled violently. Gently pull with equal force from both sides!";
+                // PHYSICAL VECTOR PEN
+                const penTipY = isPenDown ? penY + 12 : penY + 4; // Pen moves DOWN when drawing!
+                ctx.fillStyle = isPenDown ? '#facc15' : '#94a3b8';
+                ctx.beginPath();
+                ctx.moveTo(penX - 4, penY + 8);
+                ctx.lineTo(penX + 4, penY + 8);
+                ctx.lineTo(penX, penTipY);
+                ctx.closePath();
+                ctx.fill();
 
-                area.innerHTML = `
-                    <div class="relative w-64 h-48 bg-slate-800 rounded-2xl border-4 border-black flex flex-col items-center justify-center overflow-hidden">
-                        <!-- Printer Slot -->
-                        <div class="w-48 h-6 bg-black rounded-full mb-2"></div>
-                        <!-- Crumpled Paper -->
-                        <div id="paper-element" class="w-36 bg-white text-black p-3 comic-border-sm rounded-lg font-bold text-xs text-center transition-all duration-200" style="transform: translateY(${100 - state.fixProgress}px) rotate(${state.fixProgress >= 100 ? 0 : -5}deg)">
-                            <i class="fas fa-newspaper text-xl text-pink-500 mb-1 block"></i>
-                            ${state.fixProgress >= 100 ? "FREE PAPER!" : "CRUMPLED JAM!"}
-                        </div>
-                    </div>
-                `;
-            } else if (state.activeFixGame === 'toner') {
-                title.innerHTML = `<i class="fas fa-wine-bottle"></i> Shake Low Toner Cartridge!`;
-                badge.className = "bg-amber-500 text-black text-xs font-black px-2.5 py-1 rounded-lg border border-black font-mono";
-                badge.innerText = state.fixProgress >= 100 ? "STATUS: MIXED!" : "STATUS: LOW!";
-                actionBtn.innerText = "SHAKE TONER! 🍾";
-                tip.innerText = "When laser prints fade, removing the toner bottle and shaking it horizontally redistributes fine black powder!";
+                if (isPenDown) {
+                    // Pen Contact Sparkle / Ink Dot
+                    ctx.fillStyle = '#38bdf8';
+                    ctx.beginPath();
+                    ctx.arc(penX, penTipY, 4, 0, Math.PI * 2);
+                    ctx.fill();
+                }
 
-                area.innerHTML = `
-                    <div class="relative w-64 h-48 bg-slate-800 rounded-2xl border-4 border-black flex flex-col items-center justify-center overflow-hidden">
-                        <div id="toner-bottle" class="w-40 h-20 bg-slate-900 border-4 border-cyan-400 rounded-xl flex items-center justify-between px-3 transition-transform duration-100" style="transform: rotate(${state.fixProgress % 2 === 0 ? -12 : 12}deg)">
-                            <i class="fas fa-flask text-3xl text-cyan-400"></i>
-                            <span class="font-mono text-xs font-bold text-white">TONER 100%</span>
-                        </div>
-                    </div>
-                `;
-            } else {
-                title.innerHTML = `<i class="fas fa-shower"></i> Micro-Nozzle Deep Flush!`;
-                badge.className = "bg-cyan-500 text-black text-xs font-black px-2.5 py-1 rounded-lg border border-black font-mono";
-                badge.innerText = state.fixProgress >= 100 ? "STATUS: CLEAN!" : "STATUS: CLOGGED!";
-                actionBtn.innerText = "PURGE INK JET! 💦";
-                tip.innerText = "Infrequently used Inkjet printers get dried ink in micro-nozzles. Cleaning cycles force fresh ink to clear blockages!";
-
-                area.innerHTML = `
-                    <div class="relative w-64 h-48 bg-slate-800 rounded-2xl border-4 border-black flex flex-col items-center justify-center overflow-hidden">
-                        <div class="flex gap-3">
-                            <div class="w-8 h-24 bg-pink-500 rounded-full border-2 border-black flex items-end justify-center pb-2">
-                                <div class="w-4 bg-white rounded-full transition-all" style="height: ${state.fixProgress}%"></div>
-                            </div>
-                            <div class="w-8 h-24 bg-cyan-500 rounded-full border-2 border-black flex items-end justify-center pb-2">
-                                <div class="w-4 bg-white rounded-full transition-all" style="height: ${state.fixProgress}%"></div>
-                            </div>
-                            <div class="w-8 h-24 bg-yellow-400 rounded-full border-2 border-black flex items-end justify-center pb-2">
-                                <div class="w-4 bg-white rounded-full transition-all" style="height: ${state.fixProgress}%"></div>
-                            </div>
-                        </div>
-                    </div>
-                `;
+                // Status Badge Overlay
+                ctx.fillStyle = isPenDown ? '#10b981' : '#f59e0b';
+                ctx.font = 'bold 9px JetBrains Mono';
+                ctx.fillText(isPenDown ? '✒️ PEN DOWN (DRAWING VECTOR)' : '✈️ PEN UP (REPOSITIONING)', bedX + 10, bedY + 20);
             }
         }
 
-        function interactFixGame() {
-            if (state.fixProgress >= 100) {
-                playSound('success');
-                showToast("🎉 Maintenance Complete!", "Printer is back in optimal operational state!", "text-emerald-400");
-                return;
-            }
-
-            playSound('whir');
-            state.fixProgress += 20;
-            if (state.fixProgress > 100) state.fixProgress = 100;
-
-            document.getElementById('fix-progress-bar').style.width = `${state.fixProgress}%`;
-            renderFixGameUI();
-
-            if (state.fixProgress >= 100) {
-                playSound('success');
-                state.score += 150;
-                document.getElementById('score-val').innerText = state.score;
-                showToast("🛠️ Problem Solved!", "Great job fixing the issue! (+150 pts)", "text-amber-400");
-            }
-        }
-
-        /* =========================================================================
-           TAB 4: TECH QUIZ & STEM CHALLENGE
-           ========================================================================= */
-        function renderQuizQuestion() {
-            const q = state.quizQuestions[state.quizIndex];
-            document.getElementById('quiz-progress-num').innerText = `Question ${state.quizIndex + 1} / ${state.quizQuestions.length}`;
-            document.getElementById('quiz-question-box').innerText = q.q;
-
-            const container = document.getElementById('quiz-options-container');
-            container.innerHTML = '';
-
-            document.getElementById('quiz-feedback-box').classList.add('hidden');
-
-            q.options.forEach((opt, idx) => {
-                const btn = document.createElement('button');
-                btn.className = "w-full text-left p-3 rounded-xl border-2 border-black bg-slate-800 hover:bg-slate-700 text-white font-bold text-xs sm:text-sm shadow-[3px_3px_0px_#000] hover:scale-[1.01] transition-all flex items-center justify-between";
-                btn.innerHTML = `
-                    <span>${opt}</span>
-                    <span class="w-6 h-6 rounded-lg bg-black text-amber-300 font-mono flex items-center justify-center text-xs border border-amber-300">${String.fromCharCode(65 + idx)}</span>
-                `;
-                btn.onclick = () => checkQuizAnswer(idx);
-                container.appendChild(btn);
-            });
-        }
-
-        function checkQuizAnswer(selectedIdx) {
-            const q = state.quizQuestions[state.quizIndex];
-            const feedbackBox = document.getElementById('quiz-feedback-box');
-            const feedbackText = document.getElementById('quiz-feedback-text');
-
-            if (selectedIdx === q.correct) {
-                playSound('success');
-                state.score += 200;
-                document.getElementById('score-val').innerText = state.score;
-                feedbackBox.className = "bg-emerald-950/80 border border-emerald-500/50 p-3 rounded-xl text-xs text-emerald-200 flex justify-between items-center";
-                feedbackText.innerText = `🎯 Correct! ${q.explain}`;
-            } else {
-                playSound('error');
-                feedbackBox.className = "bg-red-950/80 border border-red-500/50 p-3 rounded-xl text-xs text-red-200 flex justify-between items-center";
-                feedbackText.innerText = `❌ Incorrect! ${q.explain}`;
-            }
-
-            feedbackBox.classList.remove('hidden');
-        }
-
-        function nextQuizQuestion() {
-            playSound('click');
-            state.quizIndex = (state.quizIndex + 1) % state.quizQuestions.length;
-            renderQuizQuestion();
-        }
-
-        /* =========================================================================
-           TOAST NOTIFICATION ENGINE
-           ========================================================================= */
-        let toastTimeout = null;
-        function showToast(title, desc, colorClass = "text-amber-400") {
-            const toast = document.getElementById('toast-banner');
-            document.getElementById('toast-title').innerText = title;
-            document.getElementById('toast-desc').innerText = desc;
-
-            toast.classList.remove('translate-x-full');
-
-            if (toastTimeout) clearTimeout(toastTimeout);
-            toastTimeout = setTimeout(() => {
-                toast.classList.add('translate-x-full');
-            }, 3000);
-        }
-
-        /* Initializer on window load */
-        window.onload = function () {
+        window.onload = function() {
             renderDispatchBoard();
-            window.addEventListener('resize', () => {
-                if (state.activeTab === 'inside') initEngineCanvas();
-            });
+            window.addEventListener('resize', initEngineCanvas);
         };
     </script>
 </body>
