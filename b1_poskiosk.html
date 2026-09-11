@@ -1,0 +1,541 @@
+<!DOCTYPE html>
+<html lang="en" class="dark">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>OP & MK Hardware Guide - Input & Output Devices</title>
+  
+  <script src="https://cdn.tailwindcss.com"></script>
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;600;700;800&family=JetBrains+Mono:wght@500;700&display=swap" rel="stylesheet">
+
+  <script>
+    tailwind.config = {
+      darkMode: 'class',
+      theme: {
+        extend: {
+          fontFamily: {
+            sans: ['Plus Jakarta Sans', 'sans-serif'],
+            mono: ['JetBrains Mono', 'monospace'],
+          }
+        }
+      }
+    }
+  </script>
+
+  <style>
+    body {
+      background-color: #0b0f19;
+      background-image: 
+        radial-gradient(at 0% 0%, rgba(249, 115, 22, 0.08) 0px, transparent 50%),
+        radial-gradient(at 100% 100%, rgba(239, 68, 68, 0.08) 0px, transparent 50%),
+        radial-gradient(rgba(255, 255, 255, 0.02) 1px, transparent 0);
+      background-size: 100% 100%, 100% 100%, 32px 32px;
+    }
+
+    .glass-card {
+      background: rgba(15, 23, 42, 0.7);
+      backdrop-filter: blur(16px);
+      -webkit-backdrop-filter: blur(16px);
+      border: 1px solid rgba(255, 255, 255, 0.08);
+    }
+
+    .hotspot {
+      transition: all 0.2s ease;
+      cursor: pointer;
+    }
+    .hotspot:hover {
+      filter: drop-shadow(0 0 10px rgba(56, 189, 248, 0.8));
+      transform: scale(1.02);
+      transform-origin: center;
+    }
+
+    /* Laser beam pulse */
+    @keyframes laserPulse {
+      0%, 100% { opacity: 0.3; }
+      50% { opacity: 0.9; }
+    }
+    .laser-beam {
+      animation: laserPulse 1.5s infinite ease-in-out;
+    }
+
+    /* Device Glow Highlight Styles */
+    .device-item {
+      transition: all 0.25s cubic-bezier(0.4, 0, 0.2, 1);
+    }
+    
+    .glow-input {
+      background-color: rgba(6, 182, 212, 0.25) !important;
+      border-color: rgba(34, 211, 238, 0.9) !important;
+      color: #ffffff !important;
+      transform: translateX(6px) scale(1.02);
+      box-shadow: 0 0 18px rgba(34, 211, 238, 0.6);
+    }
+
+    .glow-output {
+      background-color: rgba(16, 185, 129, 0.25) !important;
+      border-color: rgba(52, 211, 153, 0.9) !important;
+      color: #ffffff !important;
+      transform: translateX(6px) scale(1.02);
+      box-shadow: 0 0 18px rgba(52, 211, 153, 0.6);
+    }
+
+    .hotspot-active {
+      filter: drop-shadow(0 0 12px rgba(251, 191, 36, 1)) !important;
+      transform: scale(1.05);
+      transform-origin: center;
+    }
+  </style>
+</head>
+
+<body class="text-slate-100 font-sans min-h-screen flex flex-col antialiased selection:bg-amber-500 selection:text-slate-950 p-4 sm:p-6 md:p-8">
+
+  <!-- Header -->
+  <header class="max-w-5xl w-full mx-auto mb-6 flex flex-col sm:flex-row items-center justify-between gap-4 pb-6 border-b border-slate-800/80">
+    <div class="flex items-center gap-3 text-center sm:text-left">
+      <div class="w-12 h-12 rounded-2xl bg-gradient-to-br from-amber-500 to-red-600 flex items-center justify-center text-slate-950 font-black text-2xl shadow-lg shadow-orange-500/20">
+        <i class="fa-solid fa-desktop"></i>
+      </div>
+      <div>
+        <h1 class="text-xl sm:text-2xl font-extrabold tracking-tight text-white flex items-center gap-2 justify-center sm:justify-start">
+          Input & Output Hardware Guide
+        </h1>
+        <p class="text-xs text-slate-400 font-medium mt-0.5">Real-World Computer Applications: POS & Self-Service Kiosks</p>
+      </div>
+    </div>
+
+    <!-- Key Legend & Tabs Container -->
+    <div class="flex flex-col sm:flex-row items-center gap-3">
+      <!-- Tab Navigation -->
+      <div class="flex items-center p-1 bg-slate-900 rounded-xl border border-slate-800 shadow-inner">
+        <button id="tab-btn-op" onclick="switchTab('op')" class="flex items-center gap-2 px-4 py-2 rounded-lg text-xs font-bold transition-all duration-200 bg-orange-500 text-slate-950 shadow-md">
+          <span class="px-1.5 py-0.5 rounded bg-slate-950/20 text-xs">OP</span>
+          <span>Circle K POS</span>
+        </button>
+        <button id="tab-btn-mk" onclick="switchTab('mk')" class="flex items-center gap-2 px-4 py-2 rounded-lg text-xs font-bold transition-all duration-200 text-slate-400 hover:text-white">
+          <span class="px-1.5 py-0.5 rounded bg-slate-800 text-xs">MK</span>
+          <span>McDonald's Kiosk</span>
+        </button>
+      </div>
+
+      <!-- Key Legend -->
+      <div class="flex items-center gap-3 bg-slate-900/90 px-4 py-2 rounded-xl border border-slate-800 font-mono text-xs shadow-inner">
+        <div class="flex items-center gap-2">
+          <span class="w-3 h-3 rounded-full bg-cyan-400 shadow-[0_0_8px_rgba(34,211,238,0.8)]"></span>
+          <span class="text-cyan-300 font-bold">Input 📥</span>
+        </div>
+        <span class="text-slate-700">|</span>
+        <div class="flex items-center gap-2">
+          <span class="w-3 h-3 rounded-full bg-emerald-400 shadow-[0_0_8px_rgba(52,211,153,0.8)]"></span>
+          <span class="text-emerald-300 font-bold">Output 📤</span>
+        </div>
+      </div>
+    </div>
+  </header>
+
+  <!-- Main Container -->
+  <main class="max-w-4xl w-full mx-auto flex-1">
+
+    <!-- ========================================================================= -->
+    <!-- TAB 1: SCENE 1: OP - CIRCLE K POS TERMINAL -->
+    <!-- ========================================================================= -->
+    <div id="tab-content-op" class="glass-card rounded-3xl p-5 sm:p-6 flex flex-col border border-orange-500/20 shadow-xl relative overflow-hidden transition duration-300">
+      
+      <!-- Top Title Bar -->
+      <div class="flex items-center justify-between mb-4 pb-3 border-b border-slate-800">
+        <div class="flex items-center gap-2.5">
+          <span class="px-2.5 py-1 rounded-lg bg-orange-500/20 text-orange-400 font-mono font-black text-xs border border-orange-500/30">OP</span>
+          <h2 class="font-bold text-slate-100 text-lg">Circle K POS Terminal</h2>
+        </div>
+        <span class="text-xs font-mono text-slate-400 bg-slate-800/60 px-3 py-1 rounded-full border border-slate-700/50">Hover over devices to see them glow! ✨</span>
+      </div>
+
+      <!-- Drawing Canvas -->
+      <div class="relative w-full aspect-[4/3] bg-slate-950 rounded-2xl border border-slate-800 overflow-hidden shadow-inner flex items-center justify-center p-2 mb-6">
+        <svg viewBox="0 0 800 600" class="w-full h-full select-none" xmlns="http://www.w3.org/2000/svg">
+          
+          <!-- Background Store Wall & Stripes -->
+          <rect x="0" y="0" width="800" height="600" fill="#090d16"/>
+          <rect x="0" y="0" width="800" height="40" fill="#1e293b"/>
+          <rect x="0" y="40" width="800" height="7" fill="#f97316"/>
+          <rect x="0" y="47" width="800" height="4" fill="#ffffff"/>
+          <rect x="0" y="51" width="800" height="7" fill="#dc2626"/>
+
+          <!-- Shelves Background -->
+          <g opacity="0.25">
+            <rect x="60" y="80" width="200" height="170" rx="8" fill="#1e293b" stroke="#334155" stroke-width="2"/>
+            <line x1="60" y1="135" x2="260" y2="135" stroke="#475569" stroke-width="2"/>
+            <line x1="60" y1="190" x2="260" y2="190" stroke="#475569" stroke-width="2"/>
+            <!-- Items -->
+            <rect x="80" y="95" width="22" height="40" rx="4" fill="#ef4444"/>
+            <rect x="110" y="90" width="28" height="45" rx="4" fill="#3b82f6"/>
+            <rect x="145" y="100" width="20" height="35" rx="4" fill="#10b981"/>
+            <rect x="175" y="92" width="25" height="43" rx="4" fill="#f59e0b"/>
+            <rect x="80" y="150" width="35" height="40" rx="4" fill="#8b5cf6"/>
+            <rect x="125" y="145" width="40" height="45" rx="4" fill="#ec4899"/>
+          </g>
+
+          <!-- Counter Desk -->
+          <path d="M 40 380 L 760 380 L 780 580 L 20 580 Z" fill="#0f172a" stroke="#1e293b" stroke-width="4"/>
+          <polygon points="30,380 770,380 790,420 10,420" fill="#1e293b" stroke="#334155" stroke-width="2"/>
+
+          <!-- 1. Barcode Scanner -->
+          <g class="hotspot" data-device="op-barcode">
+            <path d="M 230 330 L 250 330 L 260 375 L 235 375 Z" fill="#334155"/>
+            <rect x="220" y="295" width="55" height="40" rx="8" fill="#0284c7" stroke="#38bdf8" stroke-width="2"/>
+            <circle cx="230" cy="315" r="6" fill="#ef4444"/>
+            <line x1="220" y1="315" x2="130" y2="390" stroke="#f43f5e" stroke-width="3" stroke-dasharray="4,4" class="laser-beam"/>
+          </g>
+
+          <!-- 2. Weight Scale -->
+          <g class="hotspot" data-device="op-scale">
+            <rect x="100" y="365" width="120" height="15" rx="3" fill="#64748b" stroke="#94a3b8" stroke-width="2"/>
+            <rect x="110" y="350" width="100" height="15" rx="2" fill="#cbd5e1"/>
+            <circle cx="160" cy="335" r="14" fill="#dc2626"/>
+            <path d="M 160 321 Q 165 315 168 318" stroke="#15803d" stroke-width="2" fill="none"/>
+          </g>
+
+          <!-- 3. Card Reader & Numpad -->
+          <g class="hotspot" data-device="op-cardreader">
+            <rect x="520" y="330" width="65" height="85" rx="8" fill="#1e293b" stroke="#38bdf8" stroke-width="2.5" transform="rotate(-8 550 370)"/>
+            <rect x="530" y="340" width="45" height="25" rx="3" fill="#0284c7" transform="rotate(-8 550 370)"/>
+            <circle cx="538" cy="380" r="3" fill="#94a3b8"/>
+            <circle cx="550" cy="380" r="3" fill="#94a3b8"/>
+            <circle cx="562" cy="380" r="3" fill="#94a3b8"/>
+            <circle cx="538" cy="392" r="3" fill="#94a3b8"/>
+            <circle cx="550" cy="392" r="3" fill="#94a3b8"/>
+            <circle cx="562" cy="392" r="3" fill="#94a3b8"/>
+            <line x1="578" y1="330" x2="578" y2="400" stroke="#f59e0b" stroke-width="3" transform="rotate(-8 550 370)"/>
+          </g>
+
+          <!-- 4. Cashier Touch Screen -->
+          <g class="hotspot" data-device="op-touchscreen">
+            <rect x="380" y="270" width="30" height="60" fill="#334155"/>
+            <rect x="360" y="325" width="70" height="15" rx="4" fill="#1e293b"/>
+            <rect x="290" y="160" width="210" height="135" rx="10" fill="#0f172a" stroke="#38bdf8" stroke-width="3"/>
+            <rect x="300" y="170" width="190" height="115" rx="6" fill="#0284c7" opacity="0.9"/>
+            <rect x="310" y="180" width="110" height="85" rx="4" fill="#0f172a" opacity="0.8"/>
+            <line x1="315" y1="195" x2="410" y2="195" stroke="#38bdf8" stroke-width="2"/>
+            <line x1="315" y1="210" x2="390" y2="210" stroke="#38bdf8" stroke-width="2"/>
+            <rect x="430" y="235" width="50" height="25" rx="4" fill="#10b981"/>
+            <text x="440" y="252" fill="#ffffff" font-size="10" font-weight="bold">PAY</text>
+          </g>
+
+          <!-- 5. Customer Pole Display -->
+          <g class="hotspot" data-device="op-display">
+            <rect x="630" y="200" width="12" height="180" fill="#475569"/>
+            <rect x="560" y="150" width="150" height="55" rx="6" fill="#0f172a" stroke="#10b981" stroke-width="2.5"/>
+            <rect x="570" y="160" width="130" height="35" rx="4" fill="#064e3b"/>
+            <text x="580" y="182" fill="#34d399" font-size="14" font-weight="bold" font-family="monospace">TOTAL: $12.50</text>
+          </g>
+
+          <!-- 6. Receipt Printer -->
+          <g class="hotspot" data-device="op-printer">
+            <rect x="630" y="340" width="85" height="70" rx="8" fill="#1e293b" stroke="#10b981" stroke-width="2.5"/>
+            <rect x="640" y="350" width="65" height="10" rx="2" fill="#0f172a"/>
+            <rect x="645" y="350" width="55" height="30" fill="#f8fafc"/>
+            <line x1="650" y1="360" x2="695" y2="360" stroke="#94a3b8" stroke-width="1.5"/>
+            <line x1="650" y1="370" x2="685" y2="370" stroke="#94a3b8" stroke-width="1.5"/>
+          </g>
+
+          <!-- 7. Cash Drawer -->
+          <g class="hotspot" data-device="op-cashdrawer">
+            <rect x="280" y="420" width="230" height="70" rx="6" fill="#1e293b" stroke="#10b981" stroke-width="2.5"/>
+            <rect x="295" y="440" width="200" height="40" rx="4" fill="#334155"/>
+            <rect x="305" y="448" width="35" height="25" fill="#15803d" opacity="0.8"/>
+            <rect x="345" y="448" width="35" height="25" fill="#15803d" opacity="0.8"/>
+            <rect x="385" y="448" width="35" height="25" fill="#15803d" opacity="0.8"/>
+            <circle cx="445" cy="460" r="8" fill="#f59e0b"/>
+          </g>
+
+        </svg>
+      </div>
+
+      <!-- Input & Output Device Lists -->
+      <div class="grid grid-cols-1 sm:grid-cols-2 gap-4 mt-auto">
+        
+        <!-- Input Devices Card -->
+        <div class="bg-slate-900/80 p-4 rounded-2xl border border-cyan-500/20">
+          <div class="flex items-center gap-2 mb-3 pb-2 border-b border-slate-800">
+            <span class="w-2.5 h-2.5 rounded-full bg-cyan-400"></span>
+            <h3 class="text-xs font-bold text-cyan-400 uppercase tracking-wider">Input Devices 📥</h3>
+          </div>
+          <ul class="space-y-2 text-xs font-medium">
+            <li id="device-op-barcode" data-device="op-barcode" class="device-item flex items-center gap-3 p-2 rounded-xl border border-transparent hover:border-slate-700 bg-slate-950/40 text-slate-300">
+              <i class="fa-solid fa-barcode text-cyan-400 w-5 text-center text-sm"></i>
+              <span>Barcode Scanner</span>
+            </li>
+            <li id="device-op-scale" data-device="op-scale" class="device-item flex items-center gap-3 p-2 rounded-xl border border-transparent hover:border-slate-700 bg-slate-950/40 text-slate-300">
+              <i class="fa-solid fa-weight-scale text-cyan-400 w-5 text-center text-sm"></i>
+              <span>Precision Weight Scale</span>
+            </li>
+            <li id="device-op-cardreader" data-device="op-cardreader" class="device-item flex items-center gap-3 p-2 rounded-xl border border-transparent hover:border-slate-700 bg-slate-950/40 text-slate-300">
+              <i class="fa-solid fa-credit-card text-cyan-400 w-5 text-center text-sm"></i>
+              <span>Card Reader & Keypad</span>
+            </li>
+            <li id="device-op-touchscreen" data-device="op-touchscreen" class="device-item flex items-center gap-3 p-2 rounded-xl border border-transparent hover:border-slate-700 bg-slate-950/40 text-slate-300">
+              <i class="fa-solid fa-hand-pointer text-cyan-400 w-5 text-center text-sm"></i>
+              <span>Touchscreen Input</span>
+            </li>
+          </ul>
+        </div>
+
+        <!-- Output Devices Card -->
+        <div class="bg-slate-900/80 p-4 rounded-2xl border border-emerald-500/20">
+          <div class="flex items-center gap-2 mb-3 pb-2 border-b border-slate-800">
+            <span class="w-2.5 h-2.5 rounded-full bg-emerald-400"></span>
+            <h3 class="text-xs font-bold text-emerald-400 uppercase tracking-wider">Output Devices 📤</h3>
+          </div>
+          <ul class="space-y-2 text-xs font-medium">
+            <li id="device-op-display" data-device="op-display" class="device-item flex items-center gap-3 p-2 rounded-xl border border-transparent hover:border-slate-700 bg-slate-950/40 text-slate-300">
+              <i class="fa-solid fa-tv text-emerald-400 w-5 text-center text-sm"></i>
+              <span>Customer VFD Display</span>
+            </li>
+            <li id="device-op-printer" data-device="op-printer" class="device-item flex items-center gap-3 p-2 rounded-xl border border-transparent hover:border-slate-700 bg-slate-950/40 text-slate-300">
+              <i class="fa-solid fa-print text-emerald-400 w-5 text-center text-sm"></i>
+              <span>Thermal Receipt Printer</span>
+            </li>
+            <li id="device-op-cashdrawer" data-device="op-cashdrawer" class="device-item flex items-center gap-3 p-2 rounded-xl border border-transparent hover:border-slate-700 bg-slate-950/40 text-slate-300">
+              <i class="fa-solid fa-box-open text-emerald-400 w-5 text-center text-sm"></i>
+              <span>Automatic Cash Drawer</span>
+            </li>
+            <li id="device-op-cashier-screen" data-device="op-touchscreen" class="device-item flex items-center gap-3 p-2 rounded-xl border border-transparent hover:border-slate-700 bg-slate-950/40 text-slate-300">
+              <i class="fa-solid fa-desktop text-emerald-400 w-5 text-center text-sm"></i>
+              <span>Cashier Screen Display</span>
+            </li>
+          </ul>
+        </div>
+
+      </div>
+
+    </div>
+
+    <!-- ========================================================================= -->
+    <!-- TAB 2: SCENE 2: MK - MCDONALD'S KIOSK -->
+    <!-- ========================================================================= -->
+    <div id="tab-content-mk" class="glass-card rounded-3xl p-5 sm:p-6 flex flex-col border border-red-500/20 shadow-xl relative overflow-hidden transition duration-300 hidden">
+      
+      <!-- Top Title Bar -->
+      <div class="flex items-center justify-between mb-4 pb-3 border-b border-slate-800">
+        <div class="flex items-center gap-2.5">
+          <span class="px-2.5 py-1 rounded-lg bg-red-500/20 text-red-400 font-mono font-black text-xs border border-red-500/30">MK</span>
+          <h2 class="font-bold text-slate-100 text-lg">McDonald's Self-Service Kiosk</h2>
+        </div>
+        <span class="text-xs font-mono text-slate-400 bg-slate-800/60 px-3 py-1 rounded-full border border-slate-700/50">Hover over devices to see them glow! ✨</span>
+      </div>
+
+      <!-- Drawing Canvas -->
+      <div class="relative w-full aspect-[4/3] bg-slate-950 rounded-2xl border border-slate-800 overflow-hidden shadow-inner flex items-center justify-center p-2 mb-6">
+        <svg viewBox="0 0 800 600" class="w-full h-full select-none" xmlns="http://www.w3.org/2000/svg">
+          
+          <!-- Background & Floor -->
+          <rect x="0" y="0" width="800" height="600" fill="#090d16"/>
+          <circle cx="400" cy="200" r="280" fill="#eab308" opacity="0.05"/>
+          <path d="M 0 480 L 800 480 L 800 600 L 0 600 Z" fill="#18181b"/>
+          <line x1="0" y1="520" x2="800" y2="520" stroke="#27272a" stroke-width="2"/>
+
+          <!-- Kiosk Stand & Cabinet Frame -->
+          <rect x="340" y="470" width="120" height="30" rx="6" fill="#3f3f46" stroke="#71717a" stroke-width="2"/>
+          <rect x="380" y="380" width="40" height="100" fill="#27272a" stroke="#52525b" stroke-width="2"/>
+          <rect x="260" y="40" width="280" height="360" rx="24" fill="#f4f4f5" stroke="#e4e4e7" stroke-width="4"/>
+
+          <!-- 1. High-Def Vertical Display & Touch Screen -->
+          <g class="hotspot" data-device="mk-touchscreen">
+            <rect x="280" y="60" width="240" height="230" rx="12" fill="#090d16" stroke="#27272a" stroke-width="3"/>
+            <rect x="288" y="68" width="224" height="214" rx="8" fill="#18181b"/>
+            <!-- McDonald's Golden Arches Logo -->
+            <path d="M 385 80 Q 392 70 398 80 Q 404 70 412 80 L 412 92 L 385 92 Z" fill="#eab308"/>
+            <!-- Burger Graphic -->
+            <ellipse cx="400" cy="140" rx="45" ry="15" fill="#f59e0b"/>
+            <rect x="358" y="142" width="84" height="8" rx="3" fill="#22c55e"/>
+            <rect x="355" y="150" width="90" height="10" rx="2" fill="#78350f"/>
+            <ellipse cx="400" cy="165" rx="45" ry="12" fill="#d97706"/>
+            <!-- Touch Buttons -->
+            <rect x="310" y="190" width="80" height="30" rx="6" fill="#ef4444"/>
+            <text x="322" y="210" fill="#ffffff" font-size="11" font-weight="bold">Touch Meal</text>
+            <rect x="410" y="190" width="80" height="30" rx="6" fill="#eab308"/>
+            <text x="425" y="210" fill="#18181b" font-size="11" font-weight="bold">Customize</text>
+          </g>
+
+          <!-- 2. Voice Guidance Speaker -->
+          <g class="hotspot" data-device="mk-speaker">
+            <rect x="360" y="48" width="80" height="8" rx="4" fill="#a1a1aa"/>
+            <circle cx="375" cy="52" r="1.5" fill="#27272a"/>
+            <circle cx="385" cy="52" r="1.5" fill="#27272a"/>
+            <circle cx="395" cy="52" r="1.5" fill="#27272a"/>
+            <circle cx="405" cy="52" r="1.5" fill="#27272a"/>
+            <circle cx="415" cy="52" r="1.5" fill="#27272a"/>
+            <circle cx="425" cy="52" r="1.5" fill="#27272a"/>
+          </g>
+
+          <!-- 3. Optical QR Scanner -->
+          <g class="hotspot" data-device="mk-qrscanner">
+            <rect x="290" y="305" width="60" height="45" rx="6" fill="#27272a" stroke="#38bdf8" stroke-width="2"/>
+            <rect x="300" y="315" width="40" height="25" rx="3" fill="#0284c7"/>
+            <circle cx="320" cy="327" r="8" fill="#ef4444" opacity="0.8"/>
+            <polygon points="320,335 290,380 350,380" fill="#ef4444" opacity="0.2" class="laser-beam"/>
+          </g>
+
+          <!-- 4. Contactless NFC Payment Reader -->
+          <g class="hotspot" data-device="mk-nfc">
+            <rect x="370" y="300" width="60" height="80" rx="8" fill="#1e293b" stroke="#38bdf8" stroke-width="2.5"/>
+            <rect x="380" y="310" width="40" height="25" rx="3" fill="#0284c7"/>
+            <path d="M 392 350 A 6 6 0 0 1 408 350" stroke="#38bdf8" stroke-width="2" fill="none"/>
+            <path d="M 389 355 A 10 10 0 0 1 411 355" stroke="#38bdf8" stroke-width="2" fill="none"/>
+            <line x1="380" y1="370" x2="420" y2="370" stroke="#eab308" stroke-width="3"/>
+          </g>
+
+          <!-- 5. Order Ticket Printer -->
+          <g class="hotspot" data-device="mk-printer">
+            <rect x="450" y="305" width="65" height="40" rx="6" fill="#27272a" stroke="#10b981" stroke-width="2"/>
+            <rect x="460" y="312" width="45" height="8" rx="2" fill="#090d16"/>
+            <rect x="462" y="320" width="41" height="50" fill="#f8fafc" stroke="#cbd5e1" stroke-width="1"/>
+            <text x="470" y="338" fill="#18181b" font-size="12" font-weight="extrabold" font-family="monospace">#64</text>
+            <line x1="467" y1="345" x2="498" y2="345" stroke="#64748b" stroke-width="1"/>
+          </g>
+
+        </svg>
+      </div>
+
+      <!-- Input & Output Device Lists -->
+      <div class="grid grid-cols-1 sm:grid-cols-2 gap-4 mt-auto">
+        
+        <!-- Input Devices Card -->
+        <div class="bg-slate-900/80 p-4 rounded-2xl border border-cyan-500/20">
+          <div class="flex items-center gap-2 mb-3 pb-2 border-b border-slate-800">
+            <span class="w-2.5 h-2.5 rounded-full bg-cyan-400"></span>
+            <h3 class="text-xs font-bold text-cyan-400 uppercase tracking-wider">Input Devices 📥</h3>
+          </div>
+          <ul class="space-y-2 text-xs font-medium">
+            <li id="device-mk-touchscreen" data-device="mk-touchscreen" class="device-item flex items-center gap-3 p-2 rounded-xl border border-transparent hover:border-slate-700 bg-slate-950/40 text-slate-300">
+              <i class="fa-solid fa-hand-pointer text-cyan-400 w-5 text-center text-sm"></i>
+              <span>Capacitive Touchscreen Panel</span>
+            </li>
+            <li id="device-mk-qrscanner" data-device="mk-qrscanner" class="device-item flex items-center gap-3 p-2 rounded-xl border border-transparent hover:border-slate-700 bg-slate-950/40 text-slate-300">
+              <i class="fa-solid fa-qrcode text-cyan-400 w-5 text-center text-sm"></i>
+              <span>Optical QR Code Scanner</span>
+            </li>
+            <li id="device-mk-nfc" data-device="mk-nfc" class="device-item flex items-center gap-3 p-2 rounded-xl border border-transparent hover:border-slate-700 bg-slate-950/40 text-slate-300">
+              <i class="fa-solid fa-wifi text-cyan-400 w-5 text-center text-sm"></i>
+              <span>NFC Contactless Card Reader</span>
+            </li>
+          </ul>
+        </div>
+
+        <!-- Output Devices Card -->
+        <div class="bg-slate-900/80 p-4 rounded-2xl border border-emerald-500/20">
+          <div class="flex items-center gap-2 mb-3 pb-2 border-b border-slate-800">
+            <span class="w-2.5 h-2.5 rounded-full bg-emerald-400"></span>
+            <h3 class="text-xs font-bold text-emerald-400 uppercase tracking-wider">Output Devices 📤</h3>
+          </div>
+          <ul class="space-y-2 text-xs font-medium">
+            <li id="device-mk-display" data-device="mk-touchscreen" class="device-item flex items-center gap-3 p-2 rounded-xl border border-transparent hover:border-slate-700 bg-slate-950/40 text-slate-300">
+              <i class="fa-solid fa-mobile-screen-button text-emerald-400 w-5 text-center text-sm"></i>
+              <span>High-Def Vertical Display</span>
+            </li>
+            <li id="device-mk-printer" data-device="mk-printer" class="device-item flex items-center gap-3 p-2 rounded-xl border border-transparent hover:border-slate-700 bg-slate-950/40 text-slate-300">
+              <i class="fa-solid fa-ticket text-emerald-400 w-5 text-center text-sm"></i>
+              <span>Order Call Ticket Printer</span>
+            </li>
+            <li id="device-mk-speaker" data-device="mk-speaker" class="device-item flex items-center gap-3 p-2 rounded-xl border border-transparent hover:border-slate-700 bg-slate-950/40 text-slate-300">
+              <i class="fa-solid fa-volume-high text-emerald-400 w-5 text-center text-sm"></i>
+              <span>Chime & Guidance Speaker</span>
+            </li>
+          </ul>
+        </div>
+
+      </div>
+
+    </div>
+
+  </main>
+
+  <!-- Interactive JavaScript -->
+  <script>
+    // Tab switching function
+    function switchTab(tab) {
+      const btnOp = document.getElementById('tab-btn-op');
+      const btnMk = document.getElementById('tab-btn-mk');
+      const contentOp = document.getElementById('tab-content-op');
+      const contentMk = document.getElementById('tab-content-mk');
+
+      if (tab === 'op') {
+        contentOp.classList.remove('hidden');
+        contentMk.classList.add('hidden');
+        btnOp.className = 'flex items-center gap-2 px-4 py-2 rounded-lg text-xs font-bold transition-all duration-200 bg-orange-500 text-slate-950 shadow-md';
+        btnMk.className = 'flex items-center gap-2 px-4 py-2 rounded-lg text-xs font-bold transition-all duration-200 text-slate-400 hover:text-white';
+      } else {
+        contentMk.classList.remove('hidden');
+        contentOp.classList.add('hidden');
+        btnMk.className = 'flex items-center gap-2 px-4 py-2 rounded-lg text-xs font-bold transition-all duration-200 bg-red-500 text-white shadow-md';
+        btnOp.className = 'flex items-center gap-2 px-4 py-2 rounded-lg text-xs font-bold transition-all duration-200 text-slate-400 hover:text-white';
+      }
+    }
+
+    // Attach mouseover and mouseleave listeners to SVG hotspots
+    document.addEventListener('DOMContentLoaded', () => {
+      const hotspots = document.querySelectorAll('.hotspot');
+
+      hotspots.forEach(hotspot => {
+        const deviceKey = hotspot.getAttribute('data-device');
+        if (!deviceKey) return;
+
+        hotspot.addEventListener('mouseenter', () => {
+          // Highlight SVG hotspot
+          hotspot.classList.add('hotspot-active');
+
+          // Highlight matching list items underneath
+          const matchedItems = document.querySelectorAll(`.device-item[data-device="${deviceKey}"]`);
+          matchedItems.forEach(item => {
+            const isInput = item.closest('.border-cyan-500\\/20') !== null;
+            if (isInput) {
+              item.classList.add('glow-input');
+            } else {
+              item.classList.add('glow-output');
+            }
+          });
+        });
+
+        hotspot.addEventListener('mouseleave', () => {
+          // Remove SVG highlight
+          hotspot.classList.remove('hotspot-active');
+
+          // Remove glow from list items
+          const matchedItems = document.querySelectorAll(`.device-item[data-device="${deviceKey}"]`);
+          matchedItems.forEach(item => {
+            item.classList.remove('glow-input', 'glow-output');
+          });
+        });
+      });
+
+      // Reverse interaction: Hovering list items highlights hotspot
+      const deviceItems = document.querySelectorAll('.device-item');
+      deviceItems.forEach(item => {
+        const deviceKey = item.getAttribute('data-device');
+        if (!deviceKey) return;
+
+        item.addEventListener('mouseenter', () => {
+          const isInput = item.closest('.border-cyan-500\\/20') !== null;
+          if (isInput) {
+            item.classList.add('glow-input');
+          } else {
+            item.classList.add('glow-output');
+          }
+
+          const matchedHotspots = document.querySelectorAll(`.hotspot[data-device="${deviceKey}"]`);
+          matchedHotspots.forEach(hs => hs.classList.add('hotspot-active'));
+        });
+
+        item.addEventListener('mouseleave', () => {
+          item.classList.remove('glow-input', 'glow-output');
+          const matchedHotspots = document.querySelectorAll(`.hotspot[data-device="${deviceKey}"]`);
+          matchedHotspots.forEach(hs => hs.classList.remove('hotspot-active'));
+        });
+      });
+    });
+  </script>
+
+</body>
+</html>
