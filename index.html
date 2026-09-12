@@ -53,6 +53,14 @@
     <!-- Main Content Area -->
     <main class="max-w-6xl mx-auto px-6 py-12">
         
+        <!-- Universal Breadcrumb & Back Bar -->
+        <div id="breadcrumb-container" class="hidden mb-8 flex items-center justify-between glass px-5 py-3 rounded-2xl border-white/10">
+            <button onclick="goBack()" class="flex items-center gap-2 px-3 py-1.5 rounded-xl bg-white/5 hover:bg-white/10 text-slate-300 hover:text-white font-extrabold text-xs uppercase tracking-wider transition">
+                <i class="fas fa-arrow-left text-blue-400"></i> Previous Page
+            </button>
+            <div id="breadcrumb-trail" class="flex items-center space-x-2 text-xs font-bold uppercase tracking-wider text-slate-400"></div>
+        </div>
+
         <!-- HOME PAGE -->
         <div id="page-home" class="page-content">
             <header class="text-center mb-16">
@@ -89,8 +97,8 @@
 
         <!-- S.2 PYTHON PAGE -->
         <div id="page-python" class="page-content hidden max-w-4xl mx-auto">
-            <button onclick="showPage('home')" class="mb-6 text-blue-400 font-bold text-xs uppercase tracking-widest hover:underline transition">
-                <i class="fas fa-arrow-left mr-2"></i>Back to Home
+            <button onclick="goBack()" class="mb-6 text-blue-400 font-bold text-xs uppercase tracking-widest hover:underline transition flex items-center gap-2">
+                <i class="fas fa-arrow-left"></i> Back to Previous Page
             </button>
             <h2 class="text-4xl font-black mb-8 text-blue-400 uppercase tracking-tight">S.2 Python Programming</h2>
             
@@ -127,8 +135,8 @@
 
         <!-- S.3 DATABASE PAGE -->
         <div id="page-database" class="page-content hidden max-w-4xl mx-auto">
-            <button onclick="showPage('home')" class="mb-6 text-emerald-400 font-bold text-xs uppercase tracking-widest hover:underline transition">
-                <i class="fas fa-arrow-left mr-2"></i>Back to Home
+            <button onclick="goBack()" class="mb-6 text-emerald-400 font-bold text-xs uppercase tracking-widest hover:underline transition flex items-center gap-2">
+                <i class="fas fa-arrow-left"></i> Back to Previous Page
             </button>
             <h2 class="text-4xl font-black mb-8 text-emerald-400 uppercase tracking-tight">S.3 Database & SQL</h2>
             
@@ -165,7 +173,7 @@
 
         <!-- CONCEPTS PAGE -->
         <div id="page-concepts" class="page-content hidden">
-            <button onclick="showPage('home')" class="mb-6 text-purple-400 font-bold text-xs uppercase tracking-widest hover:underline transition"><i class="fas fa-arrow-left mr-2"></i>Back</button>
+            <button onclick="goBack()" class="mb-6 text-purple-400 font-bold text-xs uppercase tracking-widest hover:underline transition flex items-center gap-2"><i class="fas fa-arrow-left"></i> Back to Previous Page</button>
             <h2 class="text-4xl font-black mb-8 text-purple-400 uppercase tracking-tight">ICT Concepts</h2>
             <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
                 <div class="glass p-6 rounded-3xl border-white/5 hover:border-purple-500/50 hover:bg-purple-500/5 transition-all cursor-pointer group">
@@ -209,97 +217,119 @@
 
         <!-- CONCEPTS: BOOK B SUBTOPICS PAGE -->
         <div id="page-concepts-book-b" class="page-content hidden max-w-5xl mx-auto">
-            <button onclick="showPage('concepts')" class="mb-6 text-purple-400 font-bold text-xs uppercase tracking-widest hover:underline transition">
-                <i class="fas fa-arrow-left mr-2"></i>Back to Concepts
+            <button onclick="goBack()" class="mb-6 text-purple-400 font-bold text-xs uppercase tracking-widest hover:underline transition flex items-center gap-2">
+                <i class="fas fa-arrow-left"></i> Back to Concepts
             </button>
             <h2 class="text-4xl font-black mb-8 text-purple-400 uppercase tracking-tight">Book B: Computer System Fundamentals</h2>
             
-            <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-                <a href="b1_keyboardvsscreen.html" class="block group">
-                    <div class="glass p-8 rounded-3xl border-white/5 group-hover:border-purple-500/50 group-hover:bg-purple-500/5 transition-all duration-300">
-                        <div class="flex justify-between items-center">
-                            <div>
-                                <h3 class="font-black text-xl mb-2 uppercase tracking-tight text-white group-hover:text-purple-400 transition-colors">1. Keyboard? Touchscreen?</h3>
-                                <p class="text-slate-400 text-sm">Explore input devices through a experiment.</p>
-                            </div>
-                            <div class="w-12 h-12 rounded-full bg-purple-500/10 flex items-center justify-center text-purple-400 group-hover:scale-110 transition-transform">
-                                <i class="fas fa-print"></i>
-                            </div>
-                        </div>
+            <div class="space-y-10">
+                <!-- Chapter 1: Input and Output Devices -->
+                <div>
+                    <div class="flex items-center gap-3 mb-6 border-b border-purple-500/20 pb-3">
+                        <div class="w-8 h-8 rounded-lg bg-purple-500/20 text-purple-400 flex items-center justify-center font-black text-sm">1</div>
+                        <h3 class="text-2xl font-black text-white uppercase tracking-tight">Ch.1 Input and Output Devices</h3>
                     </div>
-                </a>
-            </div>
-            <br>
-            <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-                <a href="b1_scanner.html" class="block group">
-                    <div class="glass p-8 rounded-3xl border-white/5 group-hover:border-purple-500/50 group-hover:bg-purple-500/5 transition-all duration-300">
-                        <div class="flex justify-between items-center">
-                            <div>
-                                <h3 class="font-black text-xl mb-2 uppercase tracking-tight text-white group-hover:text-purple-400 transition-colors">2. DIY Scanner</h3>
-                                <p class="text-slate-400 text-sm">Explore input devices through a DIY scanner project.</p>
+                    
+                    <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+                        <a href="bookb/ch1/keyboardvsscreen.html" class="block group">
+                            <div class="glass p-6 rounded-3xl border-white/5 group-hover:border-purple-500/50 group-hover:bg-purple-500/5 transition-all duration-300 h-full flex flex-col justify-between">
+                                <div>
+                                    <div class="flex justify-between items-start mb-3">
+                                        <h4 class="font-black text-lg uppercase tracking-tight text-white group-hover:text-purple-400 transition-colors">1. Keyboard? Touchscreen?</h4>
+                                        <div class="w-10 h-10 rounded-full bg-purple-500/10 flex items-center justify-center text-purple-400 group-hover:scale-110 transition-transform flex-shrink-0">
+                                            <i class="fas fa-keyboard"></i>
+                                        </div>
+                                    </div>
+                                    <p class="text-slate-400 text-sm">Explore input devices through an experiment.</p>
+                                </div>
                             </div>
-                            <div class="w-12 h-12 rounded-full bg-purple-500/10 flex items-center justify-center text-purple-400 group-hover:scale-110 transition-transform">
-                                <i class="fas fa-print"></i>
+                        </a>
+
+                        <a href="bookb/ch1/scanner.html" class="block group">
+                            <div class="glass p-6 rounded-3xl border-white/5 group-hover:border-purple-500/50 group-hover:bg-purple-500/5 transition-all duration-300 h-full flex flex-col justify-between">
+                                <div>
+                                    <div class="flex justify-between items-start mb-3">
+                                        <h4 class="font-black text-lg uppercase tracking-tight text-white group-hover:text-purple-400 transition-colors">2. DIY Scanner</h4>
+                                        <div class="w-10 h-10 rounded-full bg-purple-500/10 flex items-center justify-center text-purple-400 group-hover:scale-110 transition-transform flex-shrink-0">
+                                            <i class="fas fa-print"></i>
+                                        </div>
+                                    </div>
+                                    <p class="text-slate-400 text-sm">Explore input devices through a DIY scanner project.</p>
+                                </div>
                             </div>
-                        </div>
+                        </a>
+
+                        <a href="bookb/ch1/sensor.html" class="block group">
+                            <div class="glass p-6 rounded-3xl border-white/5 group-hover:border-purple-500/50 group-hover:bg-purple-500/5 transition-all duration-300 h-full flex flex-col justify-between">
+                                <div>
+                                    <div class="flex justify-between items-start mb-3">
+                                        <h4 class="font-black text-lg uppercase tracking-tight text-white group-hover:text-purple-400 transition-colors">3. Sensor</h4>
+                                        <div class="w-10 h-10 rounded-full bg-purple-500/10 flex items-center justify-center text-purple-400 group-hover:scale-110 transition-transform flex-shrink-0">
+                                            <i class="fas fa-microchip"></i>
+                                        </div>
+                                    </div>
+                                    <p class="text-slate-400 text-sm">What are the usage of each sensor?</p>
+                                </div>
+                            </div>
+                        </a>
+
+                        <a href="bookb/ch1/printer.html" class="block group">
+                            <div class="glass p-6 rounded-3xl border-white/5 group-hover:border-purple-500/50 group-hover:bg-purple-500/5 transition-all duration-300 h-full flex flex-col justify-between">
+                                <div>
+                                    <div class="flex justify-between items-start mb-3">
+                                        <h4 class="font-black text-lg uppercase tracking-tight text-white group-hover:text-purple-400 transition-colors">4. Printer</h4>
+                                        <div class="w-10 h-10 rounded-full bg-purple-500/10 flex items-center justify-center text-purple-400 group-hover:scale-110 transition-transform flex-shrink-0">
+                                            <i class="fas fa-print"></i>
+                                        </div>
+                                    </div>
+                                    <p class="text-slate-400 text-sm">Which printer to use to print each document?</p>
+                                </div>
+                            </div>
+                        </a>
+
+                        <a href="bookb/ch1/poskiosk.html" class="block group">
+                            <div class="glass p-6 rounded-3xl border-white/5 group-hover:border-purple-500/50 group-hover:bg-purple-500/5 transition-all duration-300 h-full flex flex-col justify-between">
+                                <div>
+                                    <div class="flex justify-between items-start mb-3">
+                                        <h4 class="font-black text-lg uppercase tracking-tight text-white group-hover:text-purple-400 transition-colors">5. Kiosk VS POS</h4>
+                                        <div class="w-10 h-10 rounded-full bg-purple-500/10 flex items-center justify-center text-purple-400 group-hover:scale-110 transition-transform flex-shrink-0">
+                                            <i class="fas fa-cash-register"></i>
+                                        </div>
+                                    </div>
+                                    <p class="text-slate-400 text-sm">Remember! MK!!!!! OP!!!!!!</p>
+                                </div>
+                            </div>
+                        </a>
                     </div>
-                </a>
-            </div>
-        <br>
-        <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-                <a href="b1_sensor.html" class="block group">
-                    <div class="glass p-8 rounded-3xl border-white/5 group-hover:border-purple-500/50 group-hover:bg-purple-500/5 transition-all duration-300">
-                        <div class="flex justify-between items-center">
-                            <div>
-                                <h3 class="font-black text-xl mb-2 uppercase tracking-tight text-white group-hover:text-purple-400 transition-colors">3. Sensor</h3>
-                                <p class="text-slate-400 text-sm">What are the usage of each sensor?</p>
-                            </div>
-                            <div class="w-12 h-12 rounded-full bg-purple-500/10 flex items-center justify-center text-purple-400 group-hover:scale-110 transition-transform">
-                                <i class="fas fa-print"></i>
-                            </div>
-                        </div>
+                </div>
+
+                <!-- Chapter 2: Computer Hardware -->
+                <div>
+                    <div class="flex items-center gap-3 mb-6 border-b border-purple-500/20 pb-3">
+                        <div class="w-8 h-8 rounded-lg bg-purple-500/20 text-purple-400 flex items-center justify-center font-black text-sm">2</div>
+                        <h3 class="text-2xl font-black text-white uppercase tracking-tight">Ch.2 Computer Hardware</h3>
                     </div>
-                </a>
-            </div>
-        <br>
-            <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-                <a href="b1_printer.html" class="block group">
-                    <div class="glass p-8 rounded-3xl border-white/5 group-hover:border-purple-500/50 group-hover:bg-purple-500/5 transition-all duration-300">
-                        <div class="flex justify-between items-center">
-                            <div>
-                                <h3 class="font-black text-xl mb-2 uppercase tracking-tight text-white group-hover:text-purple-400 transition-colors">4.Printer</h3>
-                                <p class="text-slate-400 text-sm">Which printer to use to print each document?</p>
-                            </div>
-                            <div class="w-12 h-12 rounded-full bg-purple-500/10 flex items-center justify-center text-purple-400 group-hover:scale-110 transition-transform">
-                                <i class="fas fa-print"></i>
-                            </div>
-                        </div>
+                    <div class="glass p-8 rounded-3xl border-white/5 text-slate-400 text-sm">
+                        <p class="italic">Content for Computer Hardware (CPU, RAM, ROM, Secondary Storage) is under preparation.</p>
                     </div>
-                </a>
-            </div>
-        <br>
-            <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-                <a href="b1_poskiosk.html" class="block group">
-                    <div class="glass p-8 rounded-3xl border-white/5 group-hover:border-purple-500/50 group-hover:bg-purple-500/5 transition-all duration-300">
-                        <div class="flex justify-between items-center">
-                            <div>
-                                <h3 class="font-black text-xl mb-2 uppercase tracking-tight text-white group-hover:text-purple-400 transition-colors">5. Kiosk VS POS</h3>
-                                <p class="text-slate-400 text-sm">Remember! MK!!!!! OP!!!!!!</p>
-                            </div>
-                            <div class="w-12 h-12 rounded-full bg-purple-500/10 flex items-center justify-center text-purple-400 group-hover:scale-110 transition-transform">
-                                <i class="fas fa-print"></i>
-                            </div>
-                        </div>
+                </div>
+
+                <!-- Chapter 3: Computer Software -->
+                <div>
+                    <div class="flex items-center gap-3 mb-6 border-b border-purple-500/20 pb-3">
+                        <div class="w-8 h-8 rounded-lg bg-purple-500/20 text-purple-400 flex items-center justify-center font-black text-sm">3</div>
+                        <h3 class="text-2xl font-black text-white uppercase tracking-tight">Ch.3 Computer Software</h3>
                     </div>
-                </a>
+                    <div class="glass p-8 rounded-3xl border-white/5 text-slate-400 text-sm">
+                        <p class="italic">Content for Computer Software (System Software, Application Software, OS) is under preparation.</p>
+                    </div>
+                </div>
             </div>
         </div>
 
-
-
         <!-- DSE PAGE (With Login Gateway) -->
         <div id="page-dse" class="page-content hidden">
-            <button onclick="showPage('home')" class="mb-6 text-orange-400 font-bold text-xs uppercase tracking-widest hover:underline transition"><i class="fas fa-arrow-left mr-2"></i>Back to Home</button>
+            <button onclick="goBack()" class="mb-6 text-orange-400 font-bold text-xs uppercase tracking-widest hover:underline transition flex items-center gap-2"><i class="fas fa-arrow-left"></i> Back to Previous Page</button>
             <h2 class="text-4xl font-black mb-8 text-orange-400 uppercase tracking-tight">DSE Specialized Resources</h2>
 
             <!-- Login Gateway -->
@@ -357,7 +387,7 @@
         </div>
 
         <div id="page-lab" class="page-content hidden">
-            <button onclick="showPage('home')" class="mb-6 text-indigo-400 font-bold text-xs uppercase tracking-widest hover:underline transition"><i class="fas fa-arrow-left mr-2"></i>Back</button>
+            <button onclick="goBack()" class="mb-6 text-indigo-400 font-bold text-xs uppercase tracking-widest hover:underline transition flex items-center gap-2"><i class="fas fa-arrow-left"></i> Back to Previous Page</button>
             <h2 class="text-4xl font-black mb-8 text-indigo-400 uppercase tracking-tight">Practice Lab</h2>
             <div class="glass p-8 rounded-3xl">This module has been moved to the DSE portal or is currently under maintenance.</div>
         </div>
@@ -389,8 +419,58 @@
             { year: "2025", url: "https://forms.gle/YDzqGi87wPqSkJ9A8" }
         ];
 
+        const pageMeta = {
+            'home': { title: 'Home', parent: null },
+            'python': { title: 'S.2 Python', parent: 'home' },
+            'database': { title: 'S.3 Database', parent: 'home' },
+            'concepts': { title: 'ICT Concepts', parent: 'home' },
+            'concepts-book-b': { title: 'Book B', parent: 'concepts' },
+            'dse': { title: 'DSE Resources', parent: 'home' },
+            'lab': { title: 'Practice Lab', parent: 'home' }
+        };
+
+        function updateBreadcrumbs(pageId) {
+            const container = document.getElementById('breadcrumb-container');
+            const trail = document.getElementById('breadcrumb-trail');
+            if (!container || !trail) return;
+
+            if (pageId === 'home') {
+                container.classList.add('hidden');
+                return;
+            }
+
+            container.classList.remove('hidden');
+            let chain = [];
+            let curr = pageId;
+            while (curr && pageMeta[curr]) {
+                chain.unshift({ id: curr, title: pageMeta[curr].title });
+                curr = pageMeta[curr].parent;
+            }
+
+            trail.innerHTML = chain.map((item, idx) => {
+                const isLast = idx === chain.length - 1;
+                if (isLast) {
+                    return `<span class="text-blue-400 font-black">${item.title}</span>`;
+                }
+                return `<button onclick="showPage('${item.id}')" class="hover:text-slate-200 transition">${item.title}</button><i class="fas fa-chevron-right text-[10px] text-slate-600 mx-1"></i>`;
+            }).join('');
+        }
+
+        function goBack() {
+            const currentHash = location.hash.replace('#', '') || 'home';
+            const meta = pageMeta[currentHash];
+            if (meta && meta.parent) {
+                showPage(meta.parent);
+            } else if (window.history.length > 1) {
+                window.history.back();
+            } else {
+                showPage('home');
+            }
+        }
+
         function populateMCForms() {
             const grid = document.getElementById('mc-forms-grid');
+            if (!grid) return;
             grid.innerHTML = mcForms.map(form => `
                 <a href="${form.url}" target="_blank" class="glass px-3 py-4 rounded-xl text-center hover:border-orange-500/40 hover:bg-orange-500/5 transition group">
                     <span class="block text-[10px] text-slate-500 font-black uppercase tracking-widest group-hover:text-orange-400 mb-1">${form.year}</span>
@@ -414,13 +494,23 @@
             }
         }
 
-        function showPage(pageId) {
+        function showPage(pageId, pushHash = true) {
+            if (!pageMeta[pageId]) pageId = 'home';
+
             document.querySelectorAll('.page-content').forEach(p => p.classList.add('hidden'));
             const target = document.getElementById('page-' + pageId);
             if (target) {
                 target.classList.remove('hidden');
                 window.scrollTo({ top: 0, behavior: 'smooth' });
             }
+
+            if (pushHash) {
+                if (location.hash !== '#' + pageId) {
+                    history.pushState({ pageId: pageId }, '', '#' + pageId);
+                }
+            }
+
+            updateBreadcrumbs(pageId);
         }
 
         function toggleMobileMenu() {
@@ -428,7 +518,16 @@
             if (nav) nav.classList.toggle('hidden');
         }
 
-        window.onload = populateMCForms;
+        window.addEventListener('popstate', () => {
+            const hash = location.hash.replace('#', '') || 'home';
+            showPage(hash, false);
+        });
+
+        window.onload = function() {
+            populateMCForms();
+            const initialPage = location.hash.replace('#', '') || 'home';
+            showPage(initialPage, false);
+        };
     </script>
 </body>
 </html>
