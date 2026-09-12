@@ -1,0 +1,316 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Ch.2 Computer Hardware | CPU vs GPU</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/fontawesome/6.4.0/css/all.min.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;600;800;900&display=swap');
+        body { font-family: 'Outfit', sans-serif; scroll-behavior: smooth; }
+        .glass { background: rgba(255, 255, 255, 0.03); backdrop-filter: blur(12px); border: 1px solid rgba(255, 255, 255, 0.1); }
+        .glow-purple { box-shadow: 0 0 35px -5px rgba(168, 85, 247, 0.25); }
+        .glow-cyan { box-shadow: 0 0 35px -5px rgba(6, 182, 212, 0.25); }
+        .glow-amber { box-shadow: 0 0 35px -5px rgba(245, 158, 11, 0.25); }
+    </style>
+</head>
+<body class="bg-slate-950 text-slate-100 min-h-screen overflow-x-hidden selection:bg-purple-500 selection:text-white">
+
+    <!-- Navigation Header -->
+    <nav class="glass sticky top-0 z-50 px-6 py-4 border-b border-white/10">
+        <div class="max-w-6xl mx-auto flex justify-between items-center">
+            <a href="index.html#concepts-book-b" class="flex items-center gap-3 text-slate-300 hover:text-white font-extrabold text-xs uppercase tracking-wider transition group">
+                <div class="w-8 h-8 rounded-xl bg-white/5 border border-white/10 flex items-center justify-center group-hover:border-purple-500/50 transition">
+                    <i class="fas fa-arrow-left text-purple-400"></i>
+                </div>
+                <span>Back to Book B</span>
+            </a>
+            <div class="text-xs font-black uppercase tracking-widest text-slate-400">
+                Book B &bull; Ch.2 Hardware &bull; <span class="text-purple-400">Lesson 1</span>
+            </div>
+        </div>
+    </nav>
+
+    <!-- Main Container -->
+    <main class="max-w-6xl mx-auto px-6 py-10 space-y-12">
+
+        <!-- Hero Section -->
+        <header class="text-center space-y-4 max-w-3xl mx-auto">
+            <div class="inline-flex items-center gap-2 px-4 py-1.5 rounded-full bg-purple-500/10 border border-purple-500/30 text-purple-300 text-xs font-black uppercase tracking-widest">
+                <i class="fas fa-microchip"></i> Processor Architecture
+            </div>
+            <h1 class="text-4xl md:text-6xl font-black tracking-tight leading-tight">
+                CPU vs GPU Execution
+            </h1>
+            <p class="text-slate-400 text-base md:text-lg leading-relaxed">
+                Sequential logic vs. massive parallelism. See how CPU and GPU architectures process data differently.
+            </p>
+        </header>
+
+        <!-- Core Comparison Section -->
+        <section class="grid grid-cols-1 md:grid-cols-2 gap-8">
+            
+            <!-- CPU Card -->
+            <div class="glass p-8 rounded-3xl border-purple-500/30 glow-purple flex flex-col justify-between relative overflow-hidden">
+                <div class="absolute top-0 right-0 p-6 text-purple-500/10 text-9xl font-black select-none pointer-events-none">
+                    CPU
+                </div>
+                <div>
+                    <div class="flex items-center gap-4 mb-6">
+                        <div class="w-14 h-14 rounded-2xl bg-purple-500/20 text-purple-400 flex items-center justify-center text-2xl font-black border border-purple-500/30">
+                            <i class="fas fa-microchip"></i>
+                        </div>
+                        <div>
+                            <h2 class="text-2xl font-black text-white uppercase tracking-tight">CPU</h2>
+                            <p class="text-xs text-purple-400 font-bold uppercase tracking-widest">Central Processing Unit</p>
+                        </div>
+                    </div>
+
+                    <div class="space-y-3 text-slate-300 text-sm leading-relaxed mb-6">
+                        <p>&bull; <strong>Design:</strong> Few powerful cores built for fast serial processing.</p>
+                        <p>&bull; <strong>Best For:</strong> Step-by-step logic, OS operations, and complex tasks.</p>
+                        <p>&bull; <strong>Analogy:</strong> A small team of master mathematicians solving hard problems one by one.</p>
+                    </div>
+                </div>
+
+                <div class="mt-8 pt-6 border-t border-white/10 flex justify-between items-center text-xs">
+                    <span class="text-slate-400 font-bold uppercase tracking-wider">Primary Metric</span>
+                    <span class="px-3 py-1 rounded-lg bg-purple-500/20 text-purple-300 font-black">Low Latency</span>
+                </div>
+            </div>
+
+            <!-- GPU Card -->
+            <div class="glass p-8 rounded-3xl border-cyan-500/30 glow-cyan flex flex-col justify-between relative overflow-hidden">
+                <div class="absolute top-0 right-0 p-6 text-cyan-500/10 text-9xl font-black select-none pointer-events-none">
+                    GPU
+                </div>
+                <div>
+                    <div class="flex items-center gap-4 mb-6">
+                        <div class="w-14 h-14 rounded-2xl bg-cyan-500/20 text-cyan-400 flex items-center justify-center text-2xl font-black border border-cyan-500/30">
+                            <i class="fas fa-cubes"></i>
+                        </div>
+                        <div>
+                            <h2 class="text-2xl font-black text-white uppercase tracking-tight">GPU</h2>
+                            <p class="text-xs text-cyan-400 font-bold uppercase tracking-widest">Graphics Processing Unit</p>
+                        </div>
+                    </div>
+
+                    <div class="space-y-3 text-slate-300 text-sm leading-relaxed mb-6">
+                        <p>&bull; <strong>Design:</strong> Thousands of smaller cores engineered for massive parallel workloads.</p>
+                        <p>&bull; <strong>Best For:</strong> 3D graphics, AI model training, and video processing.</p>
+                        <p>&bull; <strong>Analogy:</strong> Thousands of students solving basic math equations all at once.</p>
+                    </div>
+                </div>
+
+                <div class="mt-8 pt-6 border-t border-white/10 flex justify-between items-center text-xs">
+                    <span class="text-slate-400 font-bold uppercase tracking-wider">Primary Metric</span>
+                    <span class="px-3 py-1 rounded-lg bg-cyan-500/20 text-cyan-300 font-black">High Throughput</span>
+                </div>
+            </div>
+
+        </section>
+
+        <!-- Interactive Processing Simulator -->
+        <section class="glass p-8 rounded-3xl border-white/10 space-y-6">
+            <div class="flex flex-col md:flex-row md:items-center justify-between gap-4 border-b border-white/10 pb-6">
+                <div>
+                    <h2 class="text-2xl font-black uppercase tracking-tight text-white flex items-center gap-3">
+                        <i class="fas fa-play-circle text-amber-400"></i> Execution Simulator
+                    </h2>
+                    <p class="text-xs text-slate-400 mt-1">Compare serial pixel-by-pixel render (CPU) against instant parallel render (GPU).</p>
+                </div>
+                <div class="flex gap-3">
+                    <button id="btn-run-cpu" onclick="runCpuSimulation()" class="px-5 py-2.5 rounded-xl bg-purple-600 hover:bg-purple-500 font-black text-xs uppercase tracking-wider transition shadow-lg shadow-purple-600/20 flex items-center gap-2">
+                        <i class="fas fa-microchip"></i> Run CPU Render
+                    </button>
+                    <button id="btn-run-gpu" onclick="runGpuSimulation()" class="px-5 py-2.5 rounded-xl bg-cyan-600 hover:bg-cyan-500 font-black text-xs uppercase tracking-wider transition shadow-lg shadow-cyan-600/20 flex items-center gap-2">
+                        <i class="fas fa-bolt"></i> Run GPU Render
+                    </button>
+                </div>
+            </div>
+
+            <!-- Canvas Grid Area -->
+            <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+                <div class="bg-slate-900/80 p-5 rounded-2xl border border-white/5 space-y-3">
+                    <div class="flex justify-between items-center text-xs">
+                        <span class="font-bold text-purple-400 uppercase tracking-wider"><i class="fas fa-square text-[10px]"></i> CPU Canvas (Serial Task)</span>
+                        <span id="cpu-status" class="text-slate-500 font-mono">Idle</span>
+                    </div>
+                    <canvas id="cpuCanvas" width="280" height="180" class="w-full bg-slate-950 rounded-xl border border-white/10"></canvas>
+                    <p class="text-[11px] text-slate-500">Executes pixels sequentially, one after another.</p>
+                </div>
+
+                <div class="bg-slate-900/80 p-5 rounded-2xl border border-white/5 space-y-3">
+                    <div class="flex justify-between items-center text-xs">
+                        <span class="font-bold text-cyan-400 uppercase tracking-wider"><i class="fas fa-th text-[10px]"></i> GPU Canvas (Parallel Task)</span>
+                        <span id="gpu-status" class="text-slate-500 font-mono">Idle</span>
+                    </div>
+                    <canvas id="gpuCanvas" width="280" height="180" class="w-full bg-slate-950 rounded-xl border border-white/10"></canvas>
+                    <p class="text-[11px] text-slate-500">Executes all pixels simultaneously across all cores.</p>
+                </div>
+            </div>
+        </section>
+
+        <!-- Video Demonstration Section -->
+        <section class="glass p-8 rounded-3xl border-orange-500/30 glow-amber space-y-6">
+            <div class="flex items-center justify-between border-b border-white/10 pb-4">
+                <div>
+                    <span class="text-[10px] font-black uppercase tracking-widest text-orange-400">Visual Demo</span>
+                    <h2 class="text-2xl font-black text-white uppercase tracking-tight flex items-center gap-3 mt-1">
+                        <i class="fab fa-youtube text-red-500"></i> MythBusters CPU vs GPU Demo
+                    </h2>
+                </div>
+                <span class="hidden sm:inline-block text-xs px-3 py-1 rounded-full bg-orange-500/20 text-orange-300 font-bold">NVIDIA Classic</span>
+            </div>
+
+            <p class="text-slate-300 text-sm leading-relaxed">
+                A famous real-world experiment comparing single-thread CPU execution against parallel GPU execution using paintballs.
+            </p>
+
+            <!-- Video Embed Wrapper -->
+            <div class="relative w-full aspect-video rounded-2xl overflow-hidden border border-white/15 bg-slate-900 shadow-2xl">
+                <iframe 
+                    class="w-full h-full"
+                    src="https://www.youtube.com/embed/8_ZTvG1WQxM?rel=0" 
+                    title="NVIDIA CPU vs GPU Mythbusters Paint Cannon" 
+                    frameborder="0" 
+                    allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share" 
+                    allowfullscreen>
+                </iframe>
+            </div>
+        </section>
+
+        <!-- Comparison Matrix Table -->
+        <section class="glass p-8 rounded-3xl border-white/10 space-y-6">
+            <h2 class="text-2xl font-black text-white uppercase tracking-tight flex items-center gap-3">
+                <i class="fas fa-table text-indigo-400"></i> Direct Comparison
+            </h2>
+
+            <div class="overflow-x-auto">
+                <table class="w-full text-left text-xs text-slate-300 border-collapse">
+                    <thead>
+                        <tr class="border-b border-white/10 text-slate-400 uppercase tracking-wider font-extrabold">
+                            <th class="p-4">Feature</th>
+                            <th class="p-4 text-purple-400 bg-purple-500/5">CPU</th>
+                            <th class="p-4 text-cyan-400 bg-cyan-500/5">GPU</th>
+                        </tr>
+                    </thead>
+                    <tbody class="divide-y divide-white/5 font-medium">
+                        <tr>
+                            <td class="p-4 font-bold text-white">Cores</td>
+                            <td class="p-4 bg-purple-500/5">Few large cores (4 - 64)</td>
+                            <td class="p-4 bg-cyan-500/5">Thousands of tiny cores (10,000+)</td>
+                        </tr>
+                        <tr>
+                            <td class="p-4 font-bold text-white">Execution</td>
+                            <td class="p-4 bg-purple-500/5">Serial (Sequential)</td>
+                            <td class="p-4 bg-cyan-500/5">Parallel (Simultaneous)</td>
+                        </tr>
+                        <tr>
+                            <td class="p-4 font-bold text-white">Goal</td>
+                            <td class="p-4 bg-purple-500/5">Low Latency</td>
+                            <td class="p-4 bg-cyan-500/5">High Throughput</td>
+                        </tr>
+                        <tr>
+                            <td class="p-4 font-bold text-white">Best Workloads</td>
+                            <td class="p-4 bg-purple-500/5">OS, logic, web, databases</td>
+                            <td class="p-4 bg-cyan-500/5">3D graphics, AI, video encoding</td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+        </section>
+
+    </main>
+
+    <!-- Footer -->
+    <footer class="mt-20 border-t border-white/5 py-10 text-center text-slate-600 text-[10px] font-bold uppercase tracking-[0.2em]">
+        &copy; 2024 ICT LEARNING PORTAL &bull; COMPUTER HARDWARE MODULE B2
+    </footer>
+
+    <script>
+        // Canvas Rendering Simulation Logic
+        const cpuCanvas = document.getElementById('cpuCanvas');
+        const gpuCanvas = document.getElementById('gpuCanvas');
+        const cpuCtx = cpuCanvas.getContext('2d');
+        const gpuCtx = gpuCanvas.getContext('2d');
+
+        let cpuAnimationId = null;
+        let gpuAnimationId = null;
+
+        function clearCanvases() {
+            if (cpuAnimationId) cancelAnimationFrame(cpuAnimationId);
+            if (gpuAnimationId) cancelAnimationFrame(gpuAnimationId);
+            cpuCtx.fillStyle = '#020617';
+            gpuCtx.fillStyle = '#020617';
+            cpuCtx.fillRect(0, 0, cpuCanvas.width, cpuCanvas.height);
+            gpuCtx.fillRect(0, 0, gpuCanvas.width, gpuCanvas.height);
+        }
+
+        function runCpuSimulation() {
+            clearCanvases();
+            document.getElementById('cpu-status').innerText = 'Rendering (Sequential)...';
+            document.getElementById('cpu-status').className = 'text-purple-400 font-mono font-bold animate-pulse';
+
+            const tileSize = 10;
+            const cols = cpuCanvas.width / tileSize;
+            const rows = cpuCanvas.height / tileSize;
+            let total = cols * rows;
+            let current = 0;
+
+            function stepCPU() {
+                // Render a few pixels per frame sequentially
+                for (let i = 0; i < 2; i++) {
+                    if (current >= total) break;
+                    let x = (current % cols) * tileSize;
+                    let y = Math.floor(current / cols) * tileSize;
+                    
+                    let hue = (x + y) % 360;
+                    cpuCtx.fillStyle = `hsl(${hue}, 80%, 50%)`;
+                    cpuCtx.fillRect(x, y, tileSize - 1, tileSize - 1);
+                    current++;
+                }
+
+                if (current < total) {
+                    cpuAnimationId = requestAnimationFrame(stepCPU);
+                } else {
+                    document.getElementById('cpu-status').innerText = 'Done (Slow)';
+                    document.getElementById('cpu-status').className = 'text-purple-300 font-mono font-bold';
+                }
+            }
+            stepCPU();
+        }
+
+        function runGpuSimulation() {
+            clearCanvases();
+            document.getElementById('gpu-status').innerText = 'Rendering (Parallel)...';
+            document.getElementById('gpu-status').className = 'text-cyan-400 font-mono font-bold animate-pulse';
+
+            const tileSize = 10;
+            const cols = gpuCanvas.width / tileSize;
+            const rows = gpuCanvas.height / tileSize;
+
+            // Render ALL pixels in parallel instantly
+            setTimeout(() => {
+                for (let r = 0; r < rows; r++) {
+                    for (let c = 0; c < cols; c++) {
+                        let x = c * tileSize;
+                        let y = r * tileSize;
+                        let hue = (x + y) % 360;
+                        gpuCtx.fillStyle = `hsl(${hue}, 80%, 50%)`;
+                        gpuCtx.fillRect(x, y, tileSize - 1, tileSize - 1);
+                    }
+                }
+                document.getElementById('gpu-status').innerText = 'Done (Instant!)';
+                document.getElementById('gpu-status').className = 'text-cyan-300 font-mono font-bold';
+            }, 150);
+        }
+
+        window.onload = function() {
+            clearCanvases();
+        };
+    </script>
+</body>
+</html>
