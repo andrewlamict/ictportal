@@ -1,0 +1,1387 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>CPU Architecture & Performance Lab</title>
+    <!-- Tailwind CSS -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <!-- FontAwesome Icons -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <!-- Google Fonts -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;600;700;800;900&display=swap" rel="stylesheet">
+
+    <style>
+        body {
+            font-family: 'Outfit', sans-serif;
+            background: #090d16;
+            color: #f8fafc;
+            user-select: none;
+            overflow-x: hidden;
+        }
+
+        .glass {
+            background: rgba(15, 23, 42, 0.75);
+            backdrop-filter: blur(12px);
+            border: 1px solid rgba(255, 255, 255, 0.08);
+        }
+
+        .tab-btn.active {
+            background: rgba(56, 189, 248, 0.15);
+            border-color: #38bdf8;
+            color: #38bdf8;
+            box-shadow: 0 0 20px rgba(56, 189, 248, 0.2);
+        }
+
+        /* Machine cycle wrapper */
+        .cycle-wrapper {
+            position: relative;
+            width: 100%;
+            max-width: 420px;
+            aspect-ratio: 1 / 1;
+            margin: 0 auto;
+        }
+
+        .station-node {
+            position: absolute;
+            width: 60px;
+            height: 60px;
+            margin-left: -30px;
+            margin-top: -30px;
+            transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+        }
+
+        @media (min-width: 640px) {
+            .station-node {
+                width: 70px;
+                height: 70px;
+                margin-left: -35px;
+                margin-top: -35px;
+            }
+        }
+
+        .station-node.active {
+            transform: scale(1.22);
+            z-index: 30;
+        }
+
+        .station-node.active .node-inner {
+            border-color: currentColor;
+            box-shadow: 0 0 22px currentColor;
+        }
+
+        #active-dot {
+            position: absolute;
+            width: 20px;
+            height: 20px;
+            margin-left: -10px;
+            margin-top: -10px;
+            z-index: 40;
+            pointer-events: none;
+            transition: left 0.4s cubic-bezier(0.4, 0, 0.2, 1), top 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+        }
+
+        /* Animated Road Lane Styling */
+        .road-surface {
+            background-color: #1e293b;
+            background-image: linear-gradient(90deg, #334155 2px, transparent 2px);
+            background-size: 24px 100%;
+        }
+
+        .moving-truck {
+            transition: transform 1.2s cubic-bezier(0.4, 0, 0.2, 1), opacity 0.3s ease;
+        }
+    </style>
+</head>
+<body class="min-h-screen flex flex-col justify-between p-3 sm:p-6 max-w-6xl mx-auto">
+
+    <!-- HEADER & NAVIGATION -->
+    <header class="w-full mb-6">
+        <div class="flex flex-col md:flex-row items-center justify-between gap-4 border-b border-slate-800 pb-5">
+            <div>
+                <div class="flex items-center gap-2">
+                    <span class="px-2.5 py-1 rounded-md bg-cyan-500/10 border border-cyan-500/30 text-cyan-400 text-[10px] font-black uppercase tracking-widest">
+                        Book B &bull; Ch.2 Computer Hardware
+                    </span>
+                </div>
+                <h1 class="text-2xl sm:text-4xl font-extrabold text-transparent bg-clip-text bg-gradient-to-r from-cyan-400 via-purple-400 to-amber-400 mt-1">
+                    CPU Architecture & Performance Lab
+                </h1>
+            </div>
+
+            <!-- TAB CONTROLS -->
+            <div class="flex flex-wrap items-center justify-center gap-2 bg-slate-900/90 p-1.5 rounded-2xl border border-slate-800">
+                <button id="tab-btn-components" onclick="switchTab('components')" class="tab-btn active px-4 py-2 rounded-xl text-xs font-bold transition flex items-center gap-2 border border-transparent">
+                    <i class="fa-solid fa-microchip text-cyan-400"></i> Core Components
+                </button>
+                <button id="tab-btn-performance" onclick="switchTab('performance')" class="tab-btn px-4 py-2 rounded-xl text-xs font-bold transition flex items-center gap-2 border border-transparent text-slate-400 hover:text-slate-200">
+                    <i class="fa-solid fa-gauge-high text-amber-400"></i> Specifications
+                </button>
+                <button id="tab-btn-cycle" onclick="switchTab('cycle')" class="tab-btn px-4 py-2 rounded-xl text-xs font-bold transition flex items-center gap-2 border border-transparent text-slate-400 hover:text-slate-200">
+                    <i class="fa-solid fa-rotate text-purple-400"></i> Machine Cycle
+                </button>
+            </div>
+        </div>
+    </header>
+
+    <!-- MAIN CONTENT CONTAINER -->
+    <main class="w-full flex-1">
+
+        <!-- TAB 1: CORE CPU COMPONENTS INTERACTIVE LAB -->
+        <section id="tab-components" class="space-y-8">
+
+            <div class="grid grid-cols-1 lg:grid-cols-2 gap-6">
+
+                <!-- 1. Interactive ALU Lab -->
+                <div class="glass p-6 rounded-3xl border border-amber-500/30 flex flex-col justify-between space-y-4">
+                    <div>
+                        <div class="flex items-center justify-between mb-3">
+                            <div class="flex items-center gap-2">
+                                <div class="w-10 h-10 rounded-2xl bg-amber-500/20 text-amber-400 flex items-center justify-center font-black text-lg border border-amber-500/30">
+                                    <i class="fa-solid fa-calculator"></i>
+                                </div>
+                                <div>
+                                    <h3 class="text-lg font-black text-white uppercase tracking-tight">1. ALU Lab</h3>
+                                    <p class="text-[11px] text-amber-300 font-bold">Arithmetic & Logic Unit</p>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- Mode Switchers -->
+                        <div class="grid grid-cols-2 gap-2 mb-3">
+                            <button id="alu-mode-arith" onclick="setAluMode('arithmetic')" class="py-1.5 rounded-xl bg-amber-500/20 border border-amber-400 text-amber-300 font-extrabold text-xs">
+                                <i class="fa-solid fa-plus-minus mr-1"></i> Arithmetic Mode
+                            </button>
+                            <button id="alu-mode-logic" onclick="setAluMode('logic')" class="py-1.5 rounded-xl bg-slate-900 border border-slate-700 text-slate-400 hover:text-slate-200 font-extrabold text-xs">
+                                <i class="fa-solid fa-code-compare mr-1"></i> Logic Mode
+                            </button>
+                        </div>
+
+                        <div class="bg-slate-950 p-4 rounded-2xl border border-slate-800 space-y-3">
+                            <div class="grid grid-cols-3 gap-2 text-center items-center">
+                                <div>
+                                    <label class="block text-[10px] text-slate-400 font-bold mb-1">Input A</label>
+                                    <input id="alu-input-a" type="number" value="12" class="w-full bg-slate-900 border border-slate-700 text-center text-sm font-mono font-bold text-cyan-300 py-1.5 rounded-xl focus:border-amber-400 outline-none">
+                                </div>
+                                <div>
+                                    <label class="block text-[10px] text-slate-400 font-bold mb-1">Operation</label>
+                                    <select id="alu-op" class="w-full bg-slate-900 border border-slate-700 text-center text-xs font-bold text-amber-400 py-2 rounded-xl focus:border-amber-400 outline-none">
+                                    </select>
+                                </div>
+                                <div>
+                                    <label class="block text-[10px] text-slate-400 font-bold mb-1">Input B</label>
+                                    <input id="alu-input-b" type="number" value="8" class="w-full bg-slate-900 border border-slate-700 text-center text-sm font-mono font-bold text-cyan-300 py-1.5 rounded-xl focus:border-amber-400 outline-none">
+                                </div>
+                            </div>
+
+                            <div class="relative py-3 bg-slate-900/80 rounded-xl border-2 border-amber-500/40 text-center flex flex-col items-center justify-center">
+                                <div id="alu-pulse-bg" class="absolute inset-0 bg-amber-500/10 transition-opacity opacity-0 rounded-xl"></div>
+                                <div class="text-[10px] font-black uppercase text-amber-400 tracking-widest">
+                                    <span id="alu-type-badge">ARITHMETIC CALCULATION</span>
+                                </div>
+                                <div id="alu-formula-display" class="font-mono text-sm font-extrabold text-white mt-0.5">
+                                    12 + 8
+                                </div>
+                            </div>
+
+                            <div class="flex items-center justify-between bg-emerald-950/40 border border-emerald-500/30 p-2.5 rounded-xl">
+                                <span class="text-xs font-bold text-emerald-400 flex items-center gap-1.5">
+                                    <i class="fa-solid fa-vault"></i> Result (ACC):
+                                </span>
+                                <span id="alu-result" class="font-mono text-base font-black text-emerald-300">
+                                    20
+                                </span>
+                            </div>
+
+                            <button onclick="computeAlu()" class="w-full py-2.5 bg-gradient-to-r from-amber-500 to-orange-600 hover:from-amber-400 hover:to-orange-500 text-slate-950 font-black text-xs uppercase tracking-wider rounded-xl transition shadow-lg shadow-amber-500/20">
+                                Execute Operation <i class="fa-solid fa-bolt ml-1"></i>
+                            </button>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- 2. Control Unit (CU) Lab -->
+                <div class="glass p-6 rounded-3xl border border-purple-500/30 flex flex-col justify-between space-y-4">
+                    <div>
+                        <div class="flex items-center justify-between mb-3">
+                            <div class="flex items-center gap-2">
+                                <div class="w-10 h-10 rounded-2xl bg-purple-500/20 text-purple-400 flex items-center justify-center font-black text-lg border border-purple-500/30">
+                                    <i class="fa-solid fa-brain"></i>
+                                </div>
+                                <div>
+                                    <h3 class="text-lg font-black text-white uppercase tracking-tight">2. Control Unit (CU) Lab</h3>
+                                    <p class="text-[11px] text-purple-300 font-bold">The CPU Traffic Director</p>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="bg-slate-950 p-4 rounded-2xl border border-slate-800 space-y-3">
+                            <p class="text-[11px] text-slate-400 font-semibold">Select a command to direct hardware signals:</p>
+                            <div class="grid grid-cols-3 gap-2">
+                                <button onclick="triggerCuSignal('FETCH')" class="py-2 bg-slate-900 border border-cyan-500/40 hover:bg-cyan-500/20 text-cyan-300 rounded-xl text-[11px] font-bold transition">
+                                    Fetch Data
+                                </button>
+                                <button onclick="triggerCuSignal('DECODE')" class="py-2 bg-slate-900 border border-purple-500/40 hover:bg-purple-500/20 text-purple-300 rounded-xl text-[11px] font-bold transition">
+                                    Decode Code
+                                </button>
+                                <button onclick="triggerCuSignal('EXECUTE')" class="py-2 bg-slate-900 border border-amber-500/40 hover:bg-amber-500/20 text-amber-300 rounded-xl text-[11px] font-bold transition">
+                                    Execute ALU
+                                </button>
+                            </div>
+
+                            <div class="relative bg-slate-900 p-4 rounded-xl border border-slate-800 flex items-center justify-between text-center overflow-hidden">
+                                <div id="cu-node-cu" class="w-14 h-14 rounded-2xl bg-purple-600 text-white flex flex-col items-center justify-center font-black text-xs shadow-lg z-10 border border-purple-400">
+                                    <i class="fa-solid fa-traffic-light mb-0.5"></i>
+                                    CU
+                                </div>
+
+                                <div class="flex-1 px-3 relative flex items-center justify-center">
+                                    <div class="w-full h-1 bg-slate-800 rounded-full relative overflow-hidden">
+                                        <div id="cu-signal-wave" class="absolute inset-y-0 left-0 w-1/3 bg-gradient-to-r from-transparent via-purple-400 to-cyan-400 rounded-full transition-all duration-700 opacity-0"></div>
+                                    </div>
+                                </div>
+
+                                <div id="cu-node-target" class="w-14 h-14 rounded-2xl bg-slate-800 text-slate-400 border border-slate-700 flex flex-col items-center justify-center text-[10px] font-bold z-10 transition-all">
+                                    <i id="cu-target-icon" class="fa-solid fa-memory text-sm mb-0.5"></i>
+                                    <span id="cu-target-label">RAM</span>
+                                </div>
+                            </div>
+
+                            <div class="bg-slate-900/90 rounded-xl px-3 py-2 border border-slate-800 text-xs font-mono text-purple-300 flex items-center gap-2">
+                                <i class="fa-solid fa-bullhorn text-amber-400"></i>
+                                <span id="cu-log-text">Click a button above to direct the hardware components.</span>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+            </div>
+
+            <!-- 3. Cache Eviction & Replacement Mechanics Lab -->
+            <div class="glass p-6 rounded-3xl border border-emerald-500/30 space-y-4">
+                <div class="flex items-center justify-between border-b border-slate-800 pb-3">
+                    <div class="flex items-center gap-2">
+                        <div class="w-10 h-10 rounded-2xl bg-emerald-500/20 text-emerald-400 flex items-center justify-center font-black text-lg border border-emerald-500/30">
+                            <i class="fa-solid fa-vault"></i>
+                        </div>
+                        <div>
+                            <h3 class="text-lg font-black text-white uppercase tracking-tight">3. Cache Eviction Mechanics (How Old Memory Clears)</h3>
+                            <p class="text-[11px] text-emerald-300 font-bold">Automatic Eviction (LRU Algorithm) vs. Manual Clear Button</p>
+                        </div>
+                    </div>
+                    <div class="flex gap-2">
+                        <button onclick="clearCacheManually()" class="px-3 py-1.5 bg-red-500/20 hover:bg-red-500/30 text-red-300 border border-red-500/40 text-xs font-bold rounded-xl transition flex items-center gap-1">
+                            <i class="fa-solid fa-broom"></i> Manual Flush Cache
+                        </button>
+                        <button onclick="resetCacheSim()" class="px-3 py-1.5 bg-slate-800 hover:bg-slate-700 text-xs text-slate-300 font-bold rounded-xl border border-slate-700">Reset</button>
+                    </div>
+                </div>
+
+                <div class="grid grid-cols-1 lg:grid-cols-2 gap-6 items-center">
+                    <div class="space-y-3">
+                        <p class="text-xs text-slate-300 leading-relaxed">
+                            Cache has <strong>no physical button in hardware</strong>. When full, the CPU automatically uses an <strong>Eviction Algorithm (e.g., LRU - Least Recently Used)</strong> to kick out the oldest data block back to RAM to make space for new incoming data! You can also use the <strong>Manual Flush</strong> button to see how software clears cache.
+                        </p>
+                        <div class="bg-slate-950 p-4 rounded-2xl border border-slate-800 space-y-3">
+                            <button onclick="addCacheData()" class="w-full py-2.5 bg-emerald-600 hover:bg-emerald-500 text-white font-extrabold text-xs uppercase tracking-wider rounded-xl transition shadow-lg shadow-emerald-600/20 flex items-center justify-center gap-2">
+                                <i class="fa-solid fa-plus-circle text-sm"></i> Add New Data Block
+                            </button>
+                            <div id="cache-spill-msg" class="p-2.5 rounded-xl bg-slate-900 border border-slate-800 text-center text-xs font-mono font-bold text-slate-400">
+                                Click above to add data. Try adding more than 4 items to trigger Automatic Eviction!
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Visual Cache & Memory Dump -->
+                    <div class="grid grid-cols-2 gap-4">
+                        <!-- Cache Slot Box -->
+                        <div class="bg-slate-950 p-4 rounded-2xl border-2 border-emerald-500/40 flex flex-col items-center">
+                            <div class="flex items-center justify-between w-full mb-2">
+                                <span class="text-[10px] font-black uppercase text-emerald-400">CACHE (4 Slots Max)</span>
+                                <span id="cache-count-badge" class="text-[10px] font-bold text-slate-400 font-mono">0 / 4</span>
+                            </div>
+                            <div id="cache-grid" class="w-full grid grid-cols-1 gap-1.5 h-36 border border-slate-800 rounded-xl p-2 bg-slate-900/60 overflow-hidden">
+                            </div>
+                        </div>
+
+                        <!-- Evicted / RAM Box -->
+                        <div class="bg-slate-950 p-4 rounded-2xl border-2 border-amber-500/40 flex flex-col items-center">
+                            <div class="flex items-center justify-between w-full mb-2">
+                                <span class="text-[10px] font-black uppercase text-amber-400">EVICTED TO RAM</span>
+                                <span id="ram-count-badge" class="text-[10px] font-bold text-slate-400 font-mono">0 Items</span>
+                            </div>
+                            <div id="ram-grid" class="w-full grid grid-cols-1 gap-1.5 h-36 border border-slate-800 rounded-xl p-2 bg-slate-900/60 overflow-y-auto">
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+        </section>
+
+        <!-- TAB 2: SPECIFICATIONS INTERACTIVE LAB -->
+        <section id="tab-performance" class="space-y-8 hidden">
+
+            <!-- SPEC 1: CLOCK RATE (1Hz to 5Hz Real-Time Heartbeat) -->
+            <div class="glass p-6 rounded-3xl border border-amber-500/30 space-y-4">
+                <div class="flex items-center gap-3 border-b border-slate-800 pb-3">
+                    <div class="w-10 h-10 rounded-2xl bg-amber-500/20 text-amber-400 flex items-center justify-center font-black text-lg border border-amber-500/30">
+                        <i class="fa-solid fa-stopwatch"></i>
+                    </div>
+                    <div>
+                        <h3 class="text-lg font-black text-white uppercase tracking-tight">1. Clock Rate (1 Hz to 5 Hz)</h3>
+                        <p class="text-[11px] text-amber-300 font-bold">1 Hz = 1 instruction cycle executed every second</p>
+                    </div>
+                </div>
+
+                <div class="grid grid-cols-1 md:grid-cols-2 gap-6 items-center">
+                    <div class="space-y-3">
+                        <div class="bg-slate-950 p-4 rounded-2xl border border-slate-800 space-y-3">
+                            <div class="flex justify-between items-center text-xs font-bold">
+                                <span class="text-slate-400">Adjust Clock Speed:</span>
+                                <span id="clock-speed-val" class="text-amber-400 font-mono text-base font-black">1 Hz</span>
+                            </div>
+                            <input id="clock-slider" type="range" min="1" max="5" step="1" value="1" oninput="updateClockRate(this.value)" class="w-full accent-amber-400 cursor-pointer">
+                            <div class="flex justify-between text-[10px] text-slate-500 font-mono">
+                                <span>1 Hz (Slow)</span>
+                                <span>3 Hz</span>
+                                <span>5 Hz (Fast)</span>
+                            </div>
+                            <p class="text-[11px] text-slate-400 leading-snug">
+                                Every pulse of the clock triggers 1 step in the CPU. Modern CPUs run at billions of Hz (GHz)!
+                            </p>
+                        </div>
+                    </div>
+
+                    <div class="bg-slate-950 p-5 rounded-2xl border border-slate-800 flex flex-col items-center justify-center space-y-3 text-center">
+                        <div id="clock-heart-box" class="w-20 h-20 rounded-full bg-amber-500/20 border-2 border-amber-400 flex items-center justify-center text-amber-400 text-3xl transition-transform">
+                            <i class="fa-solid fa-heart-pulse"></i>
+                        </div>
+                        <div class="font-mono text-xs text-slate-300 font-extrabold">
+                            Cycles Executed: <span id="cycles-count" class="text-amber-400 text-sm">0</span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- SPEC 2: MULTI-CORE BENCHMARK & CONTEXT SWITCHING -->
+            <div class="glass p-6 rounded-3xl border border-cyan-500/30 space-y-4">
+                <div class="flex items-center gap-3 border-b border-slate-800 pb-3">
+                    <div class="w-10 h-10 rounded-2xl bg-cyan-500/20 text-cyan-400 flex items-center justify-center font-black text-lg border border-cyan-500/30">
+                        <i class="fa-solid fa-layer-group"></i>
+                    </div>
+                    <div>
+                        <h3 class="text-lg font-black text-white uppercase tracking-tight">2. CPU Core Benchmark & Live Context Switching</h3>
+                        <p class="text-[11px] text-cyan-300 font-bold">Compare 1 Core, 2 Cores, and 4 Cores processing 4 Tasks in real time</p>
+                    </div>
+                </div>
+
+                <div class="grid grid-cols-1 lg:grid-cols-2 gap-6 items-start">
+                    <!-- Core Selection & Controls -->
+                    <div class="space-y-4">
+                        <div class="bg-slate-950 p-4 rounded-2xl border border-slate-800 space-y-3">
+                            <p class="text-xs text-slate-300 leading-relaxed">
+                                Choose a CPU setup to watch how tasks are context-switched or processed simultaneously across cores:
+                            </p>
+                            <div class="grid grid-cols-3 gap-2">
+                                <button onclick="selectCoreConfig(1)" id="cfg-btn-1" class="py-2 rounded-xl bg-cyan-500/20 border-2 border-cyan-400 text-cyan-300 font-bold text-xs transition">
+                                    1 Core
+                                </button>
+                                <button onclick="selectCoreConfig(2)" id="cfg-btn-2" class="py-2 rounded-xl bg-slate-900 border border-slate-700 text-slate-400 hover:text-slate-200 font-bold text-xs transition">
+                                    2 Cores
+                                </button>
+                                <button onclick="selectCoreConfig(4)" id="cfg-btn-4" class="py-2 rounded-xl bg-slate-900 border border-slate-700 text-slate-400 hover:text-slate-200 font-bold text-xs transition">
+                                    4 Cores
+                                </button>
+                            </div>
+                            <button onclick="runCoreBenchmark()" id="benchmark-run-btn" class="w-full py-3 bg-gradient-to-r from-cyan-500 to-blue-600 hover:from-cyan-400 hover:to-blue-500 text-white font-extrabold text-xs uppercase tracking-wider rounded-xl transition shadow-lg shadow-cyan-500/25 flex items-center justify-center gap-2">
+                                <i class="fa-solid fa-play"></i> Run Selected Core Simulation
+                            </button>
+                        </div>
+
+                        <!-- Live Visual Cores Display -->
+                        <div id="live-cores-container" class="bg-slate-950 p-4 rounded-2xl border border-slate-800 space-y-3">
+                            <div class="flex justify-between items-center">
+                                <span class="text-[10px] font-bold uppercase text-slate-400 block">Live CPU Core Activity:</span>
+                                <span id="core-mode-desc" class="text-[10px] font-bold text-cyan-400 font-mono">1 Core Context-Switching 4 Tasks</span>
+                            </div>
+                            <div id="core-grid-visual" class="grid grid-cols-1 gap-2">
+                                <!-- Core blocks inserted dynamically -->
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Execution Time Bar Chart -->
+                    <div class="bg-slate-950 p-5 rounded-2xl border border-slate-800 space-y-4">
+                        <div class="flex justify-between items-center border-b border-slate-800 pb-2">
+                            <span class="text-[11px] font-black uppercase text-cyan-400 tracking-wider">Completion Time Comparison (Bar Chart)</span>
+                            <span id="chart-status" class="text-[10px] font-mono font-bold text-slate-400">Ready</span>
+                        </div>
+
+                        <!-- Bar 1 Core -->
+                        <div class="space-y-1">
+                            <div class="flex justify-between text-xs font-bold">
+                                <span class="text-slate-300">1 Core (Switches all 4 Tasks)</span>
+                                <span id="time-val-1" class="font-mono text-cyan-400">12.0s</span>
+                            </div>
+                            <div class="w-full bg-slate-900 h-5 rounded-full overflow-hidden border border-slate-800 p-0.5">
+                                <div id="bar-core-1" class="bg-cyan-500 h-full rounded-full transition-all duration-500 w-full flex items-center justify-end pr-2 text-[9px] font-black text-slate-950">12s</div>
+                            </div>
+                        </div>
+
+                        <!-- Bar 2 Core -->
+                        <div class="space-y-1">
+                            <div class="flex justify-between text-xs font-bold">
+                                <span class="text-slate-300">2 Cores (Each switches 2 Tasks)</span>
+                                <span id="time-val-2" class="font-mono text-amber-400">6.0s</span>
+                            </div>
+                            <div class="w-full bg-slate-900 h-5 rounded-full overflow-hidden border border-slate-800 p-0.5">
+                                <div id="bar-core-2" class="bg-amber-400 h-full rounded-full transition-all duration-500 w-1/2 flex items-center justify-end pr-2 text-[9px] font-black text-slate-950">6s</div>
+                            </div>
+                        </div>
+
+                        <!-- Bar 4 Core -->
+                        <div class="space-y-1">
+                            <div class="flex justify-between text-xs font-bold">
+                                <span class="text-slate-300">4 Cores (1 Dedicated Task / Core)</span>
+                                <span id="time-val-4" class="font-mono text-emerald-400">3.0s</span>
+                            </div>
+                            <div class="w-full bg-slate-900 h-5 rounded-full overflow-hidden border border-slate-800 p-0.5">
+                                <div id="bar-core-4" class="bg-emerald-400 h-full rounded-full transition-all duration-500 w-1/4 flex items-center justify-end pr-2 text-[9px] font-black text-slate-950">3s</div>
+                            </div>
+                        </div>
+
+                        <div class="p-3 bg-slate-900/80 rounded-xl border border-slate-800 text-[11px] text-slate-400 leading-normal">
+                            <i class="fa-solid fa-circle-info text-cyan-400 mr-1"></i>
+                            <strong>Context Switching:</strong> On 1 Core, the CPU rapidly jumps between Task 1, 2, 3, and 4. On 2 Cores, Core A switches Tasks 1 & 2 while Core B switches Tasks 3 & 4!
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- SPEC 3: WORD LENGTH (VISUAL HIGHWAY ROAD INTO CPU CORE) -->
+            <div class="glass p-6 rounded-3xl border border-purple-500/30 space-y-4">
+                <div class="flex items-center gap-3 border-b border-slate-800 pb-3">
+                    <div class="w-10 h-10 rounded-2xl bg-purple-500/20 text-purple-400 flex items-center justify-center font-black text-lg border border-purple-500/30">
+                        <i class="fa-solid fa-truck-highway"></i>
+                    </div>
+                    <div>
+                        <h3 class="text-lg font-black text-white uppercase tracking-tight">3. Word Length (Highway Direct into CPU Core)</h3>
+                        <p class="text-[11px] text-purple-300 font-bold">Watch trucks drive along the bus road directly inside the CPU Core!</p>
+                    </div>
+                </div>
+
+                <div class="grid grid-cols-1 md:grid-cols-2 gap-6 items-center">
+                    <div class="space-y-3">
+                        <div class="bg-slate-950 p-4 rounded-2xl border border-slate-800 space-y-3">
+                            <span class="block text-[10px] text-slate-400 font-bold">Select Road Width Architecture:</span>
+                            <div class="grid grid-cols-2 gap-2">
+                                <button onclick="setWordLengthRoad(32)" id="road-btn-32" class="py-2.5 rounded-xl bg-slate-900 border border-slate-700 hover:border-purple-400 font-bold text-xs text-slate-300 transition">
+                                    32-bit (Narrow Road)
+                                </button>
+                                <button onclick="setWordLengthRoad(64)" id="road-btn-64" class="py-2.5 rounded-xl bg-purple-500/20 border-2 border-purple-400 font-bold text-xs text-purple-300 transition">
+                                    64-bit (Wide Highway)
+                                </button>
+                            </div>
+                            <button onclick="dispatchHighwayCargo()" class="w-full py-2.5 bg-purple-600 hover:bg-purple-500 text-white font-extrabold text-xs uppercase tracking-wider rounded-xl transition shadow-lg shadow-purple-600/20 flex items-center justify-center gap-2">
+                                Dispatch Cargo Truck to CPU <i class="fa-solid fa-truck-fast"></i>
+                            </button>
+                            <p id="road-explanation-text" class="text-[11px] text-slate-400 leading-normal">
+                                64-bit highway allows wide multi-lane trucks carrying 8 bytes directly into CPU Core. 32-bit road forces data to be split into 2 trips!
+                            </p>
+                        </div>
+                    </div>
+
+                    <!-- Visual Highway Road into CPU Box -->
+                    <div class="bg-slate-950 p-4 rounded-2xl border border-slate-800 space-y-2">
+                        <div class="flex justify-between items-center text-[10px] font-bold text-slate-400">
+                            <span>RAM MEMORY</span>
+                            <span id="highway-status-badge" class="text-purple-400 font-mono">64-bit Highway Ready</span>
+                            <span class="text-cyan-400">CPU CORE</span>
+                        </div>
+
+                        <!-- Interactive Visual Road into CPU -->
+                        <div class="relative flex items-center gap-0">
+                            <!-- Road Area -->
+                            <div id="visual-road-canvas" class="road-surface h-36 flex-1 rounded-l-2xl border-y-2 border-l-2 border-slate-700 relative overflow-hidden flex flex-col justify-around p-2">
+                                <!-- Road Lanes inserted dynamically -->
+                            </div>
+
+                            <!-- CPU Core Target Container -->
+                            <div id="cpu-core-target-box" class="w-24 h-36 bg-cyan-950/80 border-2 border-cyan-400 rounded-r-2xl flex flex-col items-center justify-center p-2 text-center transition-all">
+                                <i class="fa-solid fa-microchip text-2xl text-cyan-400 mb-1"></i>
+                                <span class="text-[10px] font-extrabold text-white uppercase">CPU CORE</span>
+                                <div id="cpu-delivery-status" class="text-[9px] font-mono text-cyan-300 mt-2 bg-slate-900 px-1.5 py-1 rounded border border-cyan-500/30">
+                                    Awaiting Data
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+        </section>
+
+        <!-- TAB 3: MACHINE CYCLE -->
+        <section id="tab-cycle" class="space-y-6 hidden">
+
+            <div class="glass p-4 rounded-3xl border border-cyan-500/20 text-center max-w-xl mx-auto">
+                <h2 class="text-xl font-black text-transparent bg-clip-text bg-gradient-to-r from-cyan-400 to-purple-400">
+                    Machine Cycle
+                </h2>
+                <p class="text-xs text-slate-400 mt-0.5">
+                    Instruction: <span class="text-cyan-300 font-bold bg-slate-900 px-2 py-0.5 rounded-lg border border-slate-800">5 + 3 = 8</span>
+                </p>
+
+                <!-- 4 MAIN PHASES -->
+                <div class="grid grid-cols-4 gap-1 sm:gap-2 mt-3 max-w-md mx-auto">
+                    <div id="phase-pill-0" class="phase-pill px-1 py-1 rounded-xl bg-slate-900 border border-slate-800 text-center transition-all">
+                        <div class="text-[9px] font-black uppercase text-cyan-400 flex items-center justify-center gap-1">
+                            <i class="fa-solid fa-download"></i> <span>1. FETCH</span>
+                        </div>
+                    </div>
+                    <div id="phase-pill-1" class="phase-pill px-1 py-1 rounded-xl bg-slate-900 border border-slate-800 text-center transition-all">
+                        <div class="text-[9px] font-black uppercase text-purple-400 flex items-center justify-center gap-1">
+                            <i class="fa-solid fa-magnifying-glass"></i> <span>2. DECODE</span>
+                        </div>
+                    </div>
+                    <div id="phase-pill-2" class="phase-pill px-1 py-1 rounded-xl bg-slate-900 border border-slate-800 text-center transition-all">
+                        <div class="text-[9px] font-black uppercase text-amber-400 flex items-center justify-center gap-1">
+                            <i class="fa-solid fa-bolt"></i> <span>3. EXECUTE</span>
+                        </div>
+                    </div>
+                    <div id="phase-pill-3" class="phase-pill px-1 py-1 rounded-xl bg-slate-900 border border-slate-800 text-center transition-all">
+                        <div class="text-[9px] font-black uppercase text-emerald-400 flex items-center justify-center gap-1">
+                            <i class="fa-solid fa-floppy-disk"></i> <span>4. STORE</span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- CIRCULAR DISPLAY -->
+            <div class="cycle-wrapper w-full flex items-center justify-center relative my-4">
+                <div id="active-dot" class="rounded-full bg-cyan-400 shadow-[0_0_12px_#38bdf8]"></div>
+
+                <!-- CENTRAL CARD -->
+                <div id="central-card" class="w-56 h-56 sm:w-64 sm:h-64 rounded-full bg-slate-900 border-4 border-cyan-400 p-4 flex flex-col items-center justify-center text-center shadow-2xl z-20 backdrop-blur-lg transition-all duration-300">
+                    <div id="macro-phase-badge" class="px-2 py-0.5 rounded-full text-[10px] font-extrabold uppercase tracking-widest bg-cyan-500/20 text-cyan-300 border border-cyan-500/40 mb-1 flex items-center gap-1">
+                        <i id="macro-phase-icon" class="fa-solid fa-download"></i> <span id="macro-phase-text">FETCH</span>
+                    </div>
+
+                    <span id="step-badge" class="text-[9px] font-bold uppercase text-slate-400 mb-0.5">
+                        Step 1 of 8
+                    </span>
+
+                    <i id="step-icon" class="fa-solid fa-bookmark text-2xl text-cyan-400 my-0.5"></i>
+
+                    <h3 id="step-title" class="text-sm sm:text-base font-bold text-white leading-tight">
+                        Program Counter
+                    </h3>
+
+                    <div class="w-full bg-slate-950 rounded-lg px-2 py-1 my-1 border border-slate-800">
+                        <span id="step-value" class="font-mono font-black text-xs text-cyan-300 truncate block">
+                            Address: Line 1
+                        </span>
+                    </div>
+
+                    <p id="step-desc" class="text-[10px] text-slate-300 leading-tight">
+                        Holds next memory line address.
+                    </p>
+                </div>
+
+                <!-- STATIONS -->
+                <div id="station-0" onclick="goToStep(0)" class="station-node cursor-pointer">
+                    <div class="node-inner w-full h-full rounded-2xl bg-slate-900 border-2 border-cyan-500/40 text-cyan-400 flex flex-col items-center justify-center shadow-md hover:scale-105 transition">
+                        <i class="fa-solid fa-bookmark text-xs sm:text-sm"></i>
+                        <span class="font-bold text-[9px] text-slate-200 mt-0.5">1. PC</span>
+                    </div>
+                </div>
+
+                <div id="station-1" onclick="goToStep(1)" class="station-node cursor-pointer">
+                    <div class="node-inner w-full h-full rounded-2xl bg-slate-900 border-2 border-cyan-500/40 text-cyan-400 flex flex-col items-center justify-center shadow-md hover:scale-105 transition">
+                        <i class="fa-solid fa-map-pin text-xs sm:text-sm"></i>
+                        <span class="font-bold text-[9px] text-slate-200 mt-0.5">2. MAR</span>
+                    </div>
+                </div>
+
+                <div id="station-2" onclick="goToStep(2)" class="station-node cursor-pointer">
+                    <div class="node-inner w-full h-full rounded-2xl bg-slate-900 border-2 border-cyan-500/40 text-cyan-400 flex flex-col items-center justify-center shadow-md hover:scale-105 transition">
+                        <i class="fa-solid fa-memory text-xs sm:text-sm"></i>
+                        <span class="font-bold text-[9px] text-slate-200 mt-0.5">3. RAM</span>
+                    </div>
+                </div>
+
+                <div id="station-3" onclick="goToStep(3)" class="station-node cursor-pointer">
+                    <div class="node-inner w-full h-full rounded-2xl bg-slate-900 border-2 border-cyan-500/40 text-cyan-400 flex flex-col items-center justify-center shadow-md hover:scale-105 transition">
+                        <i class="fa-solid fa-box-open text-xs sm:text-sm"></i>
+                        <span class="font-bold text-[9px] text-slate-200 mt-0.5">4. MDR</span>
+                    </div>
+                </div>
+
+                <div id="station-4" onclick="goToStep(4)" class="station-node cursor-pointer">
+                    <div class="node-inner w-full h-full rounded-2xl bg-slate-900 border-2 border-purple-500/40 text-purple-400 flex flex-col items-center justify-center shadow-md hover:scale-105 transition">
+                        <i class="fa-solid fa-receipt text-xs sm:text-sm"></i>
+                        <span class="font-bold text-[9px] text-slate-200 mt-0.5">5. CIR</span>
+                    </div>
+                </div>
+
+                <div id="station-5" onclick="goToStep(5)" class="station-node cursor-pointer">
+                    <div class="node-inner w-full h-full rounded-2xl bg-slate-900 border-2 border-purple-500/40 text-purple-400 flex flex-col items-center justify-center shadow-md hover:scale-105 transition">
+                        <i class="fa-solid fa-brain text-xs sm:text-sm"></i>
+                        <span class="font-bold text-[9px] text-slate-200 mt-0.5">6. CU</span>
+                    </div>
+                </div>
+
+                <div id="station-6" onclick="goToStep(6)" class="station-node cursor-pointer">
+                    <div class="node-inner w-full h-full rounded-2xl bg-slate-900 border-2 border-amber-500/40 text-amber-400 flex flex-col items-center justify-center shadow-md hover:scale-105 transition">
+                        <i class="fa-solid fa-calculator text-xs sm:text-sm"></i>
+                        <span class="font-bold text-[9px] text-slate-200 mt-0.5">7. ALU</span>
+                    </div>
+                </div>
+
+                <div id="station-7" onclick="goToStep(7)" class="station-node cursor-pointer">
+                    <div class="node-inner w-full h-full rounded-2xl bg-slate-900 border-2 border-emerald-500/40 text-emerald-400 flex flex-col items-center justify-center shadow-md hover:scale-105 transition">
+                        <i class="fa-solid fa-vault text-xs sm:text-sm"></i>
+                        <span class="font-bold text-[9px] text-slate-200 mt-0.5">8. ACC</span>
+                    </div>
+                </div>
+            </div>
+
+            <!-- CONTROLS -->
+            <div class="w-full max-w-xl mx-auto bg-slate-900 border border-slate-800 p-3 rounded-2xl shadow-xl flex items-center justify-between gap-2">
+                <button onclick="resetCycle()" class="px-3 py-2.5 bg-slate-800 hover:bg-slate-700 text-slate-300 rounded-xl text-xs font-bold transition flex items-center gap-1.5">
+                    <i class="fa-solid fa-rotate-left"></i> Reset
+                </button>
+
+                <button id="auto-btn" onclick="toggleAutoPlay()" class="px-3 py-2.5 bg-slate-800 hover:bg-slate-700 text-cyan-300 border border-slate-700 rounded-xl text-xs font-bold transition flex items-center gap-1.5">
+                    <i class="fa-solid fa-play" id="auto-icon"></i> <span id="auto-text">Auto</span>
+                </button>
+
+                <button onclick="nextStep()" class="flex-1 py-3 bg-gradient-to-r from-cyan-500 to-blue-600 hover:from-cyan-400 hover:to-blue-500 text-white font-extrabold text-xs rounded-xl transition shadow-lg shadow-cyan-500/25 flex items-center justify-center gap-2">
+                    NEXT STEP <i class="fa-solid fa-arrow-right"></i>
+                </button>
+            </div>
+
+        </section>
+
+    </main>
+
+    <!-- FOOTER -->
+    <footer class="mt-8 border-t border-slate-800/80 pt-4 text-center text-[10px] text-slate-500 font-bold uppercase tracking-[0.2em]">
+        &copy; 2026 ICT LEARNING PORTAL &bull; CHAPTER 2 COMPUTER HARDWARE MODULE
+    </footer>
+
+    <script>
+        // --- TAB SWITCHING ---
+        function switchTab(tabId) {
+            document.getElementById('tab-components').classList.add('hidden');
+            document.getElementById('tab-performance').classList.add('hidden');
+            document.getElementById('tab-cycle').classList.add('hidden');
+
+            document.getElementById('tab-btn-components').className = 'tab-btn px-4 py-2 rounded-xl text-xs font-bold transition flex items-center gap-2 border border-transparent text-slate-400 hover:text-slate-200';
+            document.getElementById('tab-btn-performance').className = 'tab-btn px-4 py-2 rounded-xl text-xs font-bold transition flex items-center gap-2 border border-transparent text-slate-400 hover:text-slate-200';
+            document.getElementById('tab-btn-cycle').className = 'tab-btn px-4 py-2 rounded-xl text-xs font-bold transition flex items-center gap-2 border border-transparent text-slate-400 hover:text-slate-200';
+
+            const activeContent = document.getElementById('tab-' + tabId);
+            const activeBtn = document.getElementById('tab-btn-' + tabId);
+
+            if (activeContent && activeBtn) {
+                activeContent.classList.remove('hidden');
+                activeBtn.className = 'tab-btn active px-4 py-2 rounded-xl text-xs font-bold transition flex items-center gap-2 border border-transparent';
+            }
+
+            if (tabId === 'cycle') {
+                setTimeout(() => {
+                    layoutNodes();
+                    renderUI();
+                }, 50);
+            }
+        }
+
+        // --- ALU LAB ---
+        let aluCurrentMode = 'arithmetic';
+
+        function setAluMode(mode) {
+            aluCurrentMode = mode;
+            const btnArith = document.getElementById('alu-mode-arith');
+            const btnLogic = document.getElementById('alu-mode-logic');
+            const selectOp = document.getElementById('alu-op');
+            const badge = document.getElementById('alu-type-badge');
+
+            if (mode === 'arithmetic') {
+                btnArith.className = 'py-1.5 rounded-xl bg-amber-500/20 border border-amber-400 text-amber-300 font-extrabold text-xs';
+                btnLogic.className = 'py-1.5 rounded-xl bg-slate-900 border border-slate-700 text-slate-400 hover:text-slate-200 font-extrabold text-xs';
+                badge.textContent = 'ARITHMETIC CALCULATION';
+                selectOp.innerHTML = `
+                    <option value="+">+ (Add)</option>
+                    <option value="-">- (Subtract)</option>
+                    <option value="*">&times; (Multiply)</option>
+                `;
+            } else {
+                btnLogic.className = 'py-1.5 rounded-xl bg-amber-500/20 border border-amber-400 text-amber-300 font-extrabold text-xs';
+                btnArith.className = 'py-1.5 rounded-xl bg-slate-900 border border-slate-700 text-slate-400 hover:text-slate-200 font-extrabold text-xs';
+                badge.textContent = 'LOGIC COMPARISON';
+                selectOp.innerHTML = `
+                    <option value=">">&gt; (Greater Than?)</option>
+                    <option value="<">&lt; (Less Than?)</option>
+                    <option value="==">== (Equal To?)</option>
+                `;
+            }
+            computeAlu();
+        }
+
+        function computeAlu() {
+            const valA = parseFloat(document.getElementById('alu-input-a').value) || 0;
+            const valB = parseFloat(document.getElementById('alu-input-b').value) || 0;
+            const op = document.getElementById('alu-op').value;
+            const pulse = document.getElementById('alu-pulse-bg');
+
+            pulse.style.opacity = '1';
+
+            let res = 0;
+            if (op === '+') res = valA + valB;
+            else if (op === '-') res = valA - valB;
+            else if (op === '*') res = valA * valB;
+            else if (op === '>') res = valA > valB ? 'TRUE (1)' : 'FALSE (0)';
+            else if (op === '<') res = valA < valB ? 'TRUE (1)' : 'FALSE (0)';
+            else if (op === '==') res = valA === valB ? 'TRUE (1)' : 'FALSE (0)';
+
+            document.getElementById('alu-formula-display').textContent = `${valA} ${op} ${valB}`;
+
+            setTimeout(() => {
+                document.getElementById('alu-result').textContent = res;
+                pulse.style.opacity = '0';
+            }, 300);
+        }
+
+        // --- CU LAB ---
+        function triggerCuSignal(type) {
+            const wave = document.getElementById('cu-signal-wave');
+            const targetIcon = document.getElementById('cu-target-icon');
+            const targetLabel = document.getElementById('cu-target-label');
+            const targetNode = document.getElementById('cu-node-target');
+            const logText = document.getElementById('cu-log-text');
+
+            wave.style.opacity = '1';
+            wave.style.left = '0%';
+
+            if (type === 'FETCH') {
+                targetIcon.className = 'fa-solid fa-memory text-sm mb-0.5';
+                targetLabel.textContent = 'RAM';
+                logText.textContent = 'CU sends control signal: "RAM, fetch instruction code!"';
+            } else if (type === 'DECODE') {
+                targetIcon.className = 'fa-solid fa-receipt text-sm mb-0.5';
+                targetLabel.textContent = 'CIR';
+                logText.textContent = 'CU sends control signal: "CIR, decode active instruction!"';
+            } else if (type === 'EXECUTE') {
+                targetIcon.className = 'fa-solid fa-calculator text-sm mb-0.5';
+                targetLabel.textContent = 'ALU';
+                logText.textContent = 'CU sends control signal: "ALU, execute math calculation!"';
+            }
+
+            wave.style.left = '70%';
+
+            setTimeout(() => {
+                targetNode.classList.add('border-cyan-400', 'bg-cyan-950/60');
+                setTimeout(() => {
+                    targetNode.classList.remove('border-cyan-400', 'bg-cyan-950/60');
+                    wave.style.opacity = '0';
+                }, 400);
+            }, 300);
+        }
+
+        // --- CACHE EVICTION LAB ---
+        let cacheItems = [];
+        let ramItems = [];
+        let itemIdCounter = 1;
+
+        function addCacheData() {
+            const msg = document.getElementById('cache-spill-msg');
+            const newItem = `Data #${itemIdCounter++}`;
+
+            if (cacheItems.length < 4) {
+                cacheItems.push(newItem);
+                msg.textContent = `⚡ Stored "${newItem}" in Cache! (Slots left: ${4 - cacheItems.length})`;
+                msg.className = 'p-2.5 rounded-xl bg-emerald-950/40 border border-emerald-500/40 text-center text-xs font-mono font-bold text-emerald-300';
+            } else {
+                // Cache is FULL -> Perform LRU Eviction!
+                const evicted = cacheItems.shift(); // remove oldest item
+                ramItems.push(evicted);
+                cacheItems.push(newItem);
+
+                msg.textContent = `♻️ CACHE FULL! Kicked out oldest block "${evicted}" to RAM to store "${newItem}"!`;
+                msg.className = 'p-2.5 rounded-xl bg-amber-950/40 border border-amber-500/40 text-center text-xs font-mono font-bold text-amber-300';
+            }
+
+            renderCacheMemoryUI();
+        }
+
+        function clearCacheManually() {
+            const msg = document.getElementById('cache-spill-msg');
+            if (cacheItems.length === 0) {
+                msg.textContent = 'Cache is already empty!';
+                return;
+            }
+            ramItems = [...ramItems, ...cacheItems];
+            cacheItems = [];
+            msg.textContent = '🧹 Manual Flush Executed: All cached blocks flushed to RAM!';
+            msg.className = 'p-2.5 rounded-xl bg-red-950/40 border border-red-500/40 text-center text-xs font-mono font-bold text-red-300';
+            renderCacheMemoryUI();
+        }
+
+        function renderCacheMemoryUI() {
+            const cacheGrid = document.getElementById('cache-grid');
+            const ramGrid = document.getElementById('ram-grid');
+
+            document.getElementById('cache-count-badge').textContent = `${cacheItems.length} / 4`;
+            document.getElementById('ram-count-badge').textContent = `${ramItems.length} Items`;
+
+            cacheGrid.innerHTML = cacheItems.map(item => `
+                <div class="bg-emerald-500/20 border border-emerald-400 text-emerald-300 font-mono text-[10px] font-bold p-1 rounded-lg text-center flex items-center justify-between px-2">
+                    <span>${item}</span>
+                    <i class="fa-solid fa-bolt text-[9px]"></i>
+                </div>
+            `).join('');
+
+            ramGrid.innerHTML = ramItems.map(item => `
+                <div class="bg-amber-500/20 border border-amber-400 text-amber-300 font-mono text-[10px] font-bold p-1 rounded-lg text-center flex items-center justify-between px-2">
+                    <span>${item}</span>
+                    <i class="fa-solid fa-memory text-[9px]"></i>
+                </div>
+            `).join('');
+        }
+
+        function resetCacheSim() {
+            cacheItems = [];
+            ramItems = [];
+            itemIdCounter = 1;
+            document.getElementById('cache-spill-msg').textContent = 'Memory cleared. Click to start filling Cache!';
+            document.getElementById('cache-spill-msg').className = 'p-2.5 rounded-xl bg-slate-900 border border-slate-800 text-center text-xs font-mono font-bold text-slate-400';
+            renderCacheMemoryUI();
+        }
+
+        // --- CLOCK RATE ---
+        let clockTimer = null;
+        let cyclesCompleted = 0;
+
+        function updateClockRate(hzVal) {
+            document.getElementById('clock-speed-val').textContent = `${hzVal} Hz`;
+            const heartBox = document.getElementById('clock-heart-box');
+            const intervalMs = 1000 / hzVal;
+
+            if (clockTimer) clearInterval(clockTimer);
+
+            clockTimer = setInterval(() => {
+                cyclesCompleted++;
+                document.getElementById('cycles-count').textContent = cyclesCompleted;
+
+                heartBox.style.transform = 'scale(1.25)';
+                setTimeout(() => {
+                    heartBox.style.transform = 'scale(1.0)';
+                }, intervalMs / 2);
+            }, intervalMs);
+        }
+
+        // --- CORE BENCHMARK & MULTI-CORE CONTEXT SWITCHING ---
+        let selectedCores = 1;
+        let benchmarkInterval = null;
+        let isBenchmarking = false;
+
+        const TASK_NAMES = [
+            { title: '1. Web Page', color: 'cyan' },
+            { title: '2. 3D Game', color: 'purple' },
+            { title: '3. MP3 Music', color: 'amber' },
+            { title: '4. Data Encryption', color: 'emerald' }
+        ];
+
+        function selectCoreConfig(coreCount) {
+            if (isBenchmarking) return;
+            selectedCores = coreCount;
+
+            document.getElementById('cfg-btn-1').className = coreCount === 1 ? 'py-2 rounded-xl bg-cyan-500/20 border-2 border-cyan-400 text-cyan-300 font-bold text-xs transition' : 'py-2 rounded-xl bg-slate-900 border border-slate-700 text-slate-400 hover:text-slate-200 font-bold text-xs transition';
+            document.getElementById('cfg-btn-2').className = coreCount === 2 ? 'py-2 rounded-xl bg-amber-500/20 border-2 border-amber-400 text-amber-300 font-bold text-xs transition' : 'py-2 rounded-xl bg-slate-900 border border-slate-700 text-slate-400 hover:text-slate-200 font-bold text-xs transition';
+            document.getElementById('cfg-btn-4').className = coreCount === 4 ? 'py-2 rounded-xl bg-emerald-500/20 border-2 border-emerald-400 text-emerald-300 font-bold text-xs transition' : 'py-2 rounded-xl bg-slate-900 border border-slate-700 text-slate-400 hover:text-slate-200 font-bold text-xs transition';
+
+            renderLiveCoresUI();
+        }
+
+        function renderLiveCoresUI() {
+            const container = document.getElementById('core-grid-visual');
+            const modeDesc = document.getElementById('core-mode-desc');
+
+            if (selectedCores === 1) {
+                modeDesc.textContent = '1 Core Context-Switching 4 Tasks Sequentially';
+                container.className = 'grid grid-cols-1 gap-2';
+                container.innerHTML = `
+                    <div class="bg-slate-900 border border-slate-800 p-3 rounded-xl space-y-2">
+                        <div class="flex justify-between items-center text-xs font-bold text-cyan-400">
+                            <span><i class="fa-solid fa-microchip mr-1"></i> Core 1</span>
+                            <span id="active-task-label-1" class="text-[10px] text-slate-400 font-mono">Idle</span>
+                        </div>
+                        <div class="grid grid-cols-4 gap-1 text-center" id="core-tasks-1">
+                            <div id="c1-t0" class="bg-slate-950 p-1.5 rounded-lg border border-slate-800 text-[9px] text-slate-500 font-bold">1. Web</div>
+                            <div id="c1-t1" class="bg-slate-950 p-1.5 rounded-lg border border-slate-800 text-[9px] text-slate-500 font-bold">2. Game</div>
+                            <div id="c1-t2" class="bg-slate-950 p-1.5 rounded-lg border border-slate-800 text-[9px] text-slate-500 font-bold">3. Music</div>
+                            <div id="c1-t3" class="bg-slate-950 p-1.5 rounded-lg border border-slate-800 text-[9px] text-slate-500 font-bold">4. Encrypt</div>
+                        </div>
+                    </div>
+                `;
+            } else if (selectedCores === 2) {
+                modeDesc.textContent = '2 Cores Context-Switching 2 Tasks Each';
+                container.className = 'grid grid-cols-2 gap-2';
+                container.innerHTML = `
+                    <div class="bg-slate-900 border border-slate-800 p-3 rounded-xl space-y-2">
+                        <div class="flex justify-between items-center text-xs font-bold text-amber-400">
+                            <span><i class="fa-solid fa-microchip mr-1"></i> Core 1</span>
+                            <span id="active-task-label-1" class="text-[9px] text-slate-400 font-mono">Idle</span>
+                        </div>
+                        <div class="grid grid-cols-2 gap-1 text-center">
+                            <div id="c1-t0" class="bg-slate-950 p-1.5 rounded-lg border border-slate-800 text-[9px] text-slate-500 font-bold">1. Web</div>
+                            <div id="c1-t1" class="bg-slate-950 p-1.5 rounded-lg border border-slate-800 text-[9px] text-slate-500 font-bold">2. Game</div>
+                        </div>
+                    </div>
+                    <div class="bg-slate-900 border border-slate-800 p-3 rounded-xl space-y-2">
+                        <div class="flex justify-between items-center text-xs font-bold text-amber-400">
+                            <span><i class="fa-solid fa-microchip mr-1"></i> Core 2</span>
+                            <span id="active-task-label-2" class="text-[9px] text-slate-400 font-mono">Idle</span>
+                        </div>
+                        <div class="grid grid-cols-2 gap-1 text-center">
+                            <div id="c2-t2" class="bg-slate-950 p-1.5 rounded-lg border border-slate-800 text-[9px] text-slate-500 font-bold">3. Music</div>
+                            <div id="c2-t3" class="bg-slate-950 p-1.5 rounded-lg border border-slate-800 text-[9px] text-slate-500 font-bold">4. Encrypt</div>
+                        </div>
+                    </div>
+                `;
+            } else if (selectedCores === 4) {
+                modeDesc.textContent = '4 Cores: 1 Dedicated Task Per Core (True Parallel)';
+                container.className = 'grid grid-cols-2 gap-2';
+                container.innerHTML = `
+                    <div class="bg-slate-900 border border-slate-800 p-2 rounded-xl">
+                        <span class="text-[9px] font-bold text-emerald-400 block mb-1">Core 1</span>
+                        <div id="c1-t0" class="bg-slate-950 p-1.5 rounded-lg border border-slate-800 text-[9px] text-slate-500 font-bold text-center">1. Web</div>
+                    </div>
+                    <div class="bg-slate-900 border border-slate-800 p-2 rounded-xl">
+                        <span class="text-[9px] font-bold text-emerald-400 block mb-1">Core 2</span>
+                        <div id="c2-t1" class="bg-slate-950 p-1.5 rounded-lg border border-slate-800 text-[9px] text-slate-500 font-bold text-center">2. Game</div>
+                    </div>
+                    <div class="bg-slate-900 border border-slate-800 p-2 rounded-xl">
+                        <span class="text-[9px] font-bold text-emerald-400 block mb-1">Core 3</span>
+                        <div id="c3-t2" class="bg-slate-950 p-1.5 rounded-lg border border-slate-800 text-[9px] text-slate-500 font-bold text-center">3. Music</div>
+                    </div>
+                    <div class="bg-slate-900 border border-slate-800 p-2 rounded-xl">
+                        <span class="text-[9px] font-bold text-emerald-400 block mb-1">Core 4</span>
+                        <div id="c4-t3" class="bg-slate-950 p-1.5 rounded-lg border border-slate-800 text-[9px] text-slate-500 font-bold text-center">4. Encrypt</div>
+                    </div>
+                `;
+            }
+        }
+
+        function runCoreBenchmark() {
+            if (isBenchmarking) return;
+            isBenchmarking = true;
+
+            const btn = document.getElementById('benchmark-run-btn');
+            const status = document.getElementById('chart-status');
+            btn.disabled = true;
+            btn.classList.add('opacity-50');
+
+            const bar1 = document.getElementById('bar-core-1');
+            const bar2 = document.getElementById('bar-core-2');
+            const bar4 = document.getElementById('bar-core-4');
+
+            // Reset Bar Widths
+            bar1.style.width = '0%';
+            bar2.style.width = '0%';
+            bar4.style.width = '0%';
+
+            status.textContent = 'Simulating Core Execution...';
+            status.className = 'text-[10px] font-mono font-bold text-amber-400 animate-pulse';
+
+            let tick = 0;
+
+            if (selectedCores === 1) {
+                // 1 Core context switches between 0, 1, 2, 3
+                benchmarkInterval = setInterval(() => {
+                    const activeIdx = tick % 4;
+                    for (let i = 0; i < 4; i++) {
+                        const el = document.getElementById(`c1-t${i}`);
+                        if (el) {
+                            if (i === activeIdx) {
+                                el.className = 'bg-cyan-500/20 border-2 border-cyan-400 text-cyan-300 p-1.5 rounded-lg text-[9px] font-bold scale-105 transition';
+                            } else {
+                                el.className = 'bg-slate-950 p-1.5 rounded-lg border border-slate-800 text-[9px] text-slate-500 font-bold';
+                            }
+                        }
+                    }
+                    const label = document.getElementById('active-task-label-1');
+                    if (label) label.textContent = `Running: ${TASK_NAMES[activeIdx].title}`;
+                    tick++;
+                }, 300);
+
+                setTimeout(() => {
+                    bar1.style.width = '100%';
+                    finishBenchmark();
+                }, 2400);
+
+            } else if (selectedCores === 2) {
+                // 2 Cores: Core 1 switches between 0 & 1, Core 2 switches between 2 & 3
+                benchmarkInterval = setInterval(() => {
+                    const idx1 = tick % 2; // 0 or 1
+                    const idx2 = (tick % 2) + 2; // 2 or 3
+
+                    const el1_0 = document.getElementById('c1-t0');
+                    const el1_1 = document.getElementById('c1-t1');
+                    if (el1_0 && el1_1) {
+                        el1_0.className = idx1 === 0 ? 'bg-amber-500/20 border-2 border-amber-400 text-amber-300 p-1.5 rounded-lg text-[9px] font-bold scale-105 transition' : 'bg-slate-950 p-1.5 rounded-lg border border-slate-800 text-[9px] text-slate-500 font-bold';
+                        el1_1.className = idx1 === 1 ? 'bg-amber-500/20 border-2 border-amber-400 text-amber-300 p-1.5 rounded-lg text-[9px] font-bold scale-105 transition' : 'bg-slate-950 p-1.5 rounded-lg border border-slate-800 text-[9px] text-slate-500 font-bold';
+                    }
+
+                    const el2_2 = document.getElementById('c2-t2');
+                    const el2_3 = document.getElementById('c2-t3');
+                    if (el2_2 && el2_3) {
+                        el2_2.className = idx2 === 2 ? 'bg-amber-500/20 border-2 border-amber-400 text-amber-300 p-1.5 rounded-lg text-[9px] font-bold scale-105 transition' : 'bg-slate-950 p-1.5 rounded-lg border border-slate-800 text-[9px] text-slate-500 font-bold';
+                        el2_3.className = idx2 === 3 ? 'bg-amber-500/20 border-2 border-amber-400 text-amber-300 p-1.5 rounded-lg text-[9px] font-bold scale-105 transition' : 'bg-slate-950 p-1.5 rounded-lg border border-slate-800 text-[9px] text-slate-500 font-bold';
+                    }
+
+                    document.getElementById('active-task-label-1').textContent = `Running: ${TASK_NAMES[idx1].title}`;
+                    document.getElementById('active-task-label-2').textContent = `Running: ${TASK_NAMES[idx2].title}`;
+                    tick++;
+                }, 300);
+
+                setTimeout(() => {
+                    bar2.style.width = '50%';
+                    finishBenchmark();
+                }, 1200);
+
+            } else if (selectedCores === 4) {
+                // 4 Cores: Parallel Execution! All tasks run simultaneously
+                const el1 = document.getElementById('c1-t0');
+                const el2 = document.getElementById('c2-t1');
+                const el3 = document.getElementById('c3-t2');
+                const el4 = document.getElementById('c4-t3');
+
+                if (el1) el1.className = 'bg-emerald-500/20 border-2 border-emerald-400 text-emerald-300 p-1.5 rounded-lg text-[9px] font-bold scale-105 transition';
+                if (el2) el2.className = 'bg-emerald-500/20 border-2 border-emerald-400 text-emerald-300 p-1.5 rounded-lg text-[9px] font-bold scale-105 transition';
+                if (el3) el3.className = 'bg-emerald-500/20 border-2 border-emerald-400 text-emerald-300 p-1.5 rounded-lg text-[9px] font-bold scale-105 transition';
+                if (el4) el4.className = 'bg-emerald-500/20 border-2 border-emerald-400 text-emerald-300 p-1.5 rounded-lg text-[9px] font-bold scale-105 transition';
+
+                setTimeout(() => {
+                    bar4.style.width = '25%';
+                    finishBenchmark();
+                }, 600);
+            }
+        }
+
+        function finishBenchmark() {
+            if (benchmarkInterval) clearInterval(benchmarkInterval);
+
+            const status = document.getElementById('chart-status');
+            const btn = document.getElementById('benchmark-run-btn');
+
+            status.textContent = 'Benchmark Completed!';
+            status.className = 'text-[10px] font-mono font-bold text-emerald-400';
+            btn.disabled = false;
+            btn.classList.remove('opacity-50');
+            isBenchmarking = false;
+        }
+
+        // --- WORD LENGTH VISUAL HIGHWAY DIRECTLY INTO CPU CORE ---
+        let currentWordBits = 64;
+
+        function setWordLengthRoad(bits) {
+            currentWordBits = bits;
+            const btn32 = document.getElementById('road-btn-32');
+            const btn64 = document.getElementById('road-btn-64');
+            const explanation = document.getElementById('road-explanation-text');
+            const status = document.getElementById('highway-status-badge');
+
+            if (bits === 32) {
+                btn32.className = 'py-2.5 rounded-xl bg-purple-500/20 border-2 border-purple-400 font-bold text-xs text-purple-300 transition';
+                btn64.className = 'py-2.5 rounded-xl bg-slate-900 border border-slate-700 hover:border-purple-400 font-bold text-xs text-slate-300 transition';
+                explanation.textContent = '32-bit road width: Narrow 1-lane bus. Can only transport 4 Bytes per trip directly into CPU Core. Needs 2 trips for 8-byte data!';
+                status.textContent = '32-bit Narrow Bus Road';
+            } else {
+                btn64.className = 'py-2.5 rounded-xl bg-purple-500/20 border-2 border-purple-400 font-bold text-xs text-purple-300 transition';
+                btn32.className = 'py-2.5 rounded-xl bg-slate-900 border border-slate-700 hover:border-purple-400 font-bold text-xs text-slate-300 transition';
+                explanation.textContent = '64-bit road width: Wide multi-lane highway. Transports full 8 Bytes directly inside CPU Core in a single trip!';
+                status.textContent = '64-bit Wide Highway Bus';
+            }
+
+            renderHighwayVisual();
+        }
+
+        function renderHighwayVisual() {
+            const canvas = document.getElementById('visual-road-canvas');
+            document.getElementById('cpu-delivery-status').textContent = 'Awaiting Data';
+            document.getElementById('cpu-core-target-box').className = 'w-24 h-36 bg-cyan-950/80 border-2 border-cyan-400 rounded-r-2xl flex flex-col items-center justify-center p-2 text-center transition-all';
+
+            if (currentWordBits === 32) {
+                canvas.innerHTML = `
+                    <div class="h-full w-full flex items-center justify-start relative px-2">
+                        <!-- Single Lane Bus -->
+                        <div class="w-full h-12 bg-slate-900 border-y border-dashed border-slate-600 relative flex items-center">
+                            <div id="truck-32" class="moving-truck bg-purple-600 text-white font-mono text-[9px] font-extrabold px-2 py-1 rounded-lg border border-purple-300 shadow-md flex items-center gap-1 absolute left-0 z-10">
+                                <i class="fa-solid fa-truck"></i> <span id="truck-32-text">4 Bytes (Trip 1/2)</span>
+                            </div>
+                        </div>
+                    </div>
+                `;
+            } else {
+                canvas.innerHTML = `
+                    <div class="h-full w-full flex flex-col justify-around relative px-2">
+                        <!-- Lane 1 Bus -->
+                        <div class="w-full h-10 bg-slate-900 border-b border-dashed border-slate-600 relative flex items-center">
+                            <div id="truck-64-a" class="moving-truck bg-cyan-600 text-white font-mono text-[9px] font-extrabold px-2 py-1 rounded-lg border border-cyan-300 shadow-md flex items-center gap-1 absolute left-0 z-10">
+                                <i class="fa-solid fa-truck"></i> Byte 1-4
+                            </div>
+                        </div>
+                        <!-- Lane 2 Bus -->
+                        <div class="w-full h-10 bg-slate-900 relative flex items-center">
+                            <div id="truck-64-b" class="moving-truck bg-purple-600 text-white font-mono text-[9px] font-extrabold px-2 py-1 rounded-lg border border-purple-300 shadow-md flex items-center gap-1 absolute left-0 z-10">
+                                <i class="fa-solid fa-truck"></i> Byte 5-8
+                            </div>
+                        </div>
+                    </div>
+                `;
+            }
+        }
+
+        function dispatchHighwayCargo() {
+            const cpuBox = document.getElementById('cpu-core-target-box');
+            const statusEl = document.getElementById('cpu-delivery-status');
+            const canvas = document.getElementById('visual-road-canvas');
+            const travelDistance = canvas.clientWidth - 85;
+
+            if (currentWordBits === 32) {
+                const truck = document.getElementById('truck-32');
+                const truckText = document.getElementById('truck-32-text');
+                if (!truck) return;
+
+                // Reset truck position to left edge (RAM side)
+                truck.style.transition = 'none';
+                truck.style.transform = 'translateX(0px)';
+                truck.style.opacity = '1';
+                if (truckText) truckText.textContent = '4 Bytes (Trip 1/2)';
+
+                // Force reflow
+                truck.offsetHeight;
+                truck.style.transition = 'transform 1.2s cubic-bezier(0.4, 0, 0.2, 1), opacity 0.3s ease';
+
+                // Drive truck for Trip 1 into CPU Core
+                truck.style.transform = `translateX(${travelDistance}px)`;
+
+                setTimeout(() => {
+                    // First delivery arrived at CPU
+                    cpuBox.classList.add('scale-105', 'border-purple-400');
+                    statusEl.textContent = 'Received 4B (50%)';
+
+                    setTimeout(() => {
+                        // Instantly reset position to left edge (RAM side) for Trip 2
+                        truck.style.transition = 'none';
+                        truck.style.opacity = '0';
+                        truck.style.transform = 'translateX(0px)';
+                        if (truckText) truckText.textContent = '4 Bytes (Trip 2/2)';
+
+                        // Force reflow
+                        truck.offsetHeight;
+
+                        setTimeout(() => {
+                            truck.style.transition = 'transform 1.2s cubic-bezier(0.4, 0, 0.2, 1), opacity 0.3s ease';
+                            truck.style.opacity = '1';
+
+                            // Drive Trip 2 from RAM edge into CPU Core
+                            truck.style.transform = `translateX(${travelDistance}px)`;
+
+                            setTimeout(() => {
+                                statusEl.textContent = 'Received 8B (100%)';
+                                cpuBox.classList.add('bg-emerald-950/80', 'border-emerald-400');
+                            }, 1200);
+                        }, 100);
+                    }, 500);
+                }, 1200);
+
+            } else {
+                const truckA = document.getElementById('truck-64-a');
+                const truckB = document.getElementById('truck-64-b');
+                if (!truckA || !truckB) return;
+
+                // Reset truck positions to RAM side
+                truckA.style.transition = 'none';
+                truckB.style.transition = 'none';
+                truckA.style.transform = 'translateX(0px)';
+                truckB.style.transform = 'translateX(0px)';
+
+                truckA.offsetHeight;
+                truckA.style.transition = 'transform 1.2s cubic-bezier(0.4, 0, 0.2, 1)';
+                truckB.style.transition = 'transform 1.2s cubic-bezier(0.4, 0, 0.2, 1)';
+
+                // Drive both trucks together into CPU Core
+                truckA.style.transform = `translateX(${travelDistance}px)`;
+                truckB.style.transform = `translateX(${travelDistance}px)`;
+
+                setTimeout(() => {
+                    // Full 8 bytes arrived simultaneously in CPU Core
+                    cpuBox.classList.add('scale-105', 'bg-emerald-950/80', 'border-emerald-400');
+                    statusEl.textContent = 'Received 8B (100%)';
+                }, 1200);
+            }
+        }
+
+        // --- MACHINE CYCLE ENGINE ---
+        const STEPS = [
+            { name: 'Program Counter (PC)', phase: 'FETCH', phaseIdx: 0, phaseIcon: 'fa-bookmark', color: '#38bdf8', desc: 'Holds instruction memory address.', getValue: (line) => line === 1 ? 'Address: Line 1' : 'Address: Line 2' },
+            { name: 'Memory Address Register (MAR)', phase: 'FETCH', phaseIdx: 0, phaseIcon: 'fa-map-pin', color: '#38bdf8', desc: 'Sends address to memory.', getValue: (line) => line === 1 ? 'Target: Line 1' : 'Target: Line 2' },
+            { name: 'Main Memory (RAM)', phase: 'FETCH', phaseIdx: 0, phaseIcon: 'fa-memory', color: '#38bdf8', desc: 'Reads data at address.', getValue: (line) => line === 1 ? 'Found: "LOAD 5"' : 'Found: "ADD 3"' },
+            { name: 'Memory Data Register (MDR)', phase: 'FETCH', phaseIdx: 0, phaseIcon: 'fa-box-open', color: '#38bdf8', desc: 'Holds fetched data from RAM.', getValue: (line) => line === 1 ? 'Holding: "LOAD 5"' : 'Holding: "ADD 3"' },
+            { name: 'Current Instruction Register (CIR)', phase: 'DECODE', phaseIdx: 1, phaseIcon: 'fa-receipt', color: '#c084fc', desc: 'Holds active instruction.', getValue: (line) => line === 1 ? 'Active: "LOAD 5"' : 'Active: "ADD 3"' },
+            { name: 'Control Unit (CU)', phase: 'DECODE', phaseIdx: 1, phaseIcon: 'fa-brain', color: '#c084fc', desc: 'Decodes operation and signals components.', getValue: (line) => line === 1 ? 'Command: LOAD' : 'Command: ADD' },
+            { name: 'Arithmetic Logic Unit (ALU)', phase: 'EXECUTE', phaseIdx: 2, phaseIcon: 'fa-calculator', color: '#fbbf24', desc: 'Executes operation.', getValue: (line) => line === 1 ? 'Calc: Set to 5' : 'Calc: 5 + 3' },
+            { name: 'Accumulator (ACC)', phase: 'STORE', phaseIdx: 3, phaseIcon: 'fa-vault', color: '#34d399', desc: 'Stores output result.', getValue: (line, acc) => `Result = ${acc}` }
+        ];
+
+        let currentStep = 0;
+        let currentLine = 1;
+        let accValue = 0;
+        let isAuto = false;
+        let autoTimer = null;
+
+        function layoutNodes() {
+            const container = document.querySelector('.cycle-wrapper');
+            if (!container) return;
+
+            const total = 8;
+            const radius = window.innerWidth < 640 ? 115 : 135;
+            const cx = container.clientWidth / 2;
+            const cy = container.clientHeight / 2;
+
+            for (let i = 0; i < total; i++) {
+                const node = document.getElementById(`station-${i}`);
+                if (!node) continue;
+                const angle = ((i * (360 / total)) - 90) * (Math.PI / 180);
+                const x = cx + radius * Math.cos(angle);
+                const y = cy + radius * Math.sin(angle);
+
+                node.style.left = `${x}px`;
+                node.style.top = `${y}px`;
+            }
+            updateActiveDot();
+        }
+
+        function updateActiveDot() {
+            const node = document.getElementById(`station-${currentStep}`);
+            const dot = document.getElementById('active-dot');
+            if (node && dot) {
+                dot.style.left = node.style.left;
+                dot.style.top = node.style.top;
+                dot.style.backgroundColor = STEPS[currentStep].color;
+                dot.style.boxShadow = `0 0 14px ${STEPS[currentStep].color}`;
+            }
+        }
+
+        function renderUI() {
+            const stepInfo = STEPS[currentStep];
+
+            if (currentStep === 7) {
+                accValue = currentLine === 1 ? 5 : 8;
+            }
+
+            for (let p = 0; p < 4; p++) {
+                const pill = document.getElementById(`phase-pill-${p}`);
+                if (pill) {
+                    pill.className = p === stepInfo.phaseIdx
+                        ? 'phase-pill px-1 py-1 rounded-xl bg-slate-800 border-2 border-cyan-400 text-center scale-105 transition-all'
+                        : 'phase-pill px-1 py-1 rounded-xl bg-slate-900 border border-slate-800 opacity-60 text-center transition-all';
+                }
+            }
+
+            document.getElementById('macro-phase-text').textContent = stepInfo.phase;
+            document.getElementById('macro-phase-icon').className = `fa-solid ${stepInfo.phaseIcon}`;
+            document.getElementById('macro-phase-badge').style.color = stepInfo.color;
+            document.getElementById('macro-phase-badge').style.borderColor = stepInfo.color;
+
+            document.getElementById('step-badge').textContent = `Step ${currentStep + 1} of 8 (Line ${currentLine})`;
+            document.getElementById('step-title').textContent = stepInfo.name;
+            document.getElementById('step-value').textContent = stepInfo.getValue(currentLine, accValue);
+            document.getElementById('step-desc').textContent = stepInfo.desc;
+
+            const iconEl = document.getElementById('step-icon');
+            iconEl.className = `fa-solid ${stepInfo.phaseIcon} text-2xl my-0.5`;
+            iconEl.style.color = stepInfo.color;
+            document.getElementById('central-card').style.borderColor = stepInfo.color;
+
+            for (let i = 0; i < 8; i++) {
+                const node = document.getElementById(`station-${i}`);
+                if (node) {
+                    if (i === currentStep) {
+                        node.classList.add('active');
+                        node.style.color = stepInfo.color;
+                    } else {
+                        node.classList.remove('active');
+                        node.style.color = '';
+                    }
+                }
+            }
+
+            updateActiveDot();
+        }
+
+        function nextStep() {
+            if (currentStep >= 7) {
+                currentStep = 0;
+                currentLine = currentLine === 1 ? 2 : 1;
+            } else {
+                currentStep++;
+            }
+            renderUI();
+        }
+
+        function goToStep(idx) {
+            currentStep = idx;
+            renderUI();
+        }
+
+        function toggleAutoPlay() {
+            isAuto = !isAuto;
+            const btn = document.getElementById('auto-btn');
+            const icon = document.getElementById('auto-icon');
+            const text = document.getElementById('auto-text');
+
+            if (isAuto) {
+                btn.className = 'px-3 py-2.5 bg-amber-500 text-slate-950 font-bold rounded-xl text-xs transition flex items-center gap-1.5 shadow-md shadow-amber-500/20';
+                icon.className = 'fa-solid fa-pause';
+                text.textContent = 'Pause';
+                autoTimer = setInterval(nextStep, 1500);
+            } else {
+                btn.className = 'px-3 py-2.5 bg-slate-800 hover:bg-slate-700 text-cyan-300 border border-slate-700 rounded-xl text-xs font-bold transition flex items-center gap-1.5';
+                icon.className = 'fa-solid fa-play';
+                text.textContent = 'Auto';
+                clearInterval(autoTimer);
+            }
+        }
+
+        function resetCycle() {
+            if (isAuto) toggleAutoPlay();
+            currentStep = 0;
+            currentLine = 1;
+            accValue = 0;
+            renderUI();
+        }
+
+        // --- INIT ---
+        window.addEventListener('load', () => {
+            setAluMode('arithmetic');
+            renderCacheMemoryUI();
+            selectCoreConfig(1);
+            setWordLengthRoad(64);
+            updateClockRate(1);
+            layoutNodes();
+            renderUI();
+        });
+
+        window.addEventListener('resize', () => {
+            layoutNodes();
+        });
+    </script>
+</body>
+</html>
