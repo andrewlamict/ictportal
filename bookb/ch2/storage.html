@@ -1,0 +1,651 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Hardware Architecture Visualizer</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <link href="https://fonts.googleapis.com/css2?family=Fredoka:wght@400;600;700&family=JetBrains+Mono:wght@600&display=swap" rel="stylesheet">
+
+    <style>
+        body { font-family: 'Fredoka', sans-serif; background-color: #080c14; color: #f8fafc; }
+        .mono { font-family: 'JetBrains Mono', monospace; }
+
+        @keyframes pulseBios {
+            0% { stroke: #a855f7; stroke-width: 2; }
+            50% { stroke: #c084fc; stroke-width: 4; filter: drop-shadow(0 0 8px #a855f7); }
+            100% { stroke: #a855f7; stroke-width: 2; }
+        }
+        .bios-active { animation: pulseBios 0.8s infinite alternate; }
+
+        @keyframes dashFlow { to { stroke-dashoffset: -40; } }
+        .signal-line { stroke-dasharray: 8, 4; animation: dashFlow 1s linear infinite; }
+
+        .slow-seek-tape { transition: transform 3.5s ease-in-out; }
+        .slow-seek-arm { transition: transform 1.5s cubic-bezier(0.25, 1, 0.5, 1); transform-origin: 35px 145px; }
+
+        @keyframes spinDiskAnimation {
+            from { transform: rotate(0deg); }
+            to { transform: rotate(360deg); }
+        }
+        .hdd-disk-spinning { animation: spinDiskAnimation 0.4s linear infinite; transform-origin: 112px 105px; }
+        .general-transition { transition: all 0.3s ease; }
+
+        /* FIXED: Replaced transform: scale with brightness/opacity to prevent SVG bounding box flickers */
+        .slot-btn { 
+            cursor: pointer; 
+            transition: filter 0.2s ease, opacity 0.2s ease; 
+        }
+        .slot-btn:hover { 
+            filter: brightness(1.4); 
+        }
+        .slot-btn:active { 
+            opacity: 0.75; 
+        }
+
+        @keyframes scanGlow {
+            0% { stroke: #f59e0b; stroke-width: 3; }
+            50% { stroke: #fde047; stroke-width: 5; filter: drop-shadow(0 0 10px #f59e0b); }
+            100% { stroke: #f59e0b; stroke-width: 3; }
+        }
+        .scanning-active { animation: scanGlow 0.4s infinite alternate; }
+    </style>
+</head>
+<body class="min-h-screen flex flex-col justify-between p-4 max-w-5xl mx-auto">
+
+    <!-- HEADER -->
+    <header class="text-center my-2">
+        <h1 class="text-2xl sm:text-3xl font-extrabold text-transparent bg-clip-text bg-gradient-to-r from-cyan-400 via-amber-400 to-purple-400">
+            Interactive Hardware Architecture
+        </h1>
+        <div class="flex justify-center gap-2 mt-3">
+            <button id="btn-m1" onclick="switchTab(1)" class="px-4 py-2 rounded-xl text-xs font-bold bg-slate-800 text-slate-400 hover:text-white">1. Main Memory</button>
+            <button id="btn-m2" onclick="switchTab(2)" class="px-4 py-2 rounded-xl text-xs font-bold bg-slate-800 text-slate-400 hover:text-white">2. Secondary Storage</button>
+            <button id="btn-m3" onclick="switchTab(3)" class="px-4 py-2 rounded-xl text-xs font-bold bg-purple-500 text-slate-950 shadow">3. Memory Search</button>
+        </div>
+    </header>
+
+    <main class="flex-1 my-2">
+        <!-- TAB 1: MAIN MEMORY -->
+        <section id="tab-1" class="bg-slate-900 border border-cyan-500/30 rounded-2xl p-4 hidden">
+            <div class="text-center mb-3">
+                <h2 class="text-lg font-bold text-cyan-400">Main Memory</h2>
+                <p class="text-xs text-slate-400">Turn on to watch the signal line flow from BIOS (ROM) to CPU to Monitor, loading OS into RAM.</p>
+            </div>
+            <div class="flex justify-center gap-3 mb-4">
+                <button onclick="p1PowerOn()" class="px-5 py-2.5 bg-emerald-500 text-slate-950 font-extrabold text-xs rounded-xl shadow hover:bg-emerald-400 transform hover:scale-105 transition"><i class="fa-solid fa-power-off mr-1.5"></i> POWER ON (BOOT SYSTEM)</button>
+                <button onclick="p1PowerOff()" class="px-5 py-2.5 bg-rose-600 text-white font-extrabold text-xs rounded-xl shadow hover:bg-rose-500 transform hover:scale-105 transition"><i class="fa-solid fa-plug-circle-xmark mr-1.5"></i> POWER OFF (BLACKEN RAM)</button>
+            </div>
+            <div class="bg-slate-950 rounded-xl p-3 border border-slate-800 flex justify-center">
+                <svg viewBox="0 0 760 320" class="w-full max-w-3xl">
+                    <g transform="translate(510, 25)">
+                        <rect x="0" y="0" width="220" height="150" fill="#0f172a" stroke="#475569" stroke-width="4" rx="8" />
+                        <rect id="p1-screen-inner" x="8" y="8" width="204" height="134" fill="#020617" rx="4" class="general-transition" />
+                        <path d="M 85 150 L 135 150 L 145 185 L 75 185 Z" fill="#334155" />
+                        <rect x="60" y="185" width="100" height="8" fill="#475569" rx="2" />
+                        <text id="p1-screen-text" x="110" y="70" text-anchor="middle" fill="#334155" font-weight="bold" font-size="12">MONITOR: NO SIGNAL</text>
+                        <text id="p1-screen-sub" x="110" y="90" text-anchor="middle" fill="#1e293b" class="mono" font-size="9">System Powered Off</text>
+                        <g id="p1-desktop-icons" opacity="0" class="general-transition">
+                            <rect x="20" y="20" width="24" height="24" fill="#38bdf8" rx="4" />
+                            <text x="32" y="36" text-anchor="middle" fill="#fff" font-size="10" font-weight="bold">OS</text>
+                            <rect x="55" y="20" width="24" height="24" fill="#a855f7" rx="4" />
+                            <text x="67" y="36" text-anchor="middle" fill="#fff" font-size="10" font-weight="bold">App</text>
+                            <rect x="20" y="55" width="24" height="24" fill="#10b981" rx="4" />
+                            <text x="32" y="71" text-anchor="middle" fill="#fff" font-size="10" font-weight="bold">Data</text>
+                        </g>
+                    </g>
+                    <rect x="20" y="15" width="450" height="280" fill="#031e17" stroke="#059669" stroke-width="3" rx="10" />
+                    <text x="35" y="38" fill="#10b981" font-weight="bold" font-size="12" class="mono">MOTHERBOARD CIRCUIT</text>
+                    <g transform="translate(40, 70)">
+                        <rect id="p1-rom-chip" x="0" y="0" width="110" height="70" fill="#2e1065" stroke="#a855f7" stroke-width="2" rx="6" class="general-transition" />
+                        <text x="55" y="25" text-anchor="middle" fill="#f3e8ff" font-weight="bold" font-size="11">BIOS (ROM)</text>
+                        <text x="55" y="42" text-anchor="middle" fill="#c084fc" class="mono" font-size="8">NON-VOLATILE</text>
+                        <text x="55" y="58" text-anchor="middle" fill="#e9d5ff" font-size="8.5">Permanent Boot Code</text>
+                    </g>
+                    <g transform="translate(200, 70)">
+                        <rect id="p1-cpu-box" x="0" y="0" width="100" height="70" fill="#422006" stroke="#ca8a04" stroke-width="2" rx="6" class="general-transition" />
+                        <text x="50" y="28" text-anchor="middle" fill="#fef08a" font-weight="bold" font-size="12">CPU</text>
+                        <text x="50" y="48" text-anchor="middle" fill="#fde047" class="mono" font-size="8.5">Executes Boot</text>
+                    </g>
+                    <g transform="translate(340, 70)">
+                        <rect id="p1-ram-card" x="0" y="0" width="110" height="190" fill="#064e3b" stroke="#10b981" stroke-width="2" rx="6" class="general-transition" />
+                        <text id="p1-ram-title" x="55" y="25" text-anchor="middle" fill="#a7f3d0" font-weight="bold" font-size="11" class="general-transition">RAM STICK</text>
+                        <text id="p1-ram-sub" x="55" y="40" text-anchor="middle" fill="#34d399" class="mono general-transition" font-size="8">VOLATILE</text>
+                        <rect id="p1-ram-data1" x="12" y="55" width="86" height="35" fill="#022c22" stroke="#059669" stroke-width="1.5" rx="4" class="general-transition" />
+                        <text id="p1-ram-datatxt1" x="55" y="76" text-anchor="middle" fill="#6ee7b7" font-size="9" font-weight="bold" class="general-transition">Loaded OS Kernel</text>
+                        <rect id="p1-ram-data2" x="12" y="100" width="86" height="35" fill="#022c22" stroke="#059669" stroke-width="1.5" rx="4" class="general-transition" />
+                        <text id="p1-ram-datatxt2" x="55" y="121" text-anchor="middle" fill="#6ee7b7" font-size="9" font-weight="bold" class="general-transition">User Apps / Games</text>
+                        <rect id="p1-ram-status-bg" x="10" y="150" width="90" height="30" fill="#090d16" rx="4" />
+                        <text id="p1-ram-statustxt" x="55" y="169" text-anchor="middle" fill="#34d399" font-weight="bold" class="mono general-transition" font-size="8.5">POWER ON</text>
+                    </g>
+                    <path id="line-rom-cpu" d="M 150 105 L 200 105" fill="none" stroke="#334155" stroke-width="3" />
+                    <path id="line-cpu-ram" d="M 300 105 L 340 105" fill="none" stroke="#334155" stroke-width="3" />
+                    <path id="line-cpu-screen" d="M 250 70 L 250 40 L 510 40" fill="none" stroke="#334155" stroke-width="3" />
+                </svg>
+            </div>
+        </section>
+
+        <!-- TAB 2: SECONDARY STORAGE -->
+        <section id="tab-2" class="bg-slate-900 border border-amber-500/30 rounded-2xl p-4 hidden">
+            <div class="text-center mb-3">
+                <h2 class="text-lg font-bold text-amber-400">Secondary Storage</h2>
+                <p class="text-xs text-slate-400">Click a button to watch the HDD platter spin <strong>only while seeking</strong> and stop once found.</p>
+            </div>
+            <div class="flex justify-center gap-3 mb-4">
+                <button onclick="p2SeekFile(1)" class="px-5 py-2.5 bg-amber-500 text-slate-950 font-extrabold text-xs rounded-xl shadow hover:bg-amber-400 transform hover:scale-105 transition"><i class="fa-solid fa-file-lines mr-1.5"></i> FIND FILE #1 (300 KB)</button>
+                <button onclick="p2SeekFile(4)" class="px-5 py-2.5 bg-amber-500 text-slate-950 font-extrabold text-xs rounded-xl shadow hover:bg-amber-400 transform hover:scale-105 transition"><i class="fa-solid fa-file-video mr-1.5"></i> FIND FILE #4 (400 MB)</button>
+            </div>
+            <div class="bg-slate-950 rounded-xl p-3 border border-slate-800 flex justify-center">
+                <svg viewBox="0 0 750 310" class="w-full max-w-3xl">
+                    <g transform="translate(15, 10)">
+                        <rect x="0" y="0" width="225" height="285" fill="#18181b" stroke="#52525b" stroke-width="2" rx="10" />
+                        <text x="112" y="24" text-anchor="middle" fill="#e4e4e7" font-weight="bold" font-size="12">1. MAGNETIC TAPE</text>
+                        <text x="112" y="38" text-anchor="middle" fill="#ef4444" class="mono" font-size="9.5" font-weight="bold">VERY SLOW (Sequential)</text>
+                        <g transform="translate(50, 95)"><circle cx="0" cy="0" r="28" fill="#27272a" stroke="#71717a" stroke-width="2" /><circle cx="0" cy="0" r="8" fill="#090d16" /></g>
+                        <g transform="translate(175, 95)"><circle cx="0" cy="0" r="28" fill="#27272a" stroke="#71717a" stroke-width="2" /><circle cx="0" cy="0" r="8" fill="#090d16" /></g>
+                        <rect x="50" y="67" width="125" height="4" fill="#71717a" />
+                        <g id="p2-tape-ribbon" class="slow-seek-tape" transform="translate(0, 0)">
+                            <rect x="20" y="55" width="22" height="28" fill="#3b82f6" rx="3" /><text x="31" y="73" text-anchor="middle" fill="#fff" font-size="10" font-weight="bold">#1</text>
+                            <rect x="75" y="55" width="22" height="28" fill="#52525b" rx="3" /><text x="86" y="73" text-anchor="middle" fill="#fff" font-size="10">#2</text>
+                            <rect x="130" y="55" width="22" height="28" fill="#52525b" rx="3" /><text x="141" y="73" text-anchor="middle" fill="#fff" font-size="10">#3</text>
+                            <rect x="185" y="55" width="22" height="28" fill="#ef4444" rx="3" /><text x="196" y="73" text-anchor="middle" fill="#fff" font-size="10" font-weight="bold">#4</text>
+                        </g>
+                        <polygon points="112,88 104,104 120,104" fill="#f59e0b" />
+                        <line x1="112" y1="88" x2="112" y2="120" stroke="#f59e0b" stroke-width="3" />
+                        <rect x="12" y="155" width="200" height="115" fill="#090d16" rx="6" />
+                        <text x="112" y="175" text-anchor="middle" fill="#a1a1aa" font-size="9.5">Must physically spool ribbon</text>
+                        <text id="p2-tape-time" x="112" y="198" text-anchor="middle" fill="#f59e0b" class="mono" font-size="11" font-weight="bold">Seek Time: 0.0s</text>
+                        <rect x="25" y="215" width="174" height="12" fill="#27272a" rx="4" />
+                        <rect id="p2-tape-bar" x="25" y="215" width="0" height="12" fill="#f59e0b" rx="4" class="slow-seek-tape" />
+                        <text id="p2-tape-status" x="112" y="250" text-anchor="middle" fill="#e4e4e7" font-size="9" font-weight="bold">Idle</text>
+                    </g>
+                    <g transform="translate(262, 10)">
+                        <rect x="0" y="0" width="225" height="285" fill="#18181b" stroke="#52525b" stroke-width="2" rx="10" />
+                        <text x="112" y="24" text-anchor="middle" fill="#e4e4e7" font-weight="bold" font-size="12">2. HARD DISK (HDD)</text>
+                        <text x="112" y="38" text-anchor="middle" fill="#eab308" class="mono" font-size="9.5" font-weight="bold">MEDIUM (Spin Platter & Arm)</text>
+                        <g id="p2-hdd-disk">
+                            <circle cx="112" cy="105" r="50" fill="#27272a" stroke="#71717a" stroke-width="2" />
+                            <circle cx="112" cy="105" r="34" fill="none" stroke="#3f3f46" stroke-width="1.5" stroke-dasharray="4" />
+                            <circle cx="112" cy="105" r="18" fill="none" stroke="#3f3f46" stroke-width="1.5" stroke-dasharray="4" />
+                            <circle cx="112" cy="105" r="8" fill="#090d16" />
+                            <circle cx="112" cy="87" r="7" fill="#3b82f6" /><text x="112" y="90.5" text-anchor="middle" fill="#fff" font-size="8" font-weight="bold">1</text>
+                            <circle cx="112" cy="71" r="7" fill="#ef4444" /><text x="112" y="74.5" text-anchor="middle" fill="#fff" font-size="8" font-weight="bold">4</text>
+                        </g>
+                        <g id="p2-hdd-arm" class="slow-seek-arm">
+                            <circle cx="35" cy="145" r="7" fill="#f59e0b" />
+                            <line x1="35" y1="145" x2="112" y2="87" stroke="#f59e0b" stroke-width="3" stroke-linecap="round" />
+                            <circle cx="112" cy="87" r="3" fill="#fef08a" />
+                        </g>
+                        <rect x="12" y="155" width="200" height="115" fill="#090d16" rx="6" />
+                        <text x="112" y="175" text-anchor="middle" fill="#a1a1aa" font-size="9.5">Spins platter to locate file</text>
+                        <text id="p2-hdd-time" x="112" y="198" text-anchor="middle" fill="#eab308" class="mono" font-size="11" font-weight="bold">Seek Time: 0.0s</text>
+                        <rect x="25" y="215" width="174" height="12" fill="#27272a" rx="4" />
+                        <rect id="p2-hdd-bar" x="25" y="215" width="0" height="12" fill="#eab308" rx="4" class="general-transition" />
+                        <text id="p2-hdd-status" x="112" y="250" text-anchor="middle" fill="#e4e4e7" font-size="9" font-weight="bold">Idle (Platter Stopped)</text>
+                    </g>
+                    <g transform="translate(510, 10)">
+                        <rect x="0" y="0" width="225" height="285" fill="#18181b" stroke="#52525b" stroke-width="2" rx="10" />
+                        <text x="112" y="24" text-anchor="middle" fill="#e4e4e7" font-weight="bold" font-size="12">3. SOLID STATE (SSD)</text>
+                        <text x="112" y="38" text-anchor="middle" fill="#10b981" class="mono" font-size="9.5" font-weight="bold">INSTANT (Zero Moving Parts)</text>
+                        <g transform="translate(20, 55)">
+                            <rect id="ssd-chip-a" x="0" y="0" width="80" height="45" fill="#27272a" stroke="#71717a" stroke-width="1.5" rx="5" class="general-transition" />
+                            <text x="40" y="18" text-anchor="middle" fill="#a1a1aa" font-size="9" font-weight="bold">CHIP A</text>
+                            <rect x="28" y="24" width="24" height="14" fill="#3b82f6" rx="3" />
+                            <text x="40" y="35" text-anchor="middle" fill="#fff" font-size="8.5" font-weight="bold">#1</text>
+                            <rect id="ssd-chip-b" x="105" y="0" width="80" height="45" fill="#27272a" stroke="#71717a" stroke-width="1.5" rx="5" class="general-transition" />
+                            <text x="145" y="18" text-anchor="middle" fill="#a1a1aa" font-size="9" font-weight="bold">CHIP B</text>
+                            <rect x="133" y="24" width="24" height="14" fill="#ef4444" rx="3" />
+                            <text x="145" y="35" text-anchor="middle" fill="#fff" font-size="8.5" font-weight="bold">#4</text>
+                            <path id="ssd-wire-a" d="M 40 45 L 40 85 L 92 85" fill="none" stroke="#3f3f46" stroke-width="3" class="general-transition" />
+                            <path id="ssd-wire-b" d="M 145 45 L 145 85 L 92 85" fill="none" stroke="#3f3f46" stroke-width="3" class="general-transition" />
+                            <circle cx="92" cy="85" r="5" fill="#10b981" />
+                        </g>
+                        <rect x="12" y="155" width="200" height="115" fill="#090d16" rx="6" />
+                        <text x="112" y="175" text-anchor="middle" fill="#a1a1aa" font-size="9.5">Direct wire electrical impulse</text>
+                        <text id="p2-ssd-time" x="112" y="198" text-anchor="middle" fill="#10b981" class="mono" font-size="11" font-weight="bold">Seek Time: 0.0s</text>
+                        <rect x="25" y="215" width="174" height="12" fill="#27272a" rx="4" />
+                        <rect id="p2-ssd-bar" x="25" y="215" width="0" height="12" fill="#10b981" rx="4" class="general-transition" />
+                        <text id="p2-ssd-status" x="112" y="250" text-anchor="middle" fill="#e4e4e7" font-size="9" font-weight="bold">Idle</text>
+                    </g>
+                </svg>
+            </div>
+        </section>
+
+        <!-- TAB 3: CPU MEMORY FETCH ACTIVITY -->
+        <section id="tab-3" class="bg-slate-900 border border-purple-500/30 rounded-2xl p-4">
+            <div class="text-center mb-3">
+                <h2 class="text-lg font-bold text-purple-400"><i class="fa-solid fa-microchip mr-2"></i>CPU Memory Fetch Simulation</h2>
+                <p class="text-xs text-slate-400">Search hierarchy sequentially (Cache $\rightarrow$ RAM $\rightarrow$ SSD). Locate and click the <strong>exact target item</strong> to win.</p>
+            </div>
+
+            <div class="flex flex-wrap justify-center items-center gap-3 mb-3">
+                <button onclick="p3StartGame()" class="px-5 py-2.5 bg-gradient-to-r from-amber-500 to-purple-600 text-slate-950 font-extrabold text-xs rounded-xl shadow hover:brightness-110 transition">
+                    <i class="fa-solid fa-rotate-right mr-1.5"></i> ASSIGN NEW TARGET ITEM
+                </button>
+            </div>
+
+            <div class="grid grid-cols-1 sm:grid-cols-4 gap-2 mb-3 max-w-3xl mx-auto text-center mono text-xs">
+                <div class="bg-slate-950 p-2 border border-slate-800 rounded-xl">
+                    <span class="text-slate-400 block text-[10px]">TARGET ITEM</span>
+                    <span id="game-target-txt" class="text-amber-400 font-extrabold text-base">---</span>
+                </div>
+                <div class="bg-slate-950 p-2 border border-slate-800 rounded-xl">
+                    <span class="text-slate-400 block text-[10px]">NEXT REQUIRED STEP</span>
+                    <span id="game-step-txt" class="text-yellow-300 font-bold text-xs">Step 1: Check Cache</span>
+                </div>
+                <div class="bg-slate-950 p-2 border border-slate-800 rounded-xl">
+                    <span class="text-slate-400 block text-[10px]">TOTAL FETCH LATENCY</span>
+                    <span id="game-latency-txt" class="text-cyan-400 font-extrabold text-base">0 ns</span>
+                </div>
+                <div class="bg-slate-950 p-2 border border-slate-800 rounded-xl">
+                    <span class="text-slate-400 block text-[10px]">STATUS</span>
+                    <span id="game-location-txt" class="text-purple-300 font-bold text-xs">CPU Ready</span>
+                </div>
+            </div>
+
+            <div class="bg-slate-950 rounded-xl p-3 border border-slate-800 flex justify-center">
+                <svg viewBox="0 0 760 360" class="w-full max-w-3xl">
+                    <rect x="10" y="10" width="740" height="340" fill="#0f172a" stroke="#334155" stroke-width="4" rx="12" />
+
+                    <g transform="translate(25, 130)">
+                        <rect x="0" y="0" width="80" height="80" fill="#3b0764" stroke="#a855f7" stroke-width="3" rx="8" />
+                        <text x="40" y="32" text-anchor="middle" fill="#f3e8ff" font-weight="bold" font-size="12">CPU</text>
+                        <text x="40" y="48" text-anchor="middle" fill="#c084fc" font-size="8.5" class="mono">FETCH</text>
+                        <circle cx="40" cy="62" r="5" fill="#a855f7" />
+                    </g>
+
+                    <!-- 1. CACHE -->
+                    <g transform="translate(130, 40)">
+                        <rect id="card-cache" x="0" y="0" width="170" height="280" fill="#291102" stroke="#eab308" stroke-width="2.5" rx="10" class="general-transition" />
+                        <text x="85" y="24" text-anchor="middle" fill="#fde047" font-weight="bold" font-size="12">1. CACHE (L1/L2)</text>
+                        <text x="85" y="38" text-anchor="middle" fill="#fef08a" class="mono" font-size="8">Fastest | 1 ns Access</text>
+
+                        <g transform="translate(25, 55)">
+                            <g class="slot-btn" onclick="p3CheckSlot('cache', 0)">
+                                <rect id="slot-cache-0" x="0" y="0" width="120" height="90" fill="#422006" stroke="#ca8a04" stroke-width="2" rx="8" />
+                                <text x="60" y="30" text-anchor="middle" fill="#fde047" font-size="10" font-weight="bold">CACHE #1</text>
+                                <text id="txt-cache-0" x="60" y="58" text-anchor="middle" fill="#fff" class="mono" font-size="13" font-weight="bold">---</text>
+                            </g>
+                            <g class="slot-btn" onclick="p3CheckSlot('cache', 1)" transform="translate(0, 110)">
+                                <rect id="slot-cache-1" x="0" y="0" width="120" height="90" fill="#422006" stroke="#ca8a04" stroke-width="2" rx="8" />
+                                <text x="60" y="30" text-anchor="middle" fill="#fde047" font-size="10" font-weight="bold">CACHE #2</text>
+                                <text id="txt-cache-1" x="60" y="58" text-anchor="middle" fill="#fff" class="mono" font-size="13" font-weight="bold">---</text>
+                            </g>
+                        </g>
+                    </g>
+
+                    <!-- 2. RAM -->
+                    <g transform="translate(320, 40)">
+                        <rect id="card-ram" x="0" y="0" width="210" height="280" fill="#041f2d" stroke="#06b6d4" stroke-width="2.5" rx="10" class="general-transition" />
+                        <text x="105" y="24" text-anchor="middle" fill="#67e8f9" font-weight="bold" font-size="12">2. MAIN MEMORY (RAM)</text>
+                        <text x="105" y="38" text-anchor="middle" fill="#a5f3fc" class="mono" font-size="8">Medium | 100 ns Access</text>
+
+                        <g transform="translate(15, 55)">
+                            <g class="slot-btn" onclick="p3CheckSlot('ram', 0)" transform="translate(0, 0)">
+                                <rect id="slot-ram-0" x="0" y="0" width="85" height="60" fill="#083344" stroke="#0891b2" stroke-width="1.5" rx="6" />
+                                <text x="42" y="22" text-anchor="middle" fill="#22d3ee" font-size="8.5" font-weight="bold">RAM #1</text>
+                                <text id="txt-ram-0" x="42" y="44" text-anchor="middle" fill="#fff" class="mono" font-size="11" font-weight="bold">---</text>
+                            </g>
+                            <g class="slot-btn" onclick="p3CheckSlot('ram', 1)" transform="translate(95, 0)">
+                                <rect id="slot-ram-1" x="0" y="0" width="85" height="60" fill="#083344" stroke="#0891b2" stroke-width="1.5" rx="6" />
+                                <text x="42" y="22" text-anchor="middle" fill="#22d3ee" font-size="8.5" font-weight="bold">RAM #2</text>
+                                <text id="txt-ram-1" x="42" y="44" text-anchor="middle" fill="#fff" class="mono" font-size="11" font-weight="bold">---</text>
+                            </g>
+                            <g class="slot-btn" onclick="p3CheckSlot('ram', 2)" transform="translate(0, 70)">
+                                <rect id="slot-ram-2" x="0" y="0" width="85" height="60" fill="#083344" stroke="#0891b2" stroke-width="1.5" rx="6" />
+                                <text x="42" y="22" text-anchor="middle" fill="#22d3ee" font-size="8.5" font-weight="bold">RAM #3</text>
+                                <text id="txt-ram-2" x="42" y="44" text-anchor="middle" fill="#fff" class="mono" font-size="11" font-weight="bold">---</text>
+                            </g>
+                            <g class="slot-btn" onclick="p3CheckSlot('ram', 3)" transform="translate(95, 70)">
+                                <rect id="slot-ram-3" x="0" y="0" width="85" height="60" fill="#083344" stroke="#0891b2" stroke-width="1.5" rx="6" />
+                                <text x="42" y="22" text-anchor="middle" fill="#22d3ee" font-size="8.5" font-weight="bold">RAM #4</text>
+                                <text id="txt-ram-3" x="42" y="44" text-anchor="middle" fill="#fff" class="mono" font-size="11" font-weight="bold">---</text>
+                            </g>
+                            <g class="slot-btn" onclick="p3CheckSlot('ram', 4)" transform="translate(0, 140)">
+                                <rect id="slot-ram-4" x="0" y="0" width="85" height="60" fill="#083344" stroke="#0891b2" stroke-width="1.5" rx="6" />
+                                <text x="42" y="22" text-anchor="middle" fill="#22d3ee" font-size="8.5" font-weight="bold">RAM #5</text>
+                                <text id="txt-ram-4" x="42" y="44" text-anchor="middle" fill="#fff" class="mono" font-size="11" font-weight="bold">---</text>
+                            </g>
+                            <g class="slot-btn" onclick="p3CheckSlot('ram', 5)" transform="translate(95, 140)">
+                                <rect id="slot-ram-5" x="0" y="0" width="85" height="60" fill="#083344" stroke="#0891b2" stroke-width="1.5" rx="6" />
+                                <text x="42" y="22" text-anchor="middle" fill="#22d3ee" font-size="8.5" font-weight="bold">RAM #6</text>
+                                <text id="txt-ram-5" x="42" y="44" text-anchor="middle" fill="#fff" class="mono" font-size="11" font-weight="bold">---</text>
+                            </g>
+                        </g>
+                    </g>
+
+                    <!-- 3. SSD -->
+                    <g transform="translate(550, 40)">
+                        <rect id="card-ssd" x="0" y="0" width="195" height="280" fill="#011913" stroke="#10b981" stroke-width="2.5" rx="10" class="general-transition" />
+                        <text x="97" y="24" text-anchor="middle" fill="#6ee7b7" font-weight="bold" font-size="12">3. SSD / STORAGE</text>
+                        <text x="97" y="38" text-anchor="middle" fill="#a7f3d0" class="mono" font-size="8">Slowest | 10,000,000 ns</text>
+
+                        <g id="ssd-slots-container" transform="translate(12, 50)">
+                        </g>
+                    </g>
+                </svg>
+            </div>
+        </section>
+    </main>
+
+    <footer class="text-center text-xs text-slate-500 my-2">
+        Computer Architecture Visualizer
+    </footer>
+
+    <script>
+        function switchTab(num) {
+            [1, 2, 3].forEach(i => {
+                document.getElementById(`tab-${i}`).classList.add('hidden');
+                document.getElementById(`btn-m${i}`).className = "px-4 py-2 rounded-xl text-xs font-bold bg-slate-800 text-slate-400 hover:text-white";
+            });
+            document.getElementById(`tab-${num}`).classList.remove('hidden');
+            const colorMap = {1: 'bg-cyan-500', 2: 'bg-amber-500', 3: 'bg-purple-500'};
+            document.getElementById(`btn-m${num}`).className = `px-4 py-2 rounded-xl text-xs font-bold ${colorMap[num]} text-slate-950 shadow`;
+        }
+
+        /* PART 1 LOGIC */
+        let p1Timer = null;
+        function p1PowerOn() {
+            clearTimeout(p1Timer);
+            const romChip = document.getElementById('p1-rom-chip');
+            romChip.classList.add('bios-active');
+            const l1 = document.getElementById('line-rom-cpu');
+            l1.setAttribute('stroke', '#a855f7');
+            l1.classList.add('signal-line');
+            document.getElementById('p1-screen-text').textContent = "BIOS BOOTING...";
+            document.getElementById('p1-screen-text').setAttribute('fill', '#a855f7');
+            document.getElementById('p1-screen-sub').textContent = "Reading ROM Instructions";
+            document.getElementById('p1-screen-sub').setAttribute('fill', '#c084fc');
+            document.getElementById('p1-ram-card').setAttribute('fill', '#064e3b');
+            document.getElementById('p1-ram-card').setAttribute('stroke', '#10b981');
+            document.getElementById('p1-ram-title').setAttribute('fill', '#a7f3d0');
+            document.getElementById('p1-ram-sub').setAttribute('fill', '#34d399');
+            document.getElementById('p1-ram-data1').setAttribute('fill', '#022c22');
+            document.getElementById('p1-ram-data1').setAttribute('stroke', '#059669');
+            document.getElementById('p1-ram-datatxt1').setAttribute('fill', '#6ee7b7');
+            document.getElementById('p1-ram-data2').setAttribute('fill', '#022c22');
+            document.getElementById('p1-ram-data2').setAttribute('stroke', '#059669');
+            document.getElementById('p1-ram-datatxt2').setAttribute('fill', '#6ee7b7');
+            document.getElementById('p1-ram-statustxt').textContent = "POWER ON";
+            document.getElementById('p1-ram-statustxt').setAttribute('fill', '#34d399');
+
+            p1Timer = setTimeout(() => {
+                const l2 = document.getElementById('line-cpu-ram');
+                l2.setAttribute('stroke', '#10b981');
+                l2.classList.add('signal-line');
+                const l3 = document.getElementById('line-cpu-screen');
+                l3.setAttribute('stroke', '#38bdf8');
+                l3.classList.add('signal-line');
+                document.getElementById('p1-screen-inner').setAttribute('fill', '#0f172a');
+                document.getElementById('p1-screen-text').textContent = "OS READY";
+                document.getElementById('p1-screen-text').setAttribute('fill', '#38bdf8');
+                document.getElementById('p1-screen-sub').textContent = "Loaded into RAM";
+                document.getElementById('p1-screen-sub').setAttribute('fill', '#7dd3fc');
+                document.getElementById('p1-desktop-icons').setAttribute('opacity', '1');
+                romChip.classList.remove('bios-active');
+            }, 1200);
+        }
+
+        function p1PowerOff() {
+            clearTimeout(p1Timer);
+            ['line-rom-cpu', 'line-cpu-ram', 'line-cpu-screen'].forEach(id => {
+                const l = document.getElementById(id);
+                l.setAttribute('stroke', '#334155');
+                l.classList.remove('signal-line');
+            });
+            document.getElementById('p1-rom-chip').classList.remove('bios-active');
+            document.getElementById('p1-screen-inner').setAttribute('fill', '#020617');
+            document.getElementById('p1-screen-text').textContent = "MONITOR: NO SIGNAL";
+            document.getElementById('p1-screen-text').setAttribute('fill', '#334155');
+            document.getElementById('p1-screen-sub').textContent = "System Powered Off";
+            document.getElementById('p1-screen-sub').setAttribute('fill', '#1e293b');
+            document.getElementById('p1-desktop-icons').setAttribute('opacity', '0');
+            document.getElementById('p1-ram-card').setAttribute('fill', '#090d16');
+            document.getElementById('p1-ram-card').setAttribute('stroke', '#27272a');
+            document.getElementById('p1-ram-title').setAttribute('fill', '#52525b');
+            document.getElementById('p1-ram-sub').setAttribute('fill', '#3f3f46');
+            document.getElementById('p1-ram-data1').setAttribute('fill', '#000000');
+            document.getElementById('p1-ram-data1').setAttribute('stroke', '#18181b');
+            document.getElementById('p1-ram-datatxt1').setAttribute('fill', '#27272a');
+            document.getElementById('p1-ram-data2').setAttribute('fill', '#000000');
+            document.getElementById('p1-ram-data2').setAttribute('stroke', '#18181b');
+            document.getElementById('p1-ram-datatxt2').setAttribute('fill', '#27272a');
+            document.getElementById('p1-ram-statustxt').textContent = "BLACKENED (Wiped)";
+            document.getElementById('p1-ram-statustxt').setAttribute('fill', '#ef4444');
+        }
+
+        /* PART 2 LOGIC */
+        let p2Timers = [];
+        function p2SeekFile(fileNum) {
+            p2Timers.forEach(t => clearTimeout(t));
+            p2Timers = [];
+            document.getElementById('p2-tape-bar').style.width = "0px";
+            document.getElementById('p2-hdd-bar').style.width = "0px";
+            document.getElementById('p2-ssd-bar').style.width = "0px";
+
+            const ribbon = document.getElementById('p2-tape-ribbon');
+            const hddArm = document.getElementById('p2-hdd-arm');
+            const hddDisk = document.getElementById('p2-hdd-disk');
+            const wireA = document.getElementById('ssd-wire-a');
+            const wireB = document.getElementById('ssd-wire-b');
+            const chipA = document.getElementById('ssd-chip-a');
+            const chipB = document.getElementById('ssd-chip-b');
+
+            if (fileNum === 1) {
+                ribbon.style.transform = "translateX(80px)";
+                document.getElementById('p2-tape-status').textContent = "Unwinding Tape to File #1...";
+                document.getElementById('p2-tape-bar').style.width = "174px";
+                document.getElementById('p2-tape-bar').style.transition = "width 3.5s linear";
+                let tapeSec = 0;
+                const tapeInterval = setInterval(() => {
+                    tapeSec += 0.5;
+                    document.getElementById('p2-tape-time').textContent = `Seek Time: ${tapeSec.toFixed(1)}s`;
+                    if (tapeSec >= 3.5) { clearInterval(tapeInterval); document.getElementById('p2-tape-status').textContent = "File #1 Loaded (Very Slow)"; }
+                }, 500);
+                p2Timers.push(tapeInterval);
+
+                hddDisk.classList.add('hdd-disk-spinning');
+                hddArm.style.transform = "rotate(0deg)";
+                document.getElementById('p2-hdd-status').textContent = "Platter Spinning & Arm Swinging to Dot #1...";
+                document.getElementById('p2-hdd-bar').style.width = "174px";
+                document.getElementById('p2-hdd-bar').style.transition = "width 1.5s linear";
+                let hddSec = 0;
+                const hddInterval = setInterval(() => {
+                    hddSec += 0.2;
+                    document.getElementById('p2-hdd-time').textContent = `Seek Time: ${hddSec.toFixed(1)}s`;
+                    if (hddSec >= 1.5) { clearInterval(hddInterval); hddDisk.classList.remove('hdd-disk-spinning'); document.getElementById('p2-hdd-status').textContent = "File #1 Found! Platter Stopped."; }
+                }, 200);
+                p2Timers.push(hddInterval);
+
+                wireA.setAttribute('stroke', '#3b82f6');
+                wireB.setAttribute('stroke', '#3f3f46');
+                chipA.setAttribute('stroke', '#3b82f6');
+                chipB.setAttribute('stroke', '#71717a');
+                document.getElementById('p2-ssd-bar').style.width = "174px";
+                document.getElementById('p2-ssd-bar').style.transition = "width 0.1s linear";
+                document.getElementById('p2-ssd-time').textContent = "Seek Time: 0.001s";
+                document.getElementById('p2-ssd-status').textContent = "File #1 Loaded (Instant!)";
+            } else {
+                ribbon.style.transform = "translateX(-85px)";
+                document.getElementById('p2-tape-status').textContent = "Unwinding Tape to File #4...";
+                document.getElementById('p2-tape-bar').style.width = "174px";
+                document.getElementById('p2-tape-bar').style.transition = "width 5.0s linear";
+                let tapeSec = 0;
+                const tapeInterval = setInterval(() => {
+                    tapeSec += 0.5;
+                    document.getElementById('p2-tape-time').textContent = `Seek Time: ${tapeSec.toFixed(1)}s`;
+                    if (tapeSec >= 5.0) { clearInterval(tapeInterval); document.getElementById('p2-tape-status').textContent = "File #4 Loaded (Extremely Slow)"; }
+                }, 500);
+                p2Timers.push(tapeInterval);
+
+                hddDisk.classList.add('hdd-disk-spinning');
+                hddArm.style.transform = "rotate(-12.5deg)";
+                document.getElementById('p2-hdd-status').textContent = "Platter Spinning & Arm Swinging to Dot #4...";
+                document.getElementById('p2-hdd-bar').style.width = "174px";
+                document.getElementById('p2-hdd-bar').style.transition = "width 1.8s linear";
+                let hddSec = 0;
+                const hddInterval = setInterval(() => {
+                    hddSec += 0.2;
+                    document.getElementById('p2-hdd-time').textContent = `Seek Time: ${hddSec.toFixed(1)}s`;
+                    if (hddSec >= 1.8) { clearInterval(hddInterval); hddDisk.classList.remove('hdd-disk-spinning'); document.getElementById('p2-hdd-status').textContent = "File #4 Found! Platter Stopped."; }
+                }, 200);
+                p2Timers.push(hddInterval);
+
+                wireA.setAttribute('stroke', '#3f3f46');
+                wireB.setAttribute('stroke', '#ef4444');
+                chipA.setAttribute('stroke', '#71717a');
+                chipB.setAttribute('stroke', '#ef4444');
+                document.getElementById('p2-ssd-bar').style.width = "174px";
+                document.getElementById('p2-ssd-bar').style.transition = "width 0.1s linear";
+                document.getElementById('p2-ssd-time').textContent = "Seek Time: 0.001s";
+                document.getElementById('p2-ssd-status').textContent = "File #4 Loaded (Instant!)";
+            }
+        }
+
+        /* PART 3 LOGIC: SEQUENTIAL ITEM FETCH ACTIVITY */
+        const possibleItems = ["A-1", "B-2", "C-3", "D-4", "E-5", "F-6", "G-7", "H-8", "I-9", "J-10", "K-11", "L-12", "M-13", "N-14", "O-15", "P-16", "Q-17", "R-18", "S-19", "T-20"];
+        let totalLatency = 0;
+        let isSearching = false;
+        let requestedItem = "";
+        let currentStep = 'cache';
+
+        let cacheContents = [];
+        let ramContents = [];
+        let ssdContents = [];
+
+        function renderSsdSlots() {
+            const container = document.getElementById('ssd-slots-container');
+            let html = "";
+            for (let i = 0; i < 12; i++) {
+                const col = i % 3;
+                const row = Math.floor(i / 3);
+                const x = col * 56;
+                const y = row * 52;
+                html += `
+                    <g class="slot-btn" onclick="p3CheckSlot('ssd', ${i})" transform="translate(${x}, ${y})">
+                        <rect id="slot-ssd-${i}" x="0" y="0" width="50" height="44" fill="#064e3b" stroke="#059669" stroke-width="1.5" rx="5" />
+                        <text x="25" y="16" text-anchor="middle" fill="#34d399" font-size="7" font-weight="bold">SSD #${i+1}</text>
+                        <text id="txt-ssd-${i}" x="25" y="32" text-anchor="middle" fill="#fff" class="mono" font-size="9" font-weight="bold">---</text>
+                    </g>
+                `;
+            }
+            container.innerHTML = html;
+        }
+        renderSsdSlots();
+
+        function p3StartGame() {
+            isSearching = false;
+            totalLatency = 0;
+            currentStep = 'cache';
+            
+            let shuffled = [...possibleItems].sort(() => 0.5 - Math.random());
+            cacheContents = shuffled.slice(0, 2);
+            ramContents = shuffled.slice(2, 8);
+            ssdContents = shuffled.slice(8, 20);
+
+            requestedItem = ssdContents[Math.floor(Math.random() * ssdContents.length)];
+
+            document.getElementById('game-latency-txt').textContent = "0 ns";
+            document.getElementById('game-target-txt').textContent = requestedItem;
+            document.getElementById('game-step-txt').textContent = "Step 1: Check Cache";
+            document.getElementById('game-location-txt').textContent = "CPU Ready";
+
+            for (let i = 0; i < 2; i++) {
+                document.getElementById(`slot-cache-${i}`).setAttribute('fill', '#422006');
+                document.getElementById(`slot-cache-${i}`).setAttribute('stroke', '#ca8a04');
+                document.getElementById(`txt-cache-${i}`).textContent = cacheContents[i];
+            }
+            for (let i = 0; i < 6; i++) {
+                document.getElementById(`slot-ram-${i}`).setAttribute('fill', '#083344');
+                document.getElementById(`slot-ram-${i}`).setAttribute('stroke', '#0891b2');
+                document.getElementById(`txt-ram-${i}`).textContent = ramContents[i];
+            }
+            for (let i = 0; i < 12; i++) {
+                document.getElementById(`slot-ssd-${i}`).setAttribute('fill', '#064e3b');
+                document.getElementById(`slot-ssd-${i}`).setAttribute('stroke', '#059669');
+                document.getElementById(`txt-ssd-${i}`).textContent = ssdContents[i];
+            }
+        }
+
+        function p3CheckSlot(tier, index) {
+            if (isSearching || currentStep === 'found') return;
+
+            if (tier !== currentStep) {
+                if (currentStep === 'cache') {
+                    alert("Hardware Rule: The CPU must search Cache memory first!");
+                } else if (currentStep === 'ram') {
+                    alert("Hardware Rule: Cache miss! The CPU must check RAM next before accessing SSD.");
+                } else if (currentStep === 'ssd') {
+                    alert("Hardware Rule: Cache and RAM missed! Search the SSD slots now.");
+                }
+                return;
+            }
+
+            isSearching = true;
+
+            if (tier === 'cache') {
+                document.getElementById('card-cache').classList.add('scanning-active');
+                setTimeout(() => {
+                    document.getElementById('card-cache').classList.remove('scanning-active');
+                    totalLatency += 2;
+                    document.getElementById('game-latency-txt').textContent = `${totalLatency.toLocaleString()} ns`;
+
+                    for (let i = 0; i < 2; i++) {
+                        document.getElementById(`slot-cache-${i}`).setAttribute('fill', '#451a03');
+                    }
+
+                    document.getElementById('game-location-txt').textContent = "CACHE MISS!";
+                    document.getElementById('game-step-txt').textContent = "Step 2: Check RAM";
+                    currentStep = 'ram';
+                    isSearching = false;
+                }, 350);
+
+            } else if (tier === 'ram') {
+                document.getElementById('card-ram').classList.add('scanning-active');
+                setTimeout(() => {
+                    document.getElementById('card-ram').classList.remove('scanning-active');
+                    totalLatency += 600;
+                    document.getElementById('game-latency-txt').textContent = `${totalLatency.toLocaleString()} ns`;
+
+                    for (let i = 0; i < 6; i++) {
+                        document.getElementById(`slot-ram-${i}`).setAttribute('fill', '#0c4a6e');
+                    }
+
+                    document.getElementById('game-location-txt').textContent = "RAM MISS!";
+                    document.getElementById('game-step-txt').textContent = `Step 3: Click target item (${requestedItem}) on SSD`;
+                    currentStep = 'ssd';
+                    isSearching = false;
+                }, 500);
+
+            } else if (tier === 'ssd') {
+                const clickedItem = ssdContents[index];
+
+                if (clickedItem === requestedItem) {
+                    document.getElementById('card-ssd').classList.add('scanning-active');
+                    setTimeout(() => {
+                        document.getElementById('card-ssd').classList.remove('scanning-active');
+                        totalLatency += 10000000;
+                        document.getElementById('game-latency-txt').textContent = `${totalLatency.toLocaleString()} ns`;
+
+                        document.getElementById(`slot-ssd-${index}`).setAttribute('fill', '#047857');
+                        document.getElementById(`slot-ssd-${index}`).setAttribute('stroke', '#34d399');
+
+                        document.getElementById('game-location-txt').textContent = `SUCCESS! ${requestedItem} Found!`;
+                        document.getElementById('game-step-txt').textContent = "Fetch Completed!";
+                        currentStep = 'found';
+                        isSearching = false;
+                    }, 600);
+                } else {
+                    document.getElementById(`slot-ssd-${index}`).setAttribute('fill', '#7f1d1d');
+                    document.getElementById(`slot-ssd-${index}`).setAttribute('stroke', '#ef4444');
+                    document.getElementById('game-location-txt').textContent = `WRONG ITEM (${clickedItem})! Look for ${requestedItem}`;
+                    isSearching = false;
+                }
+            }
+        }
+
+        p3StartGame();
+    </script>
+</body>
+</html>
