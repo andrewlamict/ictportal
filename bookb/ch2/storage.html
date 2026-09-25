@@ -105,8 +105,8 @@
                     </g>
                     <g transform="translate(200, 70)">
                         <rect id="p1-cpu-box" x="0" y="0" width="100" height="70" fill="#422006" stroke="#ca8a04" stroke-width="2" rx="6" class="general-transition" />
-                        <text x="50" y="28" text-anchor="middle" fill="#fef08a" font-weight="bold" font-size="12">CPU</text>
-                        <text x="50" y="48" text-anchor="middle" fill="#fde047" class="mono" font-size="8.5">Executes Boot</text>
+                        <text id="p1-cpu-title" x="50" y="28" text-anchor="middle" fill="#fef08a" font-weight="bold" font-size="12">CPU</text>
+                        <text id="p1-cpu-sub" x="50" y="48" text-anchor="middle" fill="#fde047" class="mono" font-size="8.5">Executes Boot</text>
                     </g>
                     <g transform="translate(340, 70)">
                         <rect id="p1-ram-card" x="0" y="0" width="110" height="190" fill="#064e3b" stroke="#10b981" stroke-width="2" rx="6" class="general-transition" />
@@ -358,7 +358,8 @@
             document.getElementById('p1-screen-sub').textContent = "Reading ROM Instructions";
             document.getElementById('p1-screen-sub').setAttribute('fill', '#c084fc');
             document.getElementById('p1-cpu-box').setAttribute('fill', '#422006');
-            
+            document.getElementById('p1-cpu-title').setAttribute('fill', '#fef08a');
+            document.getElementById('p1-cpu-sub').setAttribute('fill', '#fde047');
             document.getElementById('p1-ram-card').setAttribute('fill', '#064e3b');
             document.getElementById('p1-ram-card').setAttribute('stroke', '#10b981');
             document.getElementById('p1-ram-title').setAttribute('fill', '#a7f3d0');
@@ -403,7 +404,8 @@
             document.getElementById('p1-screen-sub').textContent = "System Powered Off";
             document.getElementById('p1-screen-sub').setAttribute('fill', '#1e293b');
             document.getElementById('p1-cpu-box').setAttribute('fill', '#000000');
-            
+            document.getElementById('p1-cpu-title').setAttribute('fill', '#000000');
+            document.getElementById('p1-cpu-sub').setAttribute('fill', '#000000');
             document.getElementById('p1-desktop-icons').setAttribute('opacity', '0');
             document.getElementById('p1-ram-card').setAttribute('fill', '#090d16');
             document.getElementById('p1-ram-card').setAttribute('stroke', '#27272a');
