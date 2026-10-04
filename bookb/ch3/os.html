@@ -1,84 +1,643 @@
-<!-- ... existing code ... -->
-    /* FOLDER 1 CONTENT GENERATOR */
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Secondary 1 OS Interactive Learning Simulator</title>
+  <!-- Tailwind CSS -->
+  <script src="https://cdn.tailwindcss.com"></script>
+  <!-- FontAwesome Icons -->
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+  <!-- Google Fonts: Inter & JetBrains Mono -->
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=JetBrains+Mono:wght@400;600;700&display=swap" rel="stylesheet">
+
+  <style>
+    body {
+      font-family: 'Inter', sans-serif;
+      user-select: none;
+      overflow: hidden;
+      transition: background 0.5s ease;
+    }
+    .font-mono {
+      font-family: 'JetBrains Mono', monospace;
+    }
+    /* Custom Scrollbar */
+    ::-webkit-scrollbar {
+      width: 6px;
+      height: 6px;
+    }
+    ::-webkit-scrollbar-track {
+      background: rgba(15, 23, 42, 0.6);
+    }
+    ::-webkit-scrollbar-thumb {
+      background: rgba(100, 116, 139, 0.5);
+      border-radius: 4px;
+    }
+    ::-webkit-scrollbar-thumb:hover {
+      background: rgba(148, 163, 184, 0.8);
+    }
+
+    /* THEME STYLES */
+    .theme-indigo {
+      background: radial-gradient(circle at 50% 30%, #1e1b4b 0%, #0f172a 60%, #020617 100%);
+    }
+    .theme-emerald {
+      background: radial-gradient(circle at 50% 30%, #064e3b 0%, #022c22 60%, #020617 100%);
+    }
+    .theme-purple {
+      background: radial-gradient(circle at 50% 30%, #4c1d95 0%, #2e1065 60%, #020617 100%);
+    }
+    .theme-cyberpunk {
+      background: radial-gradient(circle at 50% 30%, #831843 0%, #4c0519 50%, #020617 100%);
+    }
+    .theme-amber {
+      background: radial-gradient(circle at 50% 30%, #78350f 0%, #451a03 60%, #020617 100%);
+    }
+
+    /* Glassmorphism Window Effect */
+    .glass-panel {
+      background: rgba(15, 23, 42, 0.88);
+      backdrop-filter: blur(16px);
+      -webkit-backdrop-filter: blur(16px);
+      border: 1px solid rgba(255, 255, 255, 0.12);
+      transition: all 0.3s ease;
+    }
+
+    /* Toast notification slide animation */
+    @keyframes slideInRight {
+      from { transform: translateX(100%); opacity: 0; }
+      to { transform: translateX(0); opacity: 1; }
+    }
+    .animate-toast {
+      animation: slideInRight 0.3s cubic-bezier(0.16, 1, 0.3, 1) forwards;
+    }
+
+    /* Computer Tower Glow */
+    @keyframes towerGlow {
+      0%, 100% { box-shadow: 0 0 15px rgba(59, 130, 246, 0.4); }
+      50% { box-shadow: 0 0 25px rgba(168, 85, 247, 0.7); }
+    }
+    .tower-rgb-glow {
+      animation: towerGlow 3s infinite ease-in-out;
+    }
+  </style>
+</head>
+<body id="app-body" class="h-screen w-screen theme-indigo text-slate-100 flex flex-col justify-between relative overflow-hidden select-none">
+
+  <!-- MAIN DESKTOP WORKSPACE -->
+  <main id="desktop-area" class="flex-1 p-6 relative grid grid-cols-2 sm:grid-cols-4 md:grid-cols-6 gap-6 content-start z-10">
+
+    <!-- DESKTOP FOLDER 1: FUNCTIONS OF OS -->
+    <div onclick="openFolder(1)" class="group flex flex-col items-center justify-center p-3 rounded-2xl hover:bg-white/10 cursor-pointer transition-all duration-200 border border-transparent hover:border-white/10 w-28">
+      <div class="w-14 h-14 bg-gradient-to-br from-amber-400 to-amber-600 rounded-2xl flex items-center justify-center shadow-lg group-hover:scale-105 transition-transform">
+        <i class="fa-solid fa-gears text-2xl text-slate-950"></i>
+      </div>
+      <span class="text-xs font-semibold text-white mt-2 text-center drop-shadow">1. Functions of OS</span>
+      <span class="text-[10px] text-amber-300/80 text-center font-mono">Resource Mgr</span>
+    </div>
+
+    <!-- DESKTOP FOLDER 2: USER OF OS -->
+    <div onclick="openFolder(2)" class="group flex flex-col items-center justify-center p-3 rounded-2xl hover:bg-white/10 cursor-pointer transition-all duration-200 border border-transparent hover:border-white/10 w-28">
+      <div class="w-14 h-14 bg-gradient-to-br from-sky-400 to-sky-600 rounded-2xl flex items-center justify-center shadow-lg group-hover:scale-105 transition-transform">
+        <i class="fa-solid fa-users text-2xl text-slate-950"></i>
+      </div>
+      <span class="text-xs font-semibold text-white mt-2 text-center drop-shadow">2. User of OS</span>
+      <span class="text-[10px] text-sky-300/80 text-center font-mono">Single/Multi User</span>
+    </div>
+
+    <!-- DESKTOP FOLDER 3: PURPOSE OF OS -->
+    <div onclick="openFolder(3)" class="group flex flex-col items-center justify-center p-3 rounded-2xl hover:bg-white/10 cursor-pointer transition-all duration-200 border border-transparent hover:border-white/10 w-28">
+      <div class="w-14 h-14 bg-gradient-to-br from-emerald-400 to-emerald-600 rounded-2xl flex items-center justify-center shadow-lg group-hover:scale-105 transition-transform">
+        <i class="fa-solid fa-server text-2xl text-slate-950"></i>
+      </div>
+      <span class="text-xs font-semibold text-white mt-2 text-center drop-shadow">3. Purpose of OS</span>
+      <span class="text-[10px] text-emerald-300/80 text-center font-mono">Desktop PC & NOS</span>
+    </div>
+
+    <!-- DESKTOP FOLDER 4: USER INTERFACE -->
+    <div onclick="openFolder(4)" class="group flex flex-col items-center justify-center p-3 rounded-2xl hover:bg-white/10 cursor-pointer transition-all duration-200 border border-transparent hover:border-white/10 w-28">
+      <div class="w-14 h-14 bg-gradient-to-br from-purple-400 to-purple-600 rounded-2xl flex items-center justify-center shadow-lg group-hover:scale-105 transition-transform">
+        <i class="fa-solid fa-terminal text-2xl text-slate-950"></i>
+      </div>
+      <span class="text-xs font-semibold text-white mt-2 text-center drop-shadow">4. User Interface</span>
+      <span class="text-[10px] text-purple-300/80 text-center font-mono">GUI vs CLI</span>
+    </div>
+
+  </main>
+
+  <!-- MAIN SIMULATION WINDOW CONTAINER -->
+  <div id="os-window" class="hidden absolute top-6 left-6 right-6 bottom-16 glass-panel rounded-2xl shadow-2xl flex flex-col z-30 border border-white/20 overflow-hidden">
+    
+    <!-- Window Title Bar -->
+    <div class="bg-slate-900/90 border-b border-white/10 px-4 py-3 flex items-center justify-between">
+      <div class="flex items-center space-x-3">
+        <i id="window-icon" class="fa-solid fa-folder text-amber-400 text-lg"></i>
+        <h2 id="window-title" class="font-bold text-sm text-slate-100">1. Functions of OS</h2>
+      </div>
+
+      <!-- Window Control Buttons -->
+      <div class="flex items-center space-x-2">
+        <button onclick="minimizeWindow()" class="w-7 h-7 rounded-lg bg-slate-800 hover:bg-slate-700 flex items-center justify-center text-slate-300 transition-colors">
+          <i class="fa-solid fa-minus text-xs"></i>
+        </button>
+        <button onclick="closeWindow()" class="w-7 h-7 rounded-lg bg-red-600/80 hover:bg-red-600 flex items-center justify-center text-white transition-colors">
+          <i class="fa-solid fa-xmark text-xs"></i>
+        </button>
+      </div>
+    </div>
+
+    <!-- Window Navigation Tabs Bar -->
+    <div class="bg-slate-950/80 px-4 py-2 border-b border-white/10 flex items-center space-x-2 overflow-x-auto text-xs font-medium">
+      <button onclick="switchFolderTab(1)" id="folder-tab-1" class="px-3.5 py-1.5 rounded-xl transition-all flex items-center space-x-2 bg-amber-500/20 text-amber-300 border border-amber-500/40">
+        <i class="fa-solid fa-gears"></i>
+        <span>1. Functions of OS</span>
+      </button>
+      <button onclick="switchFolderTab(2)" id="folder-tab-2" class="px-3.5 py-1.5 rounded-xl transition-all flex items-center space-x-2 bg-slate-800 text-slate-400 hover:bg-slate-700">
+        <i class="fa-solid fa-users"></i>
+        <span>2. User of OS</span>
+      </button>
+      <button onclick="switchFolderTab(3)" id="folder-tab-3" class="px-3.5 py-1.5 rounded-xl transition-all flex items-center space-x-2 bg-slate-800 text-slate-400 hover:bg-slate-700">
+        <i class="fa-solid fa-server"></i>
+        <span>3. Purpose of OS</span>
+      </button>
+      <button onclick="switchFolderTab(4)" id="folder-tab-4" class="px-3.5 py-1.5 rounded-xl transition-all flex items-center space-x-2 bg-slate-800 text-slate-400 hover:bg-slate-700">
+        <i class="fa-solid fa-terminal"></i>
+        <span>4. User Interface</span>
+      </button>
+    </div>
+
+    <!-- Window Dynamic Content Body -->
+    <div id="window-body" class="flex-1 p-5 overflow-y-auto bg-slate-900/60">
+      <!-- Content injected dynamically by JS -->
+    </div>
+  </div>
+
+  <!-- WINDOWS 11 STYLE SYSTEM TASKBAR -->
+  <footer class="h-12 glass-panel border-t border-white/10 flex items-center justify-between px-4 z-40 relative">
+    
+    <!-- Start Button -->
+    <div class="flex items-center space-x-3">
+      <button onclick="toggleStartMenu()" class="p-2 rounded-xl bg-indigo-600/80 hover:bg-indigo-500 text-white flex items-center space-x-2 shadow-lg transition-all hover:scale-105">
+        <i class="fa-brands fa-windows text-base"></i>
+        <span class="text-xs font-bold">Start</span>
+      </button>
+
+      <!-- Active Window Indicator -->
+      <div id="taskbar-active-app" class="hidden flex items-center space-x-2 px-3 py-1 bg-slate-800/80 border border-white/10 rounded-xl text-xs text-slate-200">
+        <i class="fa-solid fa-window-maximize text-amber-400"></i>
+        <span id="taskbar-app-name" class="font-medium">Functions of OS</span>
+      </div>
+    </div>
+
+    <!-- System Tray Clock & Sound Indicator -->
+    <div class="flex items-center space-x-4 text-xs font-mono text-slate-300">
+      <div class="flex items-center space-x-2 bg-slate-800/60 px-2.5 py-1 rounded-xl border border-white/10">
+        <i class="fa-solid fa-volume-high text-emerald-400"></i>
+        <i class="fa-solid fa-wifi text-sky-400"></i>
+      </div>
+      <div class="text-right">
+        <div id="sys-clock" class="font-bold text-slate-100">12:00 PM</div>
+        <div id="sys-date" class="text-[10px] text-slate-400">10/04/2026</div>
+      </div>
+    </div>
+  </footer>
+
+  <!-- TOAST NOTIFICATION CONTAINER -->
+  <div id="toast-container" class="fixed top-5 right-5 z-50 flex flex-col space-y-2 pointer-events-none"></div>
+
+  <script>
+    /* GLOBAL STATE MANAGEMENT */
+    let currentActiveFolder = 1;
+    let activeLab = null;
+    let currentThemeName = 'indigo';
+
+    /* AUDIO SYNTHESIZER (WEB AUDIO API) */
+    const audioCtx = new (window.AudioContext || window.webkitAudioContext)();
+    function playAudio(type) {
+      try {
+        if (audioCtx.state === 'suspended') audioCtx.resume();
+        const osc = audioCtx.createOscillator();
+        const gain = audioCtx.createGain();
+        osc.connect(gain);
+        gain.connect(audioCtx.destination);
+
+        if (type === 'click') {
+          osc.frequency.setValueAtTime(600, audioCtx.currentTime);
+          gain.gain.setValueAtTime(0.05, audioCtx.currentTime);
+          gain.gain.exponentialRampToValueAtTime(0.001, audioCtx.currentTime + 0.05);
+          osc.start();
+          osc.stop(audioCtx.currentTime + 0.05);
+        } else if (type === 'success') {
+          osc.frequency.setValueAtTime(523.25, audioCtx.currentTime);
+          osc.frequency.setValueAtTime(659.25, audioCtx.currentTime + 0.08);
+          gain.gain.setValueAtTime(0.08, audioCtx.currentTime);
+          gain.gain.exponentialRampToValueAtTime(0.001, audioCtx.currentTime + 0.2);
+          osc.start();
+          osc.stop(audioCtx.currentTime + 0.2);
+        } else if (type === 'eject') {
+          osc.frequency.setValueAtTime(400, audioCtx.currentTime);
+          osc.frequency.setValueAtTime(250, audioCtx.currentTime + 0.1);
+          gain.gain.setValueAtTime(0.08, audioCtx.currentTime);
+          gain.gain.exponentialRampToValueAtTime(0.001, audioCtx.currentTime + 0.25);
+          osc.start();
+          osc.stop(audioCtx.currentTime + 0.25);
+        } else if (type === 'format') {
+          osc.type = 'sawtooth';
+          osc.frequency.setValueAtTime(150, audioCtx.currentTime);
+          gain.gain.setValueAtTime(0.1, audioCtx.currentTime);
+          gain.gain.exponentialRampToValueAtTime(0.001, audioCtx.currentTime + 0.4);
+          osc.start();
+          osc.stop(audioCtx.currentTime + 0.4);
+        }
+      } catch (e) { console.log('Audio disabled', e); }
+    }
+
+    /* TOAST NOTIFICATION GENERATOR */
+    function showToast(title, message, type = 'info') {
+      const container = document.getElementById('toast-container');
+      if (!container) return;
+
+      const toast = document.createElement('div');
+      let iconColor = 'text-sky-400';
+      let borderColor = 'border-sky-500/40';
+
+      if (type === 'success') { iconColor = 'text-emerald-400'; borderColor = 'border-emerald-500/40'; }
+      if (type === 'error') { iconColor = 'text-red-400'; borderColor = 'border-red-500/40'; }
+
+      toast.className = `pointer-events-auto bg-slate-900/95 border ${borderColor} text-white px-4 py-3 rounded-2xl shadow-2xl flex items-start space-x-3 min-w-[280px] max-w-sm animate-toast backdrop-blur-md z-50`;
+      toast.innerHTML = `
+        <i class="fa-solid fa-circle-info ${iconColor} text-lg mt-0.5"></i>
+        <div class="flex-1">
+          <div class="font-bold text-xs text-slate-100">${title}</div>
+          <div class="text-[11px] text-slate-300 leading-snug mt-0.5">${message}</div>
+        </div>
+      `;
+
+      container.appendChild(toast);
+      setTimeout(() => {
+        toast.style.opacity = '0';
+        toast.style.transition = 'opacity 0.3s ease';
+        setTimeout(() => toast.remove(), 300);
+      }, 3500);
+    }
+
+    /* SYSTEM CLOCK UPDATER */
+    function updateSystemClock() {
+      const clock = document.getElementById('sys-clock');
+      const dateEl = document.getElementById('sys-date');
+      const now = new Date();
+      if (clock) clock.innerText = now.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' });
+      if (dateEl) dateEl.innerText = now.toLocaleDateString();
+    }
+    setInterval(updateSystemClock, 1000);
+    updateSystemClock();
+
+    /* WINDOW VISIBILITY CONTROLLERS */
+    function openFolder(folderId) {
+      playAudio('click');
+      currentActiveFolder = folderId;
+      activeLab = null;
+
+      const win = document.getElementById('os-window');
+      const activeApp = document.getElementById('taskbar-active-app');
+      if (win) win.classList.remove('hidden');
+      if (activeApp) activeApp.classList.remove('hidden');
+
+      updateFolderTabHighlight(folderId);
+      renderFolderContent(folderId);
+    }
+
+    function switchFolderTab(folderId) {
+      playAudio('click');
+      currentActiveFolder = folderId;
+      activeLab = null;
+      updateFolderTabHighlight(folderId);
+      renderFolderContent(folderId);
+    }
+
+    function updateFolderTabHighlight(folderId) {
+      for (let i = 1; i <= 4; i++) {
+        const tab = document.getElementById(`folder-tab-${i}`);
+        if (!tab) continue;
+        if (i === folderId) {
+          tab.className = 'px-3.5 py-1.5 rounded-xl transition-all flex items-center space-x-2 bg-amber-500/20 text-amber-300 border border-amber-500/40 font-bold';
+        } else {
+          tab.className = 'px-3.5 py-1.5 rounded-xl transition-all flex items-center space-x-2 bg-slate-800 text-slate-400 hover:bg-slate-700 font-medium';
+        }
+      }
+
+      const titleEl = document.getElementById('window-title');
+      const appNameEl = document.getElementById('taskbar-app-name');
+      const titles = {
+        1: '1. Functions of OS (Resource Management)',
+        2: '2. User of OS (Single vs Multi-User Virtualization)',
+        3: '3. Purpose of OS (Desktop PC Virtualization & NOS)',
+        4: '4. User Interface (GUI vs CLI Virtual Shells)'
+      };
+      if (titleEl) titleEl.innerText = titles[folderId];
+      if (appNameEl) appNameEl.innerText = titles[folderId];
+    }
+
+    function closeWindow() {
+      playAudio('click');
+      const win = document.getElementById('os-window');
+      const activeApp = document.getElementById('taskbar-active-app');
+      if (win) win.classList.add('hidden');
+      if (activeApp) activeApp.classList.add('hidden');
+    }
+
+    function minimizeWindow() {
+      closeWindow();
+    }
+
+    function toggleStartMenu() {
+      showToast('Windows Start Menu', 'Click any desktop icon or folder to launch interactive OS learning labs!', 'info');
+    }
+
+    /* RENDER FOLDER CONTENT BASED ON SELECTION */
+    function renderFolderContent(folderId) {
+      const body = document.getElementById('window-body');
+      if (!body) return;
+
+      if (folderId === 1) {
+        body.innerHTML = getFunctionsFolderHTML();
+      } else if (folderId === 2) {
+        body.innerHTML = getUserTypesFolderHTML();
+      } else if (folderId === 3) {
+        body.innerHTML = getPurposeFolderHTML();
+        initDesktopPCVirtualization();
+      } else if (folderId === 4) {
+        body.innerHTML = getUIFolderHTML();
+        initCLITerminal();
+        renderGUIFolderCanvas();
+      }
+    }
+
     function getFunctionsFolderHTML() {
       return `
         <div class="mb-4 bg-amber-500/10 border border-amber-500/20 p-3 rounded-xl flex items-center space-x-3">
           <i class="fa-solid fa-graduation-cap text-2xl text-amber-400"></i>
           <div>
-            <h3 class="font-bold text-sm text-amber-200">OS Core Functions Mini-Game Hub</h3>
-            <p class="text-[11px] text-slate-300">Click any of the 8 interactive labs below to explore real OS management tasks in action!</p>
+            <h3 class="font-bold text-sm text-amber-200">OS Core Functions Interactive Labs</h3>
+            <p class="text-[11px] text-slate-300">Click any lab below to directly test real operating system functions!</p>
           </div>
         </div>
         <div class="grid grid-cols-2 md:grid-cols-4 gap-3">
           <button onclick="launchLab('process')" class="p-3 bg-slate-800/80 hover:bg-slate-700/80 border border-white/10 rounded-xl text-left flex flex-col items-start transition-all hover:border-amber-400/50">
             <i class="fa-solid fa-microchip text-2xl text-amber-400 mb-2"></i>
-            <span class="font-bold text-slate-100">1. Process Mgr</span>
-            <span class="text-[10px] text-slate-400 mt-1">CPU Dispatcher & Scheduling</span>
+            <span class="font-bold text-slate-100 text-xs">1. Process Mgr</span>
+            <span class="text-[10px] text-slate-400 mt-0.5">CPU Queue & Scheduling</span>
           </button>
           <button onclick="launchLab('memory')" class="p-3 bg-slate-800/80 hover:bg-slate-700/80 border border-white/10 rounded-xl text-left flex flex-col items-start transition-all hover:border-amber-400/50">
             <i class="fa-solid fa-memory text-2xl text-sky-400 mb-2"></i>
-            <span class="font-bold text-slate-100">2. Memory Mgr</span>
-            <span class="text-[10px] text-slate-400 mt-1">Dynamic RAM Allocation</span>
+            <span class="font-bold text-slate-100 text-xs">2. Memory Mgr</span>
+            <span class="text-[10px] text-slate-400 mt-0.5">Dynamic RAM Allocation</span>
           </button>
           <button onclick="launchLab('pnp')" class="p-3 bg-slate-800/80 hover:bg-slate-700/80 border border-white/10 rounded-xl text-left flex flex-col items-start transition-all hover:border-amber-400/50">
             <i class="fa-solid fa-plug text-2xl text-emerald-400 mb-2"></i>
-            <span class="font-bold text-slate-100">3. Plug-and-Play</span>
-            <span class="text-[10px] text-slate-400 mt-1">Connect/Unplug Peripherals</span>
+            <span class="font-bold text-slate-100 text-xs">3. Plug-and-Play</span>
+            <span class="text-[10px] text-slate-400 mt-0.5">Connect & Unplug Hardware</span>
           </button>
           <button onclick="launchLab('file-explorer')" class="p-3 bg-slate-800/80 hover:bg-slate-700/80 border border-white/10 rounded-xl text-left flex flex-col items-start transition-all hover:border-amber-400/50">
             <i class="fa-solid fa-folder-tree text-2xl text-purple-400 mb-2"></i>
-            <span class="font-bold text-slate-100">4. File System</span>
-            <span class="text-[10px] text-slate-400 mt-1">Create, Open & Manage Files</span>
+            <span class="font-bold text-slate-100 text-xs">4. File System</span>
+            <span class="text-[10px] text-slate-400 mt-0.5">Folders, Files & Editor</span>
           </button>
           <button onclick="launchLab('disk')" class="p-3 bg-slate-800/80 hover:bg-slate-700/80 border border-white/10 rounded-xl text-left flex flex-col items-start transition-all hover:border-amber-400/50">
             <i class="fa-solid fa-hard-drive text-2xl text-pink-400 mb-2"></i>
-            <span class="font-bold text-slate-100">5. Disk Mgr</span>
-            <span class="text-[10px] text-slate-400 mt-1">Partitions & Formatting</span>
+            <span class="font-bold text-slate-100 text-xs">5. Disk Mgr</span>
+            <span class="text-[10px] text-slate-400 mt-0.5">Partitioning & Formatting</span>
           </button>
           <button onclick="launchLab('ui-customizer')" class="p-3 bg-slate-800/80 hover:bg-slate-700/80 border border-white/10 rounded-xl text-left flex flex-col items-start transition-all hover:border-amber-400/50">
             <i class="fa-solid fa-palette text-2xl text-yellow-400 mb-2"></i>
-            <span class="font-bold text-slate-100">6. UI Customizer</span>
-            <span class="text-[10px] text-slate-400 mt-1">Themes & Custom Visuals</span>
+            <span class="font-bold text-slate-100 text-xs">6. UI Customizer</span>
+            <span class="text-[10px] text-slate-400 mt-0.5">Themes & Desktop Styling</span>
           </button>
           <button onclick="launchLab('user-mgr')" class="p-3 bg-slate-800/80 hover:bg-slate-700/80 border border-white/10 rounded-xl text-left flex flex-col items-start transition-all hover:border-amber-400/50">
             <i class="fa-solid fa-user-shield text-2xl text-indigo-400 mb-2"></i>
-            <span class="font-bold text-slate-100">7. Admin User Mgr</span>
-            <span class="text-[10px] text-slate-400 mt-1">Add & Delete Accounts</span>
+            <span class="font-bold text-slate-100 text-xs">7. Admin User Mgr</span>
+            <span class="text-[10px] text-slate-400 mt-0.5">Add & Delete Accounts</span>
           </button>
           <button onclick="launchLab('multitasking')" class="p-3 bg-slate-800/80 hover:bg-slate-700/80 border border-white/10 rounded-xl text-left flex flex-col items-start transition-all hover:border-amber-400/50">
             <i class="fa-solid fa-window-restore text-2xl text-teal-400 mb-2"></i>
-            <span class="font-bold text-slate-100">8. Multitasking</span>
-            <span class="text-[10px] text-slate-400 mt-1">Run Multiple Live Apps</span>
+            <span class="font-bold text-slate-100 text-xs">8. Multitasking</span>
+            <span class="text-[10px] text-slate-400 mt-0.5">Run Live Mini-Apps</span>
           </button>
+        </div>
+        <div id="active-lab-container" class="mt-4">
+          <!-- Lab interactive panel rendered here -->
         </div>
       `;
     }
-<!-- ... existing code ... -->
-    /* LAB 4: FILE SYSTEM EXPLORER (INTERACTIVE CREATE, OPEN, READ & DELETE) */
+
+    function launchLab(labId) {
+      playAudio('click');
+      activeLab = labId;
+      const container = document.getElementById('active-lab-container');
+      if (!container) return;
+
+      if (labId === 'process') {
+        container.innerHTML = getProcessLabHTML();
+      } else if (labId === 'memory') {
+        container.innerHTML = getMemoryLabHTML();
+        renderRAMBlocks();
+      } else if (labId === 'pnp') {
+        container.innerHTML = getPnPLabHTML();
+      } else if (labId === 'file-explorer') {
+        container.innerHTML = getFileExplorerHTML();
+        renderFileExplorer();
+      } else if (labId === 'disk') {
+        container.innerHTML = getDiskLabHTML();
+      } else if (labId === 'ui-customizer') {
+        container.innerHTML = getUICustomizerHTML();
+      } else if (labId === 'user-mgr') {
+        container.innerHTML = getUserManagerHTML();
+        renderUserList();
+      } else if (labId === 'multitasking') {
+        container.innerHTML = getMultitaskingLabHTML();
+      }
+    }
+
+    /* PROCESS LAB */
+    let runningProcesses = [
+      { id: 101, name: 'Browser.exe', status: 'Running', cpu: '15%' },
+      { id: 102, name: 'WordProcessor.exe', status: 'Running', cpu: '8%' }
+    ];
+
+    function getProcessLabHTML() {
+      return `
+        <div class="bg-slate-950 p-4 rounded-xl border border-amber-500/30 space-y-3">
+          <div class="flex justify-between items-center border-b border-white/10 pb-2">
+            <span class="font-bold text-amber-300 text-xs flex items-center space-x-2">
+              <i class="fa-solid fa-microchip text-amber-400"></i>
+              <span>Process Management Scheduler</span>
+            </span>
+            <button onclick="addSampleProcess()" class="px-3 py-1 bg-amber-600 hover:bg-amber-500 text-white font-bold text-xs rounded-lg shadow">+ Launch New Process</button>
+          </div>
+          <div id="process-list" class="space-y-2">
+            ${runningProcesses.map(p => `
+              <div class="flex items-center justify-between bg-slate-900 p-2.5 rounded-lg border border-white/10">
+                <div class="flex items-center space-x-3">
+                  <span class="font-mono text-[10px] bg-slate-800 text-slate-300 px-2 py-0.5 rounded">PID: ${p.id}</span>
+                  <span class="font-bold text-xs text-white">${p.name}</span>
+                </div>
+                <div class="flex items-center space-x-3">
+                  <span class="text-xs text-amber-400 font-mono">CPU: ${p.cpu}</span>
+                  <button onclick="terminateProcess(${p.id})" class="px-2.5 py-1 bg-red-600 hover:bg-red-500 text-white text-[10px] font-bold rounded">End Process</button>
+                </div>
+              </div>
+            `).join('')}
+          </div>
+        </div>
+      `;
+    }
+
+    function addSampleProcess() {
+      playAudio('success');
+      const pid = 100 + Math.floor(Math.random() * 899);
+      const names = ['GameEngine.exe', 'MusicPlayer.exe', 'Antivirus.exe', 'VideoEditor.exe'];
+      const name = names[Math.floor(Math.random() * names.length)];
+      runningProcesses.push({ id: pid, name: name, status: 'Running', cpu: `${Math.floor(Math.random() * 20 + 5)}%` });
+      launchLab('process');
+      showToast('Process Dispatched', `CPU initialized ${name} (PID: ${pid})`, 'success');
+    }
+
+    function terminateProcess(pid) {
+      playAudio('eject');
+      runningProcesses = runningProcesses.filter(p => p.id !== pid);
+      launchLab('process');
+      showToast('Process Terminated', `Killed PID: ${pid}`, 'info');
+    }
+
+    /* RAM MEMORY LAB */
+    let ramGrid = Array(16).fill(null);
+
+    function getMemoryLabHTML() {
+      return `
+        <div class="bg-slate-950 p-4 rounded-xl border border-sky-500/30 space-y-3">
+          <div class="flex justify-between items-center border-b border-white/10 pb-2">
+            <span class="font-bold text-sky-300 text-xs flex items-center space-x-2">
+              <i class="fa-solid fa-memory text-sky-400"></i>
+              <span>RAM Memory Allocator (16 MB Total)</span>
+            </span>
+            <div class="flex space-x-2">
+              <button onclick="allocateRAM('App_3MB', 3)" class="px-3 py-1 bg-sky-600 hover:bg-sky-500 text-white font-bold text-xs rounded-lg shadow">+ Load App (3MB)</button>
+              <button onclick="clearRAM()" class="px-3 py-1 bg-slate-800 hover:bg-slate-700 text-slate-300 font-bold text-xs rounded-lg">Clear RAM</button>
+            </div>
+          </div>
+          <div id="ram-blocks-grid" class="grid grid-cols-4 gap-2">
+            <!-- Rendered RAM Blocks -->
+          </div>
+        </div>
+      `;
+    }
+
+    function renderRAMBlocks() {
+      const grid = document.getElementById('ram-blocks-grid');
+      if (!grid) return;
+      grid.innerHTML = ramGrid.map((block, idx) => `
+        <div class="h-12 rounded-lg border ${block ? 'bg-sky-600/80 border-sky-400 text-white' : 'bg-slate-900 border-white/10 text-slate-600'} flex flex-col items-center justify-center font-mono text-[10px] font-bold shadow">
+          <span>Block ${idx + 1}</span>
+          <span>${block || 'FREE'}</span>
+        </div>
+      `).join('');
+    }
+
+    function allocateRAM(name, sizeMB) {
+      let freeSlots = ramGrid.map((val, idx) => val === null ? idx : -1).filter(idx => idx !== -1);
+      if (freeSlots.length < sizeMB) {
+        showToast('Memory Full', 'Not enough free RAM blocks available!', 'error');
+        return;
+      }
+      playAudio('success');
+      for (let i = 0; i < sizeMB; i++) {
+        ramGrid[freeSlots[i]] = name;
+      }
+      renderRAMBlocks();
+      showToast('RAM Allocated', `Allocated ${sizeMB} MB RAM for ${name}`, 'success');
+    }
+
+    function clearRAM() {
+      playAudio('eject');
+      ramGrid = Array(16).fill(null);
+      renderRAMBlocks();
+      showToast('RAM Cleared', 'All RAM blocks released.', 'info');
+    }
+
+    /* PLUG AND PLAY LAB */
+    let connectedPeripherals = [
+      { id: 'usb1', name: 'USB Flash Drive 32GB', status: 'Connected' }
+    ];
+
+    function getPnPLabHTML() {
+      return `
+        <div class="bg-slate-950 p-4 rounded-xl border border-emerald-500/30 space-y-3">
+          <div class="flex justify-between items-center border-b border-white/10 pb-2">
+            <span class="font-bold text-emerald-300 text-xs flex items-center space-x-2">
+              <i class="fa-solid fa-plug text-emerald-400"></i>
+              <span>Plug-and-Play Device Hardware Dock</span>
+            </span>
+            <div class="flex space-x-2">
+              <button onclick="plugPeripheral('Mouse')" class="px-2.5 py-1 bg-emerald-600 hover:bg-emerald-500 text-white font-bold text-xs rounded-lg">+ Plug Mouse</button>
+              <button onclick="plugPeripheral('Printer')" class="px-2.5 py-1 bg-emerald-600 hover:bg-emerald-500 text-white font-bold text-xs rounded-lg">+ Plug Printer</button>
+              <button onclick="plugPeripheral('Gamepad')" class="px-2.5 py-1 bg-emerald-600 hover:bg-emerald-500 text-white font-bold text-xs rounded-lg">+ Plug Gamepad</button>
+            </div>
+          </div>
+          <div id="pnp-list" class="space-y-2">
+            ${connectedPeripherals.map(dev => `
+              <div class="flex items-center justify-between bg-slate-900 p-2.5 rounded-lg border border-white/10">
+                <div class="flex items-center space-x-3">
+                  <i class="fa-solid fa-hard-drive text-emerald-400"></i>
+                  <span class="font-bold text-xs text-white">${dev.name}</span>
+                </div>
+                <button onclick="unplugPeripheral('${dev.id}')" class="px-3 py-1 bg-red-600 hover:bg-red-500 text-white font-bold text-xs rounded-lg flex items-center space-x-1">
+                  <i class="fa-solid fa-eject"></i>
+                  <span>Safely Unplug</span>
+                </button>
+              </div>
+            `).join('')}
+          </div>
+        </div>
+      `;
+    }
+
+    function plugPeripheral(type) {
+      playAudio('success');
+      const id = 'dev_' + Date.now();
+      connectedPeripherals.push({ id, name: `USB ${type} Device`, status: 'Connected' });
+      launchLab('pnp');
+      showToast('Hardware Detected', `OS automatically loaded driver for USB ${type}!`, 'success');
+    }
+
+    function unplugPeripheral(id) {
+      playAudio('eject');
+      connectedPeripherals = connectedPeripherals.filter(d => d.id !== id);
+      launchLab('pnp');
+      showToast('Hardware Safely Removed', 'Device driver unloaded safely.', 'info');
+    }
+
+    /* FILE EXPLORER LAB */
     let fileTree = [
       { id: 'f1', name: 'Documents', type: 'folder', items: [
-        { id: 'doc1', name: 'Homework.txt', type: 'file', content: 'Secondary 1 Computer Science Notes:\nAn Operating System manages CPU, RAM, Disk and I/O devices.' },
-        { id: 'doc2', name: 'Project_Ideas.txt', type: 'file', content: 'OS Project Idea:\nCreate an interactive OS simulator for learning!' }
+        { id: 'doc1', name: 'Homework.txt', type: 'file', content: 'Secondary 1 Computer Science Notes:\nAn Operating System manages CPU, RAM, Disk and I/O devices.' }
       ]},
-      { id: 'f2', name: 'Pictures', type: 'folder', items: [
-        { id: 'pic1', name: 'Wallpaper_Info.txt', type: 'file', content: 'Image properties:\nWidth: 1920px, Height: 1080px, Format: PNG' }
-      ]},
-      { id: 'f3', name: 'System_Logs.txt', type: 'file', content: 'OS Boot Log:\n[OK] CPU Initialized\n[OK] RAM Allocated\n[OK] File System Mounted' }
+      { id: 'f2', name: 'Pictures', type: 'folder', items: [] },
+      { id: 'doc2', name: 'System_Logs.txt', type: 'file', content: 'Boot Log:\n[OK] Kernel Loaded\n[OK] Drivers Active' }
     ];
-    let currentFolderId = null; // null = root
+    let currentFolderId = null;
     let activeOpenedFile = null;
+    let creatingItemType = 'folder';
 
     function getFileExplorerHTML() {
       return `
         <div class="flex flex-col h-full space-y-3">
-          <!-- Explorer Toolbar -->
           <div class="flex items-center justify-between bg-slate-800/80 p-2.5 rounded-xl border border-white/10">
             <div class="flex items-center space-x-2">
-              <button onclick="showCreateItemModal('folder')" class="px-3 py-1.5 bg-amber-600 hover:bg-amber-500 text-white rounded-lg text-xs font-semibold flex items-center space-x-1.5 shadow">
+              <button onclick="showCreateItemModal('folder')" class="px-3 py-1.5 bg-amber-600 hover:bg-amber-500 text-white rounded-lg text-xs font-semibold flex items-center space-x-1 shadow">
                 <i class="fa-solid fa-folder-plus"></i>
                 <span>+ New Folder</span>
               </button>
-              <button onclick="showCreateItemModal('file')" class="px-3 py-1.5 bg-sky-600 hover:bg-sky-500 text-white rounded-lg text-xs font-semibold flex items-center space-x-1.5 shadow">
+              <button onclick="showCreateItemModal('file')" class="px-3 py-1.5 bg-sky-600 hover:bg-sky-500 text-white rounded-lg text-xs font-semibold flex items-center space-x-1 shadow">
                 <i class="fa-solid fa-file-circle-plus"></i>
                 <span>+ New File</span>
               </button>
@@ -86,7 +645,6 @@
             <div class="text-xs text-slate-300 font-mono bg-slate-950/80 px-3 py-1 rounded-lg border border-white/10" id="file-explorer-path">Path: C:\\></div>
           </div>
 
-          <!-- Inline Creation / Input Panel -->
           <div id="explorer-create-panel" class="hidden bg-slate-800 p-3 rounded-xl border border-sky-500/50 flex items-center justify-between">
             <div class="flex items-center space-x-2 flex-1 mr-3">
               <span id="create-item-label" class="text-xs font-bold text-sky-300">Name:</span>
@@ -98,32 +656,23 @@
             </div>
           </div>
 
-          <!-- Main Explorer Workspace -->
-          <div class="flex-1 bg-slate-950 rounded-xl border border-white/10 p-4 overflow-auto min-h-[260px]">
-            <div id="file-items-grid" class="grid grid-cols-2 sm:grid-cols-4 gap-4">
-              <!-- Rendered files/folders -->
-            </div>
+          <div class="flex-1 bg-slate-950 rounded-xl border border-white/10 p-4 overflow-auto min-h-[180px]">
+            <div id="file-items-grid" class="grid grid-cols-2 sm:grid-cols-4 gap-4"></div>
           </div>
 
-          <!-- File Content Reader Viewer Modal (When user clicks a file to open) -->
           <div id="file-content-viewer" class="hidden bg-slate-900 border border-sky-500/50 p-3 rounded-xl space-y-2">
             <div class="flex justify-between items-center border-b border-white/10 pb-1.5">
-              <span id="file-viewer-title" class="font-bold text-xs text-sky-300 flex items-center space-x-1">
-                <i class="fa-solid fa-file-lines text-sky-400"></i>
-                <span>Document Viewer</span>
-              </span>
+              <span id="file-viewer-title" class="font-bold text-xs text-sky-300 flex items-center space-x-1">Document Viewer</span>
               <button onclick="closeFileViewer()" class="text-xs text-red-400 hover:text-red-300 font-bold px-1.5 py-0.5 rounded bg-slate-800">Close ✕</button>
             </div>
             <textarea id="file-viewer-body" class="w-full bg-slate-950 text-emerald-400 font-mono text-xs p-2.5 rounded-lg border border-white/10 h-24 focus:outline-none resize-none"></textarea>
             <div class="flex justify-end">
-              <button onclick="saveActiveFileContent()" class="px-3 py-1 bg-sky-600 hover:bg-sky-500 text-white text-xs font-bold rounded-lg">Save File Changes</button>
+              <button onclick="saveActiveFileContent()" class="px-3 py-1 bg-sky-600 hover:bg-sky-500 text-white text-xs font-bold rounded-lg">Save Changes</button>
             </div>
           </div>
         </div>
       `;
     }
-
-    let creatingItemType = 'folder';
 
     function showCreateItemModal(type) {
       creatingItemType = type;
@@ -189,15 +738,11 @@
       let html = '';
       if (currentFolderId) {
         html += `
-          <div onclick="navigateFolder(null)" class="flex flex-col items-center justify-center p-3 bg-slate-900/90 border border-white/10 hover:border-sky-400 rounded-xl cursor-pointer transition-all hover:bg-slate-800">
+          <div onclick="navigateFolder(null)" class="flex flex-col items-center justify-center p-3 bg-slate-900 border border-white/10 hover:border-sky-400 rounded-xl cursor-pointer transition-all hover:bg-slate-800">
             <i class="fa-solid fa-arrow-turn-up text-sky-400 text-3xl mb-1"></i>
-            <span class="text-xs font-bold text-sky-200">.. (Up to Root)</span>
+            <span class="text-xs font-bold text-sky-200">.. (Up)</span>
           </div>
         `;
-      }
-
-      if (itemsToRender.length === 0) {
-        html += `<div class="col-span-4 text-center py-8 text-xs text-slate-500 italic">Folder is empty. Click "+ New Folder" or "+ New File" above!</div>`;
       }
 
       itemsToRender.forEach(item => {
@@ -205,11 +750,10 @@
           html += `
             <div class="group relative flex flex-col items-center justify-center p-3 bg-slate-900 border border-white/10 hover:bg-slate-800 hover:border-amber-400 rounded-xl cursor-pointer transition-all shadow">
               <div onclick="navigateFolder('${item.id}')" class="flex flex-col items-center w-full">
-                <i class="fa-solid fa-folder text-amber-400 text-4xl mb-1 group-hover:scale-105 transition-transform"></i>
+                <i class="fa-solid fa-folder text-amber-400 text-4xl mb-1"></i>
                 <span class="text-xs text-slate-100 font-semibold text-center truncate w-24">${item.name}</span>
-                <span class="text-[9px] text-amber-300/80 font-mono mt-0.5">Click to Open</span>
               </div>
-              <button onclick="deleteExplorerItem('${item.id}', true)" class="absolute top-1 right-1 opacity-80 group-hover:opacity-100 p-1 text-red-400 hover:text-red-300 transition-opacity" title="Delete Folder">
+              <button onclick="deleteExplorerItem('${item.id}', true)" class="absolute top-1 right-1 opacity-80 p-1 text-red-400 hover:text-red-300">
                 <i class="fa-solid fa-trash-can text-xs"></i>
               </button>
             </div>
@@ -218,11 +762,10 @@
           html += `
             <div class="group relative flex flex-col items-center justify-center p-3 bg-slate-900 border border-white/10 hover:bg-slate-800 hover:border-sky-400 rounded-xl cursor-pointer transition-all shadow">
               <div onclick="openFileViewer('${item.id}')" class="flex flex-col items-center w-full">
-                <i class="fa-solid fa-file-lines text-sky-400 text-4xl mb-1 group-hover:scale-105 transition-transform"></i>
+                <i class="fa-solid fa-file-lines text-sky-400 text-4xl mb-1"></i>
                 <span class="text-xs text-slate-100 font-semibold text-center truncate w-24">${item.name}</span>
-                <span class="text-[9px] text-sky-300/80 font-mono mt-0.5">Click to Read/Edit</span>
               </div>
-              <button onclick="deleteExplorerItem('${item.id}', false)" class="absolute top-1 right-1 opacity-80 group-hover:opacity-100 p-1 text-red-400 hover:text-red-300 transition-opacity" title="Delete File">
+              <button onclick="deleteExplorerItem('${item.id}', false)" class="absolute top-1 right-1 opacity-80 p-1 text-red-400 hover:text-red-300">
                 <i class="fa-solid fa-trash-can text-xs"></i>
               </button>
             </div>
@@ -230,7 +773,7 @@
         }
       });
 
-      grid.innerHTML = html;
+      grid.innerHTML = html || `<div class="col-span-4 text-center text-xs text-slate-500">Folder is empty.</div>`;
     }
 
     function navigateFolder(folderId) {
@@ -255,7 +798,6 @@
         title.innerHTML = `<i class="fa-solid fa-file-lines text-sky-400 mr-1"></i> Open File: <span class="text-white">${file.name}</span>`;
         body.value = file.content || '';
         viewer.classList.remove('hidden');
-        showToast('File Opened', `Opened file "${file.name}" for reading and editing.`, 'info');
       }
     }
 
@@ -285,27 +827,25 @@
       }
       closeFileViewer();
       renderFileExplorer();
-      showToast('Item Deleted', `${isFolder ? 'Folder' : 'File'} removed from storage.`, 'info');
+      showToast('Item Deleted', `Removed from storage.`, 'info');
     }
-<!-- ... existing code ... -->
-    /* LAB 5: DISK MANAGEMENT (PARTITIONS & FORMATTING) */
-    let cPartitionSize = 60; // Percent
+
+    /* DISK MANAGEMENT LAB */
+    let cPartitionSize = 60;
     function getDiskLabHTML() {
       return `
         <div class="space-y-4">
           <div class="bg-slate-800/80 p-3 rounded-xl border border-white/10">
             <h3 class="font-bold text-pink-300 text-xs">HDD / SSD Partition & Format Manager</h3>
-            <p class="text-[11px] text-slate-300">Drag the slider to re-allocate storage space between primary <b>System Drive C: (OS + Data)</b> and secondary <b>Data Drive D: (Data)</b>.</p>
+            <p class="text-[11px] text-slate-300">Drag slider to allocate storage between <b>System Drive C: (OS + Data)</b> and <b>Data Drive D: (Data)</b>.</p>
           </div>
 
-          <!-- Partition Slider -->
           <div class="bg-slate-950 p-4 rounded-xl border border-white/10 space-y-3">
             <div class="flex justify-between text-xs font-semibold">
               <span class="text-sky-400">System Partition C: (OS + Data) - <span id="c-size-txt">300 GB</span></span>
               <span class="text-emerald-400">Data Partition D: (Data) - <span id="d-size-txt">200 GB</span></span>
             </div>
 
-            <!-- Visual Disk Bar -->
             <div class="h-9 w-full bg-slate-800 rounded-lg overflow-hidden flex p-1 border border-white/10">
               <div id="partition-bar-c" class="bg-sky-600 h-full rounded-l flex items-center justify-center font-bold text-[11px] text-white transition-all" style="width: 60%;">Drive C: (OS + Data)</div>
               <div id="partition-bar-d" class="bg-emerald-600 h-full rounded-r flex items-center justify-center font-bold text-[11px] text-white transition-all" style="width: 40%;">Drive D: (Data)</div>
@@ -314,12 +854,11 @@
             <input type="range" min="20" max="80" value="60" class="w-full cursor-pointer accent-pink-500" oninput="updateDiskPartitions(this.value)" />
           </div>
 
-          <!-- Formatting Section -->
           <div class="grid grid-cols-2 gap-3">
             <div class="bg-slate-950 p-3 rounded-xl border border-sky-500/30 flex flex-col justify-between">
               <div>
                 <div class="font-bold text-sky-400 text-xs">Drive C: (OS + Data)</div>
-                <div class="text-[10px] text-slate-400 mt-1">Primary Partition containing Operating System files and System Data.</div>
+                <div class="text-[10px] text-slate-400 mt-1">Primary Partition containing Operating System files and Data.</div>
               </div>
               <button onclick="formatDrive('C: (OS + Data)')" class="mt-3 px-3 py-1.5 bg-red-600/80 hover:bg-red-600 text-white text-xs font-bold rounded-lg flex items-center justify-center space-x-1 shadow">
                 <i class="fa-solid fa-broom"></i>
@@ -330,7 +869,7 @@
             <div class="bg-slate-950 p-3 rounded-xl border border-emerald-500/30 flex flex-col justify-between">
               <div>
                 <div class="font-bold text-emerald-400 text-xs">Drive D: (Data)</div>
-                <div class="text-[10px] text-slate-400 mt-1">Secondary Storage Partition dedicated for User Data and Documents.</div>
+                <div class="text-[10px] text-slate-400 mt-1">Secondary Storage Partition dedicated for User Files.</div>
               </div>
               <button onclick="formatDrive('D: (Data)')" class="mt-3 px-3 py-1.5 bg-red-600/80 hover:bg-red-600 text-white text-xs font-bold rounded-lg flex items-center justify-center space-x-1 shadow">
                 <i class="fa-solid fa-broom"></i>
@@ -364,16 +903,60 @@
       showToast('Formatting Partition...', `Formatting ${driveName}...`, 'info');
       setTimeout(() => {
         showToast('Format Complete', `Drive ${driveName} successfully formatted.`, 'success');
-      }, 1200);
+      }, 1000);
     }
-<!-- ... existing code ... -->
-    /* LAB 7: USER MANAGEMENT & ACCESS RIGHTS (ADMIN ADD / DELETE USER) */
+
+    /* UI CUSTOMIZER FIX: WORKING THEMES */
+    function getUICustomizerHTML() {
+      return `
+        <div class="bg-slate-950 p-4 rounded-xl border border-yellow-500/30 space-y-3">
+          <div class="font-bold text-yellow-300 text-xs flex items-center space-x-2">
+            <i class="fa-solid fa-palette text-yellow-400"></i>
+            <span>Desktop Theme & Appearance Customizer</span>
+          </div>
+          <p class="text-[11px] text-slate-300">Click any theme color below to dynamically transform the desktop wallpaper, system glass panels, and taskbar colors live!</p>
+          <div class="grid grid-cols-2 sm:grid-cols-3 gap-3">
+            <button onclick="setTheme('indigo')" class="p-3 bg-indigo-950 hover:bg-indigo-900 border border-indigo-500 rounded-xl font-bold text-xs text-indigo-200 flex flex-col items-center space-y-1 shadow">
+              <div class="w-6 h-6 rounded-full bg-gradient-to-br from-indigo-500 to-slate-900 border border-white/20"></div>
+              <span>Indigo Midnight</span>
+            </button>
+            <button onclick="setTheme('emerald')" class="p-3 bg-emerald-950 hover:bg-emerald-900 border border-emerald-500 rounded-xl font-bold text-xs text-emerald-200 flex flex-col items-center space-y-1 shadow">
+              <div class="w-6 h-6 rounded-full bg-gradient-to-br from-emerald-500 to-slate-900 border border-white/20"></div>
+              <span>Emerald Forest</span>
+            </button>
+            <button onclick="setTheme('purple')" class="p-3 bg-purple-950 hover:bg-purple-900 border border-purple-500 rounded-xl font-bold text-xs text-purple-200 flex flex-col items-center space-y-1 shadow">
+              <div class="w-6 h-6 rounded-full bg-gradient-to-br from-purple-500 to-slate-900 border border-white/20"></div>
+              <span>Purple Violet</span>
+            </button>
+            <button onclick="setTheme('cyberpunk')" class="p-3 bg-pink-950 hover:bg-pink-900 border border-pink-500 rounded-xl font-bold text-xs text-pink-200 flex flex-col items-center space-y-1 shadow">
+              <div class="w-6 h-6 rounded-full bg-gradient-to-br from-pink-500 to-rose-950 border border-white/20"></div>
+              <span>Cyberpunk Neon</span>
+            </button>
+            <button onclick="setTheme('amber')" class="p-3 bg-amber-950 hover:bg-amber-900 border border-amber-500 rounded-xl font-bold text-xs text-amber-200 flex flex-col items-center space-y-1 shadow">
+              <div class="w-6 h-6 rounded-full bg-gradient-to-br from-amber-500 to-amber-950 border border-white/20"></div>
+              <span>Amber Bronze</span>
+            </button>
+          </div>
+        </div>
+      `;
+    }
+
+    function setTheme(themeName) {
+      playAudio('success');
+      currentThemeName = themeName;
+      const body = document.getElementById('app-body');
+      if (body) {
+        body.className = `h-screen w-screen theme-${themeName} text-slate-100 flex flex-col justify-between relative overflow-hidden select-none`;
+      }
+      showToast('Theme Applied', `Switched OS background theme to ${themeName.toUpperCase()}!`, 'success');
+    }
+
+    /* USER MANAGEMENT LAB */
     let osUsers = [
       { id: 'u1', name: 'Admin Student', role: 'Administrator' },
-      { id: 'u2', name: 'John Doe', role: 'Standard User' },
-      { id: 'u3', name: 'Guest User', role: 'Guest' }
+      { id: 'u2', name: 'John Doe', role: 'Standard User' }
     ];
-    let currentAdminMode = true; // Simulating Admin privilege mode
+    let currentAdminMode = true;
 
     function getUserManagerHTML() {
       return `
@@ -381,39 +964,25 @@
           <div class="bg-slate-800/80 p-3 rounded-xl border border-white/10 flex justify-between items-center">
             <div>
               <div class="text-xs font-bold text-indigo-300">User Account Administration Panel</div>
-              <div class="text-[10px] text-slate-300">As an <b>Administrator</b>, you have complete authority to <b>Add Users</b> and <b>Delete Users</b>.</div>
+              <div class="text-[10px] text-slate-300">As an <b>Administrator</b>, you can <b>Add Users</b> and <b>Delete Users</b>.</div>
             </div>
-            <div class="flex items-center space-x-2">
-              <button onclick="toggleAdminRoleState()" id="admin-toggle-btn" class="px-2.5 py-1 bg-indigo-600 text-white rounded-lg text-xs font-bold shadow">Mode: Administrator</button>
-            </div>
+            <button onclick="toggleAdminRoleState()" id="admin-toggle-btn" class="px-2.5 py-1 bg-indigo-600 text-white rounded-lg text-xs font-bold shadow">Mode: Administrator</button>
           </div>
 
-          <!-- Add User Form Area -->
           <div class="bg-slate-950 p-3 rounded-xl border border-indigo-500/30 space-y-2">
-            <div class="text-xs font-bold text-indigo-300 flex items-center space-x-1">
-              <i class="fa-solid fa-user-plus text-indigo-400"></i>
-              <span>Add New System User</span>
-            </div>
+            <div class="text-xs font-bold text-indigo-300">Add New User Account</div>
             <div class="flex items-center space-x-2">
-              <input type="text" id="new-username-input" placeholder="Enter username (e.g., Alex_Smith)" class="flex-1 bg-slate-900 border border-white/20 rounded-lg px-3 py-1.5 text-xs text-white focus:outline-none focus:border-indigo-400" />
+              <input type="text" id="new-username-input" placeholder="Enter username..." class="flex-1 bg-slate-900 border border-white/20 rounded-lg px-3 py-1.5 text-xs text-white focus:outline-none" />
               <select id="new-user-role-select" class="bg-slate-900 border border-white/20 rounded-lg px-2 py-1.5 text-xs text-slate-200">
                 <option value="Standard User">Standard User</option>
                 <option value="Administrator">Administrator</option>
-                <option value="Guest">Guest</option>
               </select>
-              <button onclick="adminAddUser()" class="px-4 py-1.5 bg-indigo-600 hover:bg-indigo-500 text-white rounded-lg text-xs font-bold shadow">+ Add User</button>
+              <button onclick="adminAddUser()" class="px-4 py-1.5 bg-indigo-600 hover:bg-indigo-500 text-white rounded-lg text-xs font-bold">+ Add User</button>
             </div>
           </div>
 
-          <!-- Registered Users List -->
           <div class="bg-slate-950 p-3 rounded-xl border border-white/10">
-            <div class="text-xs font-bold text-slate-300 mb-2 flex justify-between items-center">
-              <span>Current User Accounts</span>
-              <span class="text-[10px] text-slate-500" id="user-count-badge">Total Accounts: 3</span>
-            </div>
-            <div id="users-list-container" class="space-y-2">
-              <!-- Rendered User Accounts -->
-            </div>
+            <div id="users-list-container" class="space-y-2"></div>
           </div>
         </div>
       `;
@@ -421,33 +990,21 @@
 
     function renderUserList() {
       const container = document.getElementById('users-list-container');
-      const badge = document.getElementById('user-count-badge');
       if (!container) return;
-
-      if (badge) badge.innerText = `Total Accounts: ${osUsers.length}`;
-
       container.innerHTML = osUsers.map(u => `
-        <div class="flex items-center justify-between bg-slate-800 px-3 py-2 rounded-xl border border-white/5 hover:border-white/20 transition-all">
+        <div class="flex items-center justify-between bg-slate-800 px-3 py-2 rounded-xl border border-white/5">
           <div class="flex items-center space-x-3">
-            <div class="w-8 h-8 rounded-full ${u.role==='Administrator'?'bg-indigo-600':'bg-slate-600'} flex items-center justify-center text-white font-bold text-xs shadow">
+            <div class="w-7 h-7 rounded-full ${u.role==='Administrator'?'bg-indigo-600':'bg-slate-600'} flex items-center justify-center text-white text-xs font-bold">
               <i class="fa-solid ${u.role==='Administrator'?'fa-user-shield':'fa-user'}"></i>
             </div>
             <div>
               <div class="font-bold text-xs text-slate-100">${u.name}</div>
-              <div class="text-[10px] ${u.role==='Administrator'?'text-indigo-400':'text-slate-400'} font-medium">${u.role}</div>
+              <div class="text-[10px] text-slate-400">${u.role}</div>
             </div>
           </div>
-
-          <div class="flex items-center space-x-2">
-            ${u.name === 'Admin Student' ? `
-              <span class="text-[10px] bg-indigo-950 text-indigo-300 px-2 py-0.5 rounded font-mono">Main Admin</span>
-            ` : `
-              <button onclick="adminDeleteUser('${u.id}')" class="px-2.5 py-1 bg-red-600/80 hover:bg-red-600 text-white rounded-lg text-xs font-bold flex items-center space-x-1 shadow" title="Delete User Account">
-                <i class="fa-solid fa-trash-can text-[10px]"></i>
-                <span>Delete User</span>
-              </button>
-            `}
-          </div>
+          ${u.name === 'Admin Student' ? '<span class="text-[10px] bg-indigo-950 text-indigo-300 px-2 py-0.5 rounded">Main Admin</span>' : `
+            <button onclick="adminDeleteUser('${u.id}')" class="px-2.5 py-1 bg-red-600 hover:bg-red-500 text-white rounded text-xs font-bold">Delete</button>
+          `}
         </div>
       `).join('');
     }
@@ -456,23 +1013,20 @@
       currentAdminMode = !currentAdminMode;
       const btn = document.getElementById('admin-toggle-btn');
       if (btn) {
-        btn.className = currentAdminMode ? 'px-2.5 py-1 bg-indigo-600 text-white rounded-lg text-xs font-bold shadow' : 'px-2.5 py-1 bg-amber-600 text-white rounded-lg text-xs font-bold shadow';
+        btn.className = currentAdminMode ? 'px-2.5 py-1 bg-indigo-600 text-white rounded-lg text-xs font-bold' : 'px-2.5 py-1 bg-amber-600 text-white rounded-lg text-xs font-bold';
         btn.innerText = currentAdminMode ? 'Mode: Administrator' : 'Mode: Standard User';
       }
-      showToast('Role Switched', `Simulating access privileges as ${currentAdminMode ? 'Administrator' : 'Standard User'}.`, 'info');
+      showToast('Role Switched', `Simulating privileges as ${currentAdminMode ? 'Administrator' : 'Standard User'}.`, 'info');
     }
 
     function adminAddUser() {
       if (!currentAdminMode) {
-        showToast('Access Denied', 'Standard Users cannot add new accounts! Switch to Administrator mode.', 'error');
+        showToast('Access Denied', 'Standard Users cannot add accounts! Switch to Admin mode.', 'error');
         return;
       }
       const input = document.getElementById('new-username-input');
       const select = document.getElementById('new-user-role-select');
-      if (!input || !input.value.trim()) {
-        showToast('Input Required', 'Please type a user account name.', 'error');
-        return;
-      }
+      if (!input || !input.value.trim()) return;
 
       const name = input.value.trim();
       const role = select ? select.value : 'Standard User';
@@ -480,99 +1034,138 @@
       input.value = '';
       playAudio('success');
       renderUserList();
-      showToast('User Created', `Administrator added new user "${name}" (${role}).`, 'success');
+      showToast('User Created', `Administrator added new user "${name}".`, 'success');
     }
 
     function adminDeleteUser(userId) {
       if (!currentAdminMode) {
-        showToast('Access Denied', 'Standard Users cannot delete accounts! Switch to Administrator mode.', 'error');
+        showToast('Access Denied', 'Standard Users cannot delete accounts! Switch to Admin mode.', 'error');
         return;
       }
-
-      const userToDelete = osUsers.find(u => u.id === userId);
       osUsers = osUsers.filter(u => u.id !== userId);
       playAudio('eject');
       renderUserList();
-      showToast('User Deleted', `Administrator deleted account "${userToDelete ? userToDelete.name : 'User'}".`, 'info');
+      showToast('User Deleted', `Account removed by Administrator.`, 'info');
     }
-<!-- ... existing code ... -->
-    /* FOLDER 2: USER OF OS (SINGLE-USER VS MULTI-USER DEMO) */
+
+    /* MULTITASKING LAB */
+    function getMultitaskingLabHTML() {
+      return `
+        <div class="bg-slate-950 p-4 rounded-xl border border-teal-500/30 space-y-3">
+          <div class="text-xs font-bold text-teal-300">Concurrent Multitasking Application Engine</div>
+          <p class="text-[11px] text-slate-300">An Operating System enables CPU core switching so multiple programs run simultaneously!</p>
+          <div class="grid grid-cols-2 gap-3">
+            <div class="bg-slate-900 p-3 rounded-lg border border-white/10 flex items-center justify-between">
+              <span class="text-xs font-bold text-white">App 1: Live Counter Task</span>
+              <span id="multitask-counter" class="font-mono text-xs text-teal-400 font-bold">0</span>
+            </div>
+            <div class="bg-slate-900 p-3 rounded-lg border border-white/10 flex items-center justify-between">
+              <span class="text-xs font-bold text-white">App 2: Background Clock Task</span>
+              <span id="multitask-time" class="font-mono text-xs text-sky-400 font-bold">Active</span>
+            </div>
+          </div>
+        </div>
+      `;
+    }
+
+    let mtCounter = 0;
+    setInterval(() => {
+      mtCounter++;
+      const c = document.getElementById('multitask-counter');
+      const t = document.getElementById('multitask-time');
+      if (c) c.innerText = mtCounter;
+      if (t) t.innerText = new Date().toLocaleTimeString();
+    }, 1000);
+
+    /* USER OF OS VIRTUALIZATION (Single-User vs Multi-User OS) */
+    let activeSingleUserSession = 'Alice';
+    let singleUserActivityLogs = ["Alice logged into Console 0."];
+
+    let multiUserSessions = [
+      { user: 'Alice', protocol: 'SSH Terminal (Port 22)', status: 'Active', command: 'python train_model.py', cpu: '24%' },
+      { user: 'Bob', protocol: 'Remote Desktop RDP (Port 3389)', status: 'Active', command: 'rendering_3d_mesh.exe', cpu: '42%' },
+      { user: 'Charlie', protocol: 'Web Console Session', status: 'Active', command: 'db_backup.sh --full', cpu: '18%' }
+    ];
+
     function getUserTypesFolderHTML() {
       return `
         <div class="space-y-4">
-          <!-- Conceptual Educational Banner -->
-          <div class="bg-sky-500/10 border border-sky-500/30 p-3.5 rounded-xl">
-            <div class="flex items-center space-x-2 text-sky-300 font-bold text-xs mb-1">
-              <i class="fa-solid fa-users-gear text-base"></i>
-              <span>CLASSIFICATION 1: USER CONCURRENCY (User of OS)</span>
+          <div class="bg-sky-500/10 border border-sky-500/30 p-3 rounded-xl flex items-center justify-between">
+            <div>
+              <div class="text-xs font-bold text-sky-300 mb-0.5">USER OS VIRTUALIZATION (Single-User vs Multi-User OS)</div>
+              <p class="text-[11px] text-slate-300"><b>Single-User OS</b> allows only 1 user to log in at a time. <b>Multi-User OS</b> supports many users logged in simultaneously!</p>
             </div>
-            <p class="text-[11px] text-slate-300 leading-relaxed">
-              This topic specifically classifies Operating Systems by <b>HOW MANY USERS can log in and run processes at the EXACT same time</b> (Single-User vs Multi-User OS).
-            </p>
           </div>
 
-          <!-- Toggle Tabs -->
           <div class="flex space-x-2 border-b border-white/10 pb-2">
-            <button onclick="switchUserTypeTab('single')" id="tab-btn-single" class="px-4 py-2 bg-sky-600 text-white rounded-xl font-bold text-xs shadow">1. Single-User OS (e.g. Windows 11 Home)</button>
-            <button onclick="switchUserTypeTab('multi')" id="tab-btn-multi" class="px-4 py-2 bg-slate-800 text-slate-400 hover:bg-slate-700 rounded-xl font-bold text-xs">2. Multi-User OS (e.g. Linux / Windows Server)</button>
+            <button onclick="switchUserTypeTab('single')" id="tab-btn-single" class="px-4 py-2 bg-sky-600 text-white rounded-xl font-bold text-xs shadow">1. Single-User OS Virtualization</button>
+            <button onclick="switchUserTypeTab('multi')" id="tab-btn-multi" class="px-4 py-2 bg-slate-800 text-slate-400 hover:bg-slate-700 rounded-xl font-bold text-xs">2. Multi-User OS Virtualization</button>
           </div>
 
-          <!-- Single-User View -->
+          <!-- SINGLE USER VIRTUAL WORKSTATION -->
           <div id="view-single-user" class="space-y-3">
-            <div class="bg-slate-800/80 p-3 rounded-xl border border-white/10">
-              <h3 class="font-bold text-sky-300 text-xs">Single-User Operating System</h3>
-              <p class="text-[11px] text-slate-300">Only <b>1 person</b> can actively use the system hardware and desktop interface at any given time.</p>
-            </div>
-            <div class="bg-slate-950 p-6 rounded-xl border border-white/10 flex flex-col items-center text-center space-y-3">
-              <div class="w-16 h-16 rounded-full bg-sky-600 flex items-center justify-center text-white text-2xl font-bold shadow-lg">U1</div>
-              <div>
-                <div class="font-bold text-sm text-slate-100">User Alice (Active Desktop Session)</div>
-                <div class="text-xs text-sky-400">● 1 Active Console User at a time</div>
+            <div class="bg-slate-950 p-4 rounded-xl border border-sky-500/30 space-y-3">
+              <div class="flex items-center justify-between border-b border-white/10 pb-2">
+                <span class="text-xs font-bold text-sky-300 flex items-center space-x-2">
+                  <i class="fa-solid fa-desktop"></i>
+                  <span>Single-User Workstation Console (e.g., MS-DOS / PC Console)</span>
+                </span>
+                <span class="text-[10px] font-mono bg-red-500/20 text-red-300 px-2 py-0.5 rounded border border-red-500/30">Concurrency Limit: 1 User Max</span>
               </div>
-              <button onclick="showToast('Single-User Constraint', 'In a Single-User OS, logging in as Bob locks Alice out of screen control!', 'info')" class="px-4 py-1.5 bg-slate-800 hover:bg-slate-700 border border-white/10 rounded-lg text-xs font-semibold">Switch User (Locks Current Screen)</button>
+
+              <div class="grid grid-cols-3 gap-2">
+                <button onclick="attemptSingleUserLogin('Alice')" class="p-2.5 rounded-xl border ${activeSingleUserSession==='Alice'?'bg-sky-600 border-sky-300 text-white font-bold':'bg-slate-900 border-white/10 text-slate-400'} text-xs">
+                  <i class="fa-solid fa-user mr-1"></i> Log in as Alice
+                </button>
+                <button onclick="attemptSingleUserLogin('Bob')" class="p-2.5 rounded-xl border ${activeSingleUserSession==='Bob'?'bg-sky-600 border-sky-300 text-white font-bold':'bg-slate-900 border-white/10 text-slate-400'} text-xs">
+                  <i class="fa-solid fa-user mr-1"></i> Log in as Bob
+                </button>
+                <button onclick="attemptSingleUserLogin('Charlie')" class="p-2.5 rounded-xl border ${activeSingleUserSession==='Charlie'?'bg-sky-600 border-sky-300 text-white font-bold':'bg-slate-900 border-white/10 text-slate-400'} text-xs">
+                  <i class="fa-solid fa-user mr-1"></i> Log in as Charlie
+                </button>
+              </div>
+
+              <div class="bg-slate-900 p-3 rounded-lg border border-white/10 space-y-2">
+                <div class="flex justify-between items-center text-xs">
+                  <span class="text-slate-300 font-semibold">Active Session Console:</span>
+                  <span class="font-mono text-emerald-400 font-bold bg-emerald-950 px-2 py-0.5 rounded border border-emerald-500/30">User: ${activeSingleUserSession} (ACTIVE)</span>
+                </div>
+                <div id="single-user-log-box" class="bg-black font-mono text-[10px] text-sky-400 p-2.5 rounded border border-white/10 h-24 overflow-y-auto whitespace-pre-wrap"></div>
+              </div>
             </div>
           </div>
 
-          <!-- Multi-User View -->
+          <!-- MULTI USER VIRTUAL ENTERPRISE SERVER -->
           <div id="view-multi-user" class="hidden space-y-3">
-            <div class="bg-slate-800/80 p-3 rounded-xl border border-white/10">
-              <h3 class="font-bold text-emerald-300 text-xs">Multi-User Operating System</h3>
-              <p class="text-[11px] text-slate-300"><b>Multiple users</b> can log in simultaneously over a network, running separate isolated programs without blocking each other.</p>
-            </div>
-
-            <!-- 3 Simultaneous Remote Desktop / Terminal Windows -->
-            <div class="grid grid-cols-1 md:grid-cols-3 gap-3">
-              <div class="bg-slate-950 p-3 rounded-xl border border-emerald-500/40 space-y-2 shadow">
-                <div class="flex justify-between items-center text-[11px] font-bold text-emerald-400 border-b border-white/10 pb-1">
-                  <span>User A (Remote SSH)</span>
-                  <span class="text-[9px] bg-emerald-950 text-emerald-300 px-1.5 py-0.5 rounded">Active</span>
-                </div>
-                <div class="font-mono text-[10px] text-slate-300 space-y-1 bg-slate-900 p-2 rounded">
-                  <div>user_a@server:~$ python train_ai.py</div>
-                  <div class="text-emerald-400">[Executing AI Training Task]</div>
-                </div>
+            <div class="bg-slate-950 p-4 rounded-xl border border-emerald-500/30 space-y-3">
+              <div class="flex items-center justify-between border-b border-white/10 pb-2">
+                <span class="text-xs font-bold text-emerald-300 flex items-center space-x-2">
+                  <i class="fa-solid fa-server"></i>
+                  <span>Multi-User Server Node (e.g., Linux / Unix Server)</span>
+                </span>
+                <span class="text-[10px] font-mono bg-emerald-500/20 text-emerald-300 px-2 py-0.5 rounded border border-emerald-500/30">Concurrency: 3 Users Simultaneous</span>
               </div>
 
-              <div class="bg-slate-950 p-3 rounded-xl border border-sky-500/40 space-y-2 shadow">
-                <div class="flex justify-between items-center text-[11px] font-bold text-sky-400 border-b border-white/10 pb-1">
-                  <span>User B (Remote Desktop)</span>
-                  <span class="text-[9px] bg-sky-950 text-sky-300 px-1.5 py-0.5 rounded">Active</span>
-                </div>
-                <div class="font-mono text-[10px] text-slate-300 space-y-1 bg-slate-900 p-2 rounded">
-                  <div>user_b@server:~$ backup_db.sh</div>
-                  <div class="text-sky-400">[Backing up Database...]</div>
-                </div>
+              <div class="grid grid-cols-1 md:grid-cols-3 gap-3">
+                ${multiUserSessions.map(s => `
+                  <div class="bg-slate-900 p-3 rounded-xl border border-emerald-500/30 space-y-2">
+                    <div class="flex justify-between items-center border-b border-white/10 pb-1">
+                      <span class="font-bold text-xs text-emerald-300"><i class="fa-solid fa-user-gear mr-1"></i> ${s.user}</span>
+                      <span class="text-[9px] bg-emerald-950 text-emerald-400 px-1.5 py-0.5 rounded font-mono">ONLINE</span>
+                    </div>
+                    <div class="text-[10px] text-slate-300 font-mono">${s.protocol}</div>
+                    <div class="text-[10px] text-slate-400 font-mono bg-black p-1.5 rounded truncate">task: ${s.command}</div>
+                    <div class="flex justify-between text-[10px] text-emerald-400 font-mono">
+                      <span>CPU Share: ${s.cpu}</span>
+                      <button onclick="runMultiUserTask('${s.user}')" class="px-2 py-0.5 bg-emerald-700 hover:bg-emerald-600 text-white rounded text-[9px] font-bold">Run Task</button>
+                    </div>
+                  </div>
+                `).join('')}
               </div>
 
-              <div class="bg-slate-950 p-3 rounded-xl border border-purple-500/40 space-y-2 shadow">
-                <div class="flex justify-between items-center text-[11px] font-bold text-purple-400 border-b border-white/10 pb-1">
-                  <span>User C (Remote Web)</span>
-                  <span class="text-[9px] bg-purple-950 text-purple-300 px-1.5 py-0.5 rounded">Active</span>
-                </div>
-                <div class="font-mono text-[10px] text-slate-300 space-y-1 bg-slate-900 p-2 rounded">
-                  <div>user_c@server:~$ nginx -s reload</div>
-                  <div class="text-purple-400">[Managing Web Services]</div>
-                </div>
+              <div class="bg-slate-900 p-2.5 rounded-lg border border-white/10 flex justify-between items-center text-xs">
+                <span class="text-slate-300 font-medium">Shared OS Kernel & CPU Pool:</span>
+                <span class="font-mono text-emerald-400 font-bold">3 Users Active Simultaneously (No Lockouts!)</span>
               </div>
             </div>
           </div>
@@ -592,6 +1185,7 @@
         btnMulti.className = 'px-4 py-2 bg-slate-800 text-slate-400 hover:bg-slate-700 rounded-xl font-bold text-xs';
         viewSingle.classList.remove('hidden');
         viewMulti.classList.add('hidden');
+        renderSingleUserLogs();
       } else {
         btnMulti.className = 'px-4 py-2 bg-emerald-600 text-white rounded-xl font-bold text-xs shadow';
         btnSingle.className = 'px-4 py-2 bg-slate-800 text-slate-400 hover:bg-slate-700 rounded-xl font-bold text-xs';
@@ -599,95 +1193,163 @@
         viewSingle.classList.add('hidden');
       }
     }
-<!-- ... existing code ... -->
-    /* FOLDER 3: PURPOSE OF OS (HARDWARE DOMAIN & PLATFORM CATEGORIES) */
+
+    function attemptSingleUserLogin(newUser) {
+      playAudio('eject');
+      if (newUser === activeSingleUserSession) {
+        showToast('Already Logged In', `${newUser} is currently using the console.`, 'info');
+        return;
+      }
+
+      const prevUser = activeSingleUserSession;
+      activeSingleUserSession = newUser;
+      singleUserActivityLogs.push(`[SYSTEM LOCKOUT]: Single-user OS forcefully terminated ${prevUser}'s session!`);
+      singleUserActivityLogs.push(`[SESSION START]: ${newUser} logged in and took total control of screen console.`);
+
+      renderFolderContent(2);
+      renderSingleUserLogs();
+      showToast('Single-User OS Limit!', `Logging in ${newUser} disconnected ${prevUser}. Only 1 active user supported!`, 'error');
+    }
+
+    function renderSingleUserLogs() {
+      const logBox = document.getElementById('single-user-log-box');
+      if (logBox) {
+        logBox.innerText = singleUserActivityLogs.join('\n');
+        logBox.scrollTop = logBox.scrollHeight;
+      }
+    }
+
+    function runMultiUserTask(user) {
+      playAudio('success');
+      const target = multiUserSessions.find(s => s.user === user);
+      if (target) {
+        target.cpu = `${Math.floor(Math.random() * 30 + 15)}%`;
+        renderFolderContent(2);
+        switchUserTypeTab('multi');
+        showToast('Multi-User Task Dispatched', `Executed concurrent background job for ${user}!`, 'success');
+      }
+    }
+
+    /* PURPOSE OF OS VIRTUALIZATION: REAL DESKTOP COMPUTER SETUP */
+    let desktopVirtualApps = [
+      { id: 'code', name: 'IDE Code Editor', icon: 'fa-code', color: 'text-sky-400', active: true },
+      { id: 'browser', name: 'Web Browser', icon: 'fa-globe', color: 'text-amber-400', active: false },
+      { id: 'paint', name: 'Paint App', icon: 'fa-palette', color: 'text-pink-400', active: false }
+    ];
+    let pcGpuTurboMode = false;
+    let pcRefreshRate = 60;
+
     function getPurposeFolderHTML() {
       return `
         <div class="space-y-4">
-          <!-- Conceptual Educational Banner -->
-          <div class="bg-emerald-500/10 border border-emerald-500/30 p-3.5 rounded-xl">
-            <div class="flex items-center space-x-2 text-emerald-300 font-bold text-xs mb-1">
-              <i class="fa-solid fa-server text-base"></i>
-              <span>CLASSIFICATION 2: SYSTEM PURPOSE & HARDWARE PLATFORM (Purpose of OS)</span>
+          <div class="bg-emerald-500/10 border border-emerald-500/30 p-3 rounded-xl flex justify-between items-center">
+            <div>
+              <div class="text-xs font-bold text-emerald-300 mb-0.5">SYSTEM PURPOSE & PLATFORM VIRTUALIZATION</div>
+              <p class="text-[11px] text-slate-300">Classifies Operating Systems by <b>WHAT HARDWARE DEVICE</b> it runs on (Desktop PC vs Mobile vs Network OS).</p>
             </div>
-            <p class="text-[11px] text-slate-300 leading-relaxed">
-              Unlike "User of OS" (concurrency), <b>Purpose of OS</b> classifies operating systems based on <b>WHAT HARDWARE DEVICE</b> it runs on and its primary operational role (Desktop PC vs Mobile Phone vs Network Server).
-            </p>
           </div>
 
-          <!-- Type Selection Tabs -->
           <div class="flex space-x-2 border-b border-white/10 pb-2">
-            <button onclick="switchPurposeTab('desktop')" id="p-btn-desktop" class="px-3 py-1.5 bg-emerald-600 text-white rounded-xl font-bold text-xs shadow">1. Desktop OS</button>
-            <button onclick="switchPurposeTab('mobile')" id="p-btn-mobile" class="px-3 py-1.5 bg-slate-800 text-slate-400 hover:bg-slate-700 rounded-xl font-bold text-xs">2. Mobile OS</button>
-            <button onclick="switchPurposeTab('network')" id="p-btn-network" class="px-3 py-1.5 bg-slate-800 text-slate-400 hover:bg-slate-700 rounded-xl font-bold text-xs">3. Network OS</button>
+            <button onclick="switchPurposeTab('desktop')" id="p-btn-desktop" class="px-3.5 py-1.5 bg-emerald-600 text-white rounded-xl font-bold text-xs shadow">1. Desktop OS Virtual PC Computer</button>
+            <button onclick="switchPurposeTab('mobile')" id="p-btn-mobile" class="px-3.5 py-1.5 bg-slate-800 text-slate-400 hover:bg-slate-700 rounded-xl font-bold text-xs">2. Mobile OS</button>
+            <button onclick="switchPurposeTab('network')" id="p-btn-network" class="px-3.5 py-1.5 bg-slate-800 text-slate-400 hover:bg-slate-700 rounded-xl font-bold text-xs">3. Network OS (NOS)</button>
           </div>
 
-          <!-- DESKTOP OS SCREEN -->
+          <!-- DESKTOP PC COMPUTER VIRTUALIZATION -->
           <div id="p-view-desktop" class="space-y-3">
-            <div class="bg-slate-800/80 p-3 rounded-xl border border-white/10">
-              <h3 class="font-bold text-emerald-300 text-xs">Desktop Computer Operating System</h3>
-              <p class="text-[11px] text-slate-300">Purpose: Optimized for PC hardware, keyboard/mouse navigation, heavy software productivity, and windowed multitasking.</p>
-            </div>
-            <div class="bg-slate-950 p-4 rounded-xl border border-white/10 h-60 flex flex-col items-center justify-center relative overflow-hidden">
-              <i class="fa-solid fa-desktop text-6xl text-emerald-400 mb-2"></i>
-              <span class="text-xs font-bold text-slate-200">Desktop PC Environment</span>
-              <span class="text-[10px] text-slate-400 mt-1">Runs Windows / macOS / Linux for desktop computing.</span>
+            <div class="bg-slate-950 p-4 rounded-xl border border-emerald-500/40 space-y-3">
+              <div class="flex justify-between items-center border-b border-white/10 pb-2">
+                <span class="text-xs font-bold text-emerald-300 flex items-center space-x-2">
+                  <i class="fa-solid fa-desktop text-emerald-400"></i>
+                  <span>Desktop PC Hardware & Operating System Virtualization</span>
+                </span>
+                <div class="flex space-x-2">
+                  <button onclick="toggleGpuTurbo()" class="px-2.5 py-1 ${pcGpuTurboMode?'bg-amber-500 text-slate-950':'bg-slate-800 text-slate-300'} font-bold text-[10px] rounded-lg">
+                    ⚡ GPU Turbo: ${pcGpuTurboMode ? 'ON' : 'OFF'}
+                  </button>
+                  <button onclick="cycleRefreshRate()" class="px-2.5 py-1 bg-slate-800 text-emerald-400 font-bold text-[10px] rounded-lg">
+                    🖥️ ${pcRefreshRate} Hz Monitor
+                  </button>
+                </div>
+              </div>
+
+              <!-- DESKTOP COMPUTER SETUP GRAPHIC -->
+              <div class="flex flex-col md:flex-row items-center justify-center gap-4 bg-slate-900/90 p-4 rounded-xl border border-white/10">
+                
+                <!-- VIRTUAL MONITOR FRAME -->
+                <div class="w-full md:w-3/4 bg-slate-950 border-4 border-slate-700 rounded-xl p-2.5 shadow-2xl flex flex-col relative">
+                  <!-- Monitor Webcam & Title -->
+                  <div class="flex items-center justify-between border-b border-white/10 pb-1.5 mb-2">
+                    <div class="flex items-center space-x-2">
+                      <div class="w-2.5 h-2.5 rounded-full bg-red-500"></div>
+                      <div class="w-2.5 h-2.5 rounded-full bg-amber-500"></div>
+                      <div class="w-2.5 h-2.5 rounded-full bg-emerald-500"></div>
+                      <span class="text-[10px] font-bold text-slate-300 font-mono">Desktop PC Screen Simulator</span>
+                    </div>
+                    <span class="text-[9px] font-mono text-emerald-400">Optimized for Keyboard & Mouse</span>
+                  </div>
+
+                  <!-- Inside Virtual Screen Content -->
+                  <div id="pc-monitor-screen" class="bg-slate-900 rounded-lg p-3 min-h-[160px] border border-white/10 flex flex-col justify-between">
+                    <!-- Rendered inside PC Screen -->
+                  </div>
+
+                  <!-- Virtual Keyboard & Mouse Shelf -->
+                  <div class="mt-2 pt-2 border-t border-slate-800 flex justify-between items-center px-2">
+                    <div class="flex space-x-1">
+                      <div class="px-2 py-0.5 bg-slate-800 text-slate-400 font-mono text-[9px] rounded">Keyboard Ctrl+C</div>
+                      <div class="px-2 py-0.5 bg-slate-800 text-slate-400 font-mono text-[9px] rounded">Ctrl+V</div>
+                    </div>
+                    <div class="text-[9px] text-sky-400 font-mono flex items-center space-x-1">
+                      <i class="fa-solid fa-computer-mouse"></i>
+                      <span>High-Precision Mouse Active</span>
+                    </div>
+                  </div>
+                </div>
+
+                <!-- VIRTUAL PC TOWER FRAME -->
+                <div class="w-28 h-52 bg-slate-950 border-2 border-slate-700 rounded-2xl p-2.5 flex flex-col justify-between items-center shadow-2xl tower-rgb-glow">
+                  <div class="w-full text-center">
+                    <div class="text-[9px] font-bold text-slate-400 font-mono">PC TOWER</div>
+                    <div class="w-full h-1 bg-sky-500 rounded my-1"></div>
+                  </div>
+                  <!-- RGB Fans -->
+                  <div class="w-12 h-12 rounded-full border-2 border-sky-400 flex items-center justify-center animate-spin">
+                    <i class="fa-solid fa-fan text-sky-400 text-lg"></i>
+                  </div>
+                  <!-- PC Power Button -->
+                  <button onclick="rebootVirtualPC()" class="w-8 h-8 rounded-full bg-slate-800 hover:bg-emerald-600 text-emerald-400 hover:text-white flex items-center justify-center transition-colors shadow">
+                    <i class="fa-solid fa-power-off text-xs"></i>
+                  </button>
+                </div>
+
+              </div>
             </div>
           </div>
 
-          <!-- MOBILE OS SCREEN -->
+          <!-- MOBILE OS -->
           <div id="p-view-mobile" class="hidden space-y-3">
-            <div class="bg-slate-800/80 p-3 rounded-xl border border-white/10">
-              <h3 class="font-bold text-sky-300 text-xs">Mobile Smartphone OS</h3>
-              <p class="text-[11px] text-slate-300">Purpose: Optimized for touchscreen finger gestures, battery efficiency, cellular networking, and mobile app sandboxing (Android / iOS).</p>
-            </div>
             <div class="flex justify-center">
-              <div class="w-48 h-64 bg-slate-950 border-4 border-slate-700 rounded-3xl p-3 flex flex-col justify-between shadow-2xl relative">
-                <div class="w-16 h-3 bg-slate-800 rounded-b-lg self-center"></div>
-                <div class="grid grid-cols-3 gap-2 mt-2 text-center">
-                  <div class="p-2 bg-green-600/30 rounded-xl text-green-400"><i class="fa-solid fa-phone text-base"></i></div>
-                  <div class="p-2 bg-sky-600/30 rounded-xl text-sky-400"><i class="fa-solid fa-comments text-base"></i></div>
-                  <div class="p-2 bg-pink-600/30 rounded-xl text-pink-400"><i class="fa-solid fa-camera text-base"></i></div>
-                  <div class="p-2 bg-amber-600/30 rounded-xl text-amber-400"><i class="fa-solid fa-map-location-dot text-base"></i></div>
+              <div class="w-48 h-64 bg-slate-950 border-4 border-slate-700 rounded-3xl p-3 flex flex-col justify-between shadow-2xl">
+                <div class="w-12 h-2 bg-slate-800 rounded-b-lg self-center"></div>
+                <div class="grid grid-cols-3 gap-2 text-center my-auto">
+                  <button onclick="showToast('Touch App', 'Opened Camera app via touch gesture', 'info')" class="p-2.5 bg-green-600/30 hover:bg-green-600/50 rounded-xl text-green-400"><i class="fa-solid fa-phone"></i></button>
+                  <button onclick="showToast('Touch App', 'Opened Messages app via touch gesture', 'info')" class="p-2.5 bg-sky-600/30 hover:bg-sky-600/50 rounded-xl text-sky-400"><i class="fa-solid fa-comments"></i></button>
+                  <button onclick="showToast('Touch App', 'Opened Camera app via touch gesture', 'info')" class="p-2.5 bg-pink-600/30 hover:bg-pink-600/50 rounded-xl text-pink-400"><i class="fa-solid fa-camera"></i></button>
                 </div>
-                <div class="text-[9px] text-center text-slate-500 font-mono">Touch Screen Gesture Interface</div>
+                <div class="text-[9px] text-center text-slate-400 font-mono">Mobile Touch & ARM Battery Saver OS</div>
               </div>
             </div>
           </div>
 
-          <!-- NETWORK OS SCREEN -->
+          <!-- NETWORK OS -->
           <div id="p-view-network" class="hidden space-y-3">
-            <div class="bg-slate-800/80 p-3 rounded-xl border border-white/10">
-              <h3 class="font-bold text-purple-300 text-xs">Network Operating System (NOS)</h3>
-              <p class="text-[11px] text-slate-300">Purpose: Designed to manage routers, network traffic, centralized directory services, and domain file sharing across client PCs.</p>
-            </div>
-
             <div class="bg-slate-950 p-4 rounded-xl border border-white/10 space-y-3">
-              <div class="text-xs font-bold text-purple-300">Network Topology Server Control</div>
-              <div class="flex items-center justify-around py-3 border-b border-white/10">
-                <div class="flex flex-col items-center">
-                  <i class="fa-solid fa-server text-3xl text-purple-400 mb-1 pulse-ring"></i>
-                  <span class="text-[10px] text-purple-300 font-bold">NOS Server</span>
-                </div>
-                <i class="fa-solid fa-network-wired text-xl text-slate-500"></i>
-                <div class="flex space-x-4">
-                  <div class="flex flex-col items-center">
-                    <i class="fa-solid fa-laptop text-xl text-sky-400"></i>
-                    <span class="text-[9px] text-slate-400">Client 1</span>
-                  </div>
-                  <div class="flex flex-col items-center">
-                    <i class="fa-solid fa-laptop text-xl text-sky-400"></i>
-                    <span class="text-[9px] text-slate-400">Client 2</span>
-                  </div>
-                </div>
-              </div>
-
-              <!-- Network Commands -->
               <div class="flex space-x-2">
-                <button onclick="runNOSCommand('ping 192.168.1.1')" class="px-3 py-1 bg-purple-900/60 hover:bg-purple-800 text-purple-200 border border-purple-500/30 rounded text-xs">Ping Router</button>
-                <button onclick="runNOSCommand('netstat')" class="px-3 py-1 bg-purple-900/60 hover:bg-purple-800 text-purple-200 border border-purple-500/30 rounded text-xs">Show Connections</button>
+                <button onclick="runNOSCommand('ping')" class="px-3 py-1 bg-purple-900/60 hover:bg-purple-800 text-purple-200 border border-purple-500/30 rounded text-xs font-bold">Ping Router</button>
+                <button onclick="runNOSCommand('netstat')" class="px-3 py-1 bg-purple-900/60 hover:bg-purple-800 text-purple-200 border border-purple-500/30 rounded text-xs font-bold">Show Connections</button>
               </div>
-              <div id="nos-cli-output" class="font-mono text-[10px] text-emerald-400 bg-slate-900 p-2 rounded min-h-[45px]">
+              <div id="nos-cli-output" class="font-mono text-[10px] text-emerald-400 bg-slate-900 p-2.5 rounded border border-white/10 min-h-[45px]">
                 Ready for network commands...
               </div>
             </div>
@@ -696,17 +1358,87 @@
       `;
     }
 
+    function initDesktopPCVirtualization() {
+      const monitor = document.getElementById('pc-monitor-screen');
+      if (!monitor) return;
+
+      const activeApp = desktopVirtualApps.find(a => a.active) || desktopVirtualApps[0];
+
+      monitor.innerHTML = `
+        <div class="flex items-center justify-between border-b border-white/10 pb-1.5">
+          <div class="flex space-x-2">
+            ${desktopVirtualApps.map(a => `
+              <button onclick="switchDesktopVirtualApp('${a.id}')" class="px-2 py-0.5 rounded text-[10px] font-bold flex items-center space-x-1 ${a.active?'bg-emerald-600 text-white':'bg-slate-800 text-slate-400'}">
+                <i class="fa-solid ${a.icon} ${a.color}"></i>
+                <span>${a.name}</span>
+              </button>
+            `).join('')}
+          </div>
+          <span class="text-[9px] text-emerald-400 font-mono">Multitasking PC Core</span>
+        </div>
+
+        <div class="my-2 p-2 bg-slate-950 rounded border border-white/10 text-xs font-mono">
+          ${activeApp.id === 'code' ? `
+            <div class="text-sky-300 font-bold">// C++ High Performance Desktop Application</div>
+            <div class="text-slate-300 text-[10px] mt-1">#include &lt;iostream&gt;<br>int main() { std::cout << "Desktop OS PC Performance"; }</div>
+          ` : activeApp.id === 'browser' ? `
+            <div class="text-amber-300 font-bold">🌐 Desktop Web Browser v110.0</div>
+            <div class="text-slate-300 text-[10px] mt-1">URL: https://learning.os.edu/desktop-pc</div>
+          ` : `
+            <div class="text-pink-300 font-bold">🎨 Vector Graphics Paint Editor</div>
+            <div class="text-slate-300 text-[10px] mt-1">Rendering 24-bit Canvas with Hardware Acceleration...</div>
+          `}
+        </div>
+
+        <div class="flex justify-between text-[10px] font-mono text-slate-400">
+          <span>GPU Turbo: ${pcGpuTurboMode ? 'ENABLED ⚡' : 'OFF'}</span>
+          <span>FPS: ${pcRefreshRate} Frame/s</span>
+        </div>
+      `;
+    }
+
+    function switchDesktopVirtualApp(appId) {
+      playAudio('click');
+      desktopVirtualApps.forEach(a => a.active = (a.id === appId));
+      initDesktopPCVirtualization();
+    }
+
+    function toggleGpuTurbo() {
+      playAudio('success');
+      pcGpuTurboMode = !pcGpuTurboMode;
+      initDesktopPCVirtualization();
+      renderFolderContent(3);
+      showToast('GPU Acceleration', `Hardware GPU Turbo set to ${pcGpuTurboMode ? 'ON' : 'OFF'}`, 'info');
+    }
+
+    function cycleRefreshRate() {
+      playAudio('click');
+      pcRefreshRate = pcRefreshRate === 60 ? 120 : (pcRefreshRate === 120 ? 144 : 60);
+      initDesktopPCVirtualization();
+      renderFolderContent(3);
+      showToast('Monitor Refresh Rate', `PC Monitor set to ${pcRefreshRate} Hz.`, 'info');
+    }
+
+    function rebootVirtualPC() {
+      playAudio('eject');
+      showToast('Rebooting Virtual PC', 'Restarting Desktop Computer setup...', 'error');
+      setTimeout(() => {
+        playAudio('success');
+        showToast('Virtual PC Online', 'Desktop OS booted successfully!', 'success');
+      }, 1200);
+    }
+
     function switchPurposeTab(tab) {
       playAudio('click');
-      const tabs = ['desktop', 'mobile', 'network'];
-      tabs.forEach(t => {
+      ['desktop', 'mobile', 'network'].forEach(t => {
         const btn = document.getElementById(`p-btn-${t}`);
         const view = document.getElementById(`p-view-${t}`);
+        if (!btn || !view) return;
         if (t === tab) {
-          btn.className = 'px-3 py-1.5 bg-emerald-600 text-white rounded-xl font-bold text-xs shadow';
+          btn.className = 'px-3.5 py-1.5 bg-emerald-600 text-white rounded-xl font-bold text-xs shadow';
           view.classList.remove('hidden');
         } else {
-          btn.className = 'px-3 py-1.5 bg-slate-800 text-slate-400 hover:bg-slate-700 rounded-xl font-bold text-xs';
+          btn.className = 'px-3.5 py-1.5 bg-slate-800 text-slate-400 hover:bg-slate-700 rounded-xl font-bold text-xs';
           view.classList.add('hidden');
         }
       });
@@ -716,17 +1448,17 @@
       playAudio('click');
       const out = document.getElementById('nos-cli-output');
       if (!out) return;
-      if (cmd.startsWith('ping')) {
-        out.innerText = `Pinging 192.168.1.1 with 32 bytes of data:\nReply from 192.168.1.1: bytes=32 time=2ms TTL=64`;
+      if (cmd === 'ping') {
+        out.innerText = "Pinging 192.168.1.1:\nReply from 192.168.1.1: bytes=32 time=2ms TTL=64";
       } else if (cmd === 'netstat') {
-        out.innerText = `Active Connections:\nTCP    192.168.1.10:80        Client1:50122          ESTABLISHED`;
+        out.innerText = "Active Connections:\nTCP    192.168.1.10:80        Client1:50122          ESTABLISHED";
       }
     }
-<!-- ... existing code ... -->
-    /* FOLDER 4: USER INTERFACE (CLI INTERACTIVE TERMINAL vs CLICKABLE GUI) */
-    let cliTerminalHistory = ["Windows Command Prompt [Version 10.0]", "Type 'help' for available CLI commands.\n"];
+
+    /* USER INTERFACE: CLI VS GUI SHELLS */
+    let cliTerminalHistory = ["Windows Command Prompt [Version 10.0]", "Type 'help' for available commands.\n"];
     let guiFoldersList = [
-      { id: 'g1', name: 'Documents', files: ['Essay.docx', 'Math_Notes.txt'] },
+      { id: 'g1', name: 'Documents', files: ['Essay.docx', 'Notes.txt'] },
       { id: 'g2', name: 'Pictures', files: ['Photo.png'] }
     ];
     let guiActiveFolderIndex = null;
@@ -734,65 +1466,36 @@
     function getUIFolderHTML() {
       return `
         <div class="space-y-4">
-          <div class="bg-slate-800/80 p-3 rounded-xl border border-white/10">
-            <h3 class="font-bold text-purple-300 text-xs">GUI (Graphical User Interface) vs CLI (Command Line Interface)</h3>
-            <p class="text-[11px] text-slate-300">Compare how CLI requires typing commands into a keyboard prompt, while GUI allows clicking visual icons!</p>
-          </div>
-
           <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
-            <!-- CLI REAL INTERACTIVE TYPING TERMINAL -->
-            <div class="bg-slate-950 p-3 rounded-xl border border-purple-500/40 flex flex-col justify-between h-80 shadow">
-              <div class="flex items-center justify-between border-b border-white/10 pb-2">
-                <span class="font-mono text-xs text-purple-400 font-bold flex items-center space-x-1">
-                  <i class="fa-solid fa-terminal mr-1"></i>
-                  <span>CLI Terminal (Type Commands)</span>
-                </span>
-                <span class="text-[9px] bg-purple-950 text-purple-300 px-2 py-0.5 rounded font-mono">Keyboard Mode</span>
+            <!-- CLI TERMINAL -->
+            <div class="bg-slate-950 p-3 rounded-xl border border-purple-500/40 flex flex-col justify-between h-72 shadow">
+              <div class="border-b border-white/10 pb-2 font-mono text-xs text-purple-400 font-bold">
+                <i class="fa-solid fa-terminal mr-1"></i> CLI Terminal (Type Commands)
               </div>
-
-              <!-- Terminal Output Display Box -->
-              <div id="cli-terminal-screen" class="font-mono text-[11px] text-emerald-400 bg-black p-2.5 rounded-lg flex-1 my-2 overflow-auto whitespace-pre-wrap border border-white/10 leading-snug">
-              </div>
-
-              <!-- CLI Interactive Keyboard Input Field -->
-              <div class="flex items-center space-x-1 bg-black px-2 py-1.5 rounded-lg border border-purple-500/50">
+              <div id="cli-terminal-screen" class="font-mono text-[11px] text-emerald-400 bg-black p-2.5 rounded-lg flex-1 my-2 overflow-auto whitespace-pre-wrap border border-white/10 leading-snug"></div>
+              <div class="flex items-center space-x-1 bg-black px-2 py-1 rounded-lg border border-purple-500/50">
                 <span class="font-mono text-xs text-purple-400 font-bold">C:\\></span>
                 <input type="text" id="cli-terminal-input" placeholder="type 'help', 'dir', 'mkdir test'..." class="flex-1 bg-transparent font-mono text-xs text-emerald-400 focus:outline-none" onkeydown="handleCLIKenter(event)" />
                 <button onclick="submitCLIInput()" class="px-2 py-0.5 bg-purple-700 hover:bg-purple-600 text-white font-mono text-[10px] rounded font-bold">Run</button>
               </div>
             </div>
 
-            <!-- GUI CLICKABLE VISUAL EXPLORER -->
-            <div class="bg-slate-950 p-3 rounded-xl border border-sky-500/40 flex flex-col justify-between h-80 shadow">
-              <div class="flex items-center justify-between border-b border-white/10 pb-2">
-                <span class="font-bold text-xs text-sky-400 flex items-center space-x-1">
-                  <i class="fa-solid fa-desktop mr-1"></i>
-                  <span>GUI Visual Explorer (Click Icons)</span>
-                </span>
-                <span class="text-[9px] bg-sky-950 text-sky-300 px-2 py-0.5 rounded">Mouse Click Mode</span>
+            <!-- GUI VISUAL EXPLORER -->
+            <div class="bg-slate-950 p-3 rounded-xl border border-sky-500/40 flex flex-col justify-between h-72 shadow">
+              <div class="border-b border-white/10 pb-2 font-bold text-xs text-sky-400">
+                <i class="fa-solid fa-desktop mr-1"></i> GUI Explorer (Click Icons)
               </div>
-
-              <!-- GUI Toolbar -->
               <div class="flex items-center space-x-2 my-1">
                 <button onclick="guiCreateFolder()" class="px-2.5 py-1 bg-amber-600 hover:bg-amber-500 text-white rounded text-[10px] font-bold">+ Click New Folder</button>
                 <button onclick="guiCreateFile()" class="px-2.5 py-1 bg-sky-600 hover:bg-sky-500 text-white rounded text-[10px] font-bold">+ Click New File</button>
               </div>
-
-              <!-- GUI Interactive Clickable Canvas -->
-              <div id="gui-interactive-canvas" class="bg-slate-900 p-2.5 rounded-lg flex-1 overflow-auto border border-white/10">
-                <!-- Rendered GUI Icons -->
-              </div>
-
-              <div class="text-[10px] text-sky-300 text-center italic mt-1">
-                In GUI, click icons or buttons to open and create files!
-              </div>
+              <div id="gui-interactive-canvas" class="bg-slate-900 p-2.5 rounded-lg flex-1 overflow-auto border border-white/10"></div>
             </div>
           </div>
         </div>
       `;
     }
 
-    /* CLI Terminal Logic */
     function initCLITerminal() {
       const screen = document.getElementById('cli-terminal-screen');
       if (screen) {
@@ -815,33 +1518,29 @@
       playAudio('click');
 
       cliTerminalHistory.push(`C:\\> ${cmd}`);
-
       const parts = cmd.toLowerCase().split(' ');
       const main = parts[0];
 
       if (main === 'help') {
-        cliTerminalHistory.push(`Available Commands:\n - dir / ls  : List files\n - mkdir <name> : Create directory\n - echo <text>  : Print text\n - cls        : Clear terminal\n - ver        : Display OS version`);
+        cliTerminalHistory.push(`Commands:\n - dir/ls\n - mkdir <name>\n - cls\n - ver`);
       } else if (main === 'dir' || main === 'ls') {
-        cliTerminalHistory.push(` Directory of C:\\\n\n<DIR>          Documents\n<DIR>          Pictures\n               System_Logs.txt`);
+        cliTerminalHistory.push(`Directory of C:\\\n<DIR> Documents\n<DIR> Pictures\nSystem_Logs.txt`);
       } else if (main === 'mkdir') {
         const folderName = parts.slice(1).join('_') || 'NewFolder';
-        cliTerminalHistory.push(`Directory '${folderName}' created successfully.`);
-        showToast('CLI Command', `Created directory "${folderName}" via CLI terminal!`, 'success');
-      } else if (main === 'echo') {
-        cliTerminalHistory.push(cmd.substring(5));
+        cliTerminalHistory.push(`Directory '${folderName}' created.`);
+        showToast('CLI Command', `Created '${folderName}' via CLI!`, 'success');
       } else if (main === 'cls') {
         cliTerminalHistory = ["Windows Command Prompt [Version 10.0]"];
       } else if (main === 'ver') {
         cliTerminalHistory.push("Secondary 1 OS Learning Edition v2.0");
       } else {
-        cliTerminalHistory.push(`'${cmd}' is not recognized as an internal or external command. Type 'help'.`);
+        cliTerminalHistory.push(`'${cmd}' is not recognized. Type 'help'.`);
       }
 
       screen.innerText = cliTerminalHistory.join('\n') + '\nC:\\> _';
       screen.scrollTop = screen.scrollHeight;
     }
 
-    /* GUI Clickable Logic */
     function renderGUIFolderCanvas() {
       const canvas = document.getElementById('gui-interactive-canvas');
       if (!canvas) return;
@@ -852,7 +1551,6 @@
           <div onclick="guiClickOpenFolder(${idx})" class="p-2 bg-slate-800 hover:bg-slate-700 border border-amber-500/40 rounded-lg flex flex-col items-center justify-center cursor-pointer transition-all hover:scale-105">
             <i class="fa-solid fa-folder text-amber-400 text-2xl mb-1"></i>
             <span class="text-[10px] text-white font-bold truncate w-full text-center">${folder.name}</span>
-            <span class="text-[8px] text-amber-300">(${folder.files.length} files)</span>
           </div>
         `;
       });
@@ -863,12 +1561,12 @@
         html += `
           <div class="mt-3 p-2 bg-slate-950 border border-sky-500/40 rounded-lg">
             <div class="flex justify-between items-center text-[10px] font-bold text-sky-300 border-b border-white/10 pb-1 mb-2">
-              <span>Opened Folder: ${folder.name}</span>
-              <button onclick="guiCloseFolder()" class="text-red-400 hover:underline cursor-pointer">Close ✕</button>
+              <span>Opened: ${folder.name}</span>
+              <button onclick="guiCloseFolder()" class="text-red-400 hover:underline">Close ✕</button>
             </div>
             <div class="grid grid-cols-2 gap-2">
               ${folder.files.map(f => `
-                <div onclick="showToast('GUI Click File', 'Opened file icon: ${f}', 'info')" class="p-1.5 bg-slate-800 hover:bg-slate-700 border border-sky-400/30 rounded flex items-center space-x-1.5 cursor-pointer">
+                <div class="p-1.5 bg-slate-800 border border-sky-400/30 rounded flex items-center space-x-1.5">
                   <i class="fa-solid fa-file-lines text-sky-400 text-xs"></i>
                   <span class="text-[9px] text-slate-200 truncate">${f}</span>
                 </div>
@@ -881,27 +1579,27 @@
       canvas.innerHTML = html;
     }
 
-    window.guiClickOpenFolder = function(index) {
+    function guiClickOpenFolder(index) {
       playAudio('click');
       guiActiveFolderIndex = index;
       renderGUIFolderCanvas();
-    };
+    }
 
-    window.guiCloseFolder = function() {
+    function guiCloseFolder() {
       playAudio('click');
       guiActiveFolderIndex = null;
       renderGUIFolderCanvas();
-    };
+    }
 
-    window.guiCreateFolder = function() {
+    function guiCreateFolder() {
       playAudio('success');
       const name = `Folder_${guiFoldersList.length + 1}`;
       guiFoldersList.push({ id: 'g_' + Date.now(), name: name, files: ['File1.txt'] });
       renderGUIFolderCanvas();
-      showToast('GUI Folder Created', `Clicked GUI button to create folder "${name}"!`, 'success');
-    };
+      showToast('GUI Folder Created', `Clicked button to create folder "${name}"!`, 'success');
+    }
 
-    window.guiCreateFile = function() {
+    function guiCreateFile() {
       playAudio('success');
       if (guiActiveFolderIndex !== null) {
         guiFoldersList[guiActiveFolderIndex].files.push(`Doc_${Date.now().toString().slice(-4)}.txt`);
@@ -909,7 +1607,54 @@
         guiFoldersList[0].files.push(`Doc_${Date.now().toString().slice(-4)}.txt`);
       }
       renderGUIFolderCanvas();
-      showToast('GUI File Created', 'Clicked GUI button to add file into folder!', 'success');
+      showToast('GUI File Created', 'Added file into folder!', 'success');
+    }
+
+    window.openFolder = openFolder;
+    window.switchFolderTab = switchFolderTab;
+    window.closeWindow = closeWindow;
+    window.minimizeWindow = minimizeWindow;
+    window.toggleStartMenu = toggleStartMenu;
+    window.launchLab = launchLab;
+    window.addSampleProcess = addSampleProcess;
+    window.terminateProcess = terminateProcess;
+    window.allocateRAM = allocateRAM;
+    window.clearRAM = clearRAM;
+    window.plugPeripheral = plugPeripheral;
+    window.unplugPeripheral = unplugPeripheral;
+    window.showCreateItemModal = showCreateItemModal;
+    window.hideCreateItemModal = hideCreateItemModal;
+    window.submitCreateItem = submitCreateItem;
+    window.navigateFolder = navigateFolder;
+    window.openFileViewer = openFileViewer;
+    window.closeFileViewer = closeFileViewer;
+    window.saveActiveFileContent = saveActiveFileContent;
+    window.deleteExplorerItem = deleteExplorerItem;
+    window.updateDiskPartitions = updateDiskPartitions;
+    window.formatDrive = formatDrive;
+    window.setTheme = setTheme;
+    window.toggleAdminRoleState = toggleAdminRoleState;
+    window.adminAddUser = adminAddUser;
+    window.adminDeleteUser = adminDeleteUser;
+    window.switchUserTypeTab = switchUserTypeTab;
+    window.attemptSingleUserLogin = attemptSingleUserLogin;
+    window.runMultiUserTask = runMultiUserTask;
+    window.switchPurposeTab = switchPurposeTab;
+    window.switchDesktopVirtualApp = switchDesktopVirtualApp;
+    window.toggleGpuTurbo = toggleGpuTurbo;
+    window.cycleRefreshRate = cycleRefreshRate;
+    window.rebootVirtualPC = rebootVirtualPC;
+    window.runNOSCommand = runNOSCommand;
+    window.handleCLIKenter = handleCLIKenter;
+    window.submitCLIInput = submitCLIInput;
+    window.guiClickOpenFolder = guiClickOpenFolder;
+    window.guiCloseFolder = guiCloseFolder;
+    window.guiCreateFolder = guiCreateFolder;
+    window.guiCreateFile = guiCreateFile;
+
+    /* INITIAL LAUNCH */
+    window.onload = function() {
+      openFolder(1);
     };
   </script>
 </body>
