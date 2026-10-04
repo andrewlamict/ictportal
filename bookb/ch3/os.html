@@ -9,14 +9,14 @@
   <!-- FontAwesome Icons -->
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
   <!-- Google Fonts: Inter & JetBrains Mono -->
-  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=JetBrains+Mono:wght@400;600;700&display=swap" rel="stylesheet">
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&family=JetBrains+Mono:wght@400;600;700&display=swap" rel="stylesheet">
 
   <style>
     body {
       font-family: 'Inter', sans-serif;
       user-select: none;
       overflow: hidden;
-      transition: background 0.5s ease;
+      transition: background 0.4s ease, color 0.4s ease;
     }
     .font-mono {
       font-family: 'JetBrains Mono', monospace;
@@ -37,33 +37,44 @@
       background: rgba(148, 163, 184, 0.8);
     }
 
-    /* THEME STYLES */
+    /* ULTRA HIGH CONTRAST THEME STYLES */
     .theme-indigo {
       background: radial-gradient(circle at 50% 30%, #1e1b4b 0%, #0f172a 60%, #020617 100%);
+      color: #f8fafc;
     }
-    .theme-emerald {
-      background: radial-gradient(circle at 50% 30%, #064e3b 0%, #022c22 60%, #020617 100%);
+    .theme-cyber-contrast {
+      background: radial-gradient(circle at 50% 30%, #ec4899 0%, #831843 45%, #0f172a 90%, #000000 100%);
+      color: #ffffff;
     }
-    .theme-purple {
-      background: radial-gradient(circle at 50% 30%, #4c1d95 0%, #2e1065 60%, #020617 100%);
+    .theme-daylight-contrast {
+      background: radial-gradient(circle at 50% 30%, #ffffff 0%, #e2e8f0 50%, #cbd5e1 100%);
+      color: #0f172a;
     }
-    .theme-cyberpunk {
-      background: radial-gradient(circle at 50% 30%, #831843 0%, #4c0519 50%, #020617 100%);
+    .theme-electric-cyan {
+      background: radial-gradient(circle at 50% 30%, #06b6d4 0%, #0e7490 40%, #020617 100%);
+      color: #ffffff;
     }
-    .theme-amber {
-      background: radial-gradient(circle at 50% 30%, #78350f 0%, #451a03 60%, #020617 100%);
+    .theme-vivid-amber {
+      background: radial-gradient(circle at 50% 30%, #f59e0b 0%, #b45309 45%, #451a03 90%, #020617 100%);
+      color: #ffffff;
     }
 
-    /* Glassmorphism Window Effect */
+    /* Glassmorphism Window Effect with Theme Adaptation */
     .glass-panel {
-      background: rgba(15, 23, 42, 0.88);
+      background: rgba(15, 23, 42, 0.92);
       backdrop-filter: blur(16px);
       -webkit-backdrop-filter: blur(16px);
-      border: 1px solid rgba(255, 255, 255, 0.12);
+      border: 1px solid rgba(255, 255, 255, 0.2);
       transition: all 0.3s ease;
     }
 
-    /* Toast notification slide animation */
+    .theme-daylight-contrast .glass-panel {
+      background: rgba(255, 255, 255, 0.92);
+      border: 1px solid rgba(15, 23, 42, 0.2);
+      color: #0f172a;
+    }
+
+    /* Animations */
     @keyframes slideInRight {
       from { transform: translateX(100%); opacity: 0; }
       to { transform: translateX(0); opacity: 1; }
@@ -72,61 +83,60 @@
       animation: slideInRight 0.3s cubic-bezier(0.16, 1, 0.3, 1) forwards;
     }
 
-    /* Computer Tower Glow */
-    @keyframes towerGlow {
-      0%, 100% { box-shadow: 0 0 15px rgba(59, 130, 246, 0.4); }
-      50% { box-shadow: 0 0 25px rgba(168, 85, 247, 0.7); }
+    @keyframes pulseGlow {
+      0%, 100% { opacity: 0.8; }
+      50% { opacity: 1; filter: drop-shadow(0 0 10px rgba(56, 189, 248, 0.8)); }
     }
-    .tower-rgb-glow {
-      animation: towerGlow 3s infinite ease-in-out;
+    .pulse-glow {
+      animation: pulseGlow 2s infinite ease-in-out;
     }
   </style>
 </head>
-<body id="app-body" class="h-screen w-screen theme-indigo text-slate-100 flex flex-col justify-between relative overflow-hidden select-none">
+<body id="app-body" class="h-screen w-screen theme-cyber-contrast text-slate-100 flex flex-col justify-between relative overflow-hidden select-none">
 
   <!-- MAIN DESKTOP WORKSPACE -->
   <main id="desktop-area" class="flex-1 p-6 relative grid grid-cols-2 sm:grid-cols-4 md:grid-cols-6 gap-6 content-start z-10">
 
     <!-- DESKTOP FOLDER 1: FUNCTIONS OF OS -->
-    <div onclick="openFolder(1)" class="group flex flex-col items-center justify-center p-3 rounded-2xl hover:bg-white/10 cursor-pointer transition-all duration-200 border border-transparent hover:border-white/10 w-28">
-      <div class="w-14 h-14 bg-gradient-to-br from-amber-400 to-amber-600 rounded-2xl flex items-center justify-center shadow-lg group-hover:scale-105 transition-transform">
+    <div onclick="openFolder(1)" class="group flex flex-col items-center justify-center p-3 rounded-2xl hover:bg-white/20 cursor-pointer transition-all duration-200 border border-transparent hover:border-white/30 w-28 text-center">
+      <div class="w-14 h-14 bg-gradient-to-br from-amber-400 to-amber-600 rounded-2xl flex items-center justify-center shadow-2xl group-hover:scale-110 transition-transform">
         <i class="fa-solid fa-gears text-2xl text-slate-950"></i>
       </div>
-      <span class="text-xs font-semibold text-white mt-2 text-center drop-shadow">1. Functions of OS</span>
-      <span class="text-[10px] text-amber-300/80 text-center font-mono">Resource Mgr</span>
+      <span class="text-xs font-bold text-white mt-2 drop-shadow-md">1. Functions of OS</span>
+      <span class="text-[10px] text-amber-300 font-mono font-bold bg-black/40 px-1.5 py-0.5 rounded mt-0.5">Resource Mgr</span>
     </div>
 
-    <!-- DESKTOP FOLDER 2: USER OF OS -->
-    <div onclick="openFolder(2)" class="group flex flex-col items-center justify-center p-3 rounded-2xl hover:bg-white/10 cursor-pointer transition-all duration-200 border border-transparent hover:border-white/10 w-28">
-      <div class="w-14 h-14 bg-gradient-to-br from-sky-400 to-sky-600 rounded-2xl flex items-center justify-center shadow-lg group-hover:scale-105 transition-transform">
-        <i class="fa-solid fa-users text-2xl text-slate-950"></i>
+    <!-- DESKTOP FOLDER 2: SINGLE VS MULTI-USER OS -->
+    <div onclick="openFolder(2)" class="group flex flex-col items-center justify-center p-3 rounded-2xl hover:bg-white/20 cursor-pointer transition-all duration-200 border border-transparent hover:border-white/30 w-28 text-center">
+      <div class="w-14 h-14 bg-gradient-to-br from-sky-400 to-sky-600 rounded-2xl flex items-center justify-center shadow-2xl group-hover:scale-110 transition-transform">
+        <i class="fa-solid fa-users-line text-2xl text-slate-950"></i>
       </div>
-      <span class="text-xs font-semibold text-white mt-2 text-center drop-shadow">2. User of OS</span>
-      <span class="text-[10px] text-sky-300/80 text-center font-mono">Single/Multi User</span>
+      <span class="text-xs font-bold text-white mt-2 drop-shadow-md">2. Single vs Multi-User</span>
+      <span class="text-[10px] text-sky-300 font-mono font-bold bg-black/40 px-1.5 py-0.5 rounded mt-0.5">OS Users Lab</span>
     </div>
 
     <!-- DESKTOP FOLDER 3: PURPOSE OF OS -->
-    <div onclick="openFolder(3)" class="group flex flex-col items-center justify-center p-3 rounded-2xl hover:bg-white/10 cursor-pointer transition-all duration-200 border border-transparent hover:border-white/10 w-28">
-      <div class="w-14 h-14 bg-gradient-to-br from-emerald-400 to-emerald-600 rounded-2xl flex items-center justify-center shadow-lg group-hover:scale-105 transition-transform">
-        <i class="fa-solid fa-server text-2xl text-slate-950"></i>
+    <div onclick="openFolder(3)" class="group flex flex-col items-center justify-center p-3 rounded-2xl hover:bg-white/20 cursor-pointer transition-all duration-200 border border-transparent hover:border-white/30 w-28 text-center">
+      <div class="w-14 h-14 bg-gradient-to-br from-emerald-400 to-emerald-600 rounded-2xl flex items-center justify-center shadow-2xl group-hover:scale-110 transition-transform">
+        <i class="fa-solid fa-laptop-code text-2xl text-slate-950"></i>
       </div>
-      <span class="text-xs font-semibold text-white mt-2 text-center drop-shadow">3. Purpose of OS</span>
-      <span class="text-[10px] text-emerald-300/80 text-center font-mono">Desktop PC & NOS</span>
+      <span class="text-xs font-bold text-white mt-2 drop-shadow-md">3. Purpose of OS</span>
+      <span class="text-[10px] text-emerald-300 font-mono font-bold bg-black/40 px-1.5 py-0.5 rounded mt-0.5">Desktop & Mobile</span>
     </div>
 
     <!-- DESKTOP FOLDER 4: USER INTERFACE -->
-    <div onclick="openFolder(4)" class="group flex flex-col items-center justify-center p-3 rounded-2xl hover:bg-white/10 cursor-pointer transition-all duration-200 border border-transparent hover:border-white/10 w-28">
-      <div class="w-14 h-14 bg-gradient-to-br from-purple-400 to-purple-600 rounded-2xl flex items-center justify-center shadow-lg group-hover:scale-105 transition-transform">
-        <i class="fa-solid fa-terminal text-2xl text-slate-950"></i>
+    <div onclick="openFolder(4)" class="group flex flex-col items-center justify-center p-3 rounded-2xl hover:bg-white/20 cursor-pointer transition-all duration-200 border border-transparent hover:border-white/30 w-28 text-center">
+      <div class="w-14 h-14 bg-gradient-to-br from-purple-400 to-purple-600 rounded-2xl flex items-center justify-center shadow-2xl group-hover:scale-110 transition-transform">
+        <i class="fa-solid fa-display text-2xl text-slate-950"></i>
       </div>
-      <span class="text-xs font-semibold text-white mt-2 text-center drop-shadow">4. User Interface</span>
-      <span class="text-[10px] text-purple-300/80 text-center font-mono">GUI vs CLI</span>
+      <span class="text-xs font-bold text-white mt-2 drop-shadow-md">4. User Interface</span>
+      <span class="text-[10px] text-purple-300 font-mono font-bold bg-black/40 px-1.5 py-0.5 rounded mt-0.5">Interactive GUI</span>
     </div>
 
   </main>
 
   <!-- MAIN SIMULATION WINDOW CONTAINER -->
-  <div id="os-window" class="hidden absolute top-6 left-6 right-6 bottom-16 glass-panel rounded-2xl shadow-2xl flex flex-col z-30 border border-white/20 overflow-hidden">
+  <div id="os-window" class="hidden absolute top-4 left-4 right-4 bottom-16 glass-panel rounded-2xl shadow-2xl flex flex-col z-30 border border-white/20 overflow-hidden">
     
     <!-- Window Title Bar -->
     <div class="bg-slate-900/90 border-b border-white/10 px-4 py-3 flex items-center justify-between">
@@ -140,64 +150,64 @@
         <button onclick="minimizeWindow()" class="w-7 h-7 rounded-lg bg-slate-800 hover:bg-slate-700 flex items-center justify-center text-slate-300 transition-colors">
           <i class="fa-solid fa-minus text-xs"></i>
         </button>
-        <button onclick="closeWindow()" class="w-7 h-7 rounded-lg bg-red-600/80 hover:bg-red-600 flex items-center justify-center text-white transition-colors">
+        <button onclick="closeWindow()" class="w-7 h-7 rounded-lg bg-red-600 hover:bg-red-500 flex items-center justify-center text-white transition-colors">
           <i class="fa-solid fa-xmark text-xs"></i>
         </button>
       </div>
     </div>
 
     <!-- Window Navigation Tabs Bar -->
-    <div class="bg-slate-950/80 px-4 py-2 border-b border-white/10 flex items-center space-x-2 overflow-x-auto text-xs font-medium">
+    <div class="bg-slate-950/90 px-4 py-2 border-b border-white/10 flex items-center space-x-2 overflow-x-auto text-xs font-medium">
       <button onclick="switchFolderTab(1)" id="folder-tab-1" class="px-3.5 py-1.5 rounded-xl transition-all flex items-center space-x-2 bg-amber-500/20 text-amber-300 border border-amber-500/40">
         <i class="fa-solid fa-gears"></i>
         <span>1. Functions of OS</span>
       </button>
       <button onclick="switchFolderTab(2)" id="folder-tab-2" class="px-3.5 py-1.5 rounded-xl transition-all flex items-center space-x-2 bg-slate-800 text-slate-400 hover:bg-slate-700">
-        <i class="fa-solid fa-users"></i>
-        <span>2. User of OS</span>
+        <i class="fa-solid fa-users-line"></i>
+        <span>2. Single vs Multi-User OS</span>
       </button>
       <button onclick="switchFolderTab(3)" id="folder-tab-3" class="px-3.5 py-1.5 rounded-xl transition-all flex items-center space-x-2 bg-slate-800 text-slate-400 hover:bg-slate-700">
-        <i class="fa-solid fa-server"></i>
+        <i class="fa-solid fa-laptop-code"></i>
         <span>3. Purpose of OS</span>
       </button>
       <button onclick="switchFolderTab(4)" id="folder-tab-4" class="px-3.5 py-1.5 rounded-xl transition-all flex items-center space-x-2 bg-slate-800 text-slate-400 hover:bg-slate-700">
-        <i class="fa-solid fa-terminal"></i>
+        <i class="fa-solid fa-display"></i>
         <span>4. User Interface</span>
       </button>
     </div>
 
     <!-- Window Dynamic Content Body -->
-    <div id="window-body" class="flex-1 p-5 overflow-y-auto bg-slate-900/60">
+    <div id="window-body" class="flex-1 p-5 overflow-y-auto bg-slate-900/80">
       <!-- Content injected dynamically by JS -->
     </div>
   </div>
 
-  <!-- WINDOWS 11 STYLE SYSTEM TASKBAR -->
+  <!-- SYSTEM TASKBAR -->
   <footer class="h-12 glass-panel border-t border-white/10 flex items-center justify-between px-4 z-40 relative">
     
     <!-- Start Button -->
     <div class="flex items-center space-x-3">
-      <button onclick="toggleStartMenu()" class="p-2 rounded-xl bg-indigo-600/80 hover:bg-indigo-500 text-white flex items-center space-x-2 shadow-lg transition-all hover:scale-105">
+      <button onclick="toggleStartMenu()" class="p-2 rounded-xl bg-indigo-600 hover:bg-indigo-500 text-white flex items-center space-x-2 shadow-lg transition-all hover:scale-105">
         <i class="fa-brands fa-windows text-base"></i>
         <span class="text-xs font-bold">Start</span>
       </button>
 
       <!-- Active Window Indicator -->
-      <div id="taskbar-active-app" class="hidden flex items-center space-x-2 px-3 py-1 bg-slate-800/80 border border-white/10 rounded-xl text-xs text-slate-200">
+      <div id="taskbar-active-app" class="hidden flex items-center space-x-2 px-3 py-1 bg-slate-800/90 border border-white/20 rounded-xl text-xs text-slate-200">
         <i class="fa-solid fa-window-maximize text-amber-400"></i>
-        <span id="taskbar-app-name" class="font-medium">Functions of OS</span>
+        <span id="taskbar-app-name" class="font-bold">Functions of OS</span>
       </div>
     </div>
 
     <!-- System Tray Clock & Sound Indicator -->
     <div class="flex items-center space-x-4 text-xs font-mono text-slate-300">
-      <div class="flex items-center space-x-2 bg-slate-800/60 px-2.5 py-1 rounded-xl border border-white/10">
+      <div class="flex items-center space-x-2 bg-slate-800/80 px-2.5 py-1 rounded-xl border border-white/10">
         <i class="fa-solid fa-volume-high text-emerald-400"></i>
         <i class="fa-solid fa-wifi text-sky-400"></i>
       </div>
       <div class="text-right">
         <div id="sys-clock" class="font-bold text-slate-100">12:00 PM</div>
-        <div id="sys-date" class="text-[10px] text-slate-400">10/04/2026</div>
+        <div id="sys-date" class="text-[10px] text-slate-400">10/05/2026</div>
       </div>
     </div>
   </footer>
@@ -209,7 +219,7 @@
     /* GLOBAL STATE MANAGEMENT */
     let currentActiveFolder = 1;
     let activeLab = null;
-    let currentThemeName = 'indigo';
+    let currentThemeName = 'cyber-contrast';
 
     /* AUDIO SYNTHESIZER (WEB AUDIO API) */
     const audioCtx = new (window.AudioContext || window.webkitAudioContext)();
@@ -249,7 +259,7 @@
           osc.start();
           osc.stop(audioCtx.currentTime + 0.4);
         }
-      } catch (e) { console.log('Audio disabled', e); }
+      } catch (e) { console.log('Audio error:', e); }
     }
 
     /* TOAST NOTIFICATION GENERATOR */
@@ -259,10 +269,10 @@
 
       const toast = document.createElement('div');
       let iconColor = 'text-sky-400';
-      let borderColor = 'border-sky-500/40';
+      let borderColor = 'border-sky-500/50';
 
-      if (type === 'success') { iconColor = 'text-emerald-400'; borderColor = 'border-emerald-500/40'; }
-      if (type === 'error') { iconColor = 'text-red-400'; borderColor = 'border-red-500/40'; }
+      if (type === 'success') { iconColor = 'text-emerald-400'; borderColor = 'border-emerald-500/50'; }
+      if (type === 'error') { iconColor = 'text-red-400'; borderColor = 'border-red-500/50'; }
 
       toast.className = `pointer-events-auto bg-slate-900/95 border ${borderColor} text-white px-4 py-3 rounded-2xl shadow-2xl flex items-start space-x-3 min-w-[280px] max-w-sm animate-toast backdrop-blur-md z-50`;
       toast.innerHTML = `
@@ -330,9 +340,9 @@
       const appNameEl = document.getElementById('taskbar-app-name');
       const titles = {
         1: '1. Functions of OS (Resource Management)',
-        2: '2. User of OS (Single vs Multi-User Virtualization)',
-        3: '3. Purpose of OS (Desktop PC Virtualization & NOS)',
-        4: '4. User Interface (GUI vs CLI Virtual Shells)'
+        2: '2. User of OS (Single-User OS vs Multi-User OS)',
+        3: '3. Purpose of OS (Desktop PC OS vs Mobile OS vs NOS)',
+        4: '4. User Interface (Interactive GUI WIMP vs CLI Shell)'
       };
       if (titleEl) titleEl.innerText = titles[folderId];
       if (appNameEl) appNameEl.innerText = titles[folderId];
@@ -354,7 +364,6 @@
       showToast('Windows Start Menu', 'Click any desktop icon or folder to launch interactive OS learning labs!', 'info');
     }
 
-    /* RENDER FOLDER CONTENT BASED ON SELECTION */
     function renderFolderContent(folderId) {
       const body = document.getElementById('window-body');
       if (!body) return;
@@ -365,17 +374,18 @@
         body.innerHTML = getUserTypesFolderHTML();
       } else if (folderId === 3) {
         body.innerHTML = getPurposeFolderHTML();
-        initDesktopPCVirtualization();
       } else if (folderId === 4) {
         body.innerHTML = getUIFolderHTML();
         initCLITerminal();
-        renderGUIFolderCanvas();
       }
     }
 
+    /* =========================================================
+       FOLDER 1: FUNCTIONS OF OS
+       ========================================================= */
     function getFunctionsFolderHTML() {
       return `
-        <div class="mb-4 bg-amber-500/10 border border-amber-500/20 p-3 rounded-xl flex items-center space-x-3">
+        <div class="mb-4 bg-amber-500/10 border border-amber-500/30 p-3.5 rounded-xl flex items-center space-x-3">
           <i class="fa-solid fa-graduation-cap text-2xl text-amber-400"></i>
           <div>
             <h3 class="font-bold text-sm text-amber-200">OS Core Functions Interactive Labs</h3>
@@ -411,7 +421,7 @@
           <button onclick="launchLab('ui-customizer')" class="p-3 bg-slate-800/80 hover:bg-slate-700/80 border border-white/10 rounded-xl text-left flex flex-col items-start transition-all hover:border-amber-400/50">
             <i class="fa-solid fa-palette text-2xl text-yellow-400 mb-2"></i>
             <span class="font-bold text-slate-100 text-xs">6. UI Customizer</span>
-            <span class="text-[10px] text-slate-400 mt-0.5">Themes & Desktop Styling</span>
+            <span class="text-[10px] text-slate-400 mt-0.5">High Contrast Themes</span>
           </button>
           <button onclick="launchLab('user-mgr')" class="p-3 bg-slate-800/80 hover:bg-slate-700/80 border border-white/10 rounded-xl text-left flex flex-col items-start transition-all hover:border-amber-400/50">
             <i class="fa-solid fa-user-shield text-2xl text-indigo-400 mb-2"></i>
@@ -906,35 +916,44 @@
       }, 1000);
     }
 
-    /* UI CUSTOMIZER FIX: WORKING THEMES */
+    /* HIGH CONTRAST THEMES */
     function getUICustomizerHTML() {
       return `
-        <div class="bg-slate-950 p-4 rounded-xl border border-yellow-500/30 space-y-3">
+        <div class="bg-slate-950 p-4 rounded-xl border border-yellow-500/40 space-y-3">
           <div class="font-bold text-yellow-300 text-xs flex items-center space-x-2">
             <i class="fa-solid fa-palette text-yellow-400"></i>
-            <span>Desktop Theme & Appearance Customizer</span>
+            <span>High Contrast Desktop Wallpaper & Theme Customizer</span>
           </div>
-          <p class="text-[11px] text-slate-300">Click any theme color below to dynamically transform the desktop wallpaper, system glass panels, and taskbar colors live!</p>
-          <div class="grid grid-cols-2 sm:grid-cols-3 gap-3">
-            <button onclick="setTheme('indigo')" class="p-3 bg-indigo-950 hover:bg-indigo-900 border border-indigo-500 rounded-xl font-bold text-xs text-indigo-200 flex flex-col items-center space-y-1 shadow">
-              <div class="w-6 h-6 rounded-full bg-gradient-to-br from-indigo-500 to-slate-900 border border-white/20"></div>
-              <span>Indigo Midnight</span>
-            </button>
-            <button onclick="setTheme('emerald')" class="p-3 bg-emerald-950 hover:bg-emerald-900 border border-emerald-500 rounded-xl font-bold text-xs text-emerald-200 flex flex-col items-center space-y-1 shadow">
-              <div class="w-6 h-6 rounded-full bg-gradient-to-br from-emerald-500 to-slate-900 border border-white/20"></div>
-              <span>Emerald Forest</span>
-            </button>
-            <button onclick="setTheme('purple')" class="p-3 bg-purple-950 hover:bg-purple-900 border border-purple-500 rounded-xl font-bold text-xs text-purple-200 flex flex-col items-center space-y-1 shadow">
-              <div class="w-6 h-6 rounded-full bg-gradient-to-br from-purple-500 to-slate-900 border border-white/20"></div>
-              <span>Purple Violet</span>
-            </button>
-            <button onclick="setTheme('cyberpunk')" class="p-3 bg-pink-950 hover:bg-pink-900 border border-pink-500 rounded-xl font-bold text-xs text-pink-200 flex flex-col items-center space-y-1 shadow">
-              <div class="w-6 h-6 rounded-full bg-gradient-to-br from-pink-500 to-rose-950 border border-white/20"></div>
+          <p class="text-[11px] text-slate-300">Click any theme color below to dynamically transform the desktop background, glass controls, and taskbar colors with high visual contrast!</p>
+          <div class="grid grid-cols-2 sm:grid-cols-3 gap-3 pt-1">
+            <button onclick="setTheme('cyber-contrast')" class="p-3 bg-pink-950 hover:bg-pink-900 border-2 border-pink-500 rounded-xl font-bold text-xs text-white flex flex-col items-center space-y-1 shadow-lg">
+              <div class="w-8 h-8 rounded-full bg-gradient-to-br from-pink-500 via-rose-600 to-black border-2 border-white shadow"></div>
               <span>Cyberpunk Neon</span>
+              <span class="text-[9px] text-pink-300 font-mono">High Contrast</span>
             </button>
-            <button onclick="setTheme('amber')" class="p-3 bg-amber-950 hover:bg-amber-900 border border-amber-500 rounded-xl font-bold text-xs text-amber-200 flex flex-col items-center space-y-1 shadow">
-              <div class="w-6 h-6 rounded-full bg-gradient-to-br from-amber-500 to-amber-950 border border-white/20"></div>
-              <span>Amber Bronze</span>
+
+            <button onclick="setTheme('daylight-contrast')" class="p-3 bg-slate-200 hover:bg-slate-300 border-2 border-slate-700 rounded-xl font-bold text-xs text-slate-950 flex flex-col items-center space-y-1 shadow-lg">
+              <div class="w-8 h-8 rounded-full bg-gradient-to-br from-white via-slate-300 to-slate-700 border-2 border-slate-900 shadow"></div>
+              <span>Daylight Clean</span>
+              <span class="text-[9px] text-slate-700 font-mono">Light Contrast</span>
+            </button>
+
+            <button onclick="setTheme('electric-cyan')" class="p-3 bg-cyan-950 hover:bg-cyan-900 border-2 border-cyan-400 rounded-xl font-bold text-xs text-white flex flex-col items-center space-y-1 shadow-lg">
+              <div class="w-8 h-8 rounded-full bg-gradient-to-br from-cyan-400 via-blue-600 to-black border-2 border-white shadow"></div>
+              <span>Electric Cyan</span>
+              <span class="text-[9px] text-cyan-300 font-mono">Ocean Vibrant</span>
+            </button>
+
+            <button onclick="setTheme('vivid-amber')" class="p-3 bg-amber-950 hover:bg-amber-900 border-2 border-amber-500 rounded-xl font-bold text-xs text-white flex flex-col items-center space-y-1 shadow-lg">
+              <div class="w-8 h-8 rounded-full bg-gradient-to-br from-amber-400 via-orange-600 to-black border-2 border-white shadow"></div>
+              <span>Solar Flare</span>
+              <span class="text-[9px] text-amber-300 font-mono">Gold Contrast</span>
+            </button>
+
+            <button onclick="setTheme('indigo')" class="p-3 bg-indigo-950 hover:bg-indigo-900 border-2 border-indigo-500 rounded-xl font-bold text-xs text-white flex flex-col items-center space-y-1 shadow-lg">
+              <div class="w-8 h-8 rounded-full bg-gradient-to-br from-indigo-500 via-purple-800 to-slate-950 border-2 border-white shadow"></div>
+              <span>Indigo Midnight</span>
+              <span class="text-[9px] text-indigo-300 font-mono">Deep Dark</span>
             </button>
           </div>
         </div>
@@ -948,7 +967,7 @@
       if (body) {
         body.className = `h-screen w-screen theme-${themeName} text-slate-100 flex flex-col justify-between relative overflow-hidden select-none`;
       }
-      showToast('Theme Applied', `Switched OS background theme to ${themeName.toUpperCase()}!`, 'success');
+      showToast('High Contrast Theme Applied', `Switched OS background wallpaper theme to ${themeName.toUpperCase()}!`, 'success');
     }
 
     /* USER MANAGEMENT LAB */
@@ -966,10 +985,12 @@
               <div class="text-xs font-bold text-indigo-300">User Account Administration Panel</div>
               <div class="text-[10px] text-slate-300">As an <b>Administrator</b>, you can <b>Add Users</b> and <b>Delete Users</b>.</div>
             </div>
-            <button onclick="toggleAdminRoleState()" id="admin-toggle-btn" class="px-2.5 py-1 bg-indigo-600 text-white rounded-lg text-xs font-bold shadow">Mode: Administrator</button>
+            <button onclick="toggleAdminRoleState()" id="admin-toggle-btn" class="px-2.5 py-1 bg-indigo-600 text-white rounded-lg text-xs font-bold shadow">
+              Role: ${currentAdminMode ? 'Administrator' : 'Standard User'}
+            </button>
           </div>
 
-          <div class="bg-slate-950 p-3 rounded-xl border border-indigo-500/30 space-y-2">
+          <div id="add-user-form" class="${currentAdminMode ? '' : 'opacity-50 pointer-events-none'} bg-slate-950 p-3 rounded-xl border border-indigo-500/30 space-y-2">
             <div class="text-xs font-bold text-indigo-300">Add New User Account</div>
             <div class="flex items-center space-x-2">
               <input type="text" id="new-username-input" placeholder="Enter username..." class="flex-1 bg-slate-900 border border-white/20 rounded-lg px-3 py-1.5 text-xs text-white focus:outline-none" />
@@ -1002,8 +1023,8 @@
               <div class="text-[10px] text-slate-400">${u.role}</div>
             </div>
           </div>
-          ${u.name === 'Admin Student' ? '<span class="text-[10px] bg-indigo-950 text-indigo-300 px-2 py-0.5 rounded">Main Admin</span>' : `
-            <button onclick="adminDeleteUser('${u.id}')" class="px-2.5 py-1 bg-red-600 hover:bg-red-500 text-white rounded text-xs font-bold">Delete</button>
+          ${u.name === 'Admin Student' ? '<span class="text-[10px] bg-indigo-950 text-indigo-300 px-2 py-0.5 rounded font-mono">System Owner</span>' : `
+            <button onclick="adminDeleteUser('${u.id}')" ${!currentAdminMode ? 'disabled class="opacity-40 bg-gray-600 text-slate-300 px-2.5 py-1 rounded text-xs font-bold cursor-not-allowed"' : 'class="px-2.5 py-1 bg-red-600 hover:bg-red-500 text-white rounded text-xs font-bold"'}>Delete</button>
           `}
         </div>
       `).join('');
@@ -1011,651 +1032,866 @@
 
     function toggleAdminRoleState() {
       currentAdminMode = !currentAdminMode;
+      playAudio('click');
       const btn = document.getElementById('admin-toggle-btn');
-      if (btn) {
-        btn.className = currentAdminMode ? 'px-2.5 py-1 bg-indigo-600 text-white rounded-lg text-xs font-bold' : 'px-2.5 py-1 bg-amber-600 text-white rounded-lg text-xs font-bold';
-        btn.innerText = currentAdminMode ? 'Mode: Administrator' : 'Mode: Standard User';
+      if (btn) btn.innerText = `Role: ${currentAdminMode ? 'Administrator' : 'Standard User'}`;
+      const form = document.getElementById('add-user-form');
+      if (form) {
+        if (currentAdminMode) form.classList.remove('opacity-50', 'pointer-events-none');
+        else form.classList.add('opacity-50', 'pointer-events-none');
       }
-      showToast('Role Switched', `Simulating privileges as ${currentAdminMode ? 'Administrator' : 'Standard User'}.`, 'info');
+      renderUserList();
+      showToast('User Security Mode', `Switched active mode to ${currentAdminMode ? 'Administrator (Full Access)' : 'Standard User (Restricted)'}`, 'info');
     }
 
     function adminAddUser() {
       if (!currentAdminMode) {
-        showToast('Access Denied', 'Standard Users cannot add accounts! Switch to Admin mode.', 'error');
+        showToast('Access Denied', 'Only Administrators can add new users!', 'error');
         return;
       }
-      const input = document.getElementById('new-username-input');
-      const select = document.getElementById('new-user-role-select');
-      if (!input || !input.value.trim()) return;
+      const nameInput = document.getElementById('new-username-input');
+      const roleSelect = document.getElementById('new-user-role-select');
+      if (!nameInput || !nameInput.value.trim()) return;
 
-      const name = input.value.trim();
-      const role = select ? select.value : 'Standard User';
-      osUsers.push({ id: 'u_' + Date.now(), name, role });
-      input.value = '';
       playAudio('success');
+      osUsers.push({
+        id: 'u_' + Date.now(),
+        name: nameInput.value.trim(),
+        role: roleSelect.value
+      });
+      nameInput.value = '';
       renderUserList();
-      showToast('User Created', `Administrator added new user "${name}".`, 'success');
+      showToast('User Created', `Created account "${osUsers[osUsers.length-1].name}"`, 'success');
     }
 
-    function adminDeleteUser(userId) {
+    function adminDeleteUser(id) {
       if (!currentAdminMode) {
-        showToast('Access Denied', 'Standard Users cannot delete accounts! Switch to Admin mode.', 'error');
+        showToast('Access Denied', 'Standard users cannot delete accounts!', 'error');
         return;
       }
-      osUsers = osUsers.filter(u => u.id !== userId);
       playAudio('eject');
+      osUsers = osUsers.filter(u => u.id !== id);
       renderUserList();
-      showToast('User Deleted', `Account removed by Administrator.`, 'info');
+      showToast('User Deleted', 'Account removed from system.', 'info');
     }
 
     /* MULTITASKING LAB */
     function getMultitaskingLabHTML() {
       return `
         <div class="bg-slate-950 p-4 rounded-xl border border-teal-500/30 space-y-3">
-          <div class="text-xs font-bold text-teal-300">Concurrent Multitasking Application Engine</div>
-          <p class="text-[11px] text-slate-300">An Operating System enables CPU core switching so multiple programs run simultaneously!</p>
-          <div class="grid grid-cols-2 gap-3">
-            <div class="bg-slate-900 p-3 rounded-lg border border-white/10 flex items-center justify-between">
-              <span class="text-xs font-bold text-white">App 1: Live Counter Task</span>
-              <span id="multitask-counter" class="font-mono text-xs text-teal-400 font-bold">0</span>
+          <div class="flex justify-between items-center border-b border-white/10 pb-2">
+            <span class="font-bold text-teal-300 text-xs flex items-center space-x-2">
+              <i class="fa-solid fa-window-restore text-teal-400"></i>
+              <span>Multitasking Concurrent Application Sandbox</span>
+            </span>
+          </div>
+          <p class="text-[11px] text-slate-300">Multitasking allows the OS to execute multiple software applications concurrently in separate desktop windows.</p>
+          
+          <div class="grid grid-cols-1 md:grid-cols-2 gap-3 pt-2">
+            <!-- Mini Notepad -->
+            <div class="bg-slate-900 p-3 rounded-xl border border-white/10 flex flex-col space-y-2">
+              <div class="flex justify-between items-center bg-slate-800 px-2 py-1 rounded text-xs font-bold text-slate-200">
+                <span><i class="fa-solid fa-file-lines text-teal-400 mr-1"></i> Mini Notepad</span>
+                <span class="text-[10px] text-teal-400 font-mono">App 1</span>
+              </div>
+              <textarea placeholder="Type concurrent notes..." class="bg-slate-950 text-slate-200 text-xs p-2 rounded border border-white/10 h-20 focus:outline-none resize-none font-mono"></textarea>
             </div>
-            <div class="bg-slate-900 p-3 rounded-lg border border-white/10 flex items-center justify-between">
-              <span class="text-xs font-bold text-white">App 2: Background Clock Task</span>
-              <span id="multitask-time" class="font-mono text-xs text-sky-400 font-bold">Active</span>
+
+            <!-- Mini Stopwatch -->
+            <div class="bg-slate-900 p-3 rounded-xl border border-white/10 flex flex-col space-y-2">
+              <div class="flex justify-between items-center bg-slate-800 px-2 py-1 rounded text-xs font-bold text-slate-200">
+                <span><i class="fa-solid fa-stopwatch text-amber-400 mr-1"></i> System Stopwatch</span>
+                <span class="text-[10px] text-amber-400 font-mono">App 2</span>
+              </div>
+              <div class="flex flex-col items-center justify-center bg-slate-950 rounded p-2 h-20 border border-white/10">
+                <span id="multitask-timer" class="font-mono font-bold text-lg text-emerald-400">00:00:00</span>
+                <div class="flex space-x-2 mt-1">
+                  <button onclick="startMultitaskTimer()" class="px-2 py-0.5 bg-emerald-600 text-white text-[10px] font-bold rounded">Start</button>
+                  <button onclick="stopMultitaskTimer()" class="px-2 py-0.5 bg-red-600 text-white text-[10px] font-bold rounded">Stop</button>
+                </div>
+              </div>
             </div>
           </div>
         </div>
       `;
     }
 
-    let mtCounter = 0;
-    setInterval(() => {
-      mtCounter++;
-      const c = document.getElementById('multitask-counter');
-      const t = document.getElementById('multitask-time');
-      if (c) c.innerText = mtCounter;
-      if (t) t.innerText = new Date().toLocaleTimeString();
-    }, 1000);
+    let timerInterval = null;
+    let timerSeconds = 0;
+    function startMultitaskTimer() {
+      if (timerInterval) return;
+      playAudio('click');
+      timerInterval = setInterval(() => {
+        timerSeconds++;
+        const timerEl = document.getElementById('multitask-timer');
+        if (timerEl) {
+          const m = String(Math.floor(timerSeconds / 60)).padStart(2, '0');
+          const s = String(timerSeconds % 60).padStart(2, '0');
+          const ms = String(Math.floor(Math.random() * 99)).padStart(2, '0');
+          timerEl.innerText = `${m}:${s}:${ms}`;
+        }
+      }, 1000);
+    }
 
-    /* USER OF OS VIRTUALIZATION (Single-User vs Multi-User OS) */
-    let activeSingleUserSession = 'Alice';
-    let singleUserActivityLogs = ["Alice logged into Console 0."];
+    function stopMultitaskTimer() {
+      playAudio('click');
+      clearInterval(timerInterval);
+      timerInterval = null;
+    }
 
-    let multiUserSessions = [
-      { user: 'Alice', protocol: 'SSH Terminal (Port 22)', status: 'Active', command: 'python train_model.py', cpu: '24%' },
-      { user: 'Bob', protocol: 'Remote Desktop RDP (Port 3389)', status: 'Active', command: 'rendering_3d_mesh.exe', cpu: '42%' },
-      { user: 'Charlie', protocol: 'Web Console Session', status: 'Active', command: 'db_backup.sh --full', cpu: '18%' }
-    ];
+    /* =========================================================
+       FOLDER 2: USER OF OS (SINGLE-USER OS vs MULTI-USER OS)
+       ========================================================= */
+    let currentOSUserTypeMode = 'single'; // 'single' or 'multi'
+    let singleActiveUser = 'Alice';
+    let user1CommandStep = 0;
+    let user2CommandStep = 0;
 
     function getUserTypesFolderHTML() {
       return `
         <div class="space-y-4">
-          <div class="bg-sky-500/10 border border-sky-500/30 p-3 rounded-xl flex items-center justify-between">
+          <!-- Educational Explanation Banner -->
+          <div class="bg-sky-500/10 border border-sky-500/30 p-3.5 rounded-xl flex items-center space-x-3">
+            <i class="fa-solid fa-users text-2xl text-sky-400"></i>
             <div>
-              <div class="text-xs font-bold text-sky-300 mb-0.5">USER OS VIRTUALIZATION (Single-User vs Multi-User OS)</div>
-              <p class="text-[11px] text-slate-300"><b>Single-User OS</b> allows only 1 user to log in at a time. <b>Multi-User OS</b> supports many users logged in simultaneously!</p>
+              <h3 class="font-bold text-xs text-sky-200">What is the "User" aspect of an Operating System?</h3>
+              <p class="text-[11px] text-slate-300">An Operating System can be classified by how many users it allows to interact with system resources at any given point in time.</p>
             </div>
           </div>
 
-          <div class="flex space-x-2 border-b border-white/10 pb-2">
-            <button onclick="switchUserTypeTab('single')" id="tab-btn-single" class="px-4 py-2 bg-sky-600 text-white rounded-xl font-bold text-xs shadow">1. Single-User OS Virtualization</button>
-            <button onclick="switchUserTypeTab('multi')" id="tab-btn-multi" class="px-4 py-2 bg-slate-800 text-slate-400 hover:bg-slate-700 rounded-xl font-bold text-xs">2. Multi-User OS Virtualization</button>
+          <!-- Mode Toggle Switcher -->
+          <div class="flex items-center space-x-2 bg-slate-950 p-1.5 rounded-xl border border-white/10 text-xs font-bold">
+            <button onclick="setOSUserTypeMode('single')" id="user-mode-btn-single" class="flex-1 py-2 rounded-lg transition-all flex items-center justify-center space-x-2 bg-sky-600 text-white shadow">
+              <i class="fa-solid fa-user"></i>
+              <span>1. Single-User OS (Personal)</span>
+            </button>
+            <button onclick="setOSUserTypeMode('multi')" id="user-mode-btn-multi" class="flex-1 py-2 rounded-lg transition-all flex items-center justify-center space-x-2 bg-slate-800 text-slate-400 hover:bg-slate-700">
+              <i class="fa-solid fa-users-line"></i>
+              <span>2. Multi-User OS (Server / Time-Sharing)</span>
+            </button>
           </div>
 
-          <!-- SINGLE USER VIRTUAL WORKSTATION -->
-          <div id="view-single-user" class="space-y-3">
-            <div class="bg-slate-950 p-4 rounded-xl border border-sky-500/30 space-y-3">
-              <div class="flex items-center justify-between border-b border-white/10 pb-2">
-                <span class="text-xs font-bold text-sky-300 flex items-center space-x-2">
-                  <i class="fa-solid fa-desktop"></i>
-                  <span>Single-User Workstation Console (e.g., MS-DOS / PC Console)</span>
-                </span>
-                <span class="text-[10px] font-mono bg-red-500/20 text-red-300 px-2 py-0.5 rounded border border-red-500/30">Concurrency Limit: 1 User Max</span>
-              </div>
-
-              <div class="grid grid-cols-3 gap-2">
-                <button onclick="attemptSingleUserLogin('Alice')" class="p-2.5 rounded-xl border ${activeSingleUserSession==='Alice'?'bg-sky-600 border-sky-300 text-white font-bold':'bg-slate-900 border-white/10 text-slate-400'} text-xs">
-                  <i class="fa-solid fa-user mr-1"></i> Log in as Alice
-                </button>
-                <button onclick="attemptSingleUserLogin('Bob')" class="p-2.5 rounded-xl border ${activeSingleUserSession==='Bob'?'bg-sky-600 border-sky-300 text-white font-bold':'bg-slate-900 border-white/10 text-slate-400'} text-xs">
-                  <i class="fa-solid fa-user mr-1"></i> Log in as Bob
-                </button>
-                <button onclick="attemptSingleUserLogin('Charlie')" class="p-2.5 rounded-xl border ${activeSingleUserSession==='Charlie'?'bg-sky-600 border-sky-300 text-white font-bold':'bg-slate-900 border-white/10 text-slate-400'} text-xs">
-                  <i class="fa-solid fa-user mr-1"></i> Log in as Charlie
-                </button>
-              </div>
-
-              <div class="bg-slate-900 p-3 rounded-lg border border-white/10 space-y-2">
-                <div class="flex justify-between items-center text-xs">
-                  <span class="text-slate-300 font-semibold">Active Session Console:</span>
-                  <span class="font-mono text-emerald-400 font-bold bg-emerald-950 px-2 py-0.5 rounded border border-emerald-500/30">User: ${activeSingleUserSession} (ACTIVE)</span>
-                </div>
-                <div id="single-user-log-box" class="bg-black font-mono text-[10px] text-sky-400 p-2.5 rounded border border-white/10 h-24 overflow-y-auto whitespace-pre-wrap"></div>
-              </div>
-            </div>
+          <!-- Dynamic Mode Viewport Container -->
+          <div id="os-user-type-viewport">
+            ${getSingleUserOSDemoHTML()}
           </div>
 
-          <!-- MULTI USER VIRTUAL ENTERPRISE SERVER -->
-          <div id="view-multi-user" class="hidden space-y-3">
-            <div class="bg-slate-950 p-4 rounded-xl border border-emerald-500/30 space-y-3">
-              <div class="flex items-center justify-between border-b border-white/10 pb-2">
-                <span class="text-xs font-bold text-emerald-300 flex items-center space-x-2">
-                  <i class="fa-solid fa-server"></i>
-                  <span>Multi-User Server Node (e.g., Linux / Unix Server)</span>
-                </span>
-                <span class="text-[10px] font-mono bg-emerald-500/20 text-emerald-300 px-2 py-0.5 rounded border border-emerald-500/30">Concurrency: 3 Users Simultaneous</span>
-              </div>
-
-              <div class="grid grid-cols-1 md:grid-cols-3 gap-3">
-                ${multiUserSessions.map(s => `
-                  <div class="bg-slate-900 p-3 rounded-xl border border-emerald-500/30 space-y-2">
-                    <div class="flex justify-between items-center border-b border-white/10 pb-1">
-                      <span class="font-bold text-xs text-emerald-300"><i class="fa-solid fa-user-gear mr-1"></i> ${s.user}</span>
-                      <span class="text-[9px] bg-emerald-950 text-emerald-400 px-1.5 py-0.5 rounded font-mono">ONLINE</span>
-                    </div>
-                    <div class="text-[10px] text-slate-300 font-mono">${s.protocol}</div>
-                    <div class="text-[10px] text-slate-400 font-mono bg-black p-1.5 rounded truncate">task: ${s.command}</div>
-                    <div class="flex justify-between text-[10px] text-emerald-400 font-mono">
-                      <span>CPU Share: ${s.cpu}</span>
-                      <button onclick="runMultiUserTask('${s.user}')" class="px-2 py-0.5 bg-emerald-700 hover:bg-emerald-600 text-white rounded text-[9px] font-bold">Run Task</button>
-                    </div>
-                  </div>
-                `).join('')}
-              </div>
-
-              <div class="bg-slate-900 p-2.5 rounded-lg border border-white/10 flex justify-between items-center text-xs">
-                <span class="text-slate-300 font-medium">Shared OS Kernel & CPU Pool:</span>
-                <span class="font-mono text-emerald-400 font-bold">3 Users Active Simultaneously (No Lockouts!)</span>
-              </div>
+          <!-- Interactive Concept Comparison Table -->
+          <div class="bg-slate-950 p-3.5 rounded-xl border border-white/10 space-y-2">
+            <h4 class="font-bold text-xs text-sky-300 flex items-center space-x-2">
+              <i class="fa-solid fa-table-columns"></i>
+              <span>Key Exam Summary: Single-User vs Multi-User OS</span>
+            </h4>
+            <div class="overflow-x-auto">
+              <table class="w-full text-left text-[11px] text-slate-300 border-collapse">
+                <thead>
+                  <tr class="border-b border-white/20 text-slate-100 font-bold bg-slate-900">
+                    <th class="p-2">Feature</th>
+                    <th class="p-2 text-sky-300">Single-User OS</th>
+                    <th class="p-2 text-purple-300">Multi-User OS</th>
+                  </tr>
+                </thead>
+                <tbody class="divide-y divide-white/10 font-mono">
+                  <tr>
+                    <td class="p-2 font-bold text-slate-200">Active Users</td>
+                    <td class="p-2 text-sky-200">Only 1 user at a time</td>
+                    <td class="p-2 text-purple-200">Multiple users concurrently (simultaneously)</td>
+                  </tr>
+                  <tr>
+                    <td class="p-2 font-bold text-slate-200">System Resources</td>
+                    <td class="p-2">100% CPU & RAM dedicated to 1 active session</td>
+                    <td class="p-2">CPU & RAM time-shared between active sessions</td>
+                  </tr>
+                  <tr>
+                    <td class="p-2 font-bold text-slate-200">Switching Users</td>
+                    <td class="p-2">User 1 must Log Off / Lock before User 2 logs in</td>
+                    <td class="p-2">Users work independently at the same time via terminals</td>
+                  </tr>
+                  <tr>
+                    <td class="p-2 font-bold text-slate-200">Real-World Examples</td>
+                    <td class="p-2">MS-DOS, Windows 11 Home, macOS, iOS, Android</td>
+                    <td class="p-2">Linux Server, Windows Server, UNIX, Mainframes</td>
+                  </tr>
+                </tbody>
+              </table>
             </div>
           </div>
         </div>
       `;
     }
 
-    function switchUserTypeTab(tab) {
+    function setOSUserTypeMode(mode) {
       playAudio('click');
-      const btnSingle = document.getElementById('tab-btn-single');
-      const btnMulti = document.getElementById('tab-btn-multi');
-      const viewSingle = document.getElementById('view-single-user');
-      const viewMulti = document.getElementById('view-multi-user');
+      currentOSUserTypeMode = mode;
+      const btnSingle = document.getElementById('user-mode-btn-single');
+      const btnMulti = document.getElementById('user-mode-btn-multi');
+      const viewport = document.getElementById('os-user-type-viewport');
 
-      if (tab === 'single') {
-        btnSingle.className = 'px-4 py-2 bg-sky-600 text-white rounded-xl font-bold text-xs shadow';
-        btnMulti.className = 'px-4 py-2 bg-slate-800 text-slate-400 hover:bg-slate-700 rounded-xl font-bold text-xs';
-        viewSingle.classList.remove('hidden');
-        viewMulti.classList.add('hidden');
-        renderSingleUserLogs();
+      if (mode === 'single') {
+        if (btnSingle) btnSingle.className = 'flex-1 py-2 rounded-lg transition-all flex items-center justify-center space-x-2 bg-sky-600 text-white shadow font-bold';
+        if (btnMulti) btnMulti.className = 'flex-1 py-2 rounded-lg transition-all flex items-center justify-center space-x-2 bg-slate-800 text-slate-400 hover:bg-slate-700 font-medium';
+        if (viewport) viewport.innerHTML = getSingleUserOSDemoHTML();
       } else {
-        btnMulti.className = 'px-4 py-2 bg-emerald-600 text-white rounded-xl font-bold text-xs shadow';
-        btnSingle.className = 'px-4 py-2 bg-slate-800 text-slate-400 hover:bg-slate-700 rounded-xl font-bold text-xs';
-        viewMulti.classList.remove('hidden');
-        viewSingle.classList.add('hidden');
+        if (btnSingle) btnSingle.className = 'flex-1 py-2 rounded-lg transition-all flex items-center justify-center space-x-2 bg-slate-800 text-slate-400 hover:bg-slate-700 font-medium';
+        if (btnMulti) btnMulti.className = 'flex-1 py-2 rounded-lg transition-all flex items-center justify-center space-x-2 bg-purple-600 text-white shadow font-bold';
+        if (viewport) viewport.innerHTML = getMultiUserOSDemoHTML();
       }
     }
 
-    function attemptSingleUserLogin(newUser) {
+    /* SINGLE USER DEMO HTML */
+    function getSingleUserOSDemoHTML() {
+      return `
+        <div class="bg-slate-950 p-4 rounded-xl border-2 border-sky-500/50 space-y-3 shadow-xl">
+          <div class="flex justify-between items-center border-b border-white/10 pb-2">
+            <div>
+              <span class="font-bold text-xs text-sky-300">Single-User OS Architecture Sandbox</span>
+              <p class="text-[10px] text-slate-300 mt-0.5">Only ONE user session can hold CPU & Display controls at any instant.</p>
+            </div>
+            <span class="text-[10px] bg-sky-950 text-sky-300 font-mono px-2 py-0.5 rounded border border-sky-500/30">1 Active Session Max</span>
+          </div>
+
+          <div class="grid grid-cols-1 md:grid-cols-3 gap-3">
+            <!-- Active Display Console -->
+            <div class="md:col-span-2 bg-slate-900 p-3 rounded-xl border border-white/10 flex flex-col justify-between h-44">
+              <div class="flex justify-between items-center border-b border-white/10 pb-1.5">
+                <span class="text-xs font-bold text-white flex items-center space-x-2">
+                  <i class="fa-solid fa-desktop text-sky-400"></i>
+                  <span>Laptop Display - Active User: <b id="single-active-username" class="text-sky-300">${singleActiveUser}</b></span>
+                </span>
+                <span class="text-[9px] bg-emerald-950 text-emerald-400 px-2 py-0.5 rounded font-mono">Screen Unlocked</span>
+              </div>
+
+              <div id="single-user-screen-log" class="bg-black/90 p-2.5 rounded-lg font-mono text-[11px] text-sky-400 h-24 overflow-y-auto border border-sky-500/20 space-y-1 my-2">
+                <div>[${singleActiveUser}@Personal-PC ~]$ Opening Word_Processor.docx...</div>
+                <div class="text-slate-300">&gt; Editing document in foreground focus.</div>
+              </div>
+
+              <div class="flex space-x-2">
+                <button onclick="singleUserRunApp()" class="flex-1 px-3 py-1 bg-sky-600 hover:bg-sky-500 text-white font-bold text-xs rounded-lg shadow">Work as ${singleActiveUser}</button>
+                <button onclick="attemptSecondUserAccess()" class="px-3 py-1 bg-amber-600 hover:bg-amber-500 text-white font-bold text-xs rounded-lg shadow">Attempt 2nd User Concurrent Access</button>
+              </div>
+            </div>
+
+            <!-- Session Controls -->
+            <div class="bg-slate-900 p-3 rounded-xl border border-white/10 flex flex-col justify-between h-44">
+              <div>
+                <div class="text-xs font-bold text-slate-200 border-b border-white/10 pb-1">Session Management</div>
+                <p class="text-[10px] text-slate-400 mt-2">To let another user work on a Single-User OS, you must log off or switch active user accounts.</p>
+              </div>
+
+              <button onclick="switchSingleUserAccount()" class="w-full py-2 bg-indigo-600 hover:bg-indigo-500 text-white font-bold text-xs rounded-lg shadow flex items-center justify-center space-x-1.5">
+                <i class="fa-solid fa-right-from-bracket"></i>
+                <span>Log Off ${singleActiveUser} & Switch User</span>
+              </button>
+            </div>
+          </div>
+        </div>
+      `;
+    }
+
+    function singleUserRunApp() {
+      playAudio('click');
+      const screen = document.getElementById('single-user-screen-log');
+      if (!screen) return;
+      const div = document.createElement('div');
+      div.className = 'text-sky-300 font-mono';
+      div.innerText = `[${singleActiveUser}] > Processing task: Saved changes to file. CPU 100% allocated to ${singleActiveUser}.`;
+      screen.appendChild(div);
+      screen.scrollTop = screen.scrollHeight;
+    }
+
+    function attemptSecondUserAccess() {
       playAudio('eject');
-      if (newUser === activeSingleUserSession) {
-        showToast('Already Logged In', `${newUser} is currently using the console.`, 'info');
-        return;
-      }
-
-      const prevUser = activeSingleUserSession;
-      activeSingleUserSession = newUser;
-      singleUserActivityLogs.push(`[SYSTEM LOCKOUT]: Single-user OS forcefully terminated ${prevUser}'s session!`);
-      singleUserActivityLogs.push(`[SESSION START]: ${newUser} logged in and took total control of screen console.`);
-
-      renderFolderContent(2);
-      renderSingleUserLogs();
-      showToast('Single-User OS Limit!', `Logging in ${newUser} disconnected ${prevUser}. Only 1 active user supported!`, 'error');
+      const otherUser = singleActiveUser === 'Alice' ? 'Bob' : 'Alice';
+      showToast('Access Blocked (Single-User OS)', `${otherUser} cannot log in or run apps simultaneously! ${singleActiveUser} currently owns the screen session.`, 'error');
     }
 
-    function renderSingleUserLogs() {
-      const logBox = document.getElementById('single-user-log-box');
-      if (logBox) {
-        logBox.innerText = singleUserActivityLogs.join('\n');
-        logBox.scrollTop = logBox.scrollHeight;
+    function switchSingleUserAccount() {
+      playAudio('click');
+      singleActiveUser = singleActiveUser === 'Alice' ? 'Bob' : 'Alice';
+      const nameEl = document.getElementById('single-active-username');
+      const screen = document.getElementById('single-user-screen-log');
+      if (nameEl) nameEl.innerText = singleActiveUser;
+      if (screen) {
+        screen.innerHTML = `
+          <div class="text-yellow-300 font-mono">[OS LOG OFF] Previous session suspended.</div>
+          <div class="text-emerald-400 font-mono">[OS LOGIN] User "${singleActiveUser}" logged in. New dedicated screen session started.</div>
+        `;
       }
+      showToast('User Session Switched', `Logged off previous account. ${singleActiveUser} is now the single active user.`, 'info');
     }
 
-    function runMultiUserTask(user) {
+    /* MULTI USER DEMO HTML */
+    function getMultiUserOSDemoHTML() {
+      return `
+        <div class="bg-slate-950 p-4 rounded-xl border-2 border-purple-500/50 space-y-3 shadow-xl">
+          <div class="flex justify-between items-center border-b border-white/10 pb-2">
+            <div>
+              <span class="font-bold text-xs text-purple-300">Multi-User OS Time-Sharing Server Architecture</span>
+              <p class="text-[10px] text-slate-300 mt-0.5">MULTIPLE users log in and execute applications AT THE SAME TIME on one server.</p>
+            </div>
+            <button onclick="triggerSimultaneousTasks()" class="px-3 py-1 bg-gradient-to-r from-purple-600 to-indigo-600 hover:from-purple-500 hover:to-indigo-500 text-white text-xs font-bold rounded-lg shadow animate-pulse flex items-center space-x-1">
+              <i class="fa-solid fa-play"></i>
+              <span>Simulate Simultaneous Tasks</span>
+            </button>
+          </div>
+
+          <!-- Shared CPU Load Indicator -->
+          <div class="bg-slate-900 p-2.5 rounded-xl border border-white/10 space-y-1 font-mono text-[11px]">
+            <div class="flex justify-between items-center text-slate-300">
+              <span><i class="fa-solid fa-microchip text-purple-400 mr-1"></i> Central Time-Sharing CPU Load:</span>
+              <span id="multi-cpu-load" class="text-emerald-400 font-bold">54% Load (User 1 Alice: 28% | User 2 Bob: 26%)</span>
+            </div>
+            <div class="h-3 w-full bg-slate-950 rounded-full overflow-hidden flex p-0.5 border border-white/10">
+              <div id="u1-cpu-bar" class="bg-sky-500 h-full rounded-l transition-all duration-500" style="width: 28%;"></div>
+              <div id="u2-cpu-bar" class="bg-purple-500 h-full rounded-r transition-all duration-500" style="width: 26%;"></div>
+            </div>
+          </div>
+
+          <!-- Dual Side-by-Side Simultaneous Session Terminals -->
+          <div class="grid grid-cols-1 md:grid-cols-2 gap-3">
+            
+            <!-- Session 1: Alice -->
+            <div class="bg-slate-900 p-3 rounded-xl border border-sky-500/40 flex flex-col space-y-2">
+              <div class="flex justify-between items-center bg-slate-950 p-1.5 rounded border border-white/10 text-xs font-bold">
+                <span class="text-sky-300"><i class="fa-solid fa-terminal mr-1"></i> Terminal 1: Alice (Local Session)</span>
+                <span class="text-[9px] bg-sky-950 text-sky-300 px-1.5 py-0.5 rounded font-mono">Active Live</span>
+              </div>
+              <div id="user1-terminal" class="bg-black/90 p-2 rounded-lg font-mono text-[10px] text-sky-400 h-28 overflow-y-auto border border-sky-500/20 space-y-1">
+                <div>[Alice@OS-Server ~]$ python3 data_analysis.py</div>
+                <div class="text-emerald-400">&gt; Computing dataset records 1..500...</div>
+              </div>
+              <button onclick="user1RunTask()" class="w-full py-1 bg-sky-600 hover:bg-sky-500 text-white font-bold text-xs rounded-lg">Alice: Run Python Script</button>
+            </div>
+
+            <!-- Session 2: Bob -->
+            <div class="bg-slate-900 p-3 rounded-xl border border-purple-500/40 flex flex-col space-y-2">
+              <div class="flex justify-between items-center bg-slate-950 p-1.5 rounded border border-white/10 text-xs font-bold">
+                <span class="text-purple-300"><i class="fa-solid fa-network-wired mr-1"></i> Terminal 2: Bob (SSH Remote)</span>
+                <span class="text-[9px] bg-purple-950 text-purple-300 px-1.5 py-0.5 rounded font-mono">Active Live</span>
+              </div>
+              <div id="user2-terminal" class="bg-black/90 p-2 rounded-lg font-mono text-[10px] text-purple-300 h-28 overflow-y-auto border border-purple-500/20 space-y-1">
+                <div>[Bob@OS-Server ~]$ node webserver.js</div>
+                <div class="text-emerald-400">&gt; Server listening on HTTP port 8080...</div>
+              </div>
+              <button onclick="user2RunTask()" class="w-full py-1 bg-purple-600 hover:bg-purple-500 text-white font-bold text-xs rounded-lg">Bob: Query Server Database</button>
+            </div>
+
+          </div>
+        </div>
+      `;
+    }
+
+    function triggerSimultaneousTasks() {
       playAudio('success');
-      const target = multiUserSessions.find(s => s.user === user);
-      if (target) {
-        target.cpu = `${Math.floor(Math.random() * 30 + 15)}%`;
-        renderFolderContent(2);
-        switchUserTypeTab('multi');
-        showToast('Multi-User Task Dispatched', `Executed concurrent background job for ${user}!`, 'success');
+      showToast('Simultaneous Tasks Executed', 'Multi-User OS processed commands for both Alice and Bob at the exact same time!', 'info');
+      user1RunTask();
+      setTimeout(() => { user2RunTask(); }, 250);
+    }
+
+    function user1RunTask() {
+      playAudio('click');
+      const t = document.getElementById('user1-terminal');
+      if (!t) return;
+      const tasks = [
+        '[Alice] gcc project_compiler.c -o app',
+        '[Alice] &gt; Compiling source code modules...',
+        '[Alice] &gt; Build Success! Executable created.',
+        '[Alice] ./app --export-report'
+      ];
+      const div = document.createElement('div');
+      div.className = 'text-sky-300 font-bold';
+      div.innerHTML = tasks[user1CommandStep % tasks.length];
+      user1CommandStep++;
+      t.appendChild(div);
+      t.scrollTop = t.scrollHeight;
+      randomizeSharedCPU();
+    }
+
+    function user2RunTask() {
+      playAudio('click');
+      const t = document.getElementById('user2-terminal');
+      if (!t) return;
+      const tasks = [
+        '[Bob] SELECT * FROM users_db WHERE status="active";',
+        '[Bob] &gt; Database fetched 1,250 records in 4ms',
+        '[Bob] systemctl restart nginx.service',
+        '[Bob] &gt; Nginx Server Reloaded Successfully.'
+      ];
+      const div = document.createElement('div');
+      div.className = 'text-purple-300 font-bold';
+      div.innerHTML = tasks[user2CommandStep % tasks.length];
+      user2CommandStep++;
+      t.appendChild(div);
+      t.scrollTop = t.scrollHeight;
+      randomizeSharedCPU();
+    }
+
+    function randomizeSharedCPU() {
+      const u1Bar = document.getElementById('u1-cpu-bar');
+      const u2Bar = document.getElementById('u2-cpu-bar');
+      const txt = document.getElementById('multi-cpu-load');
+      if (u1Bar && u2Bar && txt) {
+        const u1Cpu = Math.floor(Math.random() * 35 + 15);
+        const u2Cpu = Math.floor(Math.random() * 35 + 15);
+        u1Bar.style.width = `${u1Cpu}%`;
+        u2Bar.style.width = `${u2Cpu}%`;
+        txt.innerText = `${u1Cpu + u2Cpu}% Total CPU Shared (User 1 Alice: ${u1Cpu}% | User 2 Bob: ${u2Cpu}%)`;
       }
     }
 
-    /* PURPOSE OF OS VIRTUALIZATION: REAL DESKTOP COMPUTER SETUP */
-    let desktopVirtualApps = [
-      { id: 'code', name: 'IDE Code Editor', icon: 'fa-code', color: 'text-sky-400', active: true },
-      { id: 'browser', name: 'Web Browser', icon: 'fa-globe', color: 'text-amber-400', active: false },
-      { id: 'paint', name: 'Paint App', icon: 'fa-palette', color: 'text-pink-400', active: false }
-    ];
-    let pcGpuTurboMode = false;
-    let pcRefreshRate = 60;
+    /* =========================================================
+       FOLDER 3: PURPOSE OF OS
+       ========================================================= */
+    let purposeOSTab = 'desktop'; // 'desktop' or 'mobile' or 'nos'
 
     function getPurposeFolderHTML() {
       return `
         <div class="space-y-4">
-          <div class="bg-emerald-500/10 border border-emerald-500/30 p-3 rounded-xl flex justify-between items-center">
-            <div>
-              <div class="text-xs font-bold text-emerald-300 mb-0.5">SYSTEM PURPOSE & PLATFORM VIRTUALIZATION</div>
-              <p class="text-[11px] text-slate-300">Classifies Operating Systems by <b>WHAT HARDWARE DEVICE</b> it runs on (Desktop PC vs Mobile vs Network OS).</p>
-            </div>
+          <!-- Operating System Category Selector Tabs -->
+          <div class="flex items-center space-x-2 bg-slate-950 p-1.5 rounded-xl border border-white/10 text-xs font-bold">
+            <button onclick="switchPurposeOSTab('desktop')" id="purpose-tab-desktop" class="flex-1 py-2 rounded-lg transition-all flex items-center justify-center space-x-2 bg-emerald-600 text-white shadow">
+              <i class="fa-solid fa-desktop"></i>
+              <span>1. Desktop PC OS</span>
+            </button>
+            <button onclick="switchPurposeOSTab('mobile')" id="purpose-tab-mobile" class="flex-1 py-2 rounded-lg transition-all flex items-center justify-center space-x-2 bg-slate-800 text-slate-400 hover:bg-slate-700">
+              <i class="fa-solid fa-mobile-screen-button"></i>
+              <span>2. Mobile OS</span>
+            </button>
+            <button onclick="switchPurposeOSTab('nos')" id="purpose-tab-nos" class="flex-1 py-2 rounded-lg transition-all flex items-center justify-center space-x-2 bg-slate-800 text-slate-400 hover:bg-slate-700">
+              <i class="fa-solid fa-network-wired"></i>
+              <span>3. Network OS (NOS)</span>
+            </button>
           </div>
 
-          <div class="flex space-x-2 border-b border-white/10 pb-2">
-            <button onclick="switchPurposeTab('desktop')" id="p-btn-desktop" class="px-3.5 py-1.5 bg-emerald-600 text-white rounded-xl font-bold text-xs shadow">1. Desktop OS Virtual PC Computer</button>
-            <button onclick="switchPurposeTab('mobile')" id="p-btn-mobile" class="px-3.5 py-1.5 bg-slate-800 text-slate-400 hover:bg-slate-700 rounded-xl font-bold text-xs">2. Mobile OS</button>
-            <button onclick="switchPurposeTab('network')" id="p-btn-network" class="px-3.5 py-1.5 bg-slate-800 text-slate-400 hover:bg-slate-700 rounded-xl font-bold text-xs">3. Network OS (NOS)</button>
-          </div>
-
-          <!-- DESKTOP PC COMPUTER VIRTUALIZATION -->
-          <div id="p-view-desktop" class="space-y-3">
-            <div class="bg-slate-950 p-4 rounded-xl border border-emerald-500/40 space-y-3">
-              <div class="flex justify-between items-center border-b border-white/10 pb-2">
-                <span class="text-xs font-bold text-emerald-300 flex items-center space-x-2">
-                  <i class="fa-solid fa-desktop text-emerald-400"></i>
-                  <span>Desktop PC Hardware & Operating System Virtualization</span>
-                </span>
-                <div class="flex space-x-2">
-                  <button onclick="toggleGpuTurbo()" class="px-2.5 py-1 ${pcGpuTurboMode?'bg-amber-500 text-slate-950':'bg-slate-800 text-slate-300'} font-bold text-[10px] rounded-lg">
-                    ⚡ GPU Turbo: ${pcGpuTurboMode ? 'ON' : 'OFF'}
-                  </button>
-                  <button onclick="cycleRefreshRate()" class="px-2.5 py-1 bg-slate-800 text-emerald-400 font-bold text-[10px] rounded-lg">
-                    🖥️ ${pcRefreshRate} Hz Monitor
-                  </button>
-                </div>
-              </div>
-
-              <!-- DESKTOP COMPUTER SETUP GRAPHIC -->
-              <div class="flex flex-col md:flex-row items-center justify-center gap-4 bg-slate-900/90 p-4 rounded-xl border border-white/10">
-                
-                <!-- VIRTUAL MONITOR FRAME -->
-                <div class="w-full md:w-3/4 bg-slate-950 border-4 border-slate-700 rounded-xl p-2.5 shadow-2xl flex flex-col relative">
-                  <!-- Monitor Webcam & Title -->
-                  <div class="flex items-center justify-between border-b border-white/10 pb-1.5 mb-2">
-                    <div class="flex items-center space-x-2">
-                      <div class="w-2.5 h-2.5 rounded-full bg-red-500"></div>
-                      <div class="w-2.5 h-2.5 rounded-full bg-amber-500"></div>
-                      <div class="w-2.5 h-2.5 rounded-full bg-emerald-500"></div>
-                      <span class="text-[10px] font-bold text-slate-300 font-mono">Desktop PC Screen Simulator</span>
-                    </div>
-                    <span class="text-[9px] font-mono text-emerald-400">Optimized for Keyboard & Mouse</span>
-                  </div>
-
-                  <!-- Inside Virtual Screen Content -->
-                  <div id="pc-monitor-screen" class="bg-slate-900 rounded-lg p-3 min-h-[160px] border border-white/10 flex flex-col justify-between">
-                    <!-- Rendered inside PC Screen -->
-                  </div>
-
-                  <!-- Virtual Keyboard & Mouse Shelf -->
-                  <div class="mt-2 pt-2 border-t border-slate-800 flex justify-between items-center px-2">
-                    <div class="flex space-x-1">
-                      <div class="px-2 py-0.5 bg-slate-800 text-slate-400 font-mono text-[9px] rounded">Keyboard Ctrl+C</div>
-                      <div class="px-2 py-0.5 bg-slate-800 text-slate-400 font-mono text-[9px] rounded">Ctrl+V</div>
-                    </div>
-                    <div class="text-[9px] text-sky-400 font-mono flex items-center space-x-1">
-                      <i class="fa-solid fa-computer-mouse"></i>
-                      <span>High-Precision Mouse Active</span>
-                    </div>
-                  </div>
-                </div>
-
-                <!-- VIRTUAL PC TOWER FRAME -->
-                <div class="w-28 h-52 bg-slate-950 border-2 border-slate-700 rounded-2xl p-2.5 flex flex-col justify-between items-center shadow-2xl tower-rgb-glow">
-                  <div class="w-full text-center">
-                    <div class="text-[9px] font-bold text-slate-400 font-mono">PC TOWER</div>
-                    <div class="w-full h-1 bg-sky-500 rounded my-1"></div>
-                  </div>
-                  <!-- RGB Fans -->
-                  <div class="w-12 h-12 rounded-full border-2 border-sky-400 flex items-center justify-center animate-spin">
-                    <i class="fa-solid fa-fan text-sky-400 text-lg"></i>
-                  </div>
-                  <!-- PC Power Button -->
-                  <button onclick="rebootVirtualPC()" class="w-8 h-8 rounded-full bg-slate-800 hover:bg-emerald-600 text-emerald-400 hover:text-white flex items-center justify-center transition-colors shadow">
-                    <i class="fa-solid fa-power-off text-xs"></i>
-                  </button>
-                </div>
-
-              </div>
-            </div>
-          </div>
-
-          <!-- MOBILE OS -->
-          <div id="p-view-mobile" class="hidden space-y-3">
-            <div class="flex justify-center">
-              <div class="w-48 h-64 bg-slate-950 border-4 border-slate-700 rounded-3xl p-3 flex flex-col justify-between shadow-2xl">
-                <div class="w-12 h-2 bg-slate-800 rounded-b-lg self-center"></div>
-                <div class="grid grid-cols-3 gap-2 text-center my-auto">
-                  <button onclick="showToast('Touch App', 'Opened Camera app via touch gesture', 'info')" class="p-2.5 bg-green-600/30 hover:bg-green-600/50 rounded-xl text-green-400"><i class="fa-solid fa-phone"></i></button>
-                  <button onclick="showToast('Touch App', 'Opened Messages app via touch gesture', 'info')" class="p-2.5 bg-sky-600/30 hover:bg-sky-600/50 rounded-xl text-sky-400"><i class="fa-solid fa-comments"></i></button>
-                  <button onclick="showToast('Touch App', 'Opened Camera app via touch gesture', 'info')" class="p-2.5 bg-pink-600/30 hover:bg-pink-600/50 rounded-xl text-pink-400"><i class="fa-solid fa-camera"></i></button>
-                </div>
-                <div class="text-[9px] text-center text-slate-400 font-mono">Mobile Touch & ARM Battery Saver OS</div>
-              </div>
-            </div>
-          </div>
-
-          <!-- NETWORK OS -->
-          <div id="p-view-network" class="hidden space-y-3">
-            <div class="bg-slate-950 p-4 rounded-xl border border-white/10 space-y-3">
-              <div class="flex space-x-2">
-                <button onclick="runNOSCommand('ping')" class="px-3 py-1 bg-purple-900/60 hover:bg-purple-800 text-purple-200 border border-purple-500/30 rounded text-xs font-bold">Ping Router</button>
-                <button onclick="runNOSCommand('netstat')" class="px-3 py-1 bg-purple-900/60 hover:bg-purple-800 text-purple-200 border border-purple-500/30 rounded text-xs font-bold">Show Connections</button>
-              </div>
-              <div id="nos-cli-output" class="font-mono text-[10px] text-emerald-400 bg-slate-900 p-2.5 rounded border border-white/10 min-h-[45px]">
-                Ready for network commands...
-              </div>
-            </div>
+          <!-- VIEWPORT CONTAINER -->
+          <div id="purpose-tab-content">
+            ${getPurposeTabDesktopHTML()}
           </div>
         </div>
       `;
     }
 
-    function initDesktopPCVirtualization() {
-      const monitor = document.getElementById('pc-monitor-screen');
-      if (!monitor) return;
-
-      const activeApp = desktopVirtualApps.find(a => a.active) || desktopVirtualApps[0];
-
-      monitor.innerHTML = `
-        <div class="flex items-center justify-between border-b border-white/10 pb-1.5">
-          <div class="flex space-x-2">
-            ${desktopVirtualApps.map(a => `
-              <button onclick="switchDesktopVirtualApp('${a.id}')" class="px-2 py-0.5 rounded text-[10px] font-bold flex items-center space-x-1 ${a.active?'bg-emerald-600 text-white':'bg-slate-800 text-slate-400'}">
-                <i class="fa-solid ${a.icon} ${a.color}"></i>
-                <span>${a.name}</span>
-              </button>
-            `).join('')}
-          </div>
-          <span class="text-[9px] text-emerald-400 font-mono">Multitasking PC Core</span>
-        </div>
-
-        <div class="my-2 p-2 bg-slate-950 rounded border border-white/10 text-xs font-mono">
-          ${activeApp.id === 'code' ? `
-            <div class="text-sky-300 font-bold">// C++ High Performance Desktop Application</div>
-            <div class="text-slate-300 text-[10px] mt-1">#include &lt;iostream&gt;<br>int main() { std::cout << "Desktop OS PC Performance"; }</div>
-          ` : activeApp.id === 'browser' ? `
-            <div class="text-amber-300 font-bold">🌐 Desktop Web Browser v110.0</div>
-            <div class="text-slate-300 text-[10px] mt-1">URL: https://learning.os.edu/desktop-pc</div>
-          ` : `
-            <div class="text-pink-300 font-bold">🎨 Vector Graphics Paint Editor</div>
-            <div class="text-slate-300 text-[10px] mt-1">Rendering 24-bit Canvas with Hardware Acceleration...</div>
-          `}
-        </div>
-
-        <div class="flex justify-between text-[10px] font-mono text-slate-400">
-          <span>GPU Turbo: ${pcGpuTurboMode ? 'ENABLED ⚡' : 'OFF'}</span>
-          <span>FPS: ${pcRefreshRate} Frame/s</span>
-        </div>
-      `;
-    }
-
-    function switchDesktopVirtualApp(appId) {
+    function switchPurposeOSTab(tabKey) {
       playAudio('click');
-      desktopVirtualApps.forEach(a => a.active = (a.id === appId));
-      initDesktopPCVirtualization();
-    }
-
-    function toggleGpuTurbo() {
-      playAudio('success');
-      pcGpuTurboMode = !pcGpuTurboMode;
-      initDesktopPCVirtualization();
-      renderFolderContent(3);
-      showToast('GPU Acceleration', `Hardware GPU Turbo set to ${pcGpuTurboMode ? 'ON' : 'OFF'}`, 'info');
-    }
-
-    function cycleRefreshRate() {
-      playAudio('click');
-      pcRefreshRate = pcRefreshRate === 60 ? 120 : (pcRefreshRate === 120 ? 144 : 60);
-      initDesktopPCVirtualization();
-      renderFolderContent(3);
-      showToast('Monitor Refresh Rate', `PC Monitor set to ${pcRefreshRate} Hz.`, 'info');
-    }
-
-    function rebootVirtualPC() {
-      playAudio('eject');
-      showToast('Rebooting Virtual PC', 'Restarting Desktop Computer setup...', 'error');
-      setTimeout(() => {
-        playAudio('success');
-        showToast('Virtual PC Online', 'Desktop OS booted successfully!', 'success');
-      }, 1200);
-    }
-
-    function switchPurposeTab(tab) {
-      playAudio('click');
-      ['desktop', 'mobile', 'network'].forEach(t => {
-        const btn = document.getElementById(`p-btn-${t}`);
-        const view = document.getElementById(`p-view-${t}`);
-        if (!btn || !view) return;
-        if (t === tab) {
-          btn.className = 'px-3.5 py-1.5 bg-emerald-600 text-white rounded-xl font-bold text-xs shadow';
-          view.classList.remove('hidden');
+      purposeOSTab = tabKey;
+      ['desktop', 'mobile', 'nos'].forEach(k => {
+        const btn = document.getElementById(`purpose-tab-${k}`);
+        if (!btn) return;
+        if (k === tabKey) {
+          btn.className = 'flex-1 py-2 rounded-lg transition-all flex items-center justify-center space-x-2 bg-emerald-600 text-white shadow font-bold';
         } else {
-          btn.className = 'px-3.5 py-1.5 bg-slate-800 text-slate-400 hover:bg-slate-700 rounded-xl font-bold text-xs';
-          view.classList.add('hidden');
+          btn.className = 'flex-1 py-2 rounded-lg transition-all flex items-center justify-center space-x-2 bg-slate-800 text-slate-400 hover:bg-slate-700 font-medium';
         }
       });
+
+      const container = document.getElementById('purpose-tab-content');
+      if (!container) return;
+
+      if (tabKey === 'desktop') container.innerHTML = getPurposeTabDesktopHTML();
+      else if (tabKey === 'mobile') container.innerHTML = getPurposeTabMobileHTML();
+      else if (tabKey === 'nos') container.innerHTML = getPurposeTabNOSHTML();
     }
 
-    function runNOSCommand(cmd) {
-      playAudio('click');
-      const out = document.getElementById('nos-cli-output');
-      if (!out) return;
-      if (cmd === 'ping') {
-        out.innerText = "Pinging 192.168.1.1:\nReply from 192.168.1.1: bytes=32 time=2ms TTL=64";
-      } else if (cmd === 'netstat') {
-        out.innerText = "Active Connections:\nTCP    192.168.1.10:80        Client1:50122          ESTABLISHED";
+    /* DESKTOP OS INTERACTIVE PC MONITOR VIEW */
+    function getPurposeTabDesktopHTML() {
+      return `
+        <div class="bg-slate-950 p-4 rounded-xl border border-emerald-500/40 space-y-3">
+          <div class="flex items-center justify-between border-b border-white/10 pb-2">
+            <div>
+              <h3 class="font-bold text-xs text-emerald-300">Desktop Operating System Simulation</h3>
+              <p class="text-[11px] text-slate-300">Desktop PC OS (e.g. Windows, macOS) is optimized for workstation PCs with keyboard, mouse, and large monitors.</p>
+            </div>
+            <span class="text-[10px] bg-emerald-950 text-emerald-300 font-mono px-2 py-0.5 rounded border border-emerald-500/30">Workstation PC</span>
+          </div>
+
+          <!-- INTERACTIVE COMPUTER MONITOR FRAME -->
+          <div class="bg-slate-900 border-4 border-slate-700 rounded-2xl p-3 shadow-2xl relative">
+            <div class="bg-slate-950 rounded-xl border border-white/10 p-4 h-56 relative overflow-hidden flex flex-col justify-between" style="background: radial-gradient(circle, #0284c7 0%, #0f172a 100%);">
+              
+              <!-- Monitor Desktop Shortcuts -->
+              <div class="grid grid-cols-4 gap-3 z-10">
+                <button onclick="launchDesktopMonitorApp('Calculator')" class="flex flex-col items-center hover:scale-110 transition-transform">
+                  <div class="w-10 h-10 rounded-xl bg-amber-500 flex items-center justify-center text-slate-950 shadow"><i class="fa-solid fa-calculator text-lg"></i></div>
+                  <span class="text-[10px] text-white font-bold mt-1">Calculator</span>
+                </button>
+                <button onclick="launchDesktopMonitorApp('Text Editor')" class="flex flex-col items-center hover:scale-110 transition-transform">
+                  <div class="w-10 h-10 rounded-xl bg-sky-500 flex items-center justify-center text-slate-950 shadow"><i class="fa-solid fa-file-signature text-lg"></i></div>
+                  <span class="text-[10px] text-white font-bold mt-1">Editor</span>
+                </button>
+                <button onclick="launchDesktopMonitorApp('Web Browser')" class="flex flex-col items-center hover:scale-110 transition-transform">
+                  <div class="w-10 h-10 rounded-xl bg-emerald-500 flex items-center justify-center text-slate-950 shadow"><i class="fa-solid fa-globe text-lg"></i></div>
+                  <span class="text-[10px] text-white font-bold mt-1">Browser</span>
+                </button>
+                <button onclick="launchDesktopMonitorApp('3D Game')" class="flex flex-col items-center hover:scale-110 transition-transform">
+                  <div class="w-10 h-10 rounded-xl bg-purple-500 flex items-center justify-center text-slate-950 shadow"><i class="fa-solid fa-gamepad text-lg"></i></div>
+                  <span class="text-[10px] text-white font-bold mt-1">3D Game</span>
+                </button>
+              </div>
+
+              <!-- Monitor Active Window Screen -->
+              <div id="desktop-monitor-window" class="z-10 bg-slate-900/90 border border-white/20 p-2.5 rounded-xl shadow-xl flex items-center justify-between text-xs">
+                <span id="desktop-monitor-status" class="text-emerald-300 font-mono font-bold">▶ Click any PC Desktop app shortcut above to run inside monitor.</span>
+              </div>
+
+              <!-- Monitor Taskbar -->
+              <div class="z-10 bg-black/70 px-3 py-1 rounded-lg border border-white/10 flex justify-between items-center text-[10px] text-slate-300">
+                <span class="font-bold text-white"><i class="fa-brands fa-windows text-sky-400 mr-1"></i> Desktop Taskbar</span>
+                <span class="font-mono">CPU: 4% | RAM: 3.2GB</span>
+              </div>
+            </div>
+          </div>
+        </div>
+      `;
+    }
+
+    function launchDesktopMonitorApp(appName) {
+      playAudio('success');
+      const win = document.getElementById('desktop-monitor-window');
+      const status = document.getElementById('desktop-monitor-status');
+      if (win && status) {
+        status.innerHTML = `<i class="fa-solid fa-circle-check text-emerald-400 mr-1"></i> Running Desktop App: <b class="text-white">${appName}.exe</b> (Window Maximized)`;
+        showToast('Desktop PC OS', `Executing workstation application ${appName}!`, 'success');
       }
     }
 
-    /* USER INTERFACE: CLI VS GUI SHELLS */
-    let cliTerminalHistory = ["Windows Command Prompt [Version 10.0]", "Type 'help' for available commands.\n"];
-    let guiFoldersList = [
-      { id: 'g1', name: 'Documents', files: ['Essay.docx', 'Notes.txt'] },
-      { id: 'g2', name: 'Pictures', files: ['Photo.png'] }
-    ];
-    let guiActiveFolderIndex = null;
+    /* MOBILE OS INTERACTIVE SMARTPHONE VIEW */
+    let mobileAppView = 'home';
+
+    function getPurposeTabMobileHTML() {
+      return `
+        <div class="bg-slate-950 p-4 rounded-xl border border-sky-500/40 space-y-3">
+          <div class="flex items-center justify-between border-b border-white/10 pb-2">
+            <div>
+              <h3 class="font-bold text-xs text-sky-300">Mobile Operating System Simulation</h3>
+              <p class="text-[11px] text-slate-300">Mobile OS (e.g. Android, iOS) is designed for <b>touchscreen smartphones & tablets</b> with power management and mobile sensors.</p>
+            </div>
+            <span class="text-[10px] bg-sky-950 text-sky-300 font-mono px-2 py-0.5 rounded border border-sky-500/30">Touch UI</span>
+          </div>
+
+          <!-- INTERACTIVE SMARTPHONE DEVICE FRAME -->
+          <div class="flex justify-center">
+            <div class="w-64 bg-slate-900 border-4 border-slate-700 rounded-[32px] p-3 shadow-2xl relative">
+              
+              <!-- Phone Screen -->
+              <div class="w-full h-72 bg-gradient-to-b from-indigo-900 via-purple-900 to-slate-950 rounded-[20px] p-3 flex flex-col justify-between border border-white/10 relative overflow-hidden">
+                
+                <!-- Phone Status Bar -->
+                <div class="flex justify-between items-center text-[10px] text-white font-mono px-1">
+                  <span>9:41 AM</span>
+                  <div class="flex items-center space-x-1">
+                    <i class="fa-solid fa-wifi text-[9px]"></i>
+                    <i class="fa-solid fa-battery-three-quarters text-[10px] text-emerald-400"></i>
+                  </div>
+                </div>
+
+                <!-- Phone Display Viewport Body -->
+                <div id="mobile-phone-viewport" class="flex-1 my-2 flex flex-col justify-center items-center">
+                  ${getMobilePhoneHomeHTML()}
+                </div>
+
+                <!-- Phone Navigation Bar -->
+                <div class="flex justify-center items-center pt-1">
+                  <button onclick="openMobileHome()" class="w-20 h-1 bg-white/70 hover:bg-white rounded-full transition-all shadow"></button>
+                </div>
+
+              </div>
+            </div>
+          </div>
+        </div>
+      `;
+    }
+
+    function getMobilePhoneHomeHTML() {
+      return `
+        <div class="grid grid-cols-3 gap-3 w-full px-2">
+          <button onclick="openMobileApp('camera')" class="flex flex-col items-center">
+            <div class="w-10 h-10 rounded-2xl bg-gradient-to-br from-pink-500 to-rose-600 flex items-center justify-center text-white text-lg shadow"><i class="fa-solid fa-camera"></i></div>
+            <span class="text-[9px] text-white font-bold mt-1">Camera</span>
+          </button>
+
+          <button onclick="openMobileApp('notes')" class="flex flex-col items-center">
+            <div class="w-10 h-10 rounded-2xl bg-gradient-to-br from-amber-400 to-orange-500 flex items-center justify-center text-white text-lg shadow"><i class="fa-solid fa-note-sticky"></i></div>
+            <span class="text-[9px] text-white font-bold mt-1">Notes</span>
+          </button>
+
+          <button onclick="openMobileApp('music')" class="flex flex-col items-center">
+            <div class="w-10 h-10 rounded-2xl bg-gradient-to-br from-emerald-400 to-teal-600 flex items-center justify-center text-white text-lg shadow"><i class="fa-solid fa-music"></i></div>
+            <span class="text-[9px] text-white font-bold mt-1">Music</span>
+          </button>
+        </div>
+      `;
+    }
+
+    function openMobileApp(appKey) {
+      playAudio('click');
+      const vp = document.getElementById('mobile-phone-viewport');
+      if (!vp) return;
+
+      if (appKey === 'camera') {
+        vp.innerHTML = `
+          <div class="w-full h-full bg-slate-900 border border-white/20 rounded-xl p-2 flex flex-col items-center justify-between text-center">
+            <div class="text-[10px] text-pink-300 font-bold"><i class="fa-solid fa-camera mr-1"></i> Live Mobile Camera Sensor</div>
+            <div class="w-16 h-16 rounded-full border-2 border-dashed border-pink-400 flex items-center justify-center text-pink-400 animate-spin">
+              <i class="fa-solid fa-crosshairs text-xl"></i>
+            </div>
+            <button onclick="showToast('Snap!','Photo captured to Mobile Gallery!','success')" class="w-8 h-8 rounded-full bg-white border-2 border-pink-500 shadow"></button>
+          </div>
+        `;
+      } else if (appKey === 'notes') {
+        vp.innerHTML = `
+          <div class="w-full h-full bg-amber-950/80 border border-amber-500/30 rounded-xl p-2 flex flex-col justify-between text-left">
+            <div class="text-[10px] text-amber-300 font-bold">Mobile Touch Notes</div>
+            <p class="text-[10px] text-slate-200">Mobile OS uses touch gestures and virtual keyboards.</p>
+            <button onclick="openMobileHome()" class="px-2 py-0.5 bg-amber-600 text-white font-bold text-[9px] rounded">Done</button>
+          </div>
+        `;
+      } else if (appKey === 'music') {
+        vp.innerHTML = `
+          <div class="w-full h-full bg-teal-950/80 border border-teal-500/30 rounded-xl p-2 flex flex-col items-center justify-center text-center space-y-2">
+            <i class="fa-solid fa-compact-disc text-3xl text-teal-400 animate-spin"></i>
+            <div class="text-[10px] text-white font-bold">Audio Track 01</div>
+          </div>
+        `;
+      }
+      showToast('Mobile OS App', `Touchscreen loaded ${appKey.toUpperCase()} app!`, 'success');
+    }
+
+    function openMobileHome() {
+      playAudio('click');
+      const vp = document.getElementById('mobile-phone-viewport');
+      if (vp) vp.innerHTML = getMobilePhoneHomeHTML();
+    }
+
+    /* NETWORK OS TAB */
+    function getPurposeTabNOSHTML() {
+      return `
+        <div class="bg-slate-950 p-4 rounded-xl border border-sky-500/30 space-y-3">
+          <div class="flex items-center justify-between border-b border-white/10 pb-2">
+            <div>
+              <h3 class="font-bold text-xs text-sky-300">Network Operating System (NOS)</h3>
+              <p class="text-[11px] text-slate-300">NOS coordinates server computers, managing client access to shared network files and security policies.</p>
+            </div>
+            <span class="text-[10px] bg-sky-950 text-sky-300 font-mono px-2 py-0.5 rounded border border-sky-500/30">NOS Server</span>
+          </div>
+
+          <div class="bg-slate-900 p-3 rounded-xl border border-white/10 space-y-2">
+            <div class="flex items-center justify-between">
+              <span class="text-xs font-bold text-slate-200">Server File Share Broadcast Status:</span>
+              <button onclick="simulateNOSShare()" class="px-3 py-1 bg-sky-600 hover:bg-sky-500 text-white font-bold text-xs rounded-lg shadow">Broadcast Share</button>
+            </div>
+            <div id="nos-status-box" class="bg-slate-950 p-2.5 rounded-lg text-xs font-mono text-emerald-400 border border-white/10">
+              [NOS SERVER] Network Share \\\\NOS-SERVER\\Shared_Drive is ACTIVE (3 Client Terminals Connected)
+            </div>
+          </div>
+        </div>
+      `;
+    }
+
+    function simulateNOSShare() {
+      playAudio('success');
+      const box = document.getElementById('nos-status-box');
+      if (box) {
+        box.innerText = `[NOS SERVER] Synchronized Client Credentials. Network Share \\\\NOS-SERVER\\Shared_Drive (4 Active Connections)`;
+      }
+      showToast('NOS Shared', 'Network Server successfully broadcasted shared drives!', 'success');
+    }
+
+    /* =========================================================
+       FOLDER 4: USER INTERFACE
+       ========================================================= */
+    let guiCreatedFolders = [];
 
     function getUIFolderHTML() {
       return `
         <div class="space-y-4">
+          <div class="bg-purple-500/10 border border-purple-500/30 p-3.5 rounded-xl flex items-center space-x-3">
+            <i class="fa-solid fa-display text-2xl text-purple-400"></i>
+            <div>
+              <h3 class="font-bold text-xs text-purple-200">User Interface Comparison: Interactive GUI vs CLI Shell</h3>
+              <p class="text-[11px] text-slate-300">Compare point-and-click <b>GUI (WIMP: Windows, Icons, Menus, Pointer)</b> against keyboard <b>CLI command execution</b>.</p>
+            </div>
+          </div>
+
+          <!-- SIDE-BY-SIDE INTERACTIVE INTERFACE COMPARISON -->
           <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
-            <!-- CLI TERMINAL -->
-            <div class="bg-slate-950 p-3 rounded-xl border border-purple-500/40 flex flex-col justify-between h-72 shadow">
-              <div class="border-b border-white/10 pb-2 font-mono text-xs text-purple-400 font-bold">
-                <i class="fa-solid fa-terminal mr-1"></i> CLI Terminal (Type Commands)
+            
+            <!-- 1. INTERACTIVE GUI SANDBOX (WIMP MODEL) -->
+            <div class="bg-slate-950 p-3.5 rounded-xl border-2 border-purple-500/50 flex flex-col space-y-3 shadow-xl">
+              <div class="flex justify-between items-center border-b border-white/10 pb-2">
+                <span class="font-bold text-xs text-purple-300 flex items-center space-x-1.5">
+                  <i class="fa-solid fa-window-restore text-purple-400"></i>
+                  <span>1. Interactive GUI (Point & Click)</span>
+                </span>
+                <span class="text-[10px] bg-purple-950 text-purple-300 font-mono px-2 py-0.5 rounded border border-purple-500/30">WIMP UI</span>
               </div>
-              <div id="cli-terminal-screen" class="font-mono text-[11px] text-emerald-400 bg-black p-2.5 rounded-lg flex-1 my-2 overflow-auto whitespace-pre-wrap border border-white/10 leading-snug"></div>
-              <div class="flex items-center space-x-1 bg-black px-2 py-1 rounded-lg border border-purple-500/50">
-                <span class="font-mono text-xs text-purple-400 font-bold">C:\\></span>
-                <input type="text" id="cli-terminal-input" placeholder="type 'help', 'dir', 'mkdir test'..." class="flex-1 bg-transparent font-mono text-xs text-emerald-400 focus:outline-none" onkeydown="handleCLIKenter(event)" />
-                <button onclick="submitCLIInput()" class="px-2 py-0.5 bg-purple-700 hover:bg-purple-600 text-white font-mono text-[10px] rounded font-bold">Run</button>
+
+              <!-- Simulated GUI Desktop Canvas -->
+              <div class="bg-slate-900 rounded-xl border border-white/10 p-3 h-44 flex flex-col justify-between relative overflow-hidden">
+                <!-- Dropdown Menu Bar (M of WIMP) -->
+                <div class="bg-slate-800 px-2 py-1 rounded text-[10px] flex items-center space-x-3 text-slate-300 border border-white/10">
+                  <span class="hover:text-white cursor-pointer font-bold">File</span>
+                  <span class="hover:text-white cursor-pointer font-bold">Edit</span>
+                  <span class="hover:text-white cursor-pointer font-bold">View</span>
+                </div>
+
+                <!-- Clickable Desktop Icons (I & W of WIMP) -->
+                <div id="gui-desktop-grid" class="grid grid-cols-3 gap-2 my-2">
+                  <button onclick="clickGUIIcon('Documents')" class="p-2 bg-slate-950 hover:bg-slate-800 rounded-lg border border-white/10 flex flex-col items-center">
+                    <i class="fa-solid fa-folder text-amber-400 text-xl"></i>
+                    <span class="text-[9px] text-white font-bold mt-1">Documents</span>
+                  </button>
+                  <button onclick="clickGUIIcon('Pictures')" class="p-2 bg-slate-950 hover:bg-slate-800 rounded-lg border border-white/10 flex flex-col items-center">
+                    <i class="fa-solid fa-image text-sky-400 text-xl"></i>
+                    <span class="text-[9px] text-white font-bold mt-1">Pictures</span>
+                  </button>
+                </div>
+
+                <div id="gui-action-status" class="bg-black/60 px-2 py-1 rounded text-[10px] font-mono text-purple-300 border border-white/10">
+                  ▶ GUI Status: Hover and click icons with your mouse pointer!
+                </div>
+              </div>
+
+              <div class="flex space-x-2">
+                <button onclick="createGUIFolderAction()" class="flex-1 px-3 py-1.5 bg-purple-600 hover:bg-purple-500 text-white font-bold text-xs rounded-lg shadow flex items-center justify-center space-x-1">
+                  <i class="fa-solid fa-folder-plus"></i>
+                  <span>GUI: Click to Add Folder</span>
+                </button>
               </div>
             </div>
 
-            <!-- GUI VISUAL EXPLORER -->
-            <div class="bg-slate-950 p-3 rounded-xl border border-sky-500/40 flex flex-col justify-between h-72 shadow">
-              <div class="border-b border-white/10 pb-2 font-bold text-xs text-sky-400">
-                <i class="fa-solid fa-desktop mr-1"></i> GUI Explorer (Click Icons)
+            <!-- 2. INTERACTIVE CLI TERMINAL SHELL -->
+            <div class="bg-slate-950 p-3.5 rounded-xl border-2 border-emerald-500/50 flex flex-col space-y-3 shadow-xl">
+              <div class="flex justify-between items-center border-b border-white/10 pb-2">
+                <span class="font-bold text-xs text-emerald-300 flex items-center space-x-1.5 font-mono">
+                  <i class="fa-solid fa-terminal text-emerald-400"></i>
+                  <span>2. Command Line Interface (CLI)</span>
+                </span>
+                <span class="text-[10px] bg-emerald-950 text-emerald-300 font-mono px-2 py-0.5 rounded border border-emerald-500/30">Terminal</span>
               </div>
-              <div class="flex items-center space-x-2 my-1">
-                <button onclick="guiCreateFolder()" class="px-2.5 py-1 bg-amber-600 hover:bg-amber-500 text-white rounded text-[10px] font-bold">+ Click New Folder</button>
-                <button onclick="guiCreateFile()" class="px-2.5 py-1 bg-sky-600 hover:bg-sky-500 text-white rounded text-[10px] font-bold">+ Click New File</button>
+
+              <!-- Terminal Output Box -->
+              <div id="cli-output" class="bg-black/90 p-2.5 rounded-lg font-mono text-[11px] text-emerald-400 h-44 overflow-y-auto border border-emerald-500/20 space-y-1">
+                <div>Secondary 1 OS CLI Shell [Version 10.0]</div>
+                <div>Type <span class="text-yellow-300 font-bold">help</span> to view commands.</div>
+                <div class="pt-1">----------------------------------</div>
               </div>
-              <div id="gui-interactive-canvas" class="bg-slate-900 p-2.5 rounded-lg flex-1 overflow-auto border border-white/10"></div>
+
+              <!-- Terminal Input Box -->
+              <div class="flex items-center space-x-2 bg-black/90 p-1.5 rounded-lg border border-emerald-500/30 font-mono text-xs">
+                <span class="text-emerald-400 font-bold">C:\Users&gt;</span>
+                <input type="text" id="cli-input" class="flex-1 bg-transparent text-emerald-300 focus:outline-none font-mono text-xs" placeholder="type command..." onkeydown="handleCLIBuyKey(event)" />
+                <button onclick="submitCLICommand()" class="px-2.5 py-1 bg-emerald-600 hover:bg-emerald-500 text-slate-950 font-bold rounded text-xs">Run</button>
+              </div>
             </div>
+
           </div>
         </div>
       `;
     }
 
     function initCLITerminal() {
-      const screen = document.getElementById('cli-terminal-screen');
-      if (screen) {
-        screen.innerText = cliTerminalHistory.join('\n') + '\nC:\\> _';
-        screen.scrollTop = screen.scrollHeight;
+      // Terminal ready
+    }
+
+    function clickGUIIcon(name) {
+      playAudio('click');
+      const status = document.getElementById('gui-action-status');
+      if (status) {
+        status.innerHTML = `<i class="fa-solid fa-mouse-pointer text-purple-400 mr-1"></i> GUI Pointer clicked folder <b class="text-white">"${name}"</b> to open.`;
       }
+      showToast('GUI Interaction', `Pointer opened folder ${name}!`, 'info');
     }
 
-    function handleCLIKenter(e) {
-      if (e.key === 'Enter') submitCLIInput();
+    function createGUIFolderAction() {
+      playAudio('success');
+      const grid = document.getElementById('gui-desktop-grid');
+      const status = document.getElementById('gui-action-status');
+      const folderName = `NewFolder_${guiCreatedFolders.length + 1}`;
+      guiCreatedFolders.push(folderName);
+
+      if (grid) {
+        const btn = document.createElement('button');
+        btn.onclick = () => clickGUIIcon(folderName);
+        btn.className = 'p-2 bg-slate-950 hover:bg-slate-800 rounded-lg border border-white/10 flex flex-col items-center';
+        btn.innerHTML = `
+          <i class="fa-solid fa-folder-plus text-purple-400 text-xl"></i>
+          <span class="text-[9px] text-white font-bold mt-1 truncate w-16">${folderName}</span>
+        `;
+        grid.appendChild(btn);
+      }
+      if (status) {
+        status.innerHTML = `<i class="fa-solid fa-check text-emerald-400 mr-1"></i> GUI created new folder: <b class="text-white">${folderName}</b>`;
+      }
+      showToast('GUI Folder Created', `Created ${folderName} via GUI menu click!`, 'success');
     }
 
-    function submitCLIInput() {
-      const input = document.getElementById('cli-terminal-input');
-      const screen = document.getElementById('cli-terminal-screen');
-      if (!input || !screen || !input.value.trim()) return;
+    function handleCLIBuyKey(e) {
+      if (e.key === 'Enter') submitCLICommand();
+    }
 
-      const cmd = input.value.trim();
+    function submitCLICommand() {
+      const input = document.getElementById('cli-input');
+      const output = document.getElementById('cli-output');
+      if (!input || !output || !input.value.trim()) return;
+
+      playAudio('click');
+      const cmdRaw = input.value.trim();
+      const parts = cmdRaw.split(' ');
+      const cmd = parts[0].toLowerCase();
+      const arg = parts.slice(1).join(' ');
+
+      const line = document.createElement('div');
+      line.className = 'text-slate-300';
+      line.innerText = `C:\\Users> ${cmdRaw}`;
+      output.appendChild(line);
+
+      const resp = document.createElement('div');
+      resp.className = 'text-emerald-400 pl-2 border-l border-emerald-500/40 my-1';
+
+      if (cmd === 'help') {
+        resp.innerHTML = `
+          <div class="text-yellow-300 font-bold">Commands:</div>
+          <div><b class="text-white">dir</b> - List directory</div>
+          <div><b class="text-white">mkdir [name]</b> - Create folder</div>
+          <div><b class="text-white">echo [text]</b> - Print message</div>
+          <div><b class="text-white">ver</b> - OS version</div>
+          <div><b class="text-white">cls</b> - Clear screen</div>
+        `;
+      } else if (cmd === 'dir') {
+        resp.innerHTML = `
+          <div>Directory of C:\\Users</div>
+          <div class="text-slate-400">10/05/2026  &lt;DIR&gt;  Documents</div>
+          <div class="text-slate-400">10/05/2026  &lt;DIR&gt;  Pictures</div>
+        `;
+      } else if (cmd === 'mkdir') {
+        if (!arg) {
+          resp.className = 'text-red-400 pl-2';
+          resp.innerText = 'Syntax Error: Please specify folder name (e.g. mkdir Project)';
+        } else {
+          resp.innerText = `[OK] Directory "${arg}" created via CLI command.`;
+        }
+      } else if (cmd === 'echo') {
+        resp.innerText = arg || 'ECHO is active.';
+      } else if (cmd === 'ver') {
+        resp.innerText = 'Secondary 1 OS Interactive Kernel v10.0.2026';
+      } else if (cmd === 'cls' || cmd === 'clear') {
+        output.innerHTML = '';
+        input.value = '';
+        return;
+      } else {
+        resp.className = 'text-red-400 pl-2';
+        resp.innerText = `'${cmd}' is not recognized. Type "help" for command list.`;
+      }
+
+      output.appendChild(resp);
       input.value = '';
-      playAudio('click');
-
-      cliTerminalHistory.push(`C:\\> ${cmd}`);
-      const parts = cmd.toLowerCase().split(' ');
-      const main = parts[0];
-
-      if (main === 'help') {
-        cliTerminalHistory.push(`Commands:\n - dir/ls\n - mkdir <name>\n - cls\n - ver`);
-      } else if (main === 'dir' || main === 'ls') {
-        cliTerminalHistory.push(`Directory of C:\\\n<DIR> Documents\n<DIR> Pictures\nSystem_Logs.txt`);
-      } else if (main === 'mkdir') {
-        const folderName = parts.slice(1).join('_') || 'NewFolder';
-        cliTerminalHistory.push(`Directory '${folderName}' created.`);
-        showToast('CLI Command', `Created '${folderName}' via CLI!`, 'success');
-      } else if (main === 'cls') {
-        cliTerminalHistory = ["Windows Command Prompt [Version 10.0]"];
-      } else if (main === 'ver') {
-        cliTerminalHistory.push("Secondary 1 OS Learning Edition v2.0");
-      } else {
-        cliTerminalHistory.push(`'${cmd}' is not recognized. Type 'help'.`);
-      }
-
-      screen.innerText = cliTerminalHistory.join('\n') + '\nC:\\> _';
-      screen.scrollTop = screen.scrollHeight;
+      output.scrollTop = output.scrollHeight;
     }
 
-    function renderGUIFolderCanvas() {
-      const canvas = document.getElementById('gui-interactive-canvas');
-      if (!canvas) return;
-
-      let html = '<div class="grid grid-cols-3 gap-2">';
-      guiFoldersList.forEach((folder, idx) => {
-        html += `
-          <div onclick="guiClickOpenFolder(${idx})" class="p-2 bg-slate-800 hover:bg-slate-700 border border-amber-500/40 rounded-lg flex flex-col items-center justify-center cursor-pointer transition-all hover:scale-105">
-            <i class="fa-solid fa-folder text-amber-400 text-2xl mb-1"></i>
-            <span class="text-[10px] text-white font-bold truncate w-full text-center">${folder.name}</span>
-          </div>
-        `;
-      });
-      html += '</div>';
-
-      if (guiActiveFolderIndex !== null) {
-        const folder = guiFoldersList[guiActiveFolderIndex];
-        html += `
-          <div class="mt-3 p-2 bg-slate-950 border border-sky-500/40 rounded-lg">
-            <div class="flex justify-between items-center text-[10px] font-bold text-sky-300 border-b border-white/10 pb-1 mb-2">
-              <span>Opened: ${folder.name}</span>
-              <button onclick="guiCloseFolder()" class="text-red-400 hover:underline">Close ✕</button>
-            </div>
-            <div class="grid grid-cols-2 gap-2">
-              ${folder.files.map(f => `
-                <div class="p-1.5 bg-slate-800 border border-sky-400/30 rounded flex items-center space-x-1.5">
-                  <i class="fa-solid fa-file-lines text-sky-400 text-xs"></i>
-                  <span class="text-[9px] text-slate-200 truncate">${f}</span>
-                </div>
-              `).join('')}
-            </div>
-          </div>
-        `;
-      }
-
-      canvas.innerHTML = html;
-    }
-
-    function guiClickOpenFolder(index) {
-      playAudio('click');
-      guiActiveFolderIndex = index;
-      renderGUIFolderCanvas();
-    }
-
-    function guiCloseFolder() {
-      playAudio('click');
-      guiActiveFolderIndex = null;
-      renderGUIFolderCanvas();
-    }
-
-    function guiCreateFolder() {
-      playAudio('success');
-      const name = `Folder_${guiFoldersList.length + 1}`;
-      guiFoldersList.push({ id: 'g_' + Date.now(), name: name, files: ['File1.txt'] });
-      renderGUIFolderCanvas();
-      showToast('GUI Folder Created', `Clicked button to create folder "${name}"!`, 'success');
-    }
-
-    function guiCreateFile() {
-      playAudio('success');
-      if (guiActiveFolderIndex !== null) {
-        guiFoldersList[guiActiveFolderIndex].files.push(`Doc_${Date.now().toString().slice(-4)}.txt`);
-      } else {
-        guiFoldersList[0].files.push(`Doc_${Date.now().toString().slice(-4)}.txt`);
-      }
-      renderGUIFolderCanvas();
-      showToast('GUI File Created', 'Added file into folder!', 'success');
-    }
-
-    window.openFolder = openFolder;
-    window.switchFolderTab = switchFolderTab;
-    window.closeWindow = closeWindow;
-    window.minimizeWindow = minimizeWindow;
-    window.toggleStartMenu = toggleStartMenu;
-    window.launchLab = launchLab;
-    window.addSampleProcess = addSampleProcess;
-    window.terminateProcess = terminateProcess;
-    window.allocateRAM = allocateRAM;
-    window.clearRAM = clearRAM;
-    window.plugPeripheral = plugPeripheral;
-    window.unplugPeripheral = unplugPeripheral;
-    window.showCreateItemModal = showCreateItemModal;
-    window.hideCreateItemModal = hideCreateItemModal;
-    window.submitCreateItem = submitCreateItem;
-    window.navigateFolder = navigateFolder;
-    window.openFileViewer = openFileViewer;
-    window.closeFileViewer = closeFileViewer;
-    window.saveActiveFileContent = saveActiveFileContent;
-    window.deleteExplorerItem = deleteExplorerItem;
-    window.updateDiskPartitions = updateDiskPartitions;
-    window.formatDrive = formatDrive;
-    window.setTheme = setTheme;
-    window.toggleAdminRoleState = toggleAdminRoleState;
-    window.adminAddUser = adminAddUser;
-    window.adminDeleteUser = adminDeleteUser;
-    window.switchUserTypeTab = switchUserTypeTab;
-    window.attemptSingleUserLogin = attemptSingleUserLogin;
-    window.runMultiUserTask = runMultiUserTask;
-    window.switchPurposeTab = switchPurposeTab;
-    window.switchDesktopVirtualApp = switchDesktopVirtualApp;
-    window.toggleGpuTurbo = toggleGpuTurbo;
-    window.cycleRefreshRate = cycleRefreshRate;
-    window.rebootVirtualPC = rebootVirtualPC;
-    window.runNOSCommand = runNOSCommand;
-    window.handleCLIKenter = handleCLIKenter;
-    window.submitCLIInput = submitCLIInput;
-    window.guiClickOpenFolder = guiClickOpenFolder;
-    window.guiCloseFolder = guiCloseFolder;
-    window.guiCreateFolder = guiCreateFolder;
-    window.guiCreateFile = guiCreateFile;
-
-    /* INITIAL LAUNCH */
-    window.onload = function() {
-      openFolder(1);
-    };
+    window.addEventListener('DOMContentLoaded', () => {
+      showToast('OS Simulator Updated', 'Welcome to Secondary 1 OS Interactive Learning Simulator!', 'success');
+    });
   </script>
 </body>
 </html>
