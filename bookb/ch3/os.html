@@ -1,0 +1,916 @@
+<!-- ... existing code ... -->
+    /* FOLDER 1 CONTENT GENERATOR */
+    function getFunctionsFolderHTML() {
+      return `
+        <div class="mb-4 bg-amber-500/10 border border-amber-500/20 p-3 rounded-xl flex items-center space-x-3">
+          <i class="fa-solid fa-graduation-cap text-2xl text-amber-400"></i>
+          <div>
+            <h3 class="font-bold text-sm text-amber-200">OS Core Functions Mini-Game Hub</h3>
+            <p class="text-[11px] text-slate-300">Click any of the 8 interactive labs below to explore real OS management tasks in action!</p>
+          </div>
+        </div>
+        <div class="grid grid-cols-2 md:grid-cols-4 gap-3">
+          <button onclick="launchLab('process')" class="p-3 bg-slate-800/80 hover:bg-slate-700/80 border border-white/10 rounded-xl text-left flex flex-col items-start transition-all hover:border-amber-400/50">
+            <i class="fa-solid fa-microchip text-2xl text-amber-400 mb-2"></i>
+            <span class="font-bold text-slate-100">1. Process Mgr</span>
+            <span class="text-[10px] text-slate-400 mt-1">CPU Dispatcher & Scheduling</span>
+          </button>
+          <button onclick="launchLab('memory')" class="p-3 bg-slate-800/80 hover:bg-slate-700/80 border border-white/10 rounded-xl text-left flex flex-col items-start transition-all hover:border-amber-400/50">
+            <i class="fa-solid fa-memory text-2xl text-sky-400 mb-2"></i>
+            <span class="font-bold text-slate-100">2. Memory Mgr</span>
+            <span class="text-[10px] text-slate-400 mt-1">Dynamic RAM Allocation</span>
+          </button>
+          <button onclick="launchLab('pnp')" class="p-3 bg-slate-800/80 hover:bg-slate-700/80 border border-white/10 rounded-xl text-left flex flex-col items-start transition-all hover:border-amber-400/50">
+            <i class="fa-solid fa-plug text-2xl text-emerald-400 mb-2"></i>
+            <span class="font-bold text-slate-100">3. Plug-and-Play</span>
+            <span class="text-[10px] text-slate-400 mt-1">Connect/Unplug Peripherals</span>
+          </button>
+          <button onclick="launchLab('file-explorer')" class="p-3 bg-slate-800/80 hover:bg-slate-700/80 border border-white/10 rounded-xl text-left flex flex-col items-start transition-all hover:border-amber-400/50">
+            <i class="fa-solid fa-folder-tree text-2xl text-purple-400 mb-2"></i>
+            <span class="font-bold text-slate-100">4. File System</span>
+            <span class="text-[10px] text-slate-400 mt-1">Create, Open & Manage Files</span>
+          </button>
+          <button onclick="launchLab('disk')" class="p-3 bg-slate-800/80 hover:bg-slate-700/80 border border-white/10 rounded-xl text-left flex flex-col items-start transition-all hover:border-amber-400/50">
+            <i class="fa-solid fa-hard-drive text-2xl text-pink-400 mb-2"></i>
+            <span class="font-bold text-slate-100">5. Disk Mgr</span>
+            <span class="text-[10px] text-slate-400 mt-1">Partitions & Formatting</span>
+          </button>
+          <button onclick="launchLab('ui-customizer')" class="p-3 bg-slate-800/80 hover:bg-slate-700/80 border border-white/10 rounded-xl text-left flex flex-col items-start transition-all hover:border-amber-400/50">
+            <i class="fa-solid fa-palette text-2xl text-yellow-400 mb-2"></i>
+            <span class="font-bold text-slate-100">6. UI Customizer</span>
+            <span class="text-[10px] text-slate-400 mt-1">Themes & Custom Visuals</span>
+          </button>
+          <button onclick="launchLab('user-mgr')" class="p-3 bg-slate-800/80 hover:bg-slate-700/80 border border-white/10 rounded-xl text-left flex flex-col items-start transition-all hover:border-amber-400/50">
+            <i class="fa-solid fa-user-shield text-2xl text-indigo-400 mb-2"></i>
+            <span class="font-bold text-slate-100">7. Admin User Mgr</span>
+            <span class="text-[10px] text-slate-400 mt-1">Add & Delete Accounts</span>
+          </button>
+          <button onclick="launchLab('multitasking')" class="p-3 bg-slate-800/80 hover:bg-slate-700/80 border border-white/10 rounded-xl text-left flex flex-col items-start transition-all hover:border-amber-400/50">
+            <i class="fa-solid fa-window-restore text-2xl text-teal-400 mb-2"></i>
+            <span class="font-bold text-slate-100">8. Multitasking</span>
+            <span class="text-[10px] text-slate-400 mt-1">Run Multiple Live Apps</span>
+          </button>
+        </div>
+      `;
+    }
+<!-- ... existing code ... -->
+    /* LAB 4: FILE SYSTEM EXPLORER (INTERACTIVE CREATE, OPEN, READ & DELETE) */
+    let fileTree = [
+      { id: 'f1', name: 'Documents', type: 'folder', items: [
+        { id: 'doc1', name: 'Homework.txt', type: 'file', content: 'Secondary 1 Computer Science Notes:\nAn Operating System manages CPU, RAM, Disk and I/O devices.' },
+        { id: 'doc2', name: 'Project_Ideas.txt', type: 'file', content: 'OS Project Idea:\nCreate an interactive OS simulator for learning!' }
+      ]},
+      { id: 'f2', name: 'Pictures', type: 'folder', items: [
+        { id: 'pic1', name: 'Wallpaper_Info.txt', type: 'file', content: 'Image properties:\nWidth: 1920px, Height: 1080px, Format: PNG' }
+      ]},
+      { id: 'f3', name: 'System_Logs.txt', type: 'file', content: 'OS Boot Log:\n[OK] CPU Initialized\n[OK] RAM Allocated\n[OK] File System Mounted' }
+    ];
+    let currentFolderId = null; // null = root
+    let activeOpenedFile = null;
+
+    function getFileExplorerHTML() {
+      return `
+        <div class="flex flex-col h-full space-y-3">
+          <!-- Explorer Toolbar -->
+          <div class="flex items-center justify-between bg-slate-800/80 p-2.5 rounded-xl border border-white/10">
+            <div class="flex items-center space-x-2">
+              <button onclick="showCreateItemModal('folder')" class="px-3 py-1.5 bg-amber-600 hover:bg-amber-500 text-white rounded-lg text-xs font-semibold flex items-center space-x-1.5 shadow">
+                <i class="fa-solid fa-folder-plus"></i>
+                <span>+ New Folder</span>
+              </button>
+              <button onclick="showCreateItemModal('file')" class="px-3 py-1.5 bg-sky-600 hover:bg-sky-500 text-white rounded-lg text-xs font-semibold flex items-center space-x-1.5 shadow">
+                <i class="fa-solid fa-file-circle-plus"></i>
+                <span>+ New File</span>
+              </button>
+            </div>
+            <div class="text-xs text-slate-300 font-mono bg-slate-950/80 px-3 py-1 rounded-lg border border-white/10" id="file-explorer-path">Path: C:\\></div>
+          </div>
+
+          <!-- Inline Creation / Input Panel -->
+          <div id="explorer-create-panel" class="hidden bg-slate-800 p-3 rounded-xl border border-sky-500/50 flex items-center justify-between">
+            <div class="flex items-center space-x-2 flex-1 mr-3">
+              <span id="create-item-label" class="text-xs font-bold text-sky-300">Name:</span>
+              <input type="text" id="create-item-input" placeholder="Type name here..." class="flex-1 bg-slate-950 border border-white/20 rounded-lg px-3 py-1 text-xs text-white focus:outline-none focus:border-sky-400" onkeydown="if(event.key==='Enter') submitCreateItem()" />
+            </div>
+            <div class="flex space-x-2">
+              <button onclick="submitCreateItem()" class="px-3 py-1 bg-emerald-600 hover:bg-emerald-500 text-white text-xs font-bold rounded-lg">Create</button>
+              <button onclick="hideCreateItemModal()" class="px-3 py-1 bg-slate-700 hover:bg-slate-600 text-slate-200 text-xs font-bold rounded-lg">Cancel</button>
+            </div>
+          </div>
+
+          <!-- Main Explorer Workspace -->
+          <div class="flex-1 bg-slate-950 rounded-xl border border-white/10 p-4 overflow-auto min-h-[260px]">
+            <div id="file-items-grid" class="grid grid-cols-2 sm:grid-cols-4 gap-4">
+              <!-- Rendered files/folders -->
+            </div>
+          </div>
+
+          <!-- File Content Reader Viewer Modal (When user clicks a file to open) -->
+          <div id="file-content-viewer" class="hidden bg-slate-900 border border-sky-500/50 p-3 rounded-xl space-y-2">
+            <div class="flex justify-between items-center border-b border-white/10 pb-1.5">
+              <span id="file-viewer-title" class="font-bold text-xs text-sky-300 flex items-center space-x-1">
+                <i class="fa-solid fa-file-lines text-sky-400"></i>
+                <span>Document Viewer</span>
+              </span>
+              <button onclick="closeFileViewer()" class="text-xs text-red-400 hover:text-red-300 font-bold px-1.5 py-0.5 rounded bg-slate-800">Close ✕</button>
+            </div>
+            <textarea id="file-viewer-body" class="w-full bg-slate-950 text-emerald-400 font-mono text-xs p-2.5 rounded-lg border border-white/10 h-24 focus:outline-none resize-none"></textarea>
+            <div class="flex justify-end">
+              <button onclick="saveActiveFileContent()" class="px-3 py-1 bg-sky-600 hover:bg-sky-500 text-white text-xs font-bold rounded-lg">Save File Changes</button>
+            </div>
+          </div>
+        </div>
+      `;
+    }
+
+    let creatingItemType = 'folder';
+
+    function showCreateItemModal(type) {
+      creatingItemType = type;
+      const panel = document.getElementById('explorer-create-panel');
+      const label = document.getElementById('create-item-label');
+      const input = document.getElementById('create-item-input');
+      if (!panel || !input) return;
+
+      label.innerText = type === 'folder' ? 'New Folder Name:' : 'New File Name (.txt):';
+      input.value = type === 'folder' ? 'New_Folder' : 'New_Document.txt';
+      panel.classList.remove('hidden');
+      input.focus();
+    }
+
+    function hideCreateItemModal() {
+      const panel = document.getElementById('explorer-create-panel');
+      if (panel) panel.classList.add('hidden');
+    }
+
+    function submitCreateItem() {
+      const input = document.getElementById('create-item-input');
+      if (!input || !input.value.trim()) return;
+
+      const name = input.value.trim();
+      const newItem = creatingItemType === 'folder'
+        ? { id: 'f_' + Date.now(), name: name, type: 'folder', items: [] }
+        : { id: 'file_' + Date.now(), name: name.endsWith('.txt') ? name : name + '.txt', type: 'file', content: 'Sample text content inside ' + name };
+
+      if (currentFolderId) {
+        const parentFolder = fileTree.find(f => f.id === currentFolderId);
+        if (parentFolder) parentFolder.items.push(newItem);
+      } else {
+        fileTree.push(newItem);
+      }
+
+      hideCreateItemModal();
+      playAudio('success');
+      renderFileExplorer();
+      showToast('Item Created', `Successfully created ${creatingItemType} "${name}"!`, 'success');
+    }
+
+    function getCurrentFolderItems() {
+      if (currentFolderId) {
+        const folder = fileTree.find(f => f.id === currentFolderId);
+        return folder ? folder.items : [];
+      }
+      return fileTree;
+    }
+
+    function renderFileExplorer() {
+      const grid = document.getElementById('file-items-grid');
+      const pathEl = document.getElementById('file-explorer-path');
+      if (!grid) return;
+
+      let itemsToRender = getCurrentFolderItems();
+      if (currentFolderId) {
+        const currentFolder = fileTree.find(f => f.id === currentFolderId);
+        if (pathEl) pathEl.innerText = `Path: C:\\${currentFolder ? currentFolder.name : ''}\\>`;
+      } else {
+        if (pathEl) pathEl.innerText = `Path: C:\\>`;
+      }
+
+      let html = '';
+      if (currentFolderId) {
+        html += `
+          <div onclick="navigateFolder(null)" class="flex flex-col items-center justify-center p-3 bg-slate-900/90 border border-white/10 hover:border-sky-400 rounded-xl cursor-pointer transition-all hover:bg-slate-800">
+            <i class="fa-solid fa-arrow-turn-up text-sky-400 text-3xl mb-1"></i>
+            <span class="text-xs font-bold text-sky-200">.. (Up to Root)</span>
+          </div>
+        `;
+      }
+
+      if (itemsToRender.length === 0) {
+        html += `<div class="col-span-4 text-center py-8 text-xs text-slate-500 italic">Folder is empty. Click "+ New Folder" or "+ New File" above!</div>`;
+      }
+
+      itemsToRender.forEach(item => {
+        if (item.type === 'folder') {
+          html += `
+            <div class="group relative flex flex-col items-center justify-center p-3 bg-slate-900 border border-white/10 hover:bg-slate-800 hover:border-amber-400 rounded-xl cursor-pointer transition-all shadow">
+              <div onclick="navigateFolder('${item.id}')" class="flex flex-col items-center w-full">
+                <i class="fa-solid fa-folder text-amber-400 text-4xl mb-1 group-hover:scale-105 transition-transform"></i>
+                <span class="text-xs text-slate-100 font-semibold text-center truncate w-24">${item.name}</span>
+                <span class="text-[9px] text-amber-300/80 font-mono mt-0.5">Click to Open</span>
+              </div>
+              <button onclick="deleteExplorerItem('${item.id}', true)" class="absolute top-1 right-1 opacity-80 group-hover:opacity-100 p-1 text-red-400 hover:text-red-300 transition-opacity" title="Delete Folder">
+                <i class="fa-solid fa-trash-can text-xs"></i>
+              </button>
+            </div>
+          `;
+        } else {
+          html += `
+            <div class="group relative flex flex-col items-center justify-center p-3 bg-slate-900 border border-white/10 hover:bg-slate-800 hover:border-sky-400 rounded-xl cursor-pointer transition-all shadow">
+              <div onclick="openFileViewer('${item.id}')" class="flex flex-col items-center w-full">
+                <i class="fa-solid fa-file-lines text-sky-400 text-4xl mb-1 group-hover:scale-105 transition-transform"></i>
+                <span class="text-xs text-slate-100 font-semibold text-center truncate w-24">${item.name}</span>
+                <span class="text-[9px] text-sky-300/80 font-mono mt-0.5">Click to Read/Edit</span>
+              </div>
+              <button onclick="deleteExplorerItem('${item.id}', false)" class="absolute top-1 right-1 opacity-80 group-hover:opacity-100 p-1 text-red-400 hover:text-red-300 transition-opacity" title="Delete File">
+                <i class="fa-solid fa-trash-can text-xs"></i>
+              </button>
+            </div>
+          `;
+        }
+      });
+
+      grid.innerHTML = html;
+    }
+
+    function navigateFolder(folderId) {
+      playAudio('click');
+      currentFolderId = folderId;
+      closeFileViewer();
+      renderFileExplorer();
+    }
+
+    function openFileViewer(fileId) {
+      playAudio('click');
+      const items = getCurrentFolderItems();
+      const file = items.find(i => i.id === fileId);
+      if (!file) return;
+
+      activeOpenedFile = file;
+      const viewer = document.getElementById('file-content-viewer');
+      const title = document.getElementById('file-viewer-title');
+      const body = document.getElementById('file-viewer-body');
+
+      if (viewer && title && body) {
+        title.innerHTML = `<i class="fa-solid fa-file-lines text-sky-400 mr-1"></i> Open File: <span class="text-white">${file.name}</span>`;
+        body.value = file.content || '';
+        viewer.classList.remove('hidden');
+        showToast('File Opened', `Opened file "${file.name}" for reading and editing.`, 'info');
+      }
+    }
+
+    function closeFileViewer() {
+      activeOpenedFile = null;
+      const viewer = document.getElementById('file-content-viewer');
+      if (viewer) viewer.classList.add('hidden');
+    }
+
+    function saveActiveFileContent() {
+      if (!activeOpenedFile) return;
+      const body = document.getElementById('file-viewer-body');
+      if (body) {
+        activeOpenedFile.content = body.value;
+        playAudio('success');
+        showToast('File Saved', `Changes saved to "${activeOpenedFile.name}".`, 'success');
+      }
+    }
+
+    function deleteExplorerItem(id, isFolder) {
+      playAudio('eject');
+      if (currentFolderId) {
+        const folder = fileTree.find(f => f.id === currentFolderId);
+        if (folder) folder.items = folder.items.filter(item => item.id !== id);
+      } else {
+        fileTree = fileTree.filter(item => item.id !== id);
+      }
+      closeFileViewer();
+      renderFileExplorer();
+      showToast('Item Deleted', `${isFolder ? 'Folder' : 'File'} removed from storage.`, 'info');
+    }
+<!-- ... existing code ... -->
+    /* LAB 5: DISK MANAGEMENT (PARTITIONS & FORMATTING) */
+    let cPartitionSize = 60; // Percent
+    function getDiskLabHTML() {
+      return `
+        <div class="space-y-4">
+          <div class="bg-slate-800/80 p-3 rounded-xl border border-white/10">
+            <h3 class="font-bold text-pink-300 text-xs">HDD / SSD Partition & Format Manager</h3>
+            <p class="text-[11px] text-slate-300">Drag the slider to re-allocate storage space between primary <b>System Drive C: (OS + Data)</b> and secondary <b>Data Drive D: (Data)</b>.</p>
+          </div>
+
+          <!-- Partition Slider -->
+          <div class="bg-slate-950 p-4 rounded-xl border border-white/10 space-y-3">
+            <div class="flex justify-between text-xs font-semibold">
+              <span class="text-sky-400">System Partition C: (OS + Data) - <span id="c-size-txt">300 GB</span></span>
+              <span class="text-emerald-400">Data Partition D: (Data) - <span id="d-size-txt">200 GB</span></span>
+            </div>
+
+            <!-- Visual Disk Bar -->
+            <div class="h-9 w-full bg-slate-800 rounded-lg overflow-hidden flex p-1 border border-white/10">
+              <div id="partition-bar-c" class="bg-sky-600 h-full rounded-l flex items-center justify-center font-bold text-[11px] text-white transition-all" style="width: 60%;">Drive C: (OS + Data)</div>
+              <div id="partition-bar-d" class="bg-emerald-600 h-full rounded-r flex items-center justify-center font-bold text-[11px] text-white transition-all" style="width: 40%;">Drive D: (Data)</div>
+            </div>
+
+            <input type="range" min="20" max="80" value="60" class="w-full cursor-pointer accent-pink-500" oninput="updateDiskPartitions(this.value)" />
+          </div>
+
+          <!-- Formatting Section -->
+          <div class="grid grid-cols-2 gap-3">
+            <div class="bg-slate-950 p-3 rounded-xl border border-sky-500/30 flex flex-col justify-between">
+              <div>
+                <div class="font-bold text-sky-400 text-xs">Drive C: (OS + Data)</div>
+                <div class="text-[10px] text-slate-400 mt-1">Primary Partition containing Operating System files and System Data.</div>
+              </div>
+              <button onclick="formatDrive('C: (OS + Data)')" class="mt-3 px-3 py-1.5 bg-red-600/80 hover:bg-red-600 text-white text-xs font-bold rounded-lg flex items-center justify-center space-x-1 shadow">
+                <i class="fa-solid fa-broom"></i>
+                <span>Format Drive C:</span>
+              </button>
+            </div>
+
+            <div class="bg-slate-950 p-3 rounded-xl border border-emerald-500/30 flex flex-col justify-between">
+              <div>
+                <div class="font-bold text-emerald-400 text-xs">Drive D: (Data)</div>
+                <div class="text-[10px] text-slate-400 mt-1">Secondary Storage Partition dedicated for User Data and Documents.</div>
+              </div>
+              <button onclick="formatDrive('D: (Data)')" class="mt-3 px-3 py-1.5 bg-red-600/80 hover:bg-red-600 text-white text-xs font-bold rounded-lg flex items-center justify-center space-x-1 shadow">
+                <i class="fa-solid fa-broom"></i>
+                <span>Format Drive D:</span>
+              </button>
+            </div>
+          </div>
+        </div>
+      `;
+    }
+
+    function updateDiskPartitions(val) {
+      cPartitionSize = val;
+      const cBar = document.getElementById('partition-bar-c');
+      const dBar = document.getElementById('partition-bar-d');
+      const cTxt = document.getElementById('c-size-txt');
+      const dTxt = document.getElementById('d-size-txt');
+
+      const totalGB = 500;
+      const cGB = Math.round((val / 100) * totalGB);
+      const dGB = totalGB - cGB;
+
+      if (cBar) cBar.style.width = `${val}%`;
+      if (dBar) dBar.style.width = `${100 - val}%`;
+      if (cTxt) cTxt.innerText = `${cGB} GB`;
+      if (dTxt) dTxt.innerText = `${dGB} GB`;
+    }
+
+    function formatDrive(driveName) {
+      playAudio('format');
+      showToast('Formatting Partition...', `Formatting ${driveName}...`, 'info');
+      setTimeout(() => {
+        showToast('Format Complete', `Drive ${driveName} successfully formatted.`, 'success');
+      }, 1200);
+    }
+<!-- ... existing code ... -->
+    /* LAB 7: USER MANAGEMENT & ACCESS RIGHTS (ADMIN ADD / DELETE USER) */
+    let osUsers = [
+      { id: 'u1', name: 'Admin Student', role: 'Administrator' },
+      { id: 'u2', name: 'John Doe', role: 'Standard User' },
+      { id: 'u3', name: 'Guest User', role: 'Guest' }
+    ];
+    let currentAdminMode = true; // Simulating Admin privilege mode
+
+    function getUserManagerHTML() {
+      return `
+        <div class="space-y-4">
+          <div class="bg-slate-800/80 p-3 rounded-xl border border-white/10 flex justify-between items-center">
+            <div>
+              <div class="text-xs font-bold text-indigo-300">User Account Administration Panel</div>
+              <div class="text-[10px] text-slate-300">As an <b>Administrator</b>, you have complete authority to <b>Add Users</b> and <b>Delete Users</b>.</div>
+            </div>
+            <div class="flex items-center space-x-2">
+              <button onclick="toggleAdminRoleState()" id="admin-toggle-btn" class="px-2.5 py-1 bg-indigo-600 text-white rounded-lg text-xs font-bold shadow">Mode: Administrator</button>
+            </div>
+          </div>
+
+          <!-- Add User Form Area -->
+          <div class="bg-slate-950 p-3 rounded-xl border border-indigo-500/30 space-y-2">
+            <div class="text-xs font-bold text-indigo-300 flex items-center space-x-1">
+              <i class="fa-solid fa-user-plus text-indigo-400"></i>
+              <span>Add New System User</span>
+            </div>
+            <div class="flex items-center space-x-2">
+              <input type="text" id="new-username-input" placeholder="Enter username (e.g., Alex_Smith)" class="flex-1 bg-slate-900 border border-white/20 rounded-lg px-3 py-1.5 text-xs text-white focus:outline-none focus:border-indigo-400" />
+              <select id="new-user-role-select" class="bg-slate-900 border border-white/20 rounded-lg px-2 py-1.5 text-xs text-slate-200">
+                <option value="Standard User">Standard User</option>
+                <option value="Administrator">Administrator</option>
+                <option value="Guest">Guest</option>
+              </select>
+              <button onclick="adminAddUser()" class="px-4 py-1.5 bg-indigo-600 hover:bg-indigo-500 text-white rounded-lg text-xs font-bold shadow">+ Add User</button>
+            </div>
+          </div>
+
+          <!-- Registered Users List -->
+          <div class="bg-slate-950 p-3 rounded-xl border border-white/10">
+            <div class="text-xs font-bold text-slate-300 mb-2 flex justify-between items-center">
+              <span>Current User Accounts</span>
+              <span class="text-[10px] text-slate-500" id="user-count-badge">Total Accounts: 3</span>
+            </div>
+            <div id="users-list-container" class="space-y-2">
+              <!-- Rendered User Accounts -->
+            </div>
+          </div>
+        </div>
+      `;
+    }
+
+    function renderUserList() {
+      const container = document.getElementById('users-list-container');
+      const badge = document.getElementById('user-count-badge');
+      if (!container) return;
+
+      if (badge) badge.innerText = `Total Accounts: ${osUsers.length}`;
+
+      container.innerHTML = osUsers.map(u => `
+        <div class="flex items-center justify-between bg-slate-800 px-3 py-2 rounded-xl border border-white/5 hover:border-white/20 transition-all">
+          <div class="flex items-center space-x-3">
+            <div class="w-8 h-8 rounded-full ${u.role==='Administrator'?'bg-indigo-600':'bg-slate-600'} flex items-center justify-center text-white font-bold text-xs shadow">
+              <i class="fa-solid ${u.role==='Administrator'?'fa-user-shield':'fa-user'}"></i>
+            </div>
+            <div>
+              <div class="font-bold text-xs text-slate-100">${u.name}</div>
+              <div class="text-[10px] ${u.role==='Administrator'?'text-indigo-400':'text-slate-400'} font-medium">${u.role}</div>
+            </div>
+          </div>
+
+          <div class="flex items-center space-x-2">
+            ${u.name === 'Admin Student' ? `
+              <span class="text-[10px] bg-indigo-950 text-indigo-300 px-2 py-0.5 rounded font-mono">Main Admin</span>
+            ` : `
+              <button onclick="adminDeleteUser('${u.id}')" class="px-2.5 py-1 bg-red-600/80 hover:bg-red-600 text-white rounded-lg text-xs font-bold flex items-center space-x-1 shadow" title="Delete User Account">
+                <i class="fa-solid fa-trash-can text-[10px]"></i>
+                <span>Delete User</span>
+              </button>
+            `}
+          </div>
+        </div>
+      `).join('');
+    }
+
+    function toggleAdminRoleState() {
+      currentAdminMode = !currentAdminMode;
+      const btn = document.getElementById('admin-toggle-btn');
+      if (btn) {
+        btn.className = currentAdminMode ? 'px-2.5 py-1 bg-indigo-600 text-white rounded-lg text-xs font-bold shadow' : 'px-2.5 py-1 bg-amber-600 text-white rounded-lg text-xs font-bold shadow';
+        btn.innerText = currentAdminMode ? 'Mode: Administrator' : 'Mode: Standard User';
+      }
+      showToast('Role Switched', `Simulating access privileges as ${currentAdminMode ? 'Administrator' : 'Standard User'}.`, 'info');
+    }
+
+    function adminAddUser() {
+      if (!currentAdminMode) {
+        showToast('Access Denied', 'Standard Users cannot add new accounts! Switch to Administrator mode.', 'error');
+        return;
+      }
+      const input = document.getElementById('new-username-input');
+      const select = document.getElementById('new-user-role-select');
+      if (!input || !input.value.trim()) {
+        showToast('Input Required', 'Please type a user account name.', 'error');
+        return;
+      }
+
+      const name = input.value.trim();
+      const role = select ? select.value : 'Standard User';
+      osUsers.push({ id: 'u_' + Date.now(), name, role });
+      input.value = '';
+      playAudio('success');
+      renderUserList();
+      showToast('User Created', `Administrator added new user "${name}" (${role}).`, 'success');
+    }
+
+    function adminDeleteUser(userId) {
+      if (!currentAdminMode) {
+        showToast('Access Denied', 'Standard Users cannot delete accounts! Switch to Administrator mode.', 'error');
+        return;
+      }
+
+      const userToDelete = osUsers.find(u => u.id === userId);
+      osUsers = osUsers.filter(u => u.id !== userId);
+      playAudio('eject');
+      renderUserList();
+      showToast('User Deleted', `Administrator deleted account "${userToDelete ? userToDelete.name : 'User'}".`, 'info');
+    }
+<!-- ... existing code ... -->
+    /* FOLDER 2: USER OF OS (SINGLE-USER VS MULTI-USER DEMO) */
+    function getUserTypesFolderHTML() {
+      return `
+        <div class="space-y-4">
+          <!-- Conceptual Educational Banner -->
+          <div class="bg-sky-500/10 border border-sky-500/30 p-3.5 rounded-xl">
+            <div class="flex items-center space-x-2 text-sky-300 font-bold text-xs mb-1">
+              <i class="fa-solid fa-users-gear text-base"></i>
+              <span>CLASSIFICATION 1: USER CONCURRENCY (User of OS)</span>
+            </div>
+            <p class="text-[11px] text-slate-300 leading-relaxed">
+              This topic specifically classifies Operating Systems by <b>HOW MANY USERS can log in and run processes at the EXACT same time</b> (Single-User vs Multi-User OS).
+            </p>
+          </div>
+
+          <!-- Toggle Tabs -->
+          <div class="flex space-x-2 border-b border-white/10 pb-2">
+            <button onclick="switchUserTypeTab('single')" id="tab-btn-single" class="px-4 py-2 bg-sky-600 text-white rounded-xl font-bold text-xs shadow">1. Single-User OS (e.g. Windows 11 Home)</button>
+            <button onclick="switchUserTypeTab('multi')" id="tab-btn-multi" class="px-4 py-2 bg-slate-800 text-slate-400 hover:bg-slate-700 rounded-xl font-bold text-xs">2. Multi-User OS (e.g. Linux / Windows Server)</button>
+          </div>
+
+          <!-- Single-User View -->
+          <div id="view-single-user" class="space-y-3">
+            <div class="bg-slate-800/80 p-3 rounded-xl border border-white/10">
+              <h3 class="font-bold text-sky-300 text-xs">Single-User Operating System</h3>
+              <p class="text-[11px] text-slate-300">Only <b>1 person</b> can actively use the system hardware and desktop interface at any given time.</p>
+            </div>
+            <div class="bg-slate-950 p-6 rounded-xl border border-white/10 flex flex-col items-center text-center space-y-3">
+              <div class="w-16 h-16 rounded-full bg-sky-600 flex items-center justify-center text-white text-2xl font-bold shadow-lg">U1</div>
+              <div>
+                <div class="font-bold text-sm text-slate-100">User Alice (Active Desktop Session)</div>
+                <div class="text-xs text-sky-400">● 1 Active Console User at a time</div>
+              </div>
+              <button onclick="showToast('Single-User Constraint', 'In a Single-User OS, logging in as Bob locks Alice out of screen control!', 'info')" class="px-4 py-1.5 bg-slate-800 hover:bg-slate-700 border border-white/10 rounded-lg text-xs font-semibold">Switch User (Locks Current Screen)</button>
+            </div>
+          </div>
+
+          <!-- Multi-User View -->
+          <div id="view-multi-user" class="hidden space-y-3">
+            <div class="bg-slate-800/80 p-3 rounded-xl border border-white/10">
+              <h3 class="font-bold text-emerald-300 text-xs">Multi-User Operating System</h3>
+              <p class="text-[11px] text-slate-300"><b>Multiple users</b> can log in simultaneously over a network, running separate isolated programs without blocking each other.</p>
+            </div>
+
+            <!-- 3 Simultaneous Remote Desktop / Terminal Windows -->
+            <div class="grid grid-cols-1 md:grid-cols-3 gap-3">
+              <div class="bg-slate-950 p-3 rounded-xl border border-emerald-500/40 space-y-2 shadow">
+                <div class="flex justify-between items-center text-[11px] font-bold text-emerald-400 border-b border-white/10 pb-1">
+                  <span>User A (Remote SSH)</span>
+                  <span class="text-[9px] bg-emerald-950 text-emerald-300 px-1.5 py-0.5 rounded">Active</span>
+                </div>
+                <div class="font-mono text-[10px] text-slate-300 space-y-1 bg-slate-900 p-2 rounded">
+                  <div>user_a@server:~$ python train_ai.py</div>
+                  <div class="text-emerald-400">[Executing AI Training Task]</div>
+                </div>
+              </div>
+
+              <div class="bg-slate-950 p-3 rounded-xl border border-sky-500/40 space-y-2 shadow">
+                <div class="flex justify-between items-center text-[11px] font-bold text-sky-400 border-b border-white/10 pb-1">
+                  <span>User B (Remote Desktop)</span>
+                  <span class="text-[9px] bg-sky-950 text-sky-300 px-1.5 py-0.5 rounded">Active</span>
+                </div>
+                <div class="font-mono text-[10px] text-slate-300 space-y-1 bg-slate-900 p-2 rounded">
+                  <div>user_b@server:~$ backup_db.sh</div>
+                  <div class="text-sky-400">[Backing up Database...]</div>
+                </div>
+              </div>
+
+              <div class="bg-slate-950 p-3 rounded-xl border border-purple-500/40 space-y-2 shadow">
+                <div class="flex justify-between items-center text-[11px] font-bold text-purple-400 border-b border-white/10 pb-1">
+                  <span>User C (Remote Web)</span>
+                  <span class="text-[9px] bg-purple-950 text-purple-300 px-1.5 py-0.5 rounded">Active</span>
+                </div>
+                <div class="font-mono text-[10px] text-slate-300 space-y-1 bg-slate-900 p-2 rounded">
+                  <div>user_c@server:~$ nginx -s reload</div>
+                  <div class="text-purple-400">[Managing Web Services]</div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      `;
+    }
+
+    function switchUserTypeTab(tab) {
+      playAudio('click');
+      const btnSingle = document.getElementById('tab-btn-single');
+      const btnMulti = document.getElementById('tab-btn-multi');
+      const viewSingle = document.getElementById('view-single-user');
+      const viewMulti = document.getElementById('view-multi-user');
+
+      if (tab === 'single') {
+        btnSingle.className = 'px-4 py-2 bg-sky-600 text-white rounded-xl font-bold text-xs shadow';
+        btnMulti.className = 'px-4 py-2 bg-slate-800 text-slate-400 hover:bg-slate-700 rounded-xl font-bold text-xs';
+        viewSingle.classList.remove('hidden');
+        viewMulti.classList.add('hidden');
+      } else {
+        btnMulti.className = 'px-4 py-2 bg-emerald-600 text-white rounded-xl font-bold text-xs shadow';
+        btnSingle.className = 'px-4 py-2 bg-slate-800 text-slate-400 hover:bg-slate-700 rounded-xl font-bold text-xs';
+        viewMulti.classList.remove('hidden');
+        viewSingle.classList.add('hidden');
+      }
+    }
+<!-- ... existing code ... -->
+    /* FOLDER 3: PURPOSE OF OS (HARDWARE DOMAIN & PLATFORM CATEGORIES) */
+    function getPurposeFolderHTML() {
+      return `
+        <div class="space-y-4">
+          <!-- Conceptual Educational Banner -->
+          <div class="bg-emerald-500/10 border border-emerald-500/30 p-3.5 rounded-xl">
+            <div class="flex items-center space-x-2 text-emerald-300 font-bold text-xs mb-1">
+              <i class="fa-solid fa-server text-base"></i>
+              <span>CLASSIFICATION 2: SYSTEM PURPOSE & HARDWARE PLATFORM (Purpose of OS)</span>
+            </div>
+            <p class="text-[11px] text-slate-300 leading-relaxed">
+              Unlike "User of OS" (concurrency), <b>Purpose of OS</b> classifies operating systems based on <b>WHAT HARDWARE DEVICE</b> it runs on and its primary operational role (Desktop PC vs Mobile Phone vs Network Server).
+            </p>
+          </div>
+
+          <!-- Type Selection Tabs -->
+          <div class="flex space-x-2 border-b border-white/10 pb-2">
+            <button onclick="switchPurposeTab('desktop')" id="p-btn-desktop" class="px-3 py-1.5 bg-emerald-600 text-white rounded-xl font-bold text-xs shadow">1. Desktop OS</button>
+            <button onclick="switchPurposeTab('mobile')" id="p-btn-mobile" class="px-3 py-1.5 bg-slate-800 text-slate-400 hover:bg-slate-700 rounded-xl font-bold text-xs">2. Mobile OS</button>
+            <button onclick="switchPurposeTab('network')" id="p-btn-network" class="px-3 py-1.5 bg-slate-800 text-slate-400 hover:bg-slate-700 rounded-xl font-bold text-xs">3. Network OS</button>
+          </div>
+
+          <!-- DESKTOP OS SCREEN -->
+          <div id="p-view-desktop" class="space-y-3">
+            <div class="bg-slate-800/80 p-3 rounded-xl border border-white/10">
+              <h3 class="font-bold text-emerald-300 text-xs">Desktop Computer Operating System</h3>
+              <p class="text-[11px] text-slate-300">Purpose: Optimized for PC hardware, keyboard/mouse navigation, heavy software productivity, and windowed multitasking.</p>
+            </div>
+            <div class="bg-slate-950 p-4 rounded-xl border border-white/10 h-60 flex flex-col items-center justify-center relative overflow-hidden">
+              <i class="fa-solid fa-desktop text-6xl text-emerald-400 mb-2"></i>
+              <span class="text-xs font-bold text-slate-200">Desktop PC Environment</span>
+              <span class="text-[10px] text-slate-400 mt-1">Runs Windows / macOS / Linux for desktop computing.</span>
+            </div>
+          </div>
+
+          <!-- MOBILE OS SCREEN -->
+          <div id="p-view-mobile" class="hidden space-y-3">
+            <div class="bg-slate-800/80 p-3 rounded-xl border border-white/10">
+              <h3 class="font-bold text-sky-300 text-xs">Mobile Smartphone OS</h3>
+              <p class="text-[11px] text-slate-300">Purpose: Optimized for touchscreen finger gestures, battery efficiency, cellular networking, and mobile app sandboxing (Android / iOS).</p>
+            </div>
+            <div class="flex justify-center">
+              <div class="w-48 h-64 bg-slate-950 border-4 border-slate-700 rounded-3xl p-3 flex flex-col justify-between shadow-2xl relative">
+                <div class="w-16 h-3 bg-slate-800 rounded-b-lg self-center"></div>
+                <div class="grid grid-cols-3 gap-2 mt-2 text-center">
+                  <div class="p-2 bg-green-600/30 rounded-xl text-green-400"><i class="fa-solid fa-phone text-base"></i></div>
+                  <div class="p-2 bg-sky-600/30 rounded-xl text-sky-400"><i class="fa-solid fa-comments text-base"></i></div>
+                  <div class="p-2 bg-pink-600/30 rounded-xl text-pink-400"><i class="fa-solid fa-camera text-base"></i></div>
+                  <div class="p-2 bg-amber-600/30 rounded-xl text-amber-400"><i class="fa-solid fa-map-location-dot text-base"></i></div>
+                </div>
+                <div class="text-[9px] text-center text-slate-500 font-mono">Touch Screen Gesture Interface</div>
+              </div>
+            </div>
+          </div>
+
+          <!-- NETWORK OS SCREEN -->
+          <div id="p-view-network" class="hidden space-y-3">
+            <div class="bg-slate-800/80 p-3 rounded-xl border border-white/10">
+              <h3 class="font-bold text-purple-300 text-xs">Network Operating System (NOS)</h3>
+              <p class="text-[11px] text-slate-300">Purpose: Designed to manage routers, network traffic, centralized directory services, and domain file sharing across client PCs.</p>
+            </div>
+
+            <div class="bg-slate-950 p-4 rounded-xl border border-white/10 space-y-3">
+              <div class="text-xs font-bold text-purple-300">Network Topology Server Control</div>
+              <div class="flex items-center justify-around py-3 border-b border-white/10">
+                <div class="flex flex-col items-center">
+                  <i class="fa-solid fa-server text-3xl text-purple-400 mb-1 pulse-ring"></i>
+                  <span class="text-[10px] text-purple-300 font-bold">NOS Server</span>
+                </div>
+                <i class="fa-solid fa-network-wired text-xl text-slate-500"></i>
+                <div class="flex space-x-4">
+                  <div class="flex flex-col items-center">
+                    <i class="fa-solid fa-laptop text-xl text-sky-400"></i>
+                    <span class="text-[9px] text-slate-400">Client 1</span>
+                  </div>
+                  <div class="flex flex-col items-center">
+                    <i class="fa-solid fa-laptop text-xl text-sky-400"></i>
+                    <span class="text-[9px] text-slate-400">Client 2</span>
+                  </div>
+                </div>
+              </div>
+
+              <!-- Network Commands -->
+              <div class="flex space-x-2">
+                <button onclick="runNOSCommand('ping 192.168.1.1')" class="px-3 py-1 bg-purple-900/60 hover:bg-purple-800 text-purple-200 border border-purple-500/30 rounded text-xs">Ping Router</button>
+                <button onclick="runNOSCommand('netstat')" class="px-3 py-1 bg-purple-900/60 hover:bg-purple-800 text-purple-200 border border-purple-500/30 rounded text-xs">Show Connections</button>
+              </div>
+              <div id="nos-cli-output" class="font-mono text-[10px] text-emerald-400 bg-slate-900 p-2 rounded min-h-[45px]">
+                Ready for network commands...
+              </div>
+            </div>
+          </div>
+        </div>
+      `;
+    }
+
+    function switchPurposeTab(tab) {
+      playAudio('click');
+      const tabs = ['desktop', 'mobile', 'network'];
+      tabs.forEach(t => {
+        const btn = document.getElementById(`p-btn-${t}`);
+        const view = document.getElementById(`p-view-${t}`);
+        if (t === tab) {
+          btn.className = 'px-3 py-1.5 bg-emerald-600 text-white rounded-xl font-bold text-xs shadow';
+          view.classList.remove('hidden');
+        } else {
+          btn.className = 'px-3 py-1.5 bg-slate-800 text-slate-400 hover:bg-slate-700 rounded-xl font-bold text-xs';
+          view.classList.add('hidden');
+        }
+      });
+    }
+
+    function runNOSCommand(cmd) {
+      playAudio('click');
+      const out = document.getElementById('nos-cli-output');
+      if (!out) return;
+      if (cmd.startsWith('ping')) {
+        out.innerText = `Pinging 192.168.1.1 with 32 bytes of data:\nReply from 192.168.1.1: bytes=32 time=2ms TTL=64`;
+      } else if (cmd === 'netstat') {
+        out.innerText = `Active Connections:\nTCP    192.168.1.10:80        Client1:50122          ESTABLISHED`;
+      }
+    }
+<!-- ... existing code ... -->
+    /* FOLDER 4: USER INTERFACE (CLI INTERACTIVE TERMINAL vs CLICKABLE GUI) */
+    let cliTerminalHistory = ["Windows Command Prompt [Version 10.0]", "Type 'help' for available CLI commands.\n"];
+    let guiFoldersList = [
+      { id: 'g1', name: 'Documents', files: ['Essay.docx', 'Math_Notes.txt'] },
+      { id: 'g2', name: 'Pictures', files: ['Photo.png'] }
+    ];
+    let guiActiveFolderIndex = null;
+
+    function getUIFolderHTML() {
+      return `
+        <div class="space-y-4">
+          <div class="bg-slate-800/80 p-3 rounded-xl border border-white/10">
+            <h3 class="font-bold text-purple-300 text-xs">GUI (Graphical User Interface) vs CLI (Command Line Interface)</h3>
+            <p class="text-[11px] text-slate-300">Compare how CLI requires typing commands into a keyboard prompt, while GUI allows clicking visual icons!</p>
+          </div>
+
+          <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+            <!-- CLI REAL INTERACTIVE TYPING TERMINAL -->
+            <div class="bg-slate-950 p-3 rounded-xl border border-purple-500/40 flex flex-col justify-between h-80 shadow">
+              <div class="flex items-center justify-between border-b border-white/10 pb-2">
+                <span class="font-mono text-xs text-purple-400 font-bold flex items-center space-x-1">
+                  <i class="fa-solid fa-terminal mr-1"></i>
+                  <span>CLI Terminal (Type Commands)</span>
+                </span>
+                <span class="text-[9px] bg-purple-950 text-purple-300 px-2 py-0.5 rounded font-mono">Keyboard Mode</span>
+              </div>
+
+              <!-- Terminal Output Display Box -->
+              <div id="cli-terminal-screen" class="font-mono text-[11px] text-emerald-400 bg-black p-2.5 rounded-lg flex-1 my-2 overflow-auto whitespace-pre-wrap border border-white/10 leading-snug">
+              </div>
+
+              <!-- CLI Interactive Keyboard Input Field -->
+              <div class="flex items-center space-x-1 bg-black px-2 py-1.5 rounded-lg border border-purple-500/50">
+                <span class="font-mono text-xs text-purple-400 font-bold">C:\\></span>
+                <input type="text" id="cli-terminal-input" placeholder="type 'help', 'dir', 'mkdir test'..." class="flex-1 bg-transparent font-mono text-xs text-emerald-400 focus:outline-none" onkeydown="handleCLIKenter(event)" />
+                <button onclick="submitCLIInput()" class="px-2 py-0.5 bg-purple-700 hover:bg-purple-600 text-white font-mono text-[10px] rounded font-bold">Run</button>
+              </div>
+            </div>
+
+            <!-- GUI CLICKABLE VISUAL EXPLORER -->
+            <div class="bg-slate-950 p-3 rounded-xl border border-sky-500/40 flex flex-col justify-between h-80 shadow">
+              <div class="flex items-center justify-between border-b border-white/10 pb-2">
+                <span class="font-bold text-xs text-sky-400 flex items-center space-x-1">
+                  <i class="fa-solid fa-desktop mr-1"></i>
+                  <span>GUI Visual Explorer (Click Icons)</span>
+                </span>
+                <span class="text-[9px] bg-sky-950 text-sky-300 px-2 py-0.5 rounded">Mouse Click Mode</span>
+              </div>
+
+              <!-- GUI Toolbar -->
+              <div class="flex items-center space-x-2 my-1">
+                <button onclick="guiCreateFolder()" class="px-2.5 py-1 bg-amber-600 hover:bg-amber-500 text-white rounded text-[10px] font-bold">+ Click New Folder</button>
+                <button onclick="guiCreateFile()" class="px-2.5 py-1 bg-sky-600 hover:bg-sky-500 text-white rounded text-[10px] font-bold">+ Click New File</button>
+              </div>
+
+              <!-- GUI Interactive Clickable Canvas -->
+              <div id="gui-interactive-canvas" class="bg-slate-900 p-2.5 rounded-lg flex-1 overflow-auto border border-white/10">
+                <!-- Rendered GUI Icons -->
+              </div>
+
+              <div class="text-[10px] text-sky-300 text-center italic mt-1">
+                In GUI, click icons or buttons to open and create files!
+              </div>
+            </div>
+          </div>
+        </div>
+      `;
+    }
+
+    /* CLI Terminal Logic */
+    function initCLITerminal() {
+      const screen = document.getElementById('cli-terminal-screen');
+      if (screen) {
+        screen.innerText = cliTerminalHistory.join('\n') + '\nC:\\> _';
+        screen.scrollTop = screen.scrollHeight;
+      }
+    }
+
+    function handleCLIKenter(e) {
+      if (e.key === 'Enter') submitCLIInput();
+    }
+
+    function submitCLIInput() {
+      const input = document.getElementById('cli-terminal-input');
+      const screen = document.getElementById('cli-terminal-screen');
+      if (!input || !screen || !input.value.trim()) return;
+
+      const cmd = input.value.trim();
+      input.value = '';
+      playAudio('click');
+
+      cliTerminalHistory.push(`C:\\> ${cmd}`);
+
+      const parts = cmd.toLowerCase().split(' ');
+      const main = parts[0];
+
+      if (main === 'help') {
+        cliTerminalHistory.push(`Available Commands:\n - dir / ls  : List files\n - mkdir <name> : Create directory\n - echo <text>  : Print text\n - cls        : Clear terminal\n - ver        : Display OS version`);
+      } else if (main === 'dir' || main === 'ls') {
+        cliTerminalHistory.push(` Directory of C:\\\n\n<DIR>          Documents\n<DIR>          Pictures\n               System_Logs.txt`);
+      } else if (main === 'mkdir') {
+        const folderName = parts.slice(1).join('_') || 'NewFolder';
+        cliTerminalHistory.push(`Directory '${folderName}' created successfully.`);
+        showToast('CLI Command', `Created directory "${folderName}" via CLI terminal!`, 'success');
+      } else if (main === 'echo') {
+        cliTerminalHistory.push(cmd.substring(5));
+      } else if (main === 'cls') {
+        cliTerminalHistory = ["Windows Command Prompt [Version 10.0]"];
+      } else if (main === 'ver') {
+        cliTerminalHistory.push("Secondary 1 OS Learning Edition v2.0");
+      } else {
+        cliTerminalHistory.push(`'${cmd}' is not recognized as an internal or external command. Type 'help'.`);
+      }
+
+      screen.innerText = cliTerminalHistory.join('\n') + '\nC:\\> _';
+      screen.scrollTop = screen.scrollHeight;
+    }
+
+    /* GUI Clickable Logic */
+    function renderGUIFolderCanvas() {
+      const canvas = document.getElementById('gui-interactive-canvas');
+      if (!canvas) return;
+
+      let html = '<div class="grid grid-cols-3 gap-2">';
+      guiFoldersList.forEach((folder, idx) => {
+        html += `
+          <div onclick="guiClickOpenFolder(${idx})" class="p-2 bg-slate-800 hover:bg-slate-700 border border-amber-500/40 rounded-lg flex flex-col items-center justify-center cursor-pointer transition-all hover:scale-105">
+            <i class="fa-solid fa-folder text-amber-400 text-2xl mb-1"></i>
+            <span class="text-[10px] text-white font-bold truncate w-full text-center">${folder.name}</span>
+            <span class="text-[8px] text-amber-300">(${folder.files.length} files)</span>
+          </div>
+        `;
+      });
+      html += '</div>';
+
+      if (guiActiveFolderIndex !== null) {
+        const folder = guiFoldersList[guiActiveFolderIndex];
+        html += `
+          <div class="mt-3 p-2 bg-slate-950 border border-sky-500/40 rounded-lg">
+            <div class="flex justify-between items-center text-[10px] font-bold text-sky-300 border-b border-white/10 pb-1 mb-2">
+              <span>Opened Folder: ${folder.name}</span>
+              <button onclick="guiCloseFolder()" class="text-red-400 hover:underline cursor-pointer">Close ✕</button>
+            </div>
+            <div class="grid grid-cols-2 gap-2">
+              ${folder.files.map(f => `
+                <div onclick="showToast('GUI Click File', 'Opened file icon: ${f}', 'info')" class="p-1.5 bg-slate-800 hover:bg-slate-700 border border-sky-400/30 rounded flex items-center space-x-1.5 cursor-pointer">
+                  <i class="fa-solid fa-file-lines text-sky-400 text-xs"></i>
+                  <span class="text-[9px] text-slate-200 truncate">${f}</span>
+                </div>
+              `).join('')}
+            </div>
+          </div>
+        `;
+      }
+
+      canvas.innerHTML = html;
+    }
+
+    window.guiClickOpenFolder = function(index) {
+      playAudio('click');
+      guiActiveFolderIndex = index;
+      renderGUIFolderCanvas();
+    };
+
+    window.guiCloseFolder = function() {
+      playAudio('click');
+      guiActiveFolderIndex = null;
+      renderGUIFolderCanvas();
+    };
+
+    window.guiCreateFolder = function() {
+      playAudio('success');
+      const name = `Folder_${guiFoldersList.length + 1}`;
+      guiFoldersList.push({ id: 'g_' + Date.now(), name: name, files: ['File1.txt'] });
+      renderGUIFolderCanvas();
+      showToast('GUI Folder Created', `Clicked GUI button to create folder "${name}"!`, 'success');
+    };
+
+    window.guiCreateFile = function() {
+      playAudio('success');
+      if (guiActiveFolderIndex !== null) {
+        guiFoldersList[guiActiveFolderIndex].files.push(`Doc_${Date.now().toString().slice(-4)}.txt`);
+      } else {
+        guiFoldersList[0].files.push(`Doc_${Date.now().toString().slice(-4)}.txt`);
+      }
+      renderGUIFolderCanvas();
+      showToast('GUI File Created', 'Clicked GUI button to add file into folder!', 'success');
+    };
+  </script>
+</body>
+</html>
