@@ -1,0 +1,839 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Utility Programs Interactive Suite</title>
+    <style>
+        :root {
+            --bg-color: #0f172a;
+            --card-bg: #1e293b;
+            --accent-blue: #38bdf8;
+            --accent-green: #4ade80;
+            --accent-red: #f87171;
+            --accent-yellow: #facc15;
+            --accent-purple: #c084fc;
+            --text-light: #f8fafc;
+            --text-muted: #94a3b8;
+        }
+
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background-color: var(--bg-color);
+            color: var(--text-light);
+            margin: 0;
+            padding: 20px;
+        }
+
+        header {
+            text-align: center;
+            margin-bottom: 25px;
+        }
+
+        header h1 {
+            color: var(--accent-blue);
+            margin-bottom: 5px;
+        }
+
+        .grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(380px, 1fr));
+            gap: 20px;
+            max-width: 1600px;
+            margin: 0 auto;
+        }
+
+        .game-card {
+            background-color: var(--card-bg);
+            border-radius: 12px;
+            padding: 18px;
+            box-shadow: 0 4px 15px rgba(0,0,0,0.3);
+            border: 1px solid #334155;
+            display: flex;
+            flex-direction: column;
+            justify-content: space-between;
+        }
+
+        .game-card h2 {
+            font-size: 1.15rem;
+            color: var(--accent-blue);
+            margin-top: 0;
+            border-bottom: 1px solid #334155;
+            padding-bottom: 8px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .instructions {
+            font-size: 0.82rem;
+            color: var(--text-muted);
+            margin-bottom: 10px;
+            min-height: 2.2em;
+        }
+
+        .interactive-area {
+            background: #0f172a;
+            border-radius: 8px;
+            padding: 12px;
+            min-height: 220px;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            position: relative;
+            box-sizing: border-box;
+        }
+
+        button {
+            background-color: var(--accent-blue);
+            color: #0f172a;
+            border: none;
+            padding: 6px 10px;
+            border-radius: 6px;
+            font-weight: bold;
+            cursor: pointer;
+            margin: 3px;
+            font-size: 0.8rem;
+            user-select: none;
+        }
+
+        button:hover { filter: brightness(1.1); }
+        button:active { transform: scale(0.96); }
+
+        .status-msg {
+            font-size: 0.82rem;
+            margin-top: 8px;
+            min-height: 1.2em;
+            text-align: center;
+            font-weight: bold;
+        }
+
+        /* 1. File Manager */
+        .fm-window {
+            width: 100%;
+            height: 130px;
+            background: #1e293b;
+            border: 1px solid #334155;
+            border-radius: 6px;
+            padding: 6px;
+            overflow-y: auto;
+            display: flex;
+            flex-wrap: wrap;
+            align-content: flex-start;
+            gap: 6px;
+            box-sizing: border-box;
+        }
+        .fm-item {
+            background: #334155;
+            padding: 5px 8px;
+            border-radius: 4px;
+            font-size: 0.78rem;
+            cursor: pointer;
+            border: 1px solid transparent;
+        }
+        .fm-item.selected {
+            border-color: var(--accent-blue);
+            background: #0284c7;
+        }
+
+        /* 2. System Monitor */
+        .sys-meter-box {
+            width: 100%;
+            margin-bottom: 8px;
+        }
+        .meter-label {
+            display: flex;
+            justify-content: space-between;
+            font-size: 0.75rem;
+            margin-bottom: 2px;
+        }
+        .meter-bar {
+            width: 100%;
+            height: 10px;
+            background: #334155;
+            border-radius: 5px;
+            overflow: hidden;
+        }
+        .meter-fill {
+            height: 100%;
+            width: 0%;
+            transition: width 0.5s ease-out;
+        }
+        .proc-table {
+            width: 100%;
+            font-size: 0.72rem;
+            border-collapse: collapse;
+        }
+        .proc-table th, .proc-table td {
+            padding: 3px 5px;
+            text-align: left;
+            border-bottom: 1px solid #334155;
+        }
+
+        /* 3. Foul Language Checker */
+        .doc-box {
+            background: #1e293b;
+            padding: 8px;
+            border-radius: 6px;
+            font-size: 0.8rem;
+            width: 90%;
+            margin-bottom: 8px;
+            border: 1px solid #334155;
+        }
+
+        /* 4. Firewall Road Block Theme */
+        .roadblock-display {
+            background: #334155;
+            width: 100%;
+            border-radius: 6px;
+            padding: 10px;
+            box-sizing: border-box;
+            text-align: center;
+            margin-bottom: 8px;
+            border: 2px dashed #64748b;
+        }
+        .license-plate {
+            display: inline-block;
+            background: #facc15;
+            color: #000;
+            font-weight: 900;
+            font-family: 'Courier New', Courier, monospace;
+            padding: 4px 12px;
+            border: 2px solid #000;
+            border-radius: 4px;
+            font-size: 1.1rem;
+            letter-spacing: 2px;
+            box-shadow: 2px 2px 0px #000;
+            margin: 6px 0;
+        }
+        .barrier-state {
+            font-size: 0.75rem;
+            font-weight: bold;
+            margin-top: 4px;
+        }
+        .list-badge {
+            font-size: 0.72rem;
+            padding: 2px 6px;
+            border-radius: 4px;
+            margin: 2px;
+            display: inline-block;
+        }
+
+        /* 5. Data Compressor */
+        .comp-input {
+            width: 80%;
+            padding: 5px;
+            border-radius: 4px;
+            border: 1px solid #334155;
+            background: #1e293b;
+            color: white;
+            text-align: center;
+            margin-bottom: 6px;
+        }
+
+        /* 6. Multi-Block Defragmenter */
+        .defrag-grid {
+            display: grid;
+            grid-template-columns: repeat(8, 1fr);
+            gap: 4px;
+            width: 100%;
+        }
+        .defrag-block {
+            aspect-ratio: 1;
+            border-radius: 4px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 0.75rem;
+            font-weight: bold;
+            cursor: pointer;
+            border: 2px solid transparent;
+            color: #fff;
+        }
+        .defrag-block.selected { border-color: #fff; transform: scale(1.1); }
+        .defrag-block.A { background: #ef4444; }
+        .defrag-block.B { background: #3b82f6; }
+        .defrag-block.C { background: #10b981; }
+        .defrag-block.D { background: #f59e0b; }
+        .defrag-block.EMPTY { background: #334155; color: #64748b; }
+
+        /* 7. Word Document Backup Software */
+        .word-editor {
+            width: 100%;
+            background: #ffffff;
+            color: #000000;
+            border-radius: 6px;
+            padding: 8px;
+            box-sizing: border-box;
+            margin-bottom: 8px;
+        }
+        .word-editor textarea {
+            width: 100%;
+            height: 50px;
+            border: 1px solid #ccc;
+            border-radius: 4px;
+            padding: 4px;
+            font-family: inherit;
+            font-size: 0.8rem;
+            resize: none;
+            box-sizing: border-box;
+        }
+        .backup-history {
+            width: 100%;
+            max-height: 80px;
+            overflow-y: auto;
+            background: #1e293b;
+            border: 1px solid #334155;
+            border-radius: 4px;
+            font-size: 0.72rem;
+            padding: 4px;
+            box-sizing: border-box;
+        }
+        .backup-item {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 3px 6px;
+            border-bottom: 1px solid #334155;
+        }
+        .backup-item:last-child { border-bottom: none; }
+
+        /* 8. App Uninstaller */
+        .app-list {
+            width: 100%;
+            background: #1e293b;
+            border-radius: 6px;
+            border: 1px solid #334155;
+            overflow: hidden;
+            margin-bottom: 8px;
+        }
+        .app-row {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 6px 10px;
+            font-size: 0.78rem;
+            border-bottom: 1px solid #334155;
+            cursor: pointer;
+        }
+        .app-row:hover { background: #334155; }
+        .app-row.selected { background: #0284c7; }
+    </style>
+</head>
+<body>
+
+    <header>
+        <h1>Utility Programs Interactive Suite</h1>
+        <p>Explore real-world computer utilities through hands-on controls!</p>
+    </header>
+
+    <div class="grid">
+
+        <!-- 1. Real File Manager -->
+        <div class="game-card">
+            <div>
+                <h2>1. File Manager</h2>
+                <div class="instructions">Select files to manage. Add new files, create duplicates (Copy), or remove them freely!</div>
+            </div>
+            <div class="interactive-area">
+                <div class="fm-window" id="fm-container"></div>
+                <div style="margin-top: 8px;">
+                    <button id="btn-fm-add">➕ Add File</button>
+                    <button id="btn-fm-copy">📋 Copy Selected</button>
+                    <button id="btn-fm-del">🗑️ Delete Selected</button>
+                </div>
+            </div>
+            <div id="fm-msg" class="status-msg"></div>
+        </div>
+
+        <!-- 2. System Monitor -->
+        <div class="game-card">
+            <div>
+                <h2>2. System Monitor</h2>
+                <div class="instructions">Live monitoring of system resources (CPU/RAM usage) and background process activity.</div>
+            </div>
+            <div class="interactive-area">
+                <div class="sys-meter-box">
+                    <div class="meter-label"><span>CPU Usage: <b id="cpu-val">0%</b></span></div>
+                    <div class="meter-bar"><div id="cpu-bar" class="meter-fill" style="background:var(--accent-blue);"></div></div>
+                </div>
+                <div class="sys-meter-box">
+                    <div class="meter-label"><span>RAM Usage: <b id="ram-val">0 MB</b> / 8192 MB</span></div>
+                    <div class="meter-bar"><div id="ram-bar" class="meter-fill" style="background:var(--accent-purple);"></div></div>
+                </div>
+                <table class="proc-table">
+                    <thead>
+                        <tr><th>Process Name</th><th>Status</th><th>CPU</th><th>RAM</th></tr>
+                    </thead>
+                    <tbody id="sys-proc-body"></tbody>
+                </table>
+            </div>
+            <div id="sys-msg" class="status-msg">Real-time telemetry active</div>
+        </div>
+
+        <!-- 3. Virus Checker (Profanity Filter) -->
+        <div class="game-card">
+            <div>
+                <h2>3. Virus Checker</h2>
+                <div class="instructions">Scan student submissions. Flag and quarantine documents containing bad words ("Fxxx")!</div>
+            </div>
+            <div class="interactive-area">
+                <div class="doc-box">
+                    <strong id="doc-title">Assignment.txt</strong>
+                    <div id="doc-text" style="color:var(--text-muted); margin-top:4px;">"Checking text..."</div>
+                </div>
+                <div>
+                    <button id="btn-prof-pass" style="background:var(--accent-green); color:#000;">✅ Safe Document</button>
+                    <button id="btn-prof-flag" style="background:var(--accent-red); color:#fff;">🚨 Flag & Quarantine</button>
+                </div>
+            </div>
+            <div id="prof-msg" class="status-msg"></div>
+        </div>
+
+        <!-- 4. Firewall Road Block Theme -->
+        <div class="game-card">
+            <div>
+                <h2>4. Firewall (Road Block)</h2>
+                <div class="instructions">Act as a Highway Guard! Check incoming vehicle car plates against Banned vs Approved rules.</div>
+            </div>
+            <div class="interactive-area">
+                <div class="roadblock-display">
+                    <div style="font-size:0.75rem; color:var(--text-muted); margin-bottom:2px;">🚘 Incoming Vehicle at Toll Gate:</div>
+                    <div class="license-plate" id="fw-plate">BAD-999</div>
+                    <div class="barrier-state" id="fw-barrier-status" style="color:var(--accent-yellow);">🚧 BARRIER: DOWN</div>
+                    <div style="margin-top:6px;">
+                        <span class="list-badge" style="background:#0284c7;">🟢 Whitelist: FAST-101, COOL-888</span>
+                        <span class="list-badge" style="background:#991b1b;">🔴 Blacklist: BAD-999, EVIL-666</span>
+                    </div>
+                </div>
+                <div>
+                    <button id="btn-fw-allow" style="background:var(--accent-green); color:#000;">🟢 Raise Barrier (Allow)</button>
+                    <button id="btn-fw-block" style="background:var(--accent-red); color:#fff;">🚧 Lower Barrier (Block)</button>
+                </div>
+            </div>
+            <div id="fw-msg" class="status-msg"></div>
+        </div>
+
+        <!-- 5. Data Compressor -->
+        <div class="game-card">
+            <div>
+                <h2>5. Data Compressor</h2>
+                <div class="instructions">Compress repeated data characters to reduce file sizes! Complete all 5 compression tasks.</div>
+            </div>
+            <div class="interactive-area">
+                <div style="font-size:0.82rem; margin-bottom:4px;">Data Pattern: <strong id="comp-target">AAAAABBB</strong></div>
+                <div style="font-size:0.75rem; color:var(--text-muted); margin-bottom:6px;">Original Length: <span id="comp-len-orig">8</span> chars</div>
+                <input type="text" id="comp-input" class="comp-input" placeholder="e.g. 5A3B">
+                <button id="btn-comp-submit">Compress File</button>
+            </div>
+            <div id="comp-msg" class="status-msg"></div>
+        </div>
+
+        <!-- 6. Multi-Block Defragmenter -->
+        <div class="game-card">
+            <div>
+                <h2>6. Defragmenter</h2>
+                <div class="instructions">Swap blocks so matching file fragments (A, B, C, D) group together continuously!</div>
+            </div>
+            <div class="interactive-area">
+                <div class="defrag-grid" id="defrag-grid"></div>
+            </div>
+            <div id="defrag-msg" class="status-msg">Click any two blocks to swap them.</div>
+        </div>
+
+        <!-- 7. Document Backup & Timestamp Recovery -->
+        <div class="game-card">
+            <div>
+                <h2>7. Backup Software</h2>
+                <div class="instructions">Type into your Word document below. Click "Take Backup Snapshot" to record time & create backup files!</div>
+            </div>
+            <div class="interactive-area">
+                <div class="word-editor">
+                    <div style="font-size:0.7rem; font-weight:bold; color:#475569; margin-bottom:3px;">📝 Word Document (Essay_Draft.docx)</div>
+                    <textarea id="word-text">A backup creates a timestamped copy of files so you can revert if files are lost or changed.</textarea>
+                </div>
+                <div style="margin-bottom:6px;">
+                    <button id="btn-doc-backup" style="background:var(--accent-blue);">💾 Take Backup Snapshot</button>
+                </div>
+                <div class="backup-history" id="backup-list">
+                    <div style="text-align:center; color:var(--text-muted);">[ No backups created yet ]</div>
+                </div>
+            </div>
+            <div id="bkup-msg" class="status-msg"></div>
+        </div>
+
+        <!-- 8. Real Application Uninstaller -->
+        <div class="game-card">
+            <div>
+                <h2>8. Program Uninstaller</h2>
+                <div class="instructions">Select an application to launch its uninstallation wizard, scrubbing core files and registry keys.</div>
+            </div>
+            <div class="interactive-area">
+                <div class="app-list" id="app-list-box"></div>
+                <button id="btn-uninstall-start" style="background:var(--accent-red); color:#fff;">🗑️ Uninstall Selected App</button>
+            </div>
+            <div id="uninstall-msg" class="status-msg"></div>
+        </div>
+
+    </div>
+
+    <script>
+        document.addEventListener('DOMContentLoaded', () => {
+
+            // ================= 1. FILE MANAGER =================
+            let fmFiles = [
+                { id: 1, name: "📄 Essay_Draft.docx" },
+                { id: 2, name: "🖼️ Sunset.png" },
+                { id: 3, name: "📊 Budget_2026.xlsx" },
+                { id: 4, name: "🎵 Audio_Track.mp3" }
+            ];
+            let selectedFmId = null;
+
+            function renderFM() {
+                const container = document.getElementById('fm-container');
+                container.innerHTML = "";
+                fmFiles.forEach(f => {
+                    const div = document.createElement('div');
+                    div.className = "fm-item" + (selectedFmId === f.id ? " selected" : "");
+                    div.innerText = f.name;
+                    div.onclick = () => {
+                        selectedFmId = selectedFmId === f.id ? null : f.id;
+                        renderFM();
+                    };
+                    container.appendChild(div);
+                });
+            }
+
+            document.getElementById('btn-fm-add').onclick = () => {
+                const name = prompt("Enter new filename:", "New_Document.txt");
+                if (name) {
+                    fmFiles.push({ id: Date.now(), name: "📄 " + name });
+                    renderFM();
+                    showMsg('fm-msg', 'New file created in directory!', 'var(--accent-green)');
+                }
+            };
+
+            document.getElementById('btn-fm-copy').onclick = () => {
+                if (selectedFmId !== null) {
+                    const item = fmFiles.find(f => f.id === selectedFmId);
+                    if (item) {
+                        fmFiles.push({ id: Date.now(), name: item.name.replace(/(.\w+)$/, "_Copy$1") });
+                        renderFM();
+                        showMsg('fm-msg', 'File duplicate created!', 'var(--accent-green)');
+                    }
+                } else {
+                    showMsg('fm-msg', 'Select a file first to copy!', 'var(--accent-red)');
+                }
+            };
+
+            document.getElementById('btn-fm-del').onclick = () => {
+                if (selectedFmId !== null) {
+                    fmFiles = fmFiles.filter(f => f.id !== selectedFmId);
+                    selectedFmId = null;
+                    renderFM();
+                    showMsg('fm-msg', 'File permanently removed.', 'var(--accent-green)');
+                } else {
+                    showMsg('fm-msg', 'Select a file to delete!', 'var(--accent-red)');
+                }
+            };
+            renderFM();
+
+
+            // ================= 2. SYSTEM MONITOR =================
+            const processes = [
+                { name: "system_kernel.sys", status: "Active", cpu: 3, ram: 120 },
+                { name: "web_browser.exe", status: "Running", cpu: 14, ram: 850 },
+                { name: "video_editor.exe", status: "Processing", cpu: 62, ram: 2400 },
+                { name: "background_update.exe", status: "Idle", cpu: 1, ram: 45 }
+            ];
+
+            function updateSysMonitor() {
+                let totalCpu = 0;
+                let totalRam = 0;
+
+                const tbody = document.getElementById('sys-proc-body');
+                tbody.innerHTML = "";
+
+                processes.forEach(p => {
+                    const curCpu = Math.max(1, p.cpu + Math.floor(Math.random() * 5 - 2));
+                    totalCpu += curCpu;
+                    totalRam += p.ram;
+
+                    const tr = document.createElement('tr');
+                    tr.innerHTML = `<td>${p.name}</td><td>${p.status}</td><td>${curCpu}%</td><td>${p.ram} MB</td>`;
+                    tbody.appendChild(tr);
+                });
+
+                document.getElementById('cpu-val').innerText = `${totalCpu}%`;
+                document.getElementById('cpu-bar').style.width = `${totalCpu}%`;
+
+                document.getElementById('ram-val').innerText = `${totalRam}`;
+                document.getElementById('ram-bar').style.width = `${(totalRam / 8192) * 100}%`;
+            }
+            setInterval(updateSysMonitor, 1500);
+            updateSysMonitor();
+
+
+            // ================= 3. VIRUS CHECKER =================
+            const g3Docs = [
+                { title: "Homework.txt", text: "Math answers: 42, 108, 15.", foul: false },
+                { title: "Rant.txt", text: "I hate this class Fxxx everything!", foul: true },
+                { title: "Science.txt", text: "Photosynthesis converts light to sugar.", foul: false },
+                { title: "Angry_Notes.txt", text: "You are a Fxxx stupid guy!", foul: true },
+                { title: "History_Essay.txt", text: "The industrial revolution began in Europe.", foul: false }
+            ];
+            let g3Idx = 0;
+
+            function loadG3Doc() {
+                if (g3Idx >= g3Docs.length) {
+                    document.getElementById('doc-title').innerText = "All Files Scanned!";
+                    document.getElementById('doc-text').innerText = "No more documents in queue.";
+                    showMsg('prof-msg', 'Virus Checker Scan Complete!', 'var(--accent-green)');
+                    return;
+                }
+                document.getElementById('doc-title').innerText = g3Docs[g3Idx].title;
+                document.getElementById('doc-text').innerText = `"${g3Docs[g3Idx].text}"`;
+            }
+
+            function handleProf(flagged) {
+                if (g3Idx >= g3Docs.length) return;
+                if (g3Docs[g3Idx].foul === flagged) {
+                    showMsg('prof-msg', 'Correct filter action!', 'var(--accent-green)');
+                    g3Idx++;
+                    setTimeout(loadG3Doc, 1000);
+                } else {
+                    showMsg('prof-msg', 'Incorrect! Look closely for "Fxxx".', 'var(--accent-red)');
+                }
+            }
+            document.getElementById('btn-prof-pass').onclick = () => handleProf(false);
+            document.getElementById('btn-prof-flag').onclick = () => handleProf(true);
+            loadG3Doc();
+
+
+            // ================= 4. FIREWALL (ROAD BLOCK) =================
+            const roadVehicles = [
+                { plate: "BAD-999", isBlacklisted: true },
+                { plate: "FAST-101", isBlacklisted: false },
+                { plate: "EVIL-666", isBlacklisted: true },
+                { plate: "COOL-888", isBlacklisted: false }
+            ];
+            let fwIdx = 0;
+
+            function loadFWVehicle() {
+                if (fwIdx >= roadVehicles.length) {
+                    document.getElementById('fw-plate').innerText = "CLEAR";
+                    document.getElementById('fw-barrier-status').innerText = "🚧 BARRIER: DOWN";
+                    document.getElementById('fw-barrier-status').style.color = "var(--accent-yellow)";
+                    showMsg('fw-msg', 'All traffic inspected at road block!', 'var(--accent-green)');
+                    return;
+                }
+                document.getElementById('fw-plate').innerText = roadVehicles[fwIdx].plate;
+                document.getElementById('fw-barrier-status').innerText = "🚧 BARRIER: WAITING";
+                document.getElementById('fw-barrier-status').style.color = "var(--accent-yellow)";
+            }
+
+            function handleFW(allowed) {
+                if (fwIdx >= roadVehicles.length) return;
+                const car = roadVehicles[fwIdx];
+
+                if ((!car.isBlacklisted && allowed) || (car.isBlacklisted && !allowed)) {
+                    if (allowed) {
+                        document.getElementById('fw-barrier-status').innerText = "🟢 BARRIER: RAISED (PASSED)";
+                        document.getElementById('fw-barrier-status').style.color = "var(--accent-green)";
+                        showMsg('fw-msg', 'Barrier raised! Car passed through gate.', 'var(--accent-green)');
+                    } else {
+                        document.getElementById('fw-barrier-status').innerText = "🔴 BARRIER: BLOCKED";
+                        document.getElementById('fw-barrier-status').style.color = "var(--accent-red)";
+                        showMsg('fw-msg', 'Banned plate detected! Road block barrier lowered.', 'var(--accent-green)');
+                    }
+                    fwIdx++;
+                    setTimeout(loadFWVehicle, 1200);
+                } else {
+                    showMsg('fw-msg', '❌ Wrong action! Check Blacklist vs Whitelist car plates!', 'var(--accent-red)');
+                }
+            }
+            document.getElementById('btn-fw-allow').onclick = () => handleFW(true);
+            document.getElementById('btn-fw-block').onclick = () => handleFW(false);
+            loadFWVehicle();
+
+
+            // ================= 5. DATA COMPRESSOR =================
+            const g5Missions = [
+                { orig: "AAAAABBB", target: "5A3B" },
+                { orig: "WWWWWWRRRR", target: "6W4R" },
+                { orig: "XXYYYZZZZZ", target: "2X3Y5Z" },
+                { orig: "MMMMNNNPOOO", target: "4M3N1P3O" },
+                { orig: "CCCCCCCKKKK", target: "7C4K" }
+            ];
+            let g5Idx = 0;
+
+            function loadG5Mission() {
+                if (g5Idx >= g5Missions.length) {
+                    showMsg('comp-msg', 'All 5 Files Successfully Compressed!', 'var(--accent-green)');
+                    return;
+                }
+                const m = g5Missions[g5Idx];
+                document.getElementById('comp-target').innerText = m.orig;
+                document.getElementById('comp-len-orig').innerText = m.orig.length;
+                document.getElementById('comp-input').value = "";
+            }
+
+            document.getElementById('btn-comp-submit').onclick = () => {
+                if (g5Idx >= g5Missions.length) return;
+                const input = document.getElementById('comp-input').value.trim().toUpperCase();
+                const m = g5Missions[g5Idx];
+
+                if (input === m.target) {
+                    const ratio = Math.round((1 - (m.target.length / m.orig.length)) * 100);
+                    showMsg('comp-msg', `Success! Reduced size by ${ratio}%`, 'var(--accent-green)');
+                    g5Idx++;
+                    setTimeout(loadG5Mission, 1200);
+                } else {
+                    showMsg('comp-msg', `Incorrect! Expected format: ${m.target}`, 'var(--accent-red)');
+                }
+            };
+            loadG5Mission();
+
+
+            // ================= 6. MULTI-BLOCK DEFRAGMENTER =================
+            let defragDrive = ["A", "B", "C", "A", "EMPTY", "B", "C", "EMPTY", "A", "C", "B", "EMPTY", "A", "B", "C", "EMPTY"];
+            let selectedBlockIdx = null;
+
+            function renderDefrag() {
+                const grid = document.getElementById('defrag-grid');
+                grid.innerHTML = "";
+                defragDrive.forEach((val, idx) => {
+                    const div = document.createElement('div');
+                    div.className = `defrag-block ${val}` + (selectedBlockIdx === idx ? " selected" : "");
+                    div.innerText = val === "EMPTY" ? "•" : val;
+                    div.onclick = () => handleDefragSwap(idx);
+                    grid.appendChild(div);
+                });
+            }
+
+            function handleDefragSwap(idx) {
+                if (selectedBlockIdx === null) {
+                    selectedBlockIdx = idx;
+                } else {
+                    const temp = defragDrive[selectedBlockIdx];
+                    defragDrive[selectedBlockIdx] = defragDrive[idx];
+                    defragDrive[idx] = temp;
+                    selectedBlockIdx = null;
+                    checkDefragWin();
+                }
+                renderDefrag();
+            }
+
+            function checkDefragWin() {
+                const state = defragDrive.join("");
+                if (state.startsWith("AAAA") && state.includes("BBBB") && state.includes("CCCC")) {
+                    showMsg('defrag-msg', 'Disk Fully Defragmented! Sequential read speeds optimized.', 'var(--accent-green)');
+                } else {
+                    showMsg('defrag-msg', 'Swap blocks to group matching letters together.', 'var(--text-muted)');
+                }
+            }
+            renderDefrag();
+
+
+            // ================= 7. REAL DOCUMENT BACKUP SOFTWARE =================
+            const docBackups = [];
+
+            document.getElementById('btn-doc-backup').onclick = () => {
+                const content = document.getElementById('word-text').value;
+                const now = new Date();
+                const timeStr = now.toTimeString().split(' ')[0];
+                const cleanTime = timeStr.replace(/:/g, '');
+                
+                const backupFile = {
+                    time: timeStr,
+                    filename: `Essay_Backup_${cleanTime}.docx`,
+                    content: content
+                };
+
+                docBackups.unshift(backupFile);
+                renderBackupList();
+                showMsg('bkup-msg', `Backup created at ${timeStr}!`, 'var(--accent-green)');
+            };
+
+            function renderBackupList() {
+                const list = document.getElementById('backup-list');
+                list.innerHTML = "";
+
+                if (docBackups.length === 0) {
+                    list.innerHTML = '<div style="text-align:center; color:var(--text-muted);">[ No backups created yet ]</div>';
+                    return;
+                }
+
+                docBackups.forEach((b, idx) => {
+                    const item = document.createElement('div');
+                    item.className = 'backup-item';
+                    item.innerHTML = `
+                        <span>💾 ${b.filename} <small style="color:var(--text-muted);">(${b.time})</small></span>
+                        <button class="restore-btn" style="padding:2px 6px; font-size:0.7rem; background:var(--accent-purple); color:#fff;">Restore</button>
+                    `;
+                    item.querySelector('.restore-btn').onclick = () => restoreDocBackup(idx);
+                    list.appendChild(item);
+                });
+            }
+
+            function restoreDocBackup(index) {
+                const selectedBackup = docBackups[index];
+                document.getElementById('word-text').value = selectedBackup.content;
+                showMsg('bkup-msg', `Restored document from timestamp ${selectedBackup.time}!`, 'var(--accent-green)');
+            }
+
+
+            // ================= 8. REAL UNINSTALLER =================
+            const installedApps = [
+                { id: 1, name: "🎮 Action_Game_V2.exe", size: "4.2 GB" },
+                { id: 2, name: "🎨 Paint_Tool_Pro.exe", size: "350 MB" },
+                { id: 3, name: "Toolbar_Adware.dll", size: "12 MB" }
+            ];
+            let selectedAppId = null;
+
+            function renderUninstaller() {
+                const box = document.getElementById('app-list-box');
+                box.innerHTML = "";
+                installedApps.forEach(app => {
+                    const row = document.createElement('div');
+                    row.className = "app-row" + (selectedAppId === app.id ? " selected" : "");
+                    row.innerHTML = `<span>${app.name}</span><span style="color:var(--text-muted);">${app.size}</span>`;
+                    row.onclick = () => {
+                        selectedAppId = selectedAppId === app.id ? null : app.id;
+                        renderUninstaller();
+                    };
+                    box.appendChild(row);
+                });
+            }
+
+            document.getElementById('btn-uninstall-start').onclick = () => {
+                if (selectedAppId !== null) {
+                    const app = installedApps.find(a => a.id === selectedAppId);
+                    showMsg('uninstall-msg', `Uninstalling ${app.name}... Wiping files and registry keys...`, 'var(--accent-yellow)');
+                    
+                    setTimeout(() => {
+                        const idx = installedApps.findIndex(a => a.id === selectedAppId);
+                        installedApps.splice(idx, 1);
+                        selectedAppId = null;
+                        renderUninstaller();
+                        showMsg('uninstall-msg', 'Application cleanly uninstalled from system!', 'var(--accent-green)');
+                    }, 1200);
+                } else {
+                    showMsg('uninstall-msg', 'Select an application from the list to uninstall!', 'var(--accent-red)');
+                }
+            };
+            renderUninstaller();
+
+
+            // Helper function for status messages
+            function showMsg(elemId, text, color) {
+                const el = document.getElementById(elemId);
+                el.innerText = text;
+                el.style.color = color;
+            }
+
+        });
+    </script>
+</body>
+</html>
