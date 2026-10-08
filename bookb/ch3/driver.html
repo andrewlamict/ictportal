@@ -1,0 +1,524 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Device Drivers | Multi-USB PC Setup Studio</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script src="https://cdn.jsdelivr.net/npm/canvas-confetti@1.6.0/dist/confetti.browser.min.js"></script>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Segoe+UI:wght@400;600;700;800&display=swap');
+        body { font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; }
+        
+        .glass { background: rgba(15, 23, 42, 0.85); backdrop-filter: blur(16px); border: 1px solid rgba(255, 255, 255, 0.12); }
+        .code-font { font-family: 'Consolas', 'Courier New', monospace; }
+
+        /* USB Port Glow Indicators */
+        .usb-glow-green { box-shadow: 0 0 20px rgba(34, 197, 94, 0.9); border-color: #22c55e !important; }
+        .usb-glow-red { box-shadow: 0 0 20px rgba(239, 68, 68, 0.9); border-color: #ef4444 !important; }
+
+        @keyframes popIn {
+            0% { transform: scale(0.92); opacity: 0; }
+            100% { transform: scale(1); opacity: 1; }
+        }
+        .pop-anim { animation: popIn 0.25s cubic-bezier(0.175, 0.885, 0.32, 1.275) forwards; }
+    </style>
+</head>
+<body class="bg-slate-950 text-slate-100 min-h-screen overflow-x-hidden select-none pb-12">
+
+    <!-- Portal Nav -->
+    <nav class="glass sticky top-0 z-[100] px-6 py-3 border-b border-white/10">
+        <div class="max-w-6xl mx-auto flex justify-between items-center">
+            <a href="index.html" class="text-xl font-extrabold bg-gradient-to-r from-blue-400 to-indigo-400 bg-clip-text text-transparent">
+                ICT PORTAL
+            </a>
+            <a href="index.html#concepts-book-b" class="flex items-center gap-2 px-3 py-1.5 rounded-lg bg-white/10 hover:bg-white/20 text-slate-200 font-bold text-xs uppercase tracking-wider transition">
+                <i class="fas fa-arrow-left text-blue-400"></i> Back to Ch.3 Software
+            </a>
+        </div>
+    </nav>
+
+    <main class="max-w-6xl mx-auto px-4 py-6 space-y-8">
+
+        <!-- PART 1: THE CHEF & TRANSLATOR ANALOGY -->
+        <section class="glass p-6 rounded-2xl border border-white/10 space-y-4">
+            <div class="flex justify-between items-center border-b border-white/10 pb-3">
+                <h2 class="text-lg font-bold text-white flex items-center gap-2">
+                    <i class="fas fa-utensils text-blue-400"></i> Concept 1: The Translator Analogy
+                </h2>
+                <span class="text-xs text-slate-400">Why Hardware Needs Drivers</span>
+            </div>
+
+            <div class="grid grid-cols-1 md:grid-cols-3 gap-4 bg-slate-900/90 p-4 rounded-xl border border-white/5 items-center text-center">
+                <!-- OS / Customer -->
+                <div class="space-y-2">
+                    <div class="w-14 h-14 mx-auto rounded-full bg-blue-500/20 border border-blue-400 text-blue-400 flex items-center justify-center text-2xl">
+                        <i class="fas fa-user"></i>
+                    </div>
+                    <strong class="block text-xs uppercase text-blue-300">Customer (The OS)</strong>
+                    <div id="role-bubble-os" class="bg-slate-950 p-2 rounded-lg text-xs text-slate-300 font-bold border border-white/10">
+                        "I want a burger!"
+                    </div>
+                </div>
+
+                <!-- Driver / Translator -->
+                <div id="role-zone-translator" class="space-y-2 opacity-30 transition-all">
+                    <div class="w-14 h-14 mx-auto rounded-full bg-indigo-500/20 border border-indigo-400 text-indigo-400 flex items-center justify-center text-2xl">
+                        <i class="fas fa-language"></i>
+                    </div>
+                    <strong class="block text-xs uppercase text-indigo-300">Translator (Driver)</strong>
+                    <div id="role-bubble-trans" class="bg-slate-950 p-2 rounded-lg text-xs text-slate-400 font-bold border border-white/10">
+                        No Translator Active
+                    </div>
+                </div>
+
+                <!-- Hardware / Chef -->
+                <div class="space-y-2">
+                    <div id="role-avatar-chef" class="w-14 h-14 mx-auto rounded-full bg-emerald-500/20 border border-emerald-400 text-emerald-400 flex items-center justify-center text-2xl transition-transform">
+                        <i class="fas fa-hat-chef"></i>
+                    </div>
+                    <strong class="block text-xs uppercase text-emerald-300">Italian Chef (Hardware)</strong>
+                    <div id="role-bubble-chef" class="bg-slate-950 p-2 rounded-lg text-xs text-slate-400 font-bold border border-white/10">
+                        Waiting for order...
+                    </div>
+                </div>
+            </div>
+
+            <div class="flex justify-center gap-3">
+                <button onclick="testRoleplay(false)" class="px-4 py-2 bg-rose-600/30 hover:bg-rose-600/50 text-rose-200 border border-rose-500/40 rounded-lg font-bold text-xs transition">
+                    Test WITHOUT Driver
+                </button>
+                <button onclick="testRoleplay(true)" class="px-4 py-2 bg-emerald-600/30 hover:bg-emerald-600/50 text-emerald-200 border border-emerald-500/40 rounded-lg font-bold text-xs transition">
+                    Test WITH Driver
+                </button>
+            </div>
+        </section>
+
+
+        <!-- PART 2: MULTI-USB PC TOWER & WINDOWS MONITOR STUDIO -->
+        <section class="glass p-6 rounded-2xl border border-white/10 space-y-6">
+            <div class="flex flex-col md:flex-row justify-between md:items-center gap-2 border-b border-white/10 pb-3">
+                <div>
+                    <h2 class="text-lg font-bold text-white flex items-center gap-2">
+                        <i class="fas fa-desktop text-blue-400"></i> Concept 2 & 3: Multi-USB PC Setup Studio
+                    </h2>
+                    <p class="text-xs text-slate-400">Plug multiple peripherals into USB Ports 1-4 on the PC Tower and manage drivers on the Windows Monitor Screen!</p>
+                </div>
+                <span class="text-xs font-bold bg-blue-500/20 text-blue-300 px-3 py-1 rounded-full border border-blue-500/30">
+                    Interactive Multi-Port Workstation
+                </span>
+            </div>
+
+            <!-- PHYSICAL WORKSTATION LAYOUT (MONITOR + PC TOWER WITH 4 USB PORTS) -->
+            <div class="grid grid-cols-1 lg:grid-cols-12 gap-6 items-start">
+                
+                <!-- MONITOR SCREEN FRAME (7 COLS) -->
+                <div class="lg:col-span-7 space-y-2">
+                    <span class="text-[10px] font-bold text-blue-400 uppercase tracking-widest block"><i class="fas fa-tv mr-1"></i> Windows Desktop Monitor</span>
+
+                    <!-- MONITOR OUTER BEZEL -->
+                    <div class="bg-slate-900 p-3 rounded-2xl border-4 border-slate-700 shadow-2xl relative">
+                        <!-- WINDOWS OS SCREEN CONTAINER -->
+                        <div class="bg-slate-950 rounded-xl border border-slate-800 min-h-[480px] p-3 flex flex-col justify-between relative overflow-hidden">
+                            
+                            <!-- DESKTOP TOP BAR & APPS -->
+                            <div class="space-y-3">
+                                <div class="flex justify-between items-center bg-slate-900/90 px-3 py-1.5 rounded-lg border border-white/5 text-[11px]">
+                                    <span class="font-bold text-slate-300"><i class="fab fa-windows text-blue-400 mr-2"></i>Windows 11 OS Studio</span>
+                                    <span id="win-status-badge" class="text-emerald-400 font-bold">System Status: Active</span>
+                                </div>
+
+                                <!-- DESKTOP SHORTCUTS -->
+                                <div class="flex gap-2">
+                                    <button onclick="openWinTab('devmgr')" id="tab-btn-devmgr" class="px-3 py-1.5 rounded-lg bg-blue-600 text-white font-bold text-xs flex items-center gap-2 transition">
+                                        <i class="fas fa-microchip"></i> Device Manager
+                                    </button>
+                                    <button onclick="openWinTab('explorer')" id="tab-btn-explorer" class="px-3 py-1.5 rounded-lg bg-slate-800 text-slate-400 hover:text-white font-bold text-xs flex items-center gap-2 transition">
+                                        <i class="fas fa-folder"></i> File Explorer
+                                    </button>
+                                    <button onclick="openWinTab('browser')" id="tab-btn-browser" class="px-3 py-1.5 rounded-lg bg-slate-800 text-slate-400 hover:text-white font-bold text-xs flex items-center gap-2 transition">
+                                        <i class="fas fa-globe"></i> Web Browser
+                                    </button>
+                                </div>
+
+                                <!-- WINDOW CONTENT PANELS -->
+                                <div id="win-stage-container" class="mt-3">
+                                    
+                                    <!-- APP 1: DEVICE MANAGER -->
+                                    <div id="win-panel-devmgr" class="pop-anim bg-slate-900 border border-slate-700 rounded-xl p-4 space-y-3">
+                                        <span class="text-xs font-bold text-slate-300 block border-b border-white/10 pb-2">
+                                            <i class="fas fa-sliders text-blue-400 mr-1"></i> System Device Diagnostics (Connected USB Ports)
+                                        </span>
+
+                                        <div id="devmgr-list" class="space-y-2 text-xs">
+                                            <div class="p-2.5 rounded-lg bg-slate-950 border border-slate-800 flex justify-between items-center">
+                                                <span>⌨️ Office Keyboard: <strong class="text-slate-200">Standard Generic Driver</strong></span>
+                                                <span class="text-[10px] bg-emerald-500/20 text-emerald-300 px-2 py-0.5 rounded font-bold">Ready (`keyboard.sys`)</span>
+                                            </div>
+
+                                            <div id="devmgr-mouse-row" class="p-2.5 rounded-lg bg-slate-950 border border-slate-800 flex justify-between items-center">
+                                                <span>🖱️ RGB Gaming Mouse: <strong id="devmgr-mouse-drv" class="text-rose-400">Missing Driver</strong></span>
+                                                <span id="devmgr-mouse-badge" class="text-[10px] bg-rose-500/20 text-rose-300 px-2 py-0.5 rounded font-bold">⚠️ Limited Function</span>
+                                            </div>
+
+                                            <div id="devmgr-tablet-row" class="p-2.5 rounded-lg bg-slate-950 border border-slate-800 flex justify-between items-center">
+                                                <span>🎨 Drawing Tablet: <strong id="devmgr-tablet-drv" class="text-rose-400">Missing Driver</strong></span>
+                                                <span id="devmgr-tablet-badge" class="text-[10px] bg-rose-500/20 text-rose-300 px-2 py-0.5 rounded font-bold">⚠️ Limited Function</span>
+                                            </div>
+
+                                            <div id="devmgr-printer-row" class="p-2.5 rounded-lg bg-slate-950 border border-slate-800 flex justify-between items-center">
+                                                <span>🖨️ Laser Printer: <strong id="devmgr-printer-drv" class="text-rose-400">Missing Driver</strong></span>
+                                                <span id="devmgr-printer-badge" class="text-[10px] bg-rose-500/20 text-rose-300 px-2 py-0.5 rounded font-bold">⚠️ Cannot Print</span>
+                                            </div>
+                                        </div>
+                                    </div>
+
+                                    <!-- APP 2: FILE EXPLORER -->
+                                    <div id="win-panel-explorer" class="pop-anim hidden bg-slate-900 border border-slate-700 rounded-xl p-4 space-y-3">
+                                        <div class="bg-slate-950 px-3 py-1.5 rounded-lg border border-white/5 text-xs code-font text-slate-400">
+                                            📁 C:\Windows\System32\drivers\
+                                        </div>
+                                        <div class="space-y-2 text-xs code-font" id="explorer-files">
+                                            <div class="p-2 bg-slate-950 rounded border border-slate-800 text-slate-300">📄 keyboard_generic.sys (Pre-installed OS Driver)</div>
+                                            <div class="p-2 bg-slate-950 rounded border border-slate-800 text-slate-300">📄 mouse_generic.sys (Pre-installed OS Driver)</div>
+                                            <!-- Downloaded drivers append here -->
+                                        </div>
+                                    </div>
+
+                                    <!-- APP 3: WEB BROWSER -->
+                                    <div id="win-panel-browser" class="pop-anim hidden bg-slate-900 border border-slate-700 rounded-xl p-4 space-y-3 text-center">
+                                        <div class="bg-slate-950 px-3 py-1.5 rounded-lg border border-white/5 text-xs code-font text-slate-400 text-left">
+                                            🌐 https://www.hardware-drivers.com/download
+                                        </div>
+                                        <h4 class="text-xs font-bold text-white uppercase">Official Manufacturer Web Driver Portal</h4>
+                                        <p class="text-[11px] text-slate-400">Download specific `.sys` drivers to unlock advanced non-generic functions.</p>
+                                        
+                                        <div class="grid grid-cols-1 md:grid-cols-3 gap-2 text-xs pt-2">
+                                            <button onclick="downloadDriver('mouse')" id="btn-dl-mouse" class="p-2.5 bg-purple-600 hover:bg-purple-500 text-white font-bold rounded-lg transition">
+                                                📥 RGB Mouse Driver
+                                            </button>
+                                            <button onclick="downloadDriver('tablet')" id="btn-dl-tablet" class="p-2.5 bg-amber-600 hover:bg-amber-500 text-white font-bold rounded-lg transition">
+                                                📥 Tablet Pressure Driver
+                                            </button>
+                                            <button onclick="downloadDriver('printer')" id="btn-dl-printer" class="p-2.5 bg-emerald-600 hover:bg-emerald-500 text-white font-bold rounded-lg transition">
+                                                📥 Laser Printer Driver
+                                            </button>
+                                        </div>
+                                    </div>
+
+                                </div>
+                            </div>
+
+                            <!-- TASKBAR -->
+                            <div class="bg-slate-900 px-3 py-1.5 rounded-lg border border-white/5 flex justify-between items-center text-[10px] text-slate-400">
+                                <span><i class="fab fa-windows text-blue-400 mr-1"></i> Start</span>
+                                <span>16:00 PM | HKT</span>
+                            </div>
+
+                        </div>
+                    </div>
+                    <!-- MONITOR STAND -->
+                    <div class="w-24 h-4 bg-slate-700 mx-auto rounded-b-lg"></div>
+                    <div class="w-40 h-2 bg-slate-800 mx-auto rounded-full"></div>
+                </div>
+
+
+                <!-- SYSTEM UNIT PC TOWER WITH 4 USB PORTS (5 COLS) -->
+                <div class="lg:col-span-5 space-y-4">
+                    
+                    <!-- SYSTEM UNIT PC TOWER -->
+                    <div class="bg-slate-900 p-4 rounded-2xl border-4 border-slate-700 shadow-xl space-y-3">
+                        <div class="flex justify-between items-center border-b border-white/10 pb-2">
+                            <span class="text-xs font-bold text-slate-300 uppercase"><i class="fas fa-server text-blue-400 mr-1"></i> System Unit PC Tower</span>
+                            <span class="w-2.5 h-2.5 rounded-full bg-emerald-400 animate-pulse"></span>
+                        </div>
+
+                        <!-- 4 MULTI-USB PORTS GRID -->
+                        <div class="space-y-2">
+                            <span class="text-[10px] font-bold text-slate-400 uppercase">Front I/O Panel (USB 3.0 Array):</span>
+                            
+                            <div class="grid grid-cols-2 gap-2">
+                                <!-- USB PORT 1 -->
+                                <div id="usb-port-1" class="p-2.5 rounded-xl bg-slate-950 border-2 border-dashed border-slate-700 flex flex-col items-center justify-center text-center transition-all duration-300">
+                                    <span class="text-[9px] text-slate-500 font-bold block">USB PORT 1</span>
+                                    <i id="usb-icon-1" class="fas fa-usb text-lg text-slate-600 my-1"></i>
+                                    <span id="usb-label-1" class="text-[10px] font-bold text-slate-400">Empty</span>
+                                    <button onclick="unplugPort(1)" id="unplug-1" class="hidden mt-1 text-[8px] bg-slate-800 text-rose-300 px-1.5 py-0.5 rounded">Unplug</button>
+                                </div>
+
+                                <!-- USB PORT 2 -->
+                                <div id="usb-port-2" class="p-2.5 rounded-xl bg-slate-950 border-2 border-dashed border-slate-700 flex flex-col items-center justify-center text-center transition-all duration-300">
+                                    <span class="text-[9px] text-slate-500 font-bold block">USB PORT 2</span>
+                                    <i id="usb-icon-2" class="fas fa-usb text-lg text-slate-600 my-1"></i>
+                                    <span id="usb-label-2" class="text-[10px] font-bold text-slate-400">Empty</span>
+                                    <button onclick="unplugPort(2)" id="unplug-2" class="hidden mt-1 text-[8px] bg-slate-800 text-rose-300 px-1.5 py-0.5 rounded">Unplug</button>
+                                </div>
+
+                                <!-- USB PORT 3 -->
+                                <div id="usb-port-3" class="p-2.5 rounded-xl bg-slate-950 border-2 border-dashed border-slate-700 flex flex-col items-center justify-center text-center transition-all duration-300">
+                                    <span class="text-[9px] text-slate-500 font-bold block">USB PORT 3</span>
+                                    <i id="usb-icon-3" class="fas fa-usb text-lg text-slate-600 my-1"></i>
+                                    <span id="usb-label-3" class="text-[10px] font-bold text-slate-400">Empty</span>
+                                    <button onclick="unplugPort(3)" id="unplug-3" class="hidden mt-1 text-[8px] bg-slate-800 text-rose-300 px-1.5 py-0.5 rounded">Unplug</button>
+                                </div>
+
+                                <!-- USB PORT 4 -->
+                                <div id="usb-port-4" class="p-2.5 rounded-xl bg-slate-950 border-2 border-dashed border-slate-700 flex flex-col items-center justify-center text-center transition-all duration-300">
+                                    <span class="text-[9px] text-slate-500 font-bold block">USB PORT 4</span>
+                                    <i id="usb-icon-4" class="fas fa-usb text-lg text-slate-600 my-1"></i>
+                                    <span id="usb-label-4" class="text-[10px] font-bold text-slate-400">Empty</span>
+                                    <button onclick="unplugPort(4)" id="unplug-4" class="hidden mt-1 text-[8px] bg-slate-800 text-rose-300 px-1.5 py-0.5 rounded">Unplug</button>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+
+                    <!-- HARDWARE PERIPHERALS RACK -->
+                    <div class="bg-slate-900 p-4 rounded-2xl border border-white/10 space-y-3">
+                        <span class="text-xs font-bold text-slate-300 uppercase tracking-wider block border-b border-white/10 pb-2">
+                            <i class="fas fa-plug text-purple-400 mr-1"></i> Plug Peripheral Into Open Port
+                        </span>
+
+                        <div class="grid grid-cols-2 gap-2 text-xs">
+                            <!-- 1. Keyboard -->
+                            <button onclick="plugIntoFreePort('keyboard')" class="p-2 bg-slate-950 hover:bg-slate-800 border border-slate-800 rounded-xl text-left transition flex items-center gap-2">
+                                <i class="fas fa-keyboard text-blue-400 text-base"></i>
+                                <div>
+                                    <strong class="block text-white text-[10px]">Keyboard</strong>
+                                    <span class="text-[8px] text-slate-400">Plug to Port</span>
+                                </div>
+                            </button>
+
+                            <!-- 2. RGB Mouse -->
+                            <button onclick="plugIntoFreePort('mouse')" class="p-2 bg-slate-950 hover:bg-slate-800 border border-slate-800 rounded-xl text-left transition flex items-center gap-2">
+                                <i class="fas fa-mouse text-purple-400 text-base"></i>
+                                <div>
+                                    <strong class="block text-white text-[10px]">RGB Mouse</strong>
+                                    <span class="text-[8px] text-slate-400">Plug to Port</span>
+                                </div>
+                            </button>
+
+                            <!-- 3. Tablet -->
+                            <button onclick="plugIntoFreePort('tablet')" class="p-2 bg-slate-950 hover:bg-slate-800 border border-slate-800 rounded-xl text-left transition flex items-center gap-2">
+                                <i class="fas fa-pen-nib text-amber-400 text-base"></i>
+                                <div>
+                                    <strong class="block text-white text-[10px]">Stylus Tablet</strong>
+                                    <span class="text-[8px] text-slate-400">Plug to Port</span>
+                                </div>
+                            </button>
+
+                            <!-- 4. Printer -->
+                            <button onclick="plugIntoFreePort('printer')" class="p-2 bg-slate-950 hover:bg-slate-800 border border-slate-800 rounded-xl text-left transition flex items-center gap-2">
+                                <i class="fas fa-print text-emerald-400 text-base"></i>
+                                <div>
+                                    <strong class="block text-white text-[10px]">Laser Printer</strong>
+                                    <span class="text-[8px] text-slate-400">Plug to Port</span>
+                                </div>
+                            </button>
+                        </div>
+                    </div>
+
+                </div>
+
+            </div>
+        </section>
+
+    </main>
+
+    <script>
+        // ================= PART 1: CHEF ROLEPLAY =================
+        function testRoleplay(hasDriver) {
+            const transZone = document.getElementById('role-zone-translator');
+            const bubbleOs = document.getElementById('role-bubble-os');
+            const bubbleTrans = document.getElementById('role-bubble-trans');
+            const bubbleChef = document.getElementById('role-bubble-chef');
+
+            if (hasDriver) {
+                transZone.classList.remove('opacity-30');
+                bubbleOs.innerText = '"I want a burger!"';
+                bubbleTrans.innerText = 'Translates: "Vorrei un hamburger!"';
+                bubbleTrans.className = "bg-indigo-950/60 p-2 rounded-lg text-xs text-indigo-300 font-bold border border-indigo-500/40 pop-anim";
+                
+                setTimeout(() => {
+                    bubbleChef.innerText = 'Chef: "Si! Cooking hamburger now!" 🍔';
+                    bubbleChef.className = "bg-emerald-950/60 p-2 rounded-lg text-xs text-emerald-300 font-bold border border-emerald-500/40 pop-anim";
+                    confetti({ particleCount: 30, spread: 50, origin: { y: 0.6 } });
+                }, 500);
+            } else {
+                transZone.classList.add('opacity-30');
+                bubbleTrans.innerText = 'No Translator Active';
+                bubbleChef.innerText = 'Chef confused: "Non capisco!" ❓';
+                bubbleChef.className = "bg-rose-950/60 p-2 rounded-lg text-xs text-rose-300 font-bold border border-rose-500/40 pop-anim";
+            }
+        }
+
+
+        // ================= PART 2: PC TOWER & MULTI-USB STUDIO =================
+        const downloadedDrivers = {
+            mouse: false,
+            tablet: false,
+            printer: false
+        };
+
+        const usbPorts = {
+            1: null,
+            2: null,
+            3: null,
+            4: null
+        };
+
+        function openWinTab(tab) {
+            ['devmgr', 'explorer', 'browser'].forEach(id => {
+                const panel = document.getElementById(`win-panel-${id}`);
+                const btn = document.getElementById(`tab-btn-${id}`);
+                if (id === tab) {
+                    panel.classList.remove('hidden');
+                    btn.className = "px-3 py-1.5 rounded-lg bg-blue-600 text-white font-bold text-xs flex items-center gap-2 transition";
+                } else {
+                    panel.classList.add('hidden');
+                    btn.className = "px-3 py-1.5 rounded-lg bg-slate-800 text-slate-400 hover:text-white font-bold text-xs flex items-center gap-2 transition";
+                }
+            });
+        }
+
+        function downloadDriver(devKey) {
+            if (downloadedDrivers[devKey]) return;
+            downloadedDrivers[devKey] = true;
+
+            const fileContainer = document.getElementById('explorer-files');
+            const fileDiv = document.createElement('div');
+            fileDiv.className = "p-2 bg-emerald-950/60 border border-emerald-500/40 rounded text-emerald-200 font-bold pop-anim";
+
+            if (devKey === 'mouse') {
+                fileDiv.innerText = "🛡️ ProMouse_RGB_Driver.sys (Downloaded Web Driver)";
+                document.getElementById('devmgr-mouse-drv').innerText = "ProMouse_RGB.sys";
+                document.getElementById('devmgr-mouse-drv').className = "text-emerald-400 font-bold";
+                document.getElementById('devmgr-mouse-badge').innerText = "Full Access Unlocked";
+                document.getElementById('devmgr-mouse-badge').className = "text-[10px] bg-emerald-500/20 text-emerald-300 px-2 py-0.5 rounded font-bold";
+                document.getElementById('btn-dl-mouse').innerText = "✅ Mouse Driver Installed";
+                document.getElementById('btn-dl-mouse').className = "p-2.5 bg-slate-800 text-emerald-400 font-bold rounded-lg";
+            } else if (devKey === 'tablet') {
+                fileDiv.innerText = "🛡️ Stylus_Tablet_Driver.sys (Downloaded Web Driver)";
+                document.getElementById('devmgr-tablet-drv').innerText = "Stylus_Tablet.sys";
+                document.getElementById('devmgr-tablet-drv').className = "text-emerald-400 font-bold";
+                document.getElementById('devmgr-tablet-badge').innerText = "8192 Pressure Levels Ready";
+                document.getElementById('devmgr-tablet-badge').className = "text-[10px] bg-emerald-500/20 text-emerald-300 px-2 py-0.5 rounded font-bold";
+                document.getElementById('btn-dl-tablet').innerText = "✅ Tablet Driver Installed";
+                document.getElementById('btn-dl-tablet').className = "p-2.5 bg-slate-800 text-emerald-400 font-bold rounded-lg";
+            } else if (devKey === 'printer') {
+                fileDiv.innerText = "🛡️ Laser_Printer_Driver.sys (Downloaded Web Driver)";
+                document.getElementById('devmgr-printer-drv').innerText = "Laser_Printer.sys";
+                document.getElementById('devmgr-printer-drv').className = "text-emerald-400 font-bold";
+                document.getElementById('devmgr-printer-badge').innerText = "Duplex Printing Ready";
+                document.getElementById('devmgr-printer-badge').className = "text-[10px] bg-emerald-500/20 text-emerald-300 px-2 py-0.5 rounded font-bold";
+                document.getElementById('btn-dl-printer').innerText = "✅ Printer Driver Installed";
+                document.getElementById('btn-dl-printer').className = "p-2.5 bg-slate-800 text-emerald-400 font-bold rounded-lg";
+            }
+
+            fileContainer.appendChild(fileDiv);
+            confetti({ particleCount: 30, spread: 50, origin: { y: 0.6 } });
+
+            // Refresh all ports
+            for (let portNum in usbPorts) {
+                if (usbPorts[portNum]) {
+                    renderPortUI(portNum, usbPorts[portNum]);
+                }
+            }
+        }
+
+        function plugIntoFreePort(device) {
+            // Find first available port
+            let freePort = null;
+            for (let i = 1; i <= 4; i++) {
+                if (usbPorts[i] === null) {
+                    freePort = i;
+                    break;
+                }
+            }
+
+            if (!freePort) {
+                alert("All 4 USB Ports are occupied! Unplug a device first.");
+                return;
+            }
+
+            usbPorts[freePort] = device;
+            renderPortUI(freePort, device);
+        }
+
+        function unplugPort(portNum) {
+            usbPorts[portNum] = null;
+            const slot = document.getElementById(`usb-port-${portNum}`);
+            const icon = document.getElementById(`usb-icon-${portNum}`);
+            const label = document.getElementById(`usb-label-${portNum}`);
+            const btn = document.getElementById(`unplug-${portNum}`);
+
+            slot.className = "p-2.5 rounded-xl bg-slate-950 border-2 border-dashed border-slate-700 flex flex-col items-center justify-center text-center transition-all duration-300";
+            icon.className = "fas fa-usb text-lg text-slate-600 my-1";
+            label.innerText = "Empty";
+            label.className = "text-[10px] font-bold text-slate-400";
+            btn.classList.add('hidden');
+        }
+
+        function renderPortUI(portNum, device) {
+            const slot = document.getElementById(`usb-port-${portNum}`);
+            const icon = document.getElementById(`usb-icon-${portNum}`);
+            const label = document.getElementById(`usb-label-${portNum}`);
+            const btn = document.getElementById(`unplug-${portNum}`);
+
+            slot.classList.remove('usb-glow-green', 'usb-glow-red');
+            btn.classList.remove('hidden');
+
+            if (device === 'keyboard') {
+                slot.classList.add('usb-glow-green');
+                icon.className = "fas fa-keyboard text-lg text-emerald-400 my-1";
+                label.innerText = "Keyboard (Ready)";
+                label.className = "text-[10px] font-bold text-emerald-300";
+            } 
+            else if (device === 'mouse') {
+                if (downloadedDrivers.mouse) {
+                    slot.classList.add('usb-glow-green');
+                    icon.className = "fas fa-mouse text-lg text-purple-400 my-1 animate-pulse";
+                    label.innerText = "RGB Mouse (Full)";
+                    label.className = "text-[10px] font-bold text-purple-300";
+                } else {
+                    slot.classList.add('usb-glow-red');
+                    icon.className = "fas fa-mouse text-lg text-rose-400 my-1";
+                    label.innerText = "RGB Mouse (Limited)";
+                    label.className = "text-[10px] font-bold text-rose-300";
+                    setTimeout(() => openWinTab('browser'), 400);
+                }
+            }
+            else if (device === 'tablet') {
+                if (downloadedDrivers.tablet) {
+                    slot.classList.add('usb-glow-green');
+                    icon.className = "fas fa-pen-nib text-lg text-amber-400 my-1 animate-pulse";
+                    label.innerText = "Tablet (Pressure OK)";
+                    label.className = "text-[10px] font-bold text-amber-300";
+                } else {
+                    slot.classList.add('usb-glow-red');
+                    icon.className = "fas fa-pen-nib text-lg text-rose-400 my-1";
+                    label.innerText = "Tablet (No Pressure)";
+                    label.className = "text-[10px] font-bold text-rose-300";
+                    setTimeout(() => openWinTab('browser'), 400);
+                }
+            }
+            else if (device === 'printer') {
+                if (downloadedDrivers.printer) {
+                    slot.classList.add('usb-glow-green');
+                    icon.className = "fas fa-print text-lg text-emerald-400 my-1 animate-pulse";
+                    label.innerText = "Printer (Duplex OK)";
+                    label.className = "text-[10px] font-bold text-emerald-300";
+                } else {
+                    slot.classList.add('usb-glow-red');
+                    icon.className = "fas fa-print text-lg text-rose-400 my-1";
+                    label.innerText = "Printer (No Driver)";
+                    label.className = "text-[10px] font-bold text-rose-300";
+                    setTimeout(() => openWinTab('browser'), 400);
+                }
+            }
+        }
+    </script>
+</body>
+</html>
