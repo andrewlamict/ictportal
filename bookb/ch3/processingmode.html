@@ -1,0 +1,1306 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>Mr. Lam's OS Modes Arcade & Virtualization Lab</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Fira+Code:wght@400;600;700&family=Inter:wght@300;400;600;700;800&display=swap');
+        
+        body {
+            font-family: 'Inter', sans-serif;
+            user-select: none;
+            overflow-x: hidden;
+            touch-action: manipulation;
+        }
+
+        .font-mono {
+            font-family: 'Fira Code', monospace;
+        }
+
+        /* VirtualBox Theme Custom Styling */
+        .vbox-window {
+            background-color: #1e1e1e;
+            color: #d4d4d4;
+            border: 1px solid #333;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.5);
+        }
+
+        .vbox-toolbar-btn {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            padding: 6px 12px;
+            border-radius: 4px;
+            font-size: 11px;
+            color: #ccc;
+            transition: all 0.15s ease;
+        }
+
+        .vbox-toolbar-btn:hover:not(:disabled) {
+            background-color: #33333d;
+            color: #fff;
+        }
+
+        .vbox-toolbar-btn:disabled {
+            opacity: 0.4;
+            cursor: not-allowed;
+        }
+
+        .mac-dock-item {
+            transition: transform 0.2s ease;
+        }
+        .mac-dock-item:hover {
+            transform: scale(1.25) translateY(-6px);
+        }
+
+        /* Custom Scrollbar */
+        ::-webkit-scrollbar {
+            width: 6px;
+            height: 6px;
+        }
+        ::-webkit-scrollbar-track {
+            background: #1e1e1e;
+        }
+        ::-webkit-scrollbar-thumb {
+            background: #424242;
+            border-radius: 3px;
+        }
+    </style>
+</head>
+<body class="bg-slate-950 text-slate-100 min-h-screen flex flex-col justify-between">
+
+    <!-- Top Navigation Bar -->
+    <header class="bg-slate-900 border-b border-slate-800 p-3 shadow-lg z-20">
+        <div class="max-w-7xl mx-auto flex flex-wrap items-center justify-between gap-4">
+            <div class="flex items-center gap-3">
+                <div class="bg-blue-600 text-white p-2 rounded-lg font-bold text-xl shadow-md">OS</div>
+                <div>
+                    <h1 class="font-bold text-lg leading-tight text-slate-100">Mr. Lam's OS Operating Modes Lab</h1>
+                    <p class="text-xs text-slate-400">Interactive Visualisation & Virtualization Simulator</p>
+                </div>
+            </div>
+
+            <!-- Mode Selector Buttons -->
+            <nav class="flex flex-wrap gap-1 bg-slate-950 p-1 rounded-xl border border-slate-800" id="mode-nav">
+                <button onclick="switchMode(0)" class="mode-btn px-3 py-1.5 rounded-lg text-xs font-semibold transition-all duration-200 bg-blue-600 text-white shadow-md">1. Batch Wash</button>
+                <button onclick="switchMode(1)" class="mode-btn px-3 py-1.5 rounded-lg text-xs font-semibold transition-all duration-200 text-slate-400 hover:text-white hover:bg-slate-800">2. Real-Time</button>
+                <button onclick="switchMode(2)" class="mode-btn px-3 py-1.5 rounded-lg text-xs font-semibold transition-all duration-200 text-slate-400 hover:text-white hover:bg-slate-800">3. Parallel Kitchen</button>
+                <button onclick="switchMode(3)" class="mode-btn px-3 py-1.5 rounded-lg text-xs font-semibold transition-all duration-200 text-slate-400 hover:text-white hover:bg-slate-800">4. Distributed TA</button>
+                <button onclick="switchMode(4)" class="mode-btn px-3 py-1.5 rounded-lg text-xs font-semibold transition-all duration-200 text-slate-400 hover:text-white hover:bg-slate-800">5. VirtualBox VM</button>
+            </nav>
+        </div>
+    </header>
+
+    <!-- Main Content Area -->
+    <main class="flex-1 max-w-7xl w-full mx-auto p-4 flex flex-col gap-4">
+        
+        <!-- Controls & Information Banner -->
+        <div id="mode-info" class="bg-slate-900 border border-slate-800 rounded-xl p-4 flex flex-wrap justify-between items-center gap-4 shadow-sm">
+            <div>
+                <h2 id="mode-title" class="text-lg font-bold text-blue-400">1. Batch Processing (Laundry Basket Collector)</h2>
+                <p id="mode-desc" class="text-xs text-slate-300 mt-0.5">Collect dirty clothes in the laundry basket throughout the daytime (08:00–22:00). At 22:00, processing locks and an automated batch wash cycle runs!</p>
+            </div>
+            <div id="mode-extra-controls" class="flex items-center gap-2">
+                <!-- Dynamic extra controls inserted by JS -->
+            </div>
+        </div>
+
+        <!-- Canvas Container for Modes 1-4 -->
+        <div id="canvas-container" class="relative bg-slate-900 rounded-xl border border-slate-800 overflow-hidden shadow-xl flex justify-center items-center touch-none">
+            <canvas id="osCanvas" width="900" height="500" class="w-full h-auto max-w-[900px] block"></canvas>
+            
+            <!-- iPad / Mobile On-Screen D-Pad Overlay -->
+            <div id="touch-controls" class="absolute bottom-4 left-4 flex gap-2 z-10 opacity-80 select-none">
+                <div class="grid grid-cols-3 gap-1 w-32 h-32 bg-slate-950/90 p-2 rounded-full border-2 border-slate-700 shadow-2xl">
+                    <div></div>
+                    <button id="btn-up" class="bg-slate-800 active:bg-blue-600 text-white rounded-lg text-xs font-bold flex items-center justify-center">▲</button>
+                    <div></div>
+                    <button id="btn-left" class="bg-slate-800 active:bg-blue-600 text-white rounded-lg text-xs font-bold flex items-center justify-center">◄</button>
+                    <div class="bg-slate-900 rounded-full border border-slate-800"></div>
+                    <button id="btn-right" class="bg-slate-800 active:bg-blue-600 text-white rounded-lg text-xs font-bold flex items-center justify-center">►</button>
+                    <div></div>
+                    <button id="btn-down" class="bg-slate-800 active:bg-blue-600 text-white rounded-lg text-xs font-bold flex items-center justify-center">▼</button>
+                    <div></div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Mode 3 Embedded Video Area (Koro Sensei) -->
+        <div id="youtube-section" class="hidden flex flex-col items-center gap-2 bg-slate-900 p-4 rounded-xl border border-slate-800">
+            <h3 class="text-sm font-semibold text-slate-300">Koro-Sensei Parallel Execution Footage</h3>
+            <div class="w-full max-w-[560px] aspect-video rounded-lg overflow-hidden border border-slate-700 shadow-lg">
+                <iframe id="koro-video" class="w-full h-full" src="https://www.youtube.com/embed/WYzvy3o06qk?enablejsapi=1" title="Koro Sensei Cooking" frameborder="0" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" allowfullscreen></iframe>
+            </div>
+        </div>
+
+        <!-- Mode 5 Virtual Machine UI Container -->
+        <div id="virtualbox-container" class="hidden vbox-window rounded-lg overflow-hidden flex flex-col h-[580px] w-full border border-slate-700 shadow-2xl">
+            <!-- Oracle VM Header -->
+            <div class="bg-[#2d2d2d] px-3 py-2 text-xs flex items-center justify-between border-b border-[#3c3c3c]">
+                <div class="flex items-center gap-2 font-semibold text-slate-200">
+                    <span class="w-3 h-3 rounded-full bg-blue-500 inline-block"></span>
+                    Oracle VM VirtualBox Manager (v7.0.12 Dark Edition)
+                </div>
+                <div class="text-slate-400 text-[11px]">Host CPU: 8 Cores | RAM: 16 GB</div>
+            </div>
+
+            <!-- VirtualBox Action Toolbar -->
+            <div class="bg-[#252526] px-2 py-1.5 border-b border-[#333] flex items-center gap-1">
+                <button id="vbox-btn-new" onclick="vboxNewVM()" class="vbox-toolbar-btn">
+                    <svg class="w-5 h-5 text-blue-400 mb-0.5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4v16m8-8H4"></path></svg>
+                    New
+                </button>
+                <button id="vbox-btn-settings" onclick="vboxOpenSettings()" class="vbox-toolbar-btn">
+                    <svg class="w-5 h-5 text-yellow-400 mb-0.5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10.325 4.317c.426-1.756 2.924-1.756 3.35 0a1.724 1.724 0 002.573 1.066c1.543-.94 3.31.826 2.37 2.37a1.724 1.724 0 001.065 2.572c1.756.426 1.756 2.924 0 3.35a1.724 1.724 0 00-1.066 2.573c.94 1.543-.826 3.31-2.37 2.37a1.724 1.724 0 00-2.572 1.065c-.426 1.756-2.924 1.756-3.35 0a1.724 1.724 0 00-2.573-1.066c-1.543.94-3.31-.826-2.37-2.37a1.724 1.724 0 00-1.065-2.572c-1.756-.426-1.756-2.924 0-3.35a1.724 1.724 0 001.066-2.573c-.94-1.543.826-3.31 2.37-2.37.996.608 2.296.07 2.572-1.065z"></path></svg>
+                    Settings
+                </button>
+                <div class="h-6 w-[1px] bg-slate-700 mx-1"></div>
+                <button id="vbox-btn-start" onclick="vboxStartVM()" class="vbox-toolbar-btn">
+                    <svg class="w-5 h-5 text-green-500 mb-0.5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M14.752 11.168l-3.197-2.132A1 1 0 0010 9.87v4.263a1 1 0 001.555.832l3.197-2.132a1 1 0 000-1.664z"></path><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 12a9 9 0 11-18 0 9 9 0 0118 0z"></path></svg>
+                    Start
+                </button>
+                <button id="vbox-btn-pause" onclick="vboxPauseVM()" class="vbox-toolbar-btn">
+                    <svg class="w-5 h-5 text-amber-500 mb-0.5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 9v6m4-6v6m7-3a9 9 0 11-18 0 9 9 0 0118 0z"></path></svg>
+                    Pause
+                </button>
+                <button id="vbox-btn-stop" onclick="vboxStopVM()" class="vbox-toolbar-btn">
+                    <svg class="w-5 h-5 text-red-500 mb-0.5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 12a9 9 0 11-18 0 9 9 0 0118 0z"></path><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 10a1 1 0 011-1h4a1 1 0 011 1v4a1 1 0 01-1 1h-4a1 1 0 01-1-1v-4z"></path></svg>
+                    Power Off
+                </button>
+            </div>
+
+            <!-- VirtualBox Main Split View -->
+            <div class="flex-1 flex overflow-hidden">
+                <!-- Left Sidebar VM List -->
+                <div class="w-64 bg-[#1e1e1e] border-r border-[#333] flex flex-col">
+                    <div class="p-2 text-[11px] font-semibold text-slate-400 uppercase tracking-wider border-b border-[#2d2d2d]">Virtual Machines</div>
+                    <div id="vm-list" class="flex-1 overflow-y-auto p-1 space-y-1">
+                        <!-- VM Items generated dynamically -->
+                    </div>
+                </div>
+
+                <!-- Right Pane Specs & Guest Console Display -->
+                <div class="flex-1 bg-[#181818] relative flex flex-col overflow-hidden" id="vm-details-pane">
+                    <!-- Dynamic VM details / Guest screen container -->
+                </div>
+            </div>
+        </div>
+    </main>
+
+    <footer class="bg-slate-900 border-t border-slate-800 p-3 text-center text-xs text-slate-500">
+        Mr. Lam's OS Operating Modes Arcade & Virtualization Simulator &copy; 2026 | Interactive Teaching Tool
+    </footer>
+
+    <!-- Audio Synthesizer and Master JavaScript Logic -->
+    <script>
+        class SoundFX {
+            constructor() { this.ctx = null; }
+            init() {
+                if (!this.ctx) this.ctx = new (window.AudioContext || window.webkitAudioContext)();
+            }
+            playTone(freq, type = 'sine', duration = 0.1, vol = 0.1) {
+                try {
+                    this.init();
+                    const osc = this.ctx.createOscillator();
+                    const gain = this.ctx.createGain();
+                    osc.type = type;
+                    osc.frequency.value = freq;
+                    gain.gain.setValueAtTime(vol, this.ctx.currentTime);
+                    gain.gain.exponentialRampToValueAtTime(0.001, this.ctx.currentTime + duration);
+                    osc.connect(gain);
+                    gain.connect(this.ctx.destination);
+                    osc.start();
+                    osc.stop(this.ctx.currentTime + duration);
+                } catch(e) {}
+            }
+            playCatch() { this.playTone(587.33, 'triangle', 0.08, 0.15); }
+            playWash() { this.playTone(150, 'sine', 0.4, 0.2); }
+            playSiren() { 
+                this.playTone(880, 'sawtooth', 0.15, 0.1); 
+                setTimeout(() => this.playTone(660, 'sawtooth', 0.15, 0.1), 150);
+            }
+            playSizzle() { this.playTone(220, 'square', 0.05, 0.03); }
+            playPickup() { this.playTone(440, 'sine', 0.1, 0.15); }
+            playDelivered() { 
+                this.playTone(523.25, 'triangle', 0.1, 0.15);
+                setTimeout(() => this.playTone(659.25, 'triangle', 0.15, 0.15), 100);
+            }
+            playCrash() { this.playTone(100, 'sawtooth', 0.3, 0.3); }
+        }
+        const sfx = new SoundFX();
+
+        const canvas = document.getElementById('osCanvas');
+        const ctx = canvas.getContext('2d');
+        const keys = { ArrowUp: false, ArrowDown: false, ArrowLeft: false, ArrowRight: false, w: false, a: false, s: false, d: false };
+
+        window.addEventListener('keydown', e => {
+            if (['ArrowUp','ArrowDown','ArrowLeft','ArrowRight',' '].includes(e.key)) e.preventDefault();
+            if (keys.hasOwnProperty(e.key) || keys.hasOwnProperty(e.key.toLowerCase())) {
+                keys[e.key] = true;
+                keys[e.key.toLowerCase()] = true;
+            }
+        });
+        window.addEventListener('keyup', e => {
+            if (keys.hasOwnProperty(e.key) || keys.hasOwnProperty(e.key.toLowerCase())) {
+                keys[e.key] = false;
+                keys[e.key.toLowerCase()] = false;
+            }
+        });
+
+        // Touch & iPad Control Listeners
+        const setupTouchBtn = (id, key) => {
+            const btn = document.getElementById(id);
+            if (!btn) return;
+            const handleStart = (e) => { e.preventDefault(); keys[key] = true; };
+            const handleEnd = (e) => { e.preventDefault(); keys[key] = false; };
+            btn.addEventListener('touchstart', handleStart);
+            btn.addEventListener('touchend', handleEnd);
+            btn.addEventListener('mousedown', handleStart);
+            btn.addEventListener('mouseup', handleEnd);
+        };
+        setupTouchBtn('btn-up', 'ArrowUp');
+        setupTouchBtn('btn-down', 'ArrowDown');
+        setupTouchBtn('btn-left', 'ArrowLeft');
+        setupTouchBtn('btn-right', 'ArrowRight');
+
+        // iPad Direct Touch Drag Steer
+        canvas.addEventListener('touchmove', (e) => {
+            e.preventDefault();
+            const rect = canvas.getBoundingClientRect();
+            const touchX = ((e.touches[0].clientX - rect.left) / rect.width) * canvas.width;
+            const touchY = ((e.touches[0].clientY - rect.top) / rect.height) * canvas.height;
+
+            if (currentMode === 0) batchState.basketX = Math.max(20, Math.min(canvas.width - batchState.basketWidth - 20, touchX - batchState.basketWidth / 2));
+            else if (currentMode === 1) { rtState.truck.x = touchX; rtState.truck.y = touchY; }
+            else if (currentMode === 2 && !parallelState.inKitchenZone) { parallelState.koroX = touchX; parallelState.koroY = touchY; }
+            else if (currentMode === 3) { distState.mrLam.x = touchX; distState.mrLam.y = touchY; }
+        }, { passive: false });
+
+        let currentMode = 0;
+        let animationFrameId = null;
+
+        // MODE 1: Batch Processing State
+        const batchState = {
+            basketX: 400,
+            basketWidth: 90,
+            basketHeight: 50,
+            speed: 8,
+            timeMinutes: 8 * 60,
+            maxTime: 22 * 60,
+            clothes: [],
+            collectedBatch: [],
+            isWashing: false,
+            washProgress: 0,
+            bubbles: []
+        };
+
+        function resetBatchMode() {
+            batchState.basketX = 400;
+            batchState.timeMinutes = 8 * 60;
+            batchState.clothes = [];
+            batchState.collectedBatch = [];
+            batchState.isWashing = false;
+            batchState.washProgress = 0;
+            batchState.bubbles = [];
+            updateBatchControlsUI();
+        }
+
+        function updateBatchControlsUI() {
+            const extra = document.getElementById('mode-extra-controls');
+            if (currentMode === 0) {
+                extra.innerHTML = `
+                    <button onclick="resetBatchMode()" class="px-3 py-1.5 bg-blue-600 hover:bg-blue-500 text-white rounded-lg text-xs font-bold shadow-md transition">
+                        ↺ Restart Day
+                    </button>
+                `;
+            }
+        }
+
+        function updateBatchMode() {
+            if (batchState.timeMinutes < batchState.maxTime) {
+                batchState.timeMinutes += 2.8;
+                
+                if (keys.ArrowLeft || keys.a) batchState.basketX = Math.max(20, batchState.basketX - batchState.speed);
+                if (keys.ArrowRight || keys.d) batchState.basketX = Math.min(canvas.width - batchState.basketWidth - 20, batchState.basketX + batchState.speed);
+
+                if (Math.random() < 0.12) {
+                    const colors = ['#f43f5e', '#3b82f6', '#10b981', '#eab308', '#a855f7', '#ec4899'];
+                    batchState.clothes.push({
+                        x: Math.random() * (canvas.width - 60) + 30,
+                        y: -20,
+                        vy: 3.5 + Math.random() * 2,
+                        color: colors[Math.floor(Math.random() * colors.length)]
+                    });
+                }
+
+                for (let i = batchState.clothes.length - 1; i >= 0; i--) {
+                    let item = batchState.clothes[i];
+                    item.y += item.vy;
+
+                    if (item.y >= 400 && item.y <= 430 && item.x >= batchState.basketX - 15 && item.x <= batchState.basketX + batchState.basketWidth + 15) {
+                        batchState.collectedBatch.push(item);
+                        batchState.clothes.splice(i, 1);
+                        sfx.playCatch();
+                    } else if (item.y > canvas.height) {
+                        batchState.clothes.splice(i, 1);
+                    }
+                }
+            } else {
+                if (!batchState.isWashing) {
+                    batchState.isWashing = true;
+                    sfx.playWash();
+                }
+                
+                if (batchState.washProgress < 100) {
+                    batchState.washProgress += 0.6;
+                    if (Math.random() < 0.4) {
+                        batchState.bubbles.push({
+                            x: 450 + (Math.random() - 0.5) * 120,
+                            y: 250 + (Math.random() - 0.5) * 120,
+                            radius: 4 + Math.random() * 8,
+                            vy: -1 - Math.random() * 1.5,
+                            alpha: 1
+                        });
+                    }
+                }
+
+                for (let i = batchState.bubbles.length - 1; i >= 0; i--) {
+                    let b = batchState.bubbles[i];
+                    b.y += b.vy;
+                    b.alpha -= 0.015;
+                    if (b.alpha <= 0) batchState.bubbles.splice(i, 1);
+                }
+            }
+        }
+
+        function drawBatchMode() {
+            const dayRatio = Math.min(1, (batchState.timeMinutes - 480) / (1320 - 480));
+            const bgGrad = ctx.createLinearGradient(0, 0, 0, canvas.height);
+            
+            if (dayRatio < 0.7) {
+                bgGrad.addColorStop(0, '#0284c7');
+                bgGrad.addColorStop(1, '#0f172a');
+            } else if (dayRatio < 0.95) {
+                bgGrad.addColorStop(0, '#c2410c');
+                bgGrad.addColorStop(1, '#1e1b4b');
+            } else {
+                bgGrad.addColorStop(0, '#020617');
+                bgGrad.addColorStop(1, '#0f172a');
+            }
+            ctx.fillStyle = bgGrad;
+            ctx.fillRect(0, 0, canvas.width, canvas.height);
+
+            if (dayRatio < 0.9) {
+                const sunX = dayRatio * canvas.width;
+                const sunY = 180 - Math.sin(dayRatio * Math.PI) * 140;
+                ctx.fillStyle = '#fef08a';
+                ctx.beginPath(); ctx.arc(sunX, sunY, 26, 0, Math.PI * 2); ctx.fill();
+            } else {
+                const moonX = canvas.width - (1 - dayRatio) * 1000;
+                const moonY = 80;
+                ctx.fillStyle = '#e2e8f0';
+                ctx.beginPath(); ctx.arc(moonX, moonY, 22, 0, Math.PI * 2); ctx.fill();
+            }
+
+            ctx.fillStyle = '#334155';
+            ctx.fillRect(0, 420, canvas.width, 80);
+
+            if (!batchState.isWashing) {
+                const hours = Math.floor(batchState.timeMinutes / 60);
+                const mins = Math.floor(batchState.timeMinutes % 60);
+                const timeStr = `${hours.toString().padStart(2, '0')}:${mins.toString().padStart(2, '0')}`;
+
+                ctx.fillStyle = '#1e293b';
+                ctx.fillRect(20, 20, 220, 60);
+                ctx.strokeStyle = '#38bdf8';
+                ctx.lineWidth = 2;
+                ctx.strokeRect(20, 20, 220, 60);
+
+                ctx.fillStyle = '#38bdf8';
+                ctx.font = 'bold 20px "Fira Code", monospace';
+                ctx.fillText(`TIME: ${timeStr}`, 35, 55);
+
+                batchState.clothes.forEach(item => {
+                    ctx.fillStyle = item.color;
+                    ctx.beginPath(); ctx.arc(item.x, item.y, 12, 0, Math.PI * 2); ctx.fill();
+                    ctx.strokeStyle = '#ffffff'; ctx.lineWidth = 1.5; ctx.stroke();
+                });
+
+                const bx = batchState.basketX;
+                const by = 380;
+                ctx.fillStyle = '#b45309';
+                ctx.beginPath();
+                ctx.moveTo(bx, by); ctx.lineTo(bx + batchState.basketWidth, by);
+                ctx.lineTo(bx + batchState.basketWidth - 10, by + batchState.basketHeight);
+                ctx.lineTo(bx + 10, by + batchState.basketHeight);
+                ctx.closePath(); ctx.fill();
+
+                batchState.collectedBatch.slice(-8).forEach((item, idx) => {
+                    ctx.fillStyle = item.color;
+                    ctx.beginPath(); ctx.arc(bx + 20 + (idx * 8), by + 10, 7, 0, Math.PI * 2); ctx.fill();
+                });
+            } else {
+                ctx.fillStyle = '#f8fafc';
+                ctx.font = 'bold 20px Inter, sans-serif';
+                ctx.textAlign = 'center';
+                ctx.fillText('NIGHTTIME (22:00) — AUTOMATED BATCH WASH CYCLE EXECUTING', canvas.width / 2, 50);
+
+                const cx = canvas.width / 2;
+                const cy = 250;
+
+                ctx.fillStyle = '#334155';
+                ctx.fillRect(cx - 140, cy - 140, 280, 280);
+                ctx.fillStyle = '#0f172a';
+                ctx.beginPath(); ctx.arc(cx, cy, 110, 0, Math.PI * 2); ctx.fill();
+                ctx.strokeStyle = '#38bdf8'; ctx.lineWidth = 6; ctx.stroke();
+
+                ctx.save();
+                ctx.translate(cx, cy);
+                ctx.rotate(batchState.washProgress * 0.3);
+                batchState.collectedBatch.forEach((item, i) => {
+                    const angle = (i / Math.max(1, batchState.collectedBatch.length)) * Math.PI * 2;
+                    ctx.fillStyle = item.color;
+                    ctx.beginPath(); ctx.arc(Math.cos(angle) * 50, Math.sin(angle) * 50, 14, 0, Math.PI * 2); ctx.fill();
+                });
+                ctx.restore();
+
+                batchState.bubbles.forEach(b => {
+                    ctx.fillStyle = `rgba(255, 255, 255, ${b.alpha})`;
+                    ctx.beginPath(); ctx.arc(b.x, b.y, b.radius, 0, Math.PI * 2); ctx.fill();
+                });
+
+                ctx.fillStyle = '#1e293b';
+                ctx.fillRect(cx - 150, cy + 160, 300, 24);
+                ctx.fillStyle = '#10b981';
+                ctx.fillRect(cx - 150, cy + 160, (300 * batchState.washProgress) / 100, 24);
+
+                ctx.fillStyle = '#ffffff';
+                ctx.font = 'bold 12px "Fira Code", monospace';
+                ctx.fillText(`BATCH WASH PROGRESS: ${Math.floor(batchState.washProgress)}%`, cx, cy + 177);
+                ctx.textAlign = 'left';
+            }
+        }
+
+        // MODE 2: Real-Time Processing
+        const rtState = {
+            truck: { x: 450, y: 250, speed: 5 },
+            fires: [],
+            spawnTimer: 0,
+            handled: 0,
+            missed: 0
+        };
+
+        function resetRealTimeMode() {
+            rtState.truck = { x: 450, y: 250, speed: 5 };
+            rtState.fires = [];
+            rtState.spawnTimer = 0;
+            rtState.handled = 0;
+            rtState.missed = 0;
+        }
+
+        function updateRealTimeMode() {
+            if (keys.ArrowUp || keys.w) rtState.truck.y = Math.max(30, rtState.truck.y - rtState.truck.speed);
+            if (keys.ArrowDown || keys.s) rtState.truck.y = Math.min(canvas.height - 30, rtState.truck.y + rtState.truck.speed);
+            if (keys.ArrowLeft || keys.a) rtState.truck.x = Math.max(30, rtState.truck.x - rtState.truck.speed);
+            if (keys.ArrowRight || keys.d) rtState.truck.x = Math.min(canvas.width - 30, rtState.truck.x + rtState.truck.speed);
+
+            rtState.spawnTimer++;
+            if (rtState.spawnTimer > 120) {
+                rtState.spawnTimer = 0;
+                rtState.fires.push({
+                    x: Math.random() * (canvas.width - 120) + 60,
+                    y: Math.random() * (canvas.height - 120) + 60,
+                    deadline: 3.0
+                });
+                sfx.playSiren();
+            }
+
+            for (let i = rtState.fires.length - 1; i >= 0; i--) {
+                let f = rtState.fires[i];
+                f.deadline -= 1 / 60;
+
+                if (Math.hypot(rtState.truck.x - f.x, rtState.truck.y - f.y) < 32) {
+                    rtState.handled++;
+                    rtState.fires.splice(i, 1);
+                    sfx.playCatch();
+                    continue;
+                }
+
+                if (f.deadline <= 0) {
+                    rtState.missed++;
+                    rtState.fires.splice(i, 1);
+                    sfx.playCrash();
+                }
+            }
+        }
+
+        function drawRealTimeMode() {
+            ctx.fillStyle = '#0f172a';
+            ctx.fillRect(0, 0, canvas.width, canvas.height);
+
+            ctx.strokeStyle = '#1e293b'; ctx.lineWidth = 30;
+            for (let x = 100; x < canvas.width; x += 200) { ctx.beginPath(); ctx.moveTo(x, 0); ctx.lineTo(x, canvas.height); ctx.stroke(); }
+            for (let y = 100; y < canvas.height; y += 200) { ctx.beginPath(); ctx.moveTo(0, y); ctx.lineTo(canvas.width, y); ctx.stroke(); }
+
+            ctx.fillStyle = '#1e293b'; ctx.fillRect(20, 20, 360, 50);
+            ctx.strokeStyle = '#ef4444'; ctx.lineWidth = 2; ctx.strokeRect(20, 20, 360, 50);
+            ctx.fillStyle = '#f87171'; ctx.font = 'bold 14px Inter, sans-serif';
+            ctx.fillText(`EXTINGUISHED: ${rtState.handled}  |  DEADLINE MISSED: ${rtState.missed}`, 35, 50);
+
+            rtState.fires.forEach(f => {
+                ctx.fillStyle = '#ef4444';
+                ctx.beginPath(); ctx.arc(f.x, f.y, 22 + Math.sin(Date.now() * 0.01) * 3, 0, Math.PI * 2); ctx.fill();
+                ctx.fillStyle = '#f59e0b';
+                ctx.beginPath(); ctx.arc(f.x, f.y, 12, 0, Math.PI * 2); ctx.fill();
+
+                ctx.fillStyle = f.deadline < 1.0 ? '#dc2626' : '#1e293b';
+                ctx.fillRect(f.x - 28, f.y - 45, 56, 18);
+                ctx.fillStyle = '#ffffff'; ctx.font = 'bold 11px "Fira Code", monospace';
+                ctx.textAlign = 'center'; ctx.fillText(`${f.deadline.toFixed(1)}s`, f.x, f.y - 32);
+                ctx.textAlign = 'left';
+            });
+
+            ctx.save();
+            ctx.translate(rtState.truck.x, rtState.truck.y);
+            ctx.fillStyle = '#dc2626'; ctx.fillRect(-18, -12, 36, 24);
+            ctx.fillStyle = '#ef4444'; ctx.fillRect(6, -10, 10, 20);
+            ctx.fillStyle = Date.now() % 300 < 150 ? '#38bdf8' : '#f43f5e';
+            ctx.beginPath(); ctx.arc(0, 0, 5, 0, Math.PI * 2); ctx.fill();
+            ctx.restore();
+        }
+
+        // MODE 3: Parallel Processing (Koro-Sensei Chef Clones)
+        const parallelState = {
+            koroX: 100,
+            koroY: 250,
+            inKitchenZone: false,
+            cookProgress: [0, 0, 0, 0],
+            dishes: [
+                { name: '🥩 Flambé Steak', icon: '🥩' },
+                { name: '🥞 Fluffy Pancakes', icon: '🥞' },
+                { name: '🍜 Miso Ramen', icon: '🍜' },
+                { name: '🍳 Sunny-Side Egg', icon: '🍳' }
+            ]
+        };
+
+        function resetParallelMode() {
+            parallelState.koroX = 100;
+            parallelState.koroY = 250;
+            parallelState.inKitchenZone = false;
+            parallelState.cookProgress = [0, 0, 0, 0];
+            updateParallelControlsUI();
+        }
+
+        function updateParallelMode() {
+            if (!parallelState.inKitchenZone) {
+                if (keys.ArrowRight || keys.d) parallelState.koroX += 4;
+                if (keys.ArrowLeft || keys.a) parallelState.koroX -= 4;
+                if (keys.ArrowUp || keys.w) parallelState.koroY -= 4;
+                if (keys.ArrowDown || keys.s) parallelState.koroY += 4;
+
+                if (parallelState.koroX >= 380) {
+                    parallelState.inKitchenZone = true;
+                    sfx.playSizzle();
+                }
+            } else {
+                let allDone = true;
+                for (let i = 0; i < 4; i++) {
+                    if (parallelState.cookProgress[i] < 100) {
+                        parallelState.cookProgress[i] += 0.4 + (i * 0.05);
+                        allDone = false;
+                    }
+                }
+                if (allDone) updateParallelControlsUI();
+            }
+        }
+
+        function updateParallelControlsUI() {
+            const extra = document.getElementById('mode-extra-controls');
+            if (currentMode === 2 && parallelState.inKitchenZone) {
+                extra.innerHTML = `
+                    <button onclick="resetParallelMode()" class="px-3 py-1.5 bg-purple-600 hover:bg-purple-500 text-white rounded-lg text-xs font-bold shadow-md transition">
+                        ↺ Cook Again (Reset Arena)
+                    </button>
+                `;
+            } else if (currentMode !== 0 && currentMode !== 3) {
+                extra.innerHTML = '';
+            }
+        }
+
+        function drawParallelMode() {
+            ctx.fillStyle = '#0f172a';
+            ctx.fillRect(0, 0, canvas.width, canvas.height);
+
+            ctx.fillStyle = '#1e293b';
+            ctx.fillRect(400, 40, 460, 420);
+            ctx.strokeStyle = '#eab308';
+            ctx.setLineDash([8, 8]);
+            ctx.strokeRect(400, 40, 460, 420);
+            ctx.setLineDash([]);
+
+            ctx.fillStyle = '#fef08a';
+            ctx.font = 'bold 16px Inter, sans-serif';
+            ctx.fillText('PARALLEL KITCHEN CORE ARENA (SAME CHEF -> 4 CORES)', 420, 70);
+
+            const stovePositions = [
+                { x: 480, y: 150 }, { x: 720, y: 150 },
+                { x: 480, y: 330 }, { x: 720, y: 330 }
+            ];
+
+            stovePositions.forEach((stove, idx) => {
+                ctx.fillStyle = '#334155';
+                ctx.beginPath(); ctx.arc(stove.x, stove.y, 45, 0, Math.PI * 2); ctx.fill();
+                ctx.strokeStyle = '#f97316'; ctx.lineWidth = 3; ctx.stroke();
+
+                ctx.fillStyle = '#ffffff';
+                ctx.font = '22px Inter, sans-serif';
+                ctx.textAlign = 'center';
+                ctx.fillText(parallelState.dishes[idx].icon, stove.x, stove.y + 7);
+
+                ctx.fillStyle = '#0f172a';
+                ctx.fillRect(stove.x - 55, stove.y + 55, 110, 12);
+                ctx.fillStyle = '#eab308';
+                ctx.fillRect(stove.x - 55, stove.y + 55, (110 * parallelState.cookProgress[idx]) / 100, 12);
+
+                ctx.fillStyle = '#ffffff';
+                ctx.font = '10px "Fira Code", monospace';
+                ctx.fillText(`${parallelState.dishes[idx].name}`, stove.x, stove.y + 82);
+            });
+
+            if (!parallelState.inKitchenZone) {
+                // Drawing Koro-Sensei Chef Character
+                drawChefSprite(parallelState.koroX, parallelState.koroY);
+                ctx.fillStyle = '#cbd5e1'; ctx.font = '14px Inter, sans-serif'; ctx.textAlign = 'left';
+                ctx.fillText('Walk Koro-Sensei Chef into Kitchen Arena to spawn 4 Shadow Clones!', 30, 470);
+            } else {
+                // Drawing 4 Identical Chef Clones simultaneously working on stove burners
+                stovePositions.forEach(stove => {
+                    ctx.save();
+                    ctx.globalAlpha = 0.9;
+                    drawChefSprite(stove.x - 28, stove.y - 20, 0.85);
+                    ctx.restore();
+                });
+            }
+        }
+
+        // Helper to Draw Koro-Sensei Chef Clone Graphics
+        function drawChefSprite(x, y, scale = 1.0) {
+            ctx.save();
+            ctx.translate(x, y);
+            ctx.scale(scale, scale);
+
+            // Chef Hat
+            ctx.fillStyle = '#ffffff';
+            ctx.fillRect(-12, -34, 24, 12);
+            ctx.beginPath(); ctx.arc(0, -32, 14, 0, Math.PI * 2); ctx.fill();
+
+            // Koro-Sensei Round Yellow Head
+            ctx.fillStyle = '#eab308';
+            ctx.beginPath(); ctx.arc(0, 0, 20, 0, Math.PI * 2); ctx.fill();
+
+            // Face Smile & Eyes
+            ctx.fillStyle = '#000000';
+            ctx.beginPath(); ctx.arc(-6, -4, 2.5, 0, Math.PI * 2); ctx.fill();
+            ctx.beginPath(); ctx.arc(6, -4, 2.5, 0, Math.PI * 2); ctx.fill();
+            ctx.beginPath(); ctx.arc(0, 4, 8, 0, Math.PI); ctx.stroke();
+
+            // Cooking Spatula Hand
+            ctx.strokeStyle = '#94a3b8'; ctx.lineWidth = 3;
+            ctx.beginPath(); ctx.moveTo(14, 6); ctx.lineTo(26, -2); ctx.stroke();
+            ctx.fillStyle = '#cbd5e1'; ctx.fillRect(24, -8, 8, 12);
+
+            ctx.restore();
+        }
+
+        // MODE 4: Distributed Processing
+        const distState = {
+            mrLam: { x: 450, y: 250, speed: 5 },
+            taNodes: [
+                { id: 1, name: "TA Node Alpha", x: 100, y: 80, active: true, progress: 0, currentStudent: null },
+                { id: 2, name: "TA Node Beta", x: 800, y: 80, active: true, progress: 0, currentStudent: null },
+                { id: 3, name: "TA Node Gamma", x: 450, y: 430, active: true, progress: 0, currentStudent: null }
+            ],
+            students: [],
+            attachedStudent: null,
+            spawnTimer: 0
+        };
+
+        function resetDistributedMode() {
+            distState.mrLam = { x: 450, y: 250, speed: 5 };
+            distState.students = [];
+            distState.attachedStudent = null;
+            distState.spawnTimer = 0;
+            distState.taNodes.forEach(ta => { ta.progress = 0; ta.currentStudent = null; ta.active = true; });
+            updateDistControlsUI();
+        }
+
+        function updateDistributedMode() {
+            if (keys.ArrowUp || keys.w) distState.mrLam.y = Math.max(30, distState.mrLam.y - distState.mrLam.speed);
+            if (keys.ArrowDown || keys.s) distState.mrLam.y = Math.min(canvas.height - 30, distState.mrLam.y + distState.mrLam.speed);
+            if (keys.ArrowLeft || keys.a) distState.mrLam.x = Math.max(30, distState.mrLam.x - distState.mrLam.speed);
+            if (keys.ArrowRight || keys.d) distState.mrLam.x = Math.min(canvas.width - 30, distState.mrLam.x + distState.mrLam.speed);
+
+            distState.spawnTimer++;
+            if (distState.spawnTimer > 150 && distState.students.length < 4) {
+                distState.spawnTimer = 0;
+                distState.students.push({
+                    id: Date.now(),
+                    x: Math.random() * 500 + 200,
+                    y: Math.random() * 200 + 150,
+                    status: 'waiting'
+                });
+            }
+
+            if (!distState.attachedStudent) {
+                for (let i = 0; i < distState.students.length; i++) {
+                    let st = distState.students[i];
+                    if (st.status === 'waiting') {
+                        if (Math.hypot(distState.mrLam.x - st.x, distState.mrLam.y - st.y) < 30) {
+                            st.status = 'attached';
+                            distState.attachedStudent = st;
+                            sfx.playPickup();
+                            break;
+                        }
+                    }
+                }
+            } else {
+                distState.attachedStudent.x = distState.mrLam.x + 18;
+                distState.attachedStudent.y = distState.mrLam.y + 18;
+
+                distState.taNodes.forEach(ta => {
+                    if (ta.active && !ta.currentStudent) {
+                        if (Math.hypot(distState.mrLam.x - ta.x, distState.mrLam.y - ta.y) < 45) {
+                            ta.currentStudent = distState.attachedStudent;
+                            ta.currentStudent.status = 'processing';
+                            ta.progress = 0;
+                            distState.attachedStudent = null;
+                            sfx.playDelivered();
+                        }
+                    }
+                });
+            }
+
+            distState.taNodes.forEach(ta => {
+                if (ta.active && ta.currentStudent) {
+                    ta.progress += 100 / (3 * 60);
+                    if (ta.progress >= 100) {
+                        const index = distState.students.findIndex(s => s.id === ta.currentStudent.id);
+                        if (index !== -1) distState.students.splice(index, 1);
+                        ta.currentStudent = null;
+                        ta.progress = 0;
+                        sfx.playCatch();
+                    }
+                }
+            });
+        }
+
+        function crashTANode() {
+            const activeTAs = distState.taNodes.filter(t => t.active);
+            if (activeTAs.length > 0) {
+                const crashed = activeTAs[Math.floor(Math.random() * activeTAs.length)];
+                crashed.active = false;
+                sfx.playCrash();
+
+                if (crashed.currentStudent) {
+                    crashed.currentStudent.status = 'waiting';
+                    crashed.currentStudent.x = crashed.x + 30;
+                    crashed.currentStudent.y = crashed.y + 30;
+                    crashed.currentStudent = null;
+                    crashed.progress = 0;
+                }
+                updateDistControlsUI();
+            }
+        }
+
+        function hireTA() {
+            const inactive = distState.taNodes.find(t => !t.active);
+            if (inactive) { inactive.active = true; sfx.playCatch(); updateDistControlsUI(); }
+        }
+
+        function fireTA() {
+            const activeTAs = distState.taNodes.filter(t => t.active);
+            if (activeTAs.length > 1) {
+                const target = activeTAs[activeTAs.length - 1];
+                target.active = false;
+                if (target.currentStudent) target.currentStudent.status = 'waiting';
+                sfx.playCrash();
+                updateDistControlsUI();
+            }
+        }
+
+        function drawDistributedMode() {
+            ctx.fillStyle = '#0f172a';
+            ctx.fillRect(0, 0, canvas.width, canvas.height);
+
+            distState.taNodes.forEach(ta => {
+                ctx.fillStyle = ta.active ? '#1e293b' : '#451a1a';
+                ctx.fillRect(ta.x - 50, ta.y - 35, 100, 70);
+                ctx.strokeStyle = ta.active ? '#3b82f6' : '#ef4444'; ctx.lineWidth = 2;
+                ctx.strokeRect(ta.x - 50, ta.y - 35, 100, 70);
+
+                ctx.fillStyle = ta.active ? '#38bdf8' : '#f87171';
+                ctx.font = 'bold 11px Inter, sans-serif'; ctx.textAlign = 'center';
+                ctx.fillText(ta.name, ta.x, ta.y - 18);
+                ctx.fillText(ta.active ? (ta.currentStudent ? 'PROCESSING (3s)' : 'ONLINE / IDLE') : 'OFFLINE (CRASHED)', ta.x, ta.y - 4);
+
+                if (ta.active && ta.currentStudent) {
+                    ctx.fillStyle = '#0f172a'; ctx.fillRect(ta.x - 40, ta.y + 12, 80, 8);
+                    ctx.fillStyle = '#10b981'; ctx.fillRect(ta.x - 40, ta.y + 12, (80 * ta.progress) / 100, 8);
+                }
+                ctx.textAlign = 'left';
+            });
+
+            distState.students.forEach(st => {
+                if (st.status === 'waiting') {
+                    ctx.fillStyle = '#a855f7';
+                    ctx.beginPath(); ctx.arc(st.x, st.y, 12, 0, Math.PI * 2); ctx.fill();
+                    ctx.fillStyle = '#ffffff'; ctx.font = 'bold 12px Inter, sans-serif';
+                    ctx.fillText('?', st.x - 3, st.y + 4);
+                }
+            });
+
+            if (distState.attachedStudent) {
+                const st = distState.attachedStudent;
+                ctx.fillStyle = '#c084fc';
+                ctx.beginPath(); ctx.arc(st.x, st.y, 12, 0, Math.PI * 2); ctx.fill();
+            }
+
+            ctx.fillStyle = '#3b82f6';
+            ctx.beginPath(); ctx.arc(distState.mrLam.x, distState.mrLam.y, 20, 0, Math.PI * 2); ctx.fill();
+            ctx.fillStyle = '#ffffff'; ctx.font = 'bold 10px Inter, sans-serif'; ctx.textAlign = 'center';
+            ctx.fillText('Mr. Lam', distState.mrLam.x, distState.mrLam.y - 25);
+            ctx.textAlign = 'left';
+        }
+
+        // MODE 5: Oracle VirtualBox 7.0 Hypervisor Manager State
+        const vboxState = {
+            selectedVM: 2, // Default Windows 11
+            vms: [
+                { id: 'mac', name: 'macOS Sequoia 15.0', osType: 'macOS', status: 'Powered Off', ram: 4096, cpus: 4, vram: 128, disk: '80 GB VDI' },
+                { id: 'ubuntu', name: 'Ubuntu 24.04 LTS', osType: 'Ubuntu', status: 'Powered Off', ram: 2048, cpus: 2, vram: 64, disk: '25 GB VDI', terminalHistory: ['Welcome to Ubuntu 24.04 LTS'] },
+                { id: 'win11', name: 'Windows 11 Pro', osType: 'Windows 11', status: 'Powered Off', ram: 8192, cpus: 4, vram: 128, disk: '100 GB VDI', startMenuOpen: false, activeApp: null },
+                { id: 'ios18', name: 'iOS 18 (Mobile VM)', osType: 'iOS', status: 'Powered Off', ram: 3072, cpus: 2, vram: 64, disk: '32 GB VDI', activeApp: null }
+            ]
+        };
+
+        function renderVBoxUI() {
+            const vmListEl = document.getElementById('vm-list');
+            vmListEl.innerHTML = '';
+
+            vboxState.vms.forEach((vm, idx) => {
+                const isSelected = idx === vboxState.selectedVM;
+                const item = document.createElement('div');
+                item.className = `p-2 rounded cursor-pointer text-xs flex items-center justify-between transition-colors ${isSelected ? 'bg-[#37373d] border-l-2 border-blue-500' : 'hover:bg-[#2a2a2a]'}`;
+                item.onclick = () => { vboxState.selectedVM = idx; renderVBoxUI(); };
+
+                const statusColor = vm.status === 'Running' ? 'bg-green-500' : (vm.status === 'Paused' ? 'bg-amber-500' : 'bg-red-500');
+                item.innerHTML = `
+                    <div class="flex items-center gap-2">
+                        <span class="w-2 h-2 rounded-full ${statusColor}"></span>
+                        <span class="font-medium text-slate-200">${vm.name}</span>
+                    </div>
+                    <span class="text-[10px] text-slate-400">${vm.status}</span>
+                `;
+                vmListEl.appendChild(item);
+            });
+
+            const currentVM = vboxState.vms[vboxState.selectedVM];
+            const pane = document.getElementById('vm-details-pane');
+
+            document.getElementById('vbox-btn-start').disabled = currentVM.status === 'Running';
+            document.getElementById('vbox-btn-pause').disabled = currentVM.status !== 'Running';
+            document.getElementById('vbox-btn-stop').disabled = currentVM.status === 'Powered Off';
+
+            if (currentVM.status === 'Powered Off') {
+                pane.innerHTML = `
+                    <div class="p-6 h-full flex flex-col justify-between overflow-y-auto">
+                        <div>
+                            <div class="flex items-center gap-3 border-b border-[#333] pb-4 mb-4">
+                                <div class="w-12 h-12 bg-blue-600/20 text-blue-400 rounded-lg flex items-center justify-center font-bold text-xl">VM</div>
+                                <div>
+                                    <h3 class="text-base font-bold text-slate-100">${currentVM.name}</h3>
+                                    <p class="text-xs text-slate-400">Virtualization Guest Spec Sheet</p>
+                                </div>
+                            </div>
+                            <div class="space-y-4 max-w-xl">
+                                <div>
+                                    <div class="flex justify-between text-xs text-slate-300 mb-1">
+                                        <span>Base Memory (RAM):</span>
+                                        <span class="font-mono text-blue-400">${currentVM.ram} MB</span>
+                                    </div>
+                                    <input type="range" min="1024" max="16384" step="1024" value="${currentVM.ram}" onchange="updateVramSpec(this.value)" class="w-full accent-blue-500 bg-[#333]">
+                                </div>
+                                <div>
+                                    <div class="flex justify-between text-xs text-slate-300 mb-1">
+                                        <span>Processors (vCPU):</span>
+                                        <span class="font-mono text-blue-400">${currentVM.cpus} Cores</span>
+                                    </div>
+                                    <input type="range" min="1" max="8" step="1" value="${currentVM.cpus}" onchange="updateCpuSpec(this.value)" class="w-full accent-blue-500 bg-[#333]">
+                                </div>
+                            </div>
+                        </div>
+                        <div class="bg-[#222] p-3 rounded border border-[#333] text-xs text-slate-400">
+                            Press <strong class="text-green-400">Start</strong> on the top action bar to boot guest OS.
+                        </div>
+                    </div>
+                `;
+            } else {
+                if (currentVM.osType === 'macOS') renderMacOSDesktop(pane, currentVM);
+                else if (currentVM.osType === 'Ubuntu') renderUbuntuDesktop(pane, currentVM);
+                else if (currentVM.osType === 'Windows 11') renderWindows11Desktop(pane, currentVM);
+                else if (currentVM.osType === 'iOS') renderIOS18Desktop(pane, currentVM);
+            }
+        }
+
+        function renderMacOSDesktop(pane, vm) {
+            pane.innerHTML = `
+                <div class="h-full w-full bg-cover bg-center flex flex-col justify-between relative overflow-hidden" style="background-image: linear-gradient(to bottom right, #3b82f6, #8b5cf6, #ec4899);">
+                    <div class="bg-slate-900/40 backdrop-blur-md px-4 py-1 text-xs text-white flex items-center justify-between border-b border-white/10">
+                        <div class="flex items-center gap-4 font-medium"><span class="font-bold"></span><span>Finder</span><span>File</span><span>Edit</span></div>
+                        <span class="text-[11px]">${new Date().toLocaleTimeString([], {hour: '2-digit', minute:'2-digit'})}</span>
+                    </div>
+                    <div class="flex-1 p-6">
+                        <div class="bg-white/10 backdrop-blur-lg border border-white/20 rounded-xl p-4 w-72 text-white shadow-2xl">
+                            <h4 class="font-bold text-sm">macOS Sequoia 15.0</h4>
+                            <p class="text-xs text-white/70 mt-1">${vm.cpus} vCPU | ${vm.ram} MB RAM</p>
+                        </div>
+                    </div>
+                </div>
+            `;
+        }
+
+        function renderUbuntuDesktop(pane, vm) {
+            pane.innerHTML = `
+                <div class="h-full w-full bg-[#2c001e] flex flex-col justify-between relative overflow-hidden">
+                    <div class="bg-[#111111] px-3 py-1 text-xs text-slate-200 flex items-center justify-between border-b border-[#222]">
+                        <span class="font-semibold">Activities</span><span>${new Date().toLocaleTimeString([], {hour: '2-digit', minute:'2-digit'})}</span>
+                    </div>
+                    <div class="flex-1 p-4 flex justify-center items-center">
+                        <div class="w-full max-w-2xl bg-black/90 border border-slate-700 rounded-lg p-3 font-mono text-xs text-green-400">
+                            <div>user@ubuntu-vm:~$ neofetch</div>
+                            <div class="text-slate-300">OS: Ubuntu 24.04 LTS x86_64</div>
+                            <div class="text-slate-300">Memory: ${vm.ram}MB Allocated</div>
+                        </div>
+                    </div>
+                </div>
+            `;
+        }
+
+        // AUTHENTIC WINDOWS 11 DESKTOP UI
+        function renderWindows11Desktop(pane, vm) {
+            pane.innerHTML = `
+                <div class="h-full w-full bg-cover bg-center flex flex-col justify-between relative overflow-hidden select-none" style="background-image: radial-gradient(circle at center, #1e3a8a 0%, #0f172a 100%);">
+                    
+                    <div class="p-4 grid grid-cols-1 gap-4 w-24">
+                        <button onclick="toggleWinApp('explorer')" class="p-2 hover:bg-white/10 rounded-lg flex flex-col items-center gap-1 text-white text-[11px] group">
+                            <div class="w-10 h-10 bg-amber-500 rounded-lg flex items-center justify-center text-xl shadow-md">📁</div>
+                            <span class="group-hover:underline">This PC</span>
+                        </button>
+                        <button onclick="toggleWinApp('notepad')" class="p-2 hover:bg-white/10 rounded-lg flex flex-col items-center gap-1 text-white text-[11px] group">
+                            <div class="w-10 h-10 bg-blue-600 rounded-lg flex items-center justify-center text-xl shadow-md">📝</div>
+                            <span class="group-hover:underline">Notepad</span>
+                        </button>
+                        <button onclick="toggleWinApp('paint')" class="p-2 hover:bg-white/10 rounded-lg flex flex-col items-center gap-1 text-white text-[11px] group">
+                            <div class="w-10 h-10 bg-pink-600 rounded-lg flex items-center justify-center text-xl shadow-md">🎨</div>
+                            <span class="group-hover:underline">Paint</span>
+                        </button>
+                    </div>
+
+                    <div class="flex-1 p-6 relative">
+                        ${vm.activeApp === 'notepad' ? `
+                            <div class="w-[420px] bg-slate-900 border border-slate-700 rounded-xl shadow-2xl text-slate-100 overflow-hidden font-sans absolute top-8 left-16 z-20">
+                                <div class="bg-slate-800/90 px-3 py-2 text-xs flex justify-between items-center border-b border-slate-700">
+                                    <div class="flex items-center gap-2"><span>📝</span><span class="font-medium">Untitled - Notepad</span></div>
+                                    <button onclick="toggleWinApp(null)" class="w-6 h-6 hover:bg-rose-600 text-slate-300 hover:text-white rounded flex items-center justify-center">✕</button>
+                                </div>
+                                <textarea class="w-full h-48 bg-slate-950/90 p-3 text-xs text-slate-200 focus:outline-none resize-none font-mono" placeholder="Windows 11 Virtual Guest Notepad..."></textarea>
+                            </div>
+                        ` : ''}
+
+                        ${vm.activeApp === 'explorer' ? `
+                            <div class="w-[480px] bg-slate-900 border border-slate-700 rounded-xl shadow-2xl text-slate-100 overflow-hidden font-sans absolute top-12 left-28 z-20">
+                                <div class="bg-slate-800/90 px-3 py-2 text-xs flex justify-between items-center border-b border-slate-700">
+                                    <div class="flex items-center gap-2"><span>📁</span><span class="font-medium">File Explorer - This PC</span></div>
+                                    <button onclick="toggleWinApp(null)" class="w-6 h-6 hover:bg-rose-600 text-slate-300 hover:text-white rounded flex items-center justify-center">✕</button>
+                                </div>
+                                <div class="p-4 grid grid-cols-2 gap-3 text-xs">
+                                    <div class="bg-slate-800/50 p-3 rounded-lg border border-slate-700 flex items-center gap-3">
+                                        <span class="text-2xl">💽</span>
+                                        <div><strong>Local Disk (C:)</strong><div class="text-[10px] text-slate-400">64 GB free of 100 GB</div></div>
+                                    </div>
+                                    <div class="bg-slate-800/50 p-3 rounded-lg border border-slate-700 flex items-center gap-3">
+                                        <span class="text-2xl">⚙️</span>
+                                        <div><strong>System32</strong><div class="text-[10px] text-slate-400">Virtual OS Kernel</div></div>
+                                    </div>
+                                </div>
+                            </div>
+                        ` : ''}
+
+                        ${vm.activeApp === 'paint' ? `
+                            <div class="w-[440px] bg-slate-900 border border-slate-700 rounded-xl shadow-2xl text-slate-100 overflow-hidden font-sans absolute top-10 left-36 z-20">
+                                <div class="bg-slate-800/90 px-3 py-2 text-xs flex justify-between items-center border-b border-slate-700">
+                                    <div class="flex items-center gap-2"><span>🎨</span><span class="font-medium">MS Paint Studio</span></div>
+                                    <button onclick="toggleWinApp(null)" class="w-6 h-6 hover:bg-rose-600 text-slate-300 hover:text-white rounded flex items-center justify-center">✕</button>
+                                </div>
+                                <div class="p-3 bg-slate-950 flex flex-col items-center">
+                                    <div class="w-full h-36 bg-white rounded border border-slate-700 flex items-center justify-center text-slate-400 text-xs font-mono">Interactive Drawing Canvas</div>
+                                </div>
+                            </div>
+                        ` : ''}
+
+                        ${vm.startMenuOpen ? `
+                            <div class="absolute bottom-2 left-1/2 -translate-x-1/2 w-[400px] bg-slate-900/95 backdrop-blur-2xl border border-slate-700/80 rounded-2xl p-5 shadow-2xl text-white z-30">
+                                <input type="text" placeholder="Type here to search..." class="w-full bg-slate-950/80 border border-slate-700 rounded-xl px-3 py-2 text-xs text-slate-200 focus:outline-none mb-4">
+                                <div class="text-[11px] font-bold text-slate-400 mb-3 uppercase tracking-wider">Pinned Apps</div>
+                                <div class="grid grid-cols-4 gap-4 text-center">
+                                    <button onclick="toggleWinApp('notepad')" class="p-2 hover:bg-slate-800 rounded-xl text-xs flex flex-col items-center gap-1.5 transition">
+                                        <span class="text-2xl">📝</span>
+                                        <span class="text-[11px]">Notepad</span>
+                                    </button>
+                                    <button onclick="toggleWinApp('explorer')" class="p-2 hover:bg-slate-800 rounded-xl text-xs flex flex-col items-center gap-1.5 transition">
+                                        <span class="text-2xl">📁</span>
+                                        <span class="text-[11px]">Explorer</span>
+                                    </button>
+                                    <button onclick="toggleWinApp('paint')" class="p-2 hover:bg-slate-800 rounded-xl text-xs flex flex-col items-center gap-1.5 transition">
+                                        <span class="text-2xl">🎨</span>
+                                        <span class="text-[11px]">Paint</span>
+                                    </button>
+                                </div>
+                            </div>
+                        ` : ''}
+                    </div>
+
+                    <div class="bg-slate-900/90 backdrop-blur-xl px-4 py-2 border-t border-slate-800/80 flex items-center justify-between z-40">
+                        <div class="w-24"></div>
+                        <div class="flex items-center gap-1.5 bg-slate-800/40 px-3 py-1 rounded-2xl border border-white/5">
+                            <button onclick="toggleWinStart()" class="w-9 h-9 hover:bg-white/10 rounded-xl flex items-center justify-center text-blue-400 font-bold text-xl transition">🪟</button>
+                            <button onclick="toggleWinApp('explorer')" class="w-9 h-9 hover:bg-white/10 rounded-xl flex items-center justify-center text-amber-400 text-lg transition">📁</button>
+                            <button onclick="toggleWinApp('notepad')" class="w-9 h-9 hover:bg-white/10 rounded-xl flex items-center justify-center text-blue-300 text-lg transition">📝</button>
+                            <button onclick="toggleWinApp('paint')" class="w-9 h-9 hover:bg-white/10 rounded-xl flex items-center justify-center text-pink-400 text-lg transition">🎨</button>
+                        </div>
+                        <div class="text-[11px] text-slate-300 font-medium text-right">
+                            <div>${new Date().toLocaleTimeString([], {hour: '2-digit', minute:'2-digit'})}</div>
+                            <div class="text-[9px] text-slate-500">${new Date().toLocaleDateString()}</div>
+                        </div>
+                    </div>
+
+                </div>
+            `;
+        }
+
+        // iOS 18 (APPLE MOBILE DEVICE) VIRTUAL MACHINE UI
+        function renderIOS18Desktop(pane, vm) {
+            pane.innerHTML = `
+                <div class="h-full w-full bg-slate-950 flex items-center justify-center p-2 relative overflow-hidden select-none">
+                    <div class="w-[280px] h-[520px] bg-black rounded-[48px] p-3 border-4 border-slate-700 shadow-2xl relative flex flex-col justify-between overflow-hidden" style="background-image: linear-gradient(to bottom, #4c1d95, #0f172a);">
+                        
+                        <!-- Dynamic Island Notch -->
+                        <div class="w-24 h-5 bg-black rounded-full mx-auto flex items-center justify-end px-2 gap-1 z-30">
+                            <span class="w-2 h-2 rounded-full bg-green-500"></span>
+                        </div>
+
+                        <!-- Main Screen Content -->
+                        <div class="flex-1 pt-4 px-2 flex flex-col justify-between relative z-20">
+                            ${vm.activeApp === 'safari' ? `
+                                <div class="w-full h-full bg-slate-900 rounded-3xl p-3 text-white flex flex-col justify-between border border-slate-700">
+                                    <div class="flex justify-between items-center border-b border-slate-800 pb-2 text-xs">
+                                        <span class="font-bold">Safari Mobile</span>
+                                        <button onclick="toggleIOSApp(null)" class="text-xs text-blue-400">Done</button>
+                                    </div>
+                                    <div class="text-center text-xs text-slate-400">apple.com/ios-18-virtualbox</div>
+                                    <div class="h-8 bg-slate-800 rounded-full flex items-center px-3 text-[10px] text-slate-400">Search or enter URL</div>
+                                </div>
+                            ` : `
+                                <!-- Home Screen App Grid -->
+                                <div class="space-y-4">
+                                    <!-- Clock Widget -->
+                                    <div class="bg-white/10 backdrop-blur-md rounded-2xl p-3 text-white">
+                                        <div class="text-xs font-semibold text-slate-300">CUPERTINO</div>
+                                        <div class="text-2xl font-bold">${new Date().toLocaleTimeString([], {hour: '2-digit', minute:'2-digit'})}</div>
+                                    </div>
+
+                                    <!-- Apps Grid -->
+                                    <div class="grid grid-cols-4 gap-3 text-center text-[10px] text-white">
+                                        <button onclick="toggleIOSApp('safari')" class="flex flex-col items-center gap-1">
+                                            <div class="w-11 h-11 bg-gradient-to-tr from-cyan-400 to-blue-600 rounded-2xl flex items-center justify-center text-lg shadow-md">🧭</div>
+                                            <span>Safari</span>
+                                        </button>
+                                        <div class="flex flex-col items-center gap-1">
+                                            <div class="w-11 h-11 bg-green-500 rounded-2xl flex items-center justify-center text-lg shadow-md">💬</div>
+                                            <span>Messages</span>
+                                        </div>
+                                        <div class="flex flex-col items-center gap-1">
+                                            <div class="w-11 h-11 bg-amber-400 rounded-2xl flex items-center justify-center text-lg shadow-md">📝</div>
+                                            <span>Notes</span>
+                                        </div>
+                                        <div class="flex flex-col items-center gap-1">
+                                            <div class="w-11 h-11 bg-slate-700 rounded-2xl flex items-center justify-center text-lg shadow-md">⚙️</div>
+                                            <span>Settings</span>
+                                        </div>
+                                    </div>
+                                </div>
+                            `}
+                        </div>
+
+                        <!-- Home Bar -->
+                        <button onclick="toggleIOSApp(null)" class="w-28 h-1 bg-white/60 rounded-full mx-auto my-1 z-30"></button>
+                    </div>
+                </div>
+            `;
+        }
+
+        function toggleWinStart() {
+            const vm = vboxState.vms[vboxState.selectedVM];
+            vm.startMenuOpen = !vm.startMenuOpen;
+            renderVBoxUI();
+        }
+
+        function toggleWinApp(app) {
+            const vm = vboxState.vms[vboxState.selectedVM];
+            vm.activeApp = app;
+            vm.startMenuOpen = false;
+            renderVBoxUI();
+        }
+
+        function toggleIOSApp(app) {
+            const vm = vboxState.vms[vboxState.selectedVM];
+            vm.activeApp = app;
+            renderVBoxUI();
+        }
+
+        function updateVramSpec(val) {
+            vboxState.vms[vboxState.selectedVM].ram = parseInt(val);
+            renderVBoxUI();
+        }
+
+        function updateCpuSpec(val) {
+            vboxState.vms[vboxState.selectedVM].cpus = parseInt(val);
+            renderVBoxUI();
+        }
+
+        function vboxStartVM() {
+            vboxState.vms[vboxState.selectedVM].status = 'Running';
+            sfx.playCatch();
+            renderVBoxUI();
+        }
+
+        function vboxPauseVM() {
+            vboxState.vms[vboxState.selectedVM].status = 'Paused';
+            renderVBoxUI();
+        }
+
+        function vboxStopVM() {
+            vboxState.vms[vboxState.selectedVM].status = 'Powered Off';
+            renderVBoxUI();
+        }
+
+        function vboxNewVM() {
+            const name = prompt("Enter New Virtual Machine Name:", "Debian Linux");
+            if (name) {
+                vboxState.vms.push({
+                    id: 'custom_' + Date.now(),
+                    name: name,
+                    osType: 'Ubuntu',
+                    status: 'Powered Off',
+                    ram: 2048,
+                    cpus: 2,
+                    vram: 64,
+                    disk: '20 GB VDI',
+                    terminalHistory: ['Custom Linux Environment']
+                });
+                vboxState.selectedVM = vboxState.vms.length - 1;
+                renderVBoxUI();
+            }
+        }
+
+        function vboxOpenSettings() {
+            alert(`VirtualBox Settings for ${vboxState.vms[vboxState.selectedVM].name}:\nStorage: Controller SATA\nNetwork: NAT\nDisplay: VMSVGA 128MB`);
+        }
+
+        function updateDistControlsUI() {
+            const extra = document.getElementById('mode-extra-controls');
+            if (currentMode === 3) {
+                extra.innerHTML = `
+                    <button onclick="hireTA()" class="px-3 py-1 bg-green-600 hover:bg-green-500 text-white rounded text-xs font-semibold">+ Hire TA</button>
+                    <button onclick="fireTA()" class="px-3 py-1 bg-red-600 hover:bg-red-500 text-white rounded text-xs font-semibold">- Fire TA</button>
+                    <button onclick="crashTANode()" class="px-3 py-1 bg-amber-600 hover:bg-amber-500 text-white rounded text-xs font-semibold">☕ Spill Coffee (Crash Node)</button>
+                `;
+            } else if (currentMode !== 0 && currentMode !== 2) {
+                extra.innerHTML = '';
+            }
+        }
+
+        function switchMode(modeIndex) {
+            currentMode = modeIndex;
+
+            const navBtns = document.querySelectorAll('.mode-btn');
+            navBtns.forEach((btn, idx) => {
+                if (idx === modeIndex) {
+                    btn.className = "mode-btn px-3 py-1.5 rounded-lg text-xs font-semibold transition-all duration-200 bg-blue-600 text-white shadow-md";
+                } else {
+                    btn.className = "mode-btn px-3 py-1.5 rounded-lg text-xs font-semibold transition-all duration-200 text-slate-400 hover:text-white hover:bg-slate-800";
+                }
+            });
+
+            const canvasContainer = document.getElementById('canvas-container');
+            const youtubeSec = document.getElementById('youtube-section');
+            const vboxContainer = document.getElementById('virtualbox-container');
+
+            if (modeIndex === 4) {
+                canvasContainer.classList.add('hidden');
+                youtubeSec.classList.add('hidden');
+                vboxContainer.classList.remove('hidden');
+                renderVBoxUI();
+            } else {
+                canvasContainer.classList.remove('hidden');
+                vboxContainer.classList.add('hidden');
+                if (modeIndex === 2) youtubeSec.classList.remove('hidden');
+                else youtubeSec.classList.add('hidden');
+            }
+
+            const titles = [
+                "1. Batch Processing (Laundry Basket Collector)",
+                "2. Real-Time Processing (Fire Station Dispatch)",
+                "3. Parallel Processing (Koro-Sensei Kitchen Arena)",
+                "4. Distributed Processing (Classroom TA Team System)",
+                "5. Virtualisation (Oracle VM VirtualBox Manager & Desktop)"
+            ];
+            const descs = [
+                "Collect dirty clothes in the laundry basket throughout the daytime (08:00–22:00). At 22:00, processing locks and an automated batch wash cycle runs!",
+                "Hard Real-Time system! Drive the fire truck to emergency fires before their strict 3.0s deadline timers expire.",
+                "Multi-threaded execution! Walk Koro-Sensei into the kitchen arena to automatically spawn 4 parallel cooking clones.",
+                "Mr. Lam picks up students with questions (sticky escort) and brings them to perimeter TA nodes. Crash nodes to trigger dynamic load-balancing!",
+                "Full VirtualBox 7.0 replica! Configure specs and boot macOS, Ubuntu Linux (with Bash Terminal), Windows 11, or iOS 18."
+            ];
+
+            document.getElementById('mode-title').innerText = titles[modeIndex];
+            document.getElementById('mode-desc').innerText = descs[modeIndex];
+
+            if (modeIndex === 0) resetBatchMode();
+            else if (modeIndex === 1) resetRealTimeMode();
+            else if (modeIndex === 2) resetParallelMode();
+            else if (modeIndex === 3) resetDistributedMode();
+
+            updateBatchControlsUI();
+            updateDistControlsUI();
+        }
+
+        function gameLoop() {
+            if (currentMode === 0) { updateBatchMode(); drawBatchMode(); }
+            else if (currentMode === 1) { updateRealTimeMode(); drawRealTimeMode(); }
+            else if (currentMode === 2) { updateParallelMode(); drawParallelMode(); }
+            else if (currentMode === 3) { updateDistributedMode(); drawDistributedMode(); }
+
+            animationFrameId = requestAnimationFrame(gameLoop);
+        }
+
+        window.onload = function() {
+            switchMode(0);
+            gameLoop();
+        };
+    </script>
+</body>
+</html>
