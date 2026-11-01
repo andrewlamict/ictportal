@@ -145,7 +145,7 @@ ul.key li{margin:3px 0}
 details.more{margin-top:10px}
 details.more>summary{cursor:pointer;color:var(--muted);font-size:13px}
 .ans img{max-width:100%;background:#fff;border-radius:8px;margin-top:6px;display:block}
-</style>
+</style><svg width="0" height="0" style="position:absolute" aria-hidden="true"><defs><marker id="ah" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse"><path d="M0 0L10 5L0 10z" fill="#334155"/></marker></defs></svg>
 <div class="wrap">
   <header>
     <div>
@@ -254,14 +254,14 @@ function fmtq(t,isAns){
 }
 function qcard(q){
   const f=fmtq(q[1]),a=fmtq(q[2],true);
-  return '<div class="qcard"><div class="qtop"><span class="qid">'+esc(q[0])+'</span>'+f.mk+'</div><div class="qtext">'+f.h+'</div>'+(q[3]?'<div class="qctx"><div class="qcl">Given (question data)</div>'+q[3]+'</div>':'')+'<button class="showans" onclick="var a=this.nextElementSibling;a.hidden=!a.hidden;this.textContent=a.hidden?\'👀 Show answer\':\'🙈 Hide answer\'">👀 Show answer</button><div class="ans" hidden>'+a.h+(q[4]||'')+'</div></div>';
+  return '<div class="qcard"><div class="qtop"><span class="qid">'+esc(q[0])+'</span>'+f.mk+'</div><div class="qtext">'+f.h+'</div>'+(q[3]?'<div class="qctx"><div class="qcl">Given (question data)</div>'+q[3]+'</div>':'')+'<button class="showans" onclick="var a=this.nextElementSibling;a.hidden=!a.hidden;this.textContent=a.hidden?\'Show answer\':\'🙈 Hide answer\'">Show answer</button><div class="ans" hidden>'+a.h+(q[4]||'')+'</div></div>';
 }
 function kstep(b,d){
   const k=b.closest('.kst'),ss=k.querySelectorAll('.ks');let i=+k.dataset.i+d;
   if(i>=ss.length)i=0;if(i<0)i=0;k.dataset.i=i;
   ss.forEach((e,j)=>e.hidden=(j!==i));
   k.querySelector('.kdots').textContent=(i+1)+' / '+ss.length;
-  const bs=k.querySelectorAll('.kb');bs[0].disabled=(i===0);bs[1].textContent=(i===ss.length-1)?'🔁 Again':'Next ▶';
+  const bs=k.querySelectorAll('.kb');bs[0].disabled=(i===0);bs[1].textContent=(i===ss.length-1)?'Start again':'Next';
 }
 function kans(b,i,ok){
   const q=b.closest('.kq'),bs=q.querySelectorAll('.kqo button');
@@ -273,7 +273,7 @@ function kidhtml(n){
   if(!n.kid&&!n.kidsteps&&!n.kidfig&&!n.kidq)return '';
   let h='<div class="kid"><div class="kidh">Picture explanation</div>';
   if(n.kidsteps&&n.kidsteps.length){
-    h+='<div class="kst" data-i="0">'+n.kidsteps.map((s,i)=>'<div class="ks"'+(i?' hidden':'')+'>'+s[0]+'<p class="kcap">'+esc(s[1]||'')+'</p></div>').join('')+'<div class="knav"><button class="kb" disabled onclick="kstep(this,-1)">◀ Back</button><span class="kdots">1 / '+n.kidsteps.length+'</span><button class="kb" onclick="kstep(this,1)">Next ▶</button></div></div>';
+    h+='<div class="kst" data-i="0">'+n.kidsteps.map((s,i)=>'<div class="ks"'+(i?' hidden':'')+'>'+s[0]+'<p class="kcap">'+esc(s[1]||'')+'</p></div>').join('')+'<div class="knav"><button class="kb" disabled onclick="kstep(this,-1)">Back</button><span class="kdots">1 / '+n.kidsteps.length+'</span><button class="kb" onclick="kstep(this,1)">Next</button></div></div>';
   }else if(n.kidfig&&n.kidfig.length)h+='<div class="kidfig">'+n.kidfig.join('')+'</div>';
   if(n.kid)h+='<p class="kidt">'+esc(n.kid)+'</p>';
   if(n.kidq){const q=n.kidq;h+='<div class="kq" data-ex="'+esc(q[3]||'').replace(/"/g,'&quot;')+'"><div class="kqq">Quick question: '+esc(q[0])+'</div><div class="kqo">'+q[1].map((o,i)=>'<button onclick="kans(this,'+i+','+q[2]+')">'+esc(o)+'</button>').join('')+'</div><div class="kqf" hidden></div></div>'}
