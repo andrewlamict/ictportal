@@ -69,6 +69,36 @@ svg{display:block}
 .qs details{border:1px solid var(--line);border-radius:8px;padding:6px 10px;background:var(--bg)}
 .qs summary{cursor:pointer;font-size:14px}
 .qctx{margin-top:8px;padding:8px 10px;border:1px solid var(--line);border-radius:8px;background:var(--b1t);font-size:13px;overflow-x:auto}.qcl{font-size:11px;font-weight:700;letter-spacing:.04em;text-transform:uppercase;opacity:.7;margin-bottom:4px}.qctx p{margin:4px 0}.qctx p.qsub{opacity:.85;font-style:italic}.qctx table.qt{border-collapse:collapse;margin:6px 0;font-family:var(--mono);font-size:12.5px;background:var(--card,transparent)}.qctx table.qt td,.qctx table.qt th{border:1px solid var(--line);padding:2px 8px;text-align:left;white-space:nowrap}.qctx table.qt th{background:rgba(127,127,127,.15);font-weight:600}.qctx table.qt td.dk,.qctx table.qt th.dk{background:#222}.qctx img{max-width:100%;height:auto;border:1px solid var(--line);border-radius:6px;margin:4px 0;background:#fff}.qctx ul.opts{list-style:none;padding:0;margin:6px 0 0}.qctx ul.opts li{margin:2px 0}.qctx ul.opts li table{margin:4px 0}
+.kid{margin:6px 0 12px;padding:12px 14px;border-radius:14px;border:2px dashed #f59e0b;background:#fffbeb;color:#422006}.kid p{margin:6px 0 0;font-size:16px;line-height:1.5}.kidh{font-weight:800;font-size:13px;letter-spacing:.04em;text-transform:uppercase;color:#b45309}.kidfig{display:flex;flex-wrap:wrap;gap:10px;margin-top:6px}.kidfig svg{max-width:100%;height:auto;background:#fff;border-radius:10px}
+@media (prefers-color-scheme:dark){:root:not([data-theme="light"]) .kid{background:#3b2a0a;color:#fde68a;border-color:#d97706}:root:not([data-theme="light"]) .kidh{color:#fbbf24}}
+.qcard{border:1px solid var(--line);border-radius:14px;padding:12px 14px;margin:12px 0;background:var(--card,rgba(127,127,127,.05))}
+.qtop{display:flex;align-items:center;gap:8px;flex-wrap:wrap;margin-bottom:6px}
+.qtop .mk{margin-left:auto;font-size:12px;font-weight:700;border-radius:999px;padding:2px 10px;background:rgba(245,158,11,.18);color:#b45309}
+.qtext{line-height:1.7;font-size:15px;white-space:pre-line;margin:4px 0 6px}
+.qtext .qopt{display:block;margin:4px 0 0 4px;padding-left:2px}
+pre.sql{background:rgba(127,127,127,.13);border-radius:8px;padding:8px 12px;font-family:var(--mono);font-size:13px;line-height:1.55;white-space:pre-wrap;margin:8px 0}
+.showans{margin-top:10px;border-radius:999px;padding:7px 16px;border:1.5px solid var(--b1,#4f46e5);background:var(--b1t,#eef2ff);color:var(--b1,#4f46e5);font:inherit;font-weight:700;cursor:pointer}
+.showans:hover{filter:brightness(.96)}
+.qcard .ans{margin-top:10px;padding:10px 12px;border:0;border-left:4px solid #22c55e;border-radius:6px;background:rgba(34,197,94,.10);line-height:1.7;font-size:15px;white-space:pre-line}
+.qcard .ans[hidden]{display:none}
+.kid{margin:6px 0 14px;padding:12px 14px;border-radius:16px;border:2px dashed #f59e0b;background:#fffbeb;color:#422006}
+.kidh{font-weight:800;font-size:13px;letter-spacing:.04em;text-transform:uppercase;color:#b45309;margin-bottom:6px}
+.kidt{margin:8px 0 0;font-size:19px;line-height:1.5;font-weight:600}
+.kst .ks svg,.kidfig svg{max-width:100%;height:auto;background:#fff;border-radius:12px;display:block;margin:0 auto}
+.kcap{margin:6px 0 0;font-size:16px;line-height:1.45;text-align:center}
+.knav{display:flex;align-items:center;justify-content:center;gap:12px;margin-top:8px}
+.kb{border:0;border-radius:999px;padding:8px 18px;font:inherit;font-weight:800;font-size:15px;background:#f59e0b;color:#fff;cursor:pointer}
+.kb[disabled]{opacity:.35;cursor:default}
+.kdots{font-weight:700;color:#b45309}
+.kq{margin-top:12px;padding:10px 12px;border-radius:12px;background:#fff;border:2px solid #fde68a}
+.kqq{font-weight:800;font-size:16px;margin-bottom:8px}
+.kqo{display:flex;flex-wrap:wrap;gap:8px}
+.kqo button{border:2px solid #fbbf24;border-radius:14px;padding:8px 14px;font:inherit;font-size:16px;background:#fffbeb;color:#422006;cursor:pointer}
+.kqo button.ok{background:#bbf7d0;border-color:#22c55e}
+.kqo button.no{background:#fecaca;border-color:#ef4444}
+.kqf{margin-top:8px;font-size:16px;font-weight:700}
+.kidfig{display:flex;flex-wrap:wrap;gap:10px;margin-top:6px}
+@media (prefers-color-scheme:dark){:root:not([data-theme="light"]) .kid{background:#3b2a0a;color:#fde68a;border-color:#d97706}:root:not([data-theme="light"]) .kidh,:root:not([data-theme="light"]) .kdots{color:#fbbf24}:root:not([data-theme="light"]) .kq{background:#2a1f08;border-color:#92400e}:root:not([data-theme="light"]) .kqo button{background:#3b2a0a;color:#fde68a;border-color:#d97706}}
 .qid{font-family:var(--mono);font-weight:600;font-size:12px;background:var(--b1t);color:var(--b1);border-radius:6px;padding:1px 6px;margin-right:4px}
 .ans{margin-top:6px;padding-top:6px;border-top:1px dashed var(--line);font-size:14px;white-space:pre-line}
 .tip{margin-top:10px;padding:8px 12px;border-radius:8px;background:var(--b3t);color:var(--fg);max-width:80ch;font-size:14px}
@@ -99,6 +129,7 @@ ul.key{margin:8px 0 0;padding-left:20px;max-width:70ch;font-size:16px;font-weigh
 ul.key li{margin:3px 0}
 details.more{margin-top:10px}
 details.more>summary{cursor:pointer;color:var(--muted);font-size:13px}
+.ans img{max-width:100%;background:#fff;border-radius:8px;margin-top:6px;display:block}
 </style>
 <div class="wrap">
   <header>
@@ -182,15 +213,67 @@ function draw(){
   svg.parentNode.classList.toggle('dim',hotOnly);
 }
 function esc(s){return s.replace(/[&<>]/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;'}[c]))}
+function fmtq(t,isAns){
+  let s=String(t==null?'':t),mk='';
+  if(!isAns){s=s.replace(/\s*\((\d+)\s*marks?\)\s*$/i,(m,k)=>{mk='<span class="mk">'+k+' mark'+(k>1?'s':'')+'</span>';return ''})}
+  s=s.replace(/ \/ /g,'\n');
+  const cnt=(re)=>(s.match(re)||[]).length;
+  let pre='',sql='',post='';
+  const mm=!isAns&&s.match(/\b(SELECT\b[\s\S]*?\bFROM\b[\s\S]*?)(?=\.\s+[A-Z]|\?|\n|$)/);
+  if(mm){pre=s.slice(0,mm.index);sql=mm[1];post=s.slice(mm.index+mm[1].length);
+    sql=sql.replace(/\s+(FROM|WHERE|GROUP BY|HAVING|ORDER BY|LEFT JOIN|INNER JOIN|JOIN|UNION)\b/gi,'\n$1').replace(/\s+(AND|OR)\s+/g,' $1 ');
+  }else pre=s;
+  const lay=(x)=>{
+    if(!isAns){
+      if((x.match(/\s\(\d\)\s/g)||[]).length>=2)x=x.replace(/\s+(?=\(\d\)\s)/g,'\n');
+      if((x.match(/\s[A-D]\.\s/g)||[]).length>=3)x=x.replace(/\s+(?=[A-D]\.\s)/g,'\n');
+      if((x.match(/\s\([a-z]\)\s/g)||[]).length>=2)x=x.replace(/\s+(?=\([a-z]\)\s)/g,'\n');
+    }else{
+      const parts=x.split(/;\s+/);
+      if(parts.length>=3&&parts.every(p=>p.length<48))x=parts.join('\n');
+    }
+    return esc(x)};
+  let out=lay(pre.trim());
+  if(sql)out+='<pre class="sql">'+esc(sql.trim())+'</pre>'+(post.trim()?esc(post.trim()):'');
+  return {h:out,mk:mk};
+}
+function qcard(q){
+  const f=fmtq(q[1]),a=fmtq(q[2],true);
+  return '<div class="qcard"><div class="qtop"><span class="qid">'+esc(q[0])+'</span>'+f.mk+'</div><div class="qtext">'+f.h+'</div>'+(q[3]?'<div class="qctx"><div class="qcl">Given (question data)</div>'+q[3]+'</div>':'')+'<button class="showans" onclick="var a=this.nextElementSibling;a.hidden=!a.hidden;this.textContent=a.hidden?\'👀 Show answer\':\'🙈 Hide answer\'">👀 Show answer</button><div class="ans" hidden>'+a.h+(q[4]||'')+'</div></div>';
+}
+function kstep(b,d){
+  const k=b.closest('.kst'),ss=k.querySelectorAll('.ks');let i=+k.dataset.i+d;
+  if(i>=ss.length)i=0;if(i<0)i=0;k.dataset.i=i;
+  ss.forEach((e,j)=>e.hidden=(j!==i));
+  k.querySelector('.kdots').textContent=(i+1)+' / '+ss.length;
+  const bs=k.querySelectorAll('.kb');bs[0].disabled=(i===0);bs[1].textContent=(i===ss.length-1)?'🔁 Again':'Next ▶';
+}
+function kans(b,i,ok){
+  const q=b.closest('.kq'),bs=q.querySelectorAll('.kqo button');
+  bs.forEach(x=>x.classList.remove('ok','no'));
+  b.classList.add(i===ok?'ok':'no');if(i!==ok)bs[ok].classList.add('ok');
+  const f=q.querySelector('.kqf');f.hidden=false;f.textContent=(i===ok?'🎉 Yes! ':'🙈 Oops! ')+q.dataset.ex;
+}
+function kidhtml(n){
+  if(!n.kid&&!n.kidsteps&&!n.kidfig&&!n.kidq)return '';
+  let h='<div class="kid"><div class="kidh">🧒 Like you\'re 5</div>';
+  if(n.kidsteps&&n.kidsteps.length){
+    h+='<div class="kst" data-i="0">'+n.kidsteps.map((s,i)=>'<div class="ks"'+(i?' hidden':'')+'>'+s[0]+'<p class="kcap">'+esc(s[1]||'')+'</p></div>').join('')+'<div class="knav"><button class="kb" disabled onclick="kstep(this,-1)">◀ Back</button><span class="kdots">1 / '+n.kidsteps.length+'</span><button class="kb" onclick="kstep(this,1)">Next ▶</button></div></div>';
+  }else if(n.kidfig&&n.kidfig.length)h+='<div class="kidfig">'+n.kidfig.join('')+'</div>';
+  if(n.kid)h+='<p class="kidt">'+esc(n.kid)+'</p>';
+  if(n.kidq){const q=n.kidq;h+='<div class="kq" data-ex="'+esc(q[3]||'').replace(/"/g,'&quot;')+'"><div class="kqq">❓ '+esc(q[0])+'</div><div class="kqo">'+q[1].map((o,i)=>'<button onclick="kans(this,'+i+','+q[2]+')">'+esc(o)+'</button>').join('')+'</div><div class="kqf" hidden></div></div>'}
+  return h+'</div>';
+}
 function show(n){
   selected=n;
   let h=`<div class="dctl"><button class="dbtn" data-act="min" aria-label="Minimise this box" title="Minimise">&#8722;</button><button class="dbtn" data-act="close" aria-label="Close this box" title="Close">&#215;</button></div><h2>${esc(n.lines.join(' '))}${n.c?`<span class="pill">${n.c} past-paper question${n.c>1?'s':''}</span>`:'<span class="pill zero">no past-paper question yet</span>'}</h2>`;
   if(n.pg)h+=`<p class="pgline"><b>Revise in Book A1:</b> ${esc(n.pg)}</p>`;
+  h+=kidhtml(n);
   if(n.fig&&n.fig.length)h+='<div class="figs">'+n.fig.join('')+'</div>';
   if(n.key&&n.key.length)h+='<ul class="key">'+n.key.map(k=>'<li>'+esc(k)+'</li>').join('')+'</ul>';
   if(n.n){const full=`<p>${esc(n.n)}</p>`;h+=((n.fig&&n.fig.length)||(n.key&&n.key.length)?`<details class="more"><summary>More explanation</summary>${full}</details>`:full)}else h+='<p class="hint">Open this branch to see the points inside it.</p>';
   if(n.tip)h+=`<div class="tip"><b>Exam</b>${esc(n.tip)}</div>`;
-  if(n.qs&&n.qs.length){h+=`<div class="qs"><div class="qh">Questions on this topic (tap one to see the answer)</div>`+n.qs.map(q=>`<details><summary><span class="qid">${esc(q[0])}</span> ${esc(q[1])}</summary>${q[3]?`<div class="qctx"><div class="qcl">Given (question data)</div>${q[3]}</div>`:''}<div class="ans">${esc(q[2])}</div></details>`).join('')+`</div>`}
+  if(n.qs&&n.qs.length){h+=`<div class="qs"><div class="qh">Questions on this topic (read the question first, then tap “Show answer”)</div>`+n.qs.map(qcard).join('')+`</div>`}
   else if(n.kids.length&&n.tot){h+=`<p class="hint">${n.tot} question${n.tot>1?'s':''} sit in the boxes inside this branch. Open it and tap each box.</p>`}
   detail.hidden=false;detail.classList.remove('min');
   detail.innerHTML=h;
