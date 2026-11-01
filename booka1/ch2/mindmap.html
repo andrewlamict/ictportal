@@ -1,0 +1,181 @@
+<title>A1 Ch2 Mindmap</title>
+<meta name="claude:viewport-fit-sides" content="cover">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:wght@500;600&family=IBM+Plex+Sans:wght@400;500;600&family=Bricolage+Grotesque:opsz,wght@12..96,700&display=swap">
+<style>
+/* Layout: left-to-right branching map in a scroll pane, controls above, detail card below. */
+:root{
+  --bg:#f3f5f9; --panel:#ffffff; --fg:#14213d; --muted:#5b6784; --line:#cfd6e4; --hot:#d62839;
+  --b1:#1d4ed8; --b1t:#e3ebff; --b2:#0f766e; --b2t:#dcf5f1; --b3:#b45309; --b3t:#fdebd0;
+  --b4:#7e22ce; --b4t:#f0e2fd; --b5:#be185d; --b5t:#fde2ee; --b6:#3f6212; --b6t:#e8f3d1;
+  --root:#14213d; --rootfg:#ffffff;
+  --font:'IBM Plex Sans',system-ui,sans-serif; --mono:'IBM Plex Mono',ui-monospace,monospace; --disp:'Bricolage Grotesque','IBM Plex Sans',sans-serif;
+}
+@media (prefers-color-scheme:dark){:root:not([data-theme="light"]){
+  --bg:#0d1424; --panel:#16203a; --fg:#e6ebf7; --muted:#9aa7c7; --line:#2b3858; --hot:#ff6b7a;
+  --b1:#7aa2ff; --b1t:#18284f; --b2:#4fd1c1; --b2t:#0f2e2c; --b3:#f4b25c; --b3t:#3a2a12;
+  --b4:#c79bff; --b4t:#2b1c45; --b5:#ff8cbc; --b5t:#40182e; --b6:#b6dd72; --b6t:#26331a;
+  --root:#e6ebf7; --rootfg:#0d1424; color-scheme:dark}}
+:root[data-theme="dark"]{
+  --bg:#0d1424; --panel:#16203a; --fg:#e6ebf7; --muted:#9aa7c7; --line:#2b3858; --hot:#ff6b7a;
+  --b1:#7aa2ff; --b1t:#18284f; --b2:#4fd1c1; --b2t:#0f2e2c; --b3:#f4b25c; --b3t:#3a2a12;
+  --b4:#c79bff; --b4t:#2b1c45; --b5:#ff8cbc; --b5t:#40182e; --b6:#b6dd72; --b6t:#26331a;
+  --root:#e6ebf7; --rootfg:#0d1424; color-scheme:dark}
+body{background:var(--bg);color:var(--fg);font-family:var(--font);font-size:15px;line-height:1.5;
+  padding-block:20px 40px;padding-left:max(16px,env(safe-area-inset-left,0px));padding-right:max(16px,env(safe-area-inset-right,0px))}
+.wrap{max-width:1400px;margin:0 auto;display:flex;flex-direction:column;gap:14px}
+header{display:flex;flex-wrap:wrap;gap:6px 18px;align-items:baseline;justify-content:space-between}
+.kicker{font-family:var(--mono);font-size:12px;letter-spacing:.08em;text-transform:uppercase;color:var(--muted)}
+h1{font-family:var(--disp);font-size:clamp(24px,4vw,36px);line-height:1.1;margin:2px 0 0;text-wrap:balance}
+.sub{color:var(--muted);max-width:60ch;margin:6px 0 0}
+.bar{display:flex;flex-wrap:wrap;gap:8px 10px;align-items:center}
+button{font:inherit;font-size:13px;color:var(--fg);background:var(--panel);border:1px solid var(--line);border-radius:8px;padding:6px 12px;cursor:pointer}
+button:hover{border-color:var(--fg)}
+button[aria-pressed="true"]{background:var(--hot);border-color:var(--hot);color:#fff}
+button:focus-visible,.node:focus-visible{outline:2px solid var(--fg);outline-offset:2px}
+.legend{display:flex;flex-wrap:wrap;gap:6px 16px;font-size:13px;color:var(--muted);align-items:center}
+.legend .pill{font-family:var(--mono);font-size:11px;font-weight:600;background:var(--hot);color:#fff;border-radius:99px;padding:1px 7px}
+.legend .sw{display:inline-block;width:14px;height:14px;border-radius:4px;vertical-align:-2px;margin-right:5px}
+.pane{background:var(--panel);border:1px solid var(--line);border-radius:14px;overflow-x:auto;overflow-y:hidden}
+svg{display:block}
+.link{fill:none;stroke-width:2;opacity:.55}
+.node{cursor:pointer}
+.node rect{stroke-width:1.5;transition:opacity .15s}
+.node text{font-family:var(--font);font-size:13px;font-weight:500;pointer-events:none}
+.node.hotn text{font-weight:600}
+.node text.pgtag{font-family:var(--mono);font-size:11px;font-weight:500;opacity:.85}
+.node .badge rect{fill:var(--hot);stroke:none}
+.node .badge text{fill:#fff;font-family:var(--mono);font-size:11px;font-weight:600}
+.node .tog circle{fill:var(--panel);stroke-width:1.5}
+.node .tog text{font-family:var(--mono);font-size:12px;font-weight:600;fill:var(--fg)}
+.dim .node.cold{opacity:.22}
+.dim .link.cold{opacity:.12}
+.root rect{fill:var(--root);stroke:none}
+.root text{fill:var(--rootfg);font-family:var(--disp);font-size:16px;font-weight:700}
+.detail{background:var(--panel);border:1px solid var(--line);border-radius:14px;padding:14px 18px;min-height:72px;position:sticky;bottom:max(8px,env(safe-area-inset-bottom,0px));z-index:5;box-shadow:0 -6px 18px rgba(20,33,61,.14);max-height:52vh;overflow:auto}
+.detail h2{font-family:var(--disp);font-size:20px;margin:0 0 4px;display:flex;gap:10px;align-items:center;flex-wrap:wrap}
+.detail h2 .pill{font-family:var(--mono);font-size:12px;font-weight:600;background:var(--hot);color:#fff;border-radius:99px;padding:1px 9px}
+.detail p{margin:6px 0 0;max-width:80ch;white-space:pre-line}
+.detail .hint{color:var(--muted)}
+.detail .pgline{margin:0 0 8px;font-family:var(--mono);font-size:13px;color:var(--fg)}
+.detail .pgline b{font-family:var(--font);font-weight:600}
+.detail h2 .pill.zero{background:var(--line);color:var(--muted)}
+.dctl{float:right;display:flex;gap:6px;margin:-2px 0 6px 10px}
+.dbtn{width:32px;height:32px;padding:0;font-size:20px;line-height:1;border-radius:8px}
+.detail.min{max-height:none;overflow:visible;padding-block:8px}
+.detail.min>*:not(.dctl):not(h2){display:none}
+.detail.min h2{margin:0;font-size:16px}
+.qs{margin-top:12px;display:flex;flex-direction:column;gap:6px;max-width:90ch}
+.qh{font-family:var(--mono);font-size:11px;letter-spacing:.06em;text-transform:uppercase;color:var(--muted)}
+.qs details{border:1px solid var(--line);border-radius:8px;padding:6px 10px;background:var(--bg)}
+.qs summary{cursor:pointer;font-size:14px}
+.qid{font-family:var(--mono);font-weight:600;font-size:12px;background:var(--b1t);color:var(--b1);border-radius:6px;padding:1px 6px;margin-right:4px}
+.ans{margin-top:6px;padding-top:6px;border-top:1px dashed var(--line);font-size:14px;white-space:pre-line}
+.tip{margin-top:10px;padding:8px 12px;border-radius:8px;background:var(--b3t);color:var(--fg);max-width:80ch;font-size:14px}
+.tip b{font-family:var(--mono);font-size:11px;letter-spacing:.06em;text-transform:uppercase;color:var(--b3);margin-right:6px}
+code,.m{font-family:var(--mono);font-size:.92em}
+.backlink{display:inline-block;margin-bottom:8px;font-family:var(--mono);font-size:12px;letter-spacing:.06em;text-transform:uppercase;color:var(--muted);text-decoration:none}
+.backlink:hover{color:var(--fg);text-decoration:underline}
+@media (prefers-reduced-motion:reduce){.node rect{transition:none}}
+</style>
+<div class="wrap">
+  <header>
+    <div>
+      
+      <a class="backlink" href="../../index.html#concepts-book-a1">&larr; Back to Book A1</a><div class="kicker">Book A1 · Chapter 2</div>
+      <h1>Data Control and Data Organisation</h1>
+      <p class="sub">Every concept in the chapter, with each past-paper question attached to the topic it tests.</p>
+    </div>
+    <div class="bar">
+      <button id="hotBtn" aria-pressed="false">Show topics with 8+ questions only</button>
+      <button id="expBtn">Expand all</button>
+      <button id="colBtn">Collapse all</button>
+    </div>
+  </header>
+  <div class="legend">
+    <span><b style="font-family:var(--mono);font-size:12px">pp.34–35</b> page numbers in Book A1 to revise this topic</span>
+    <span><span class="pill">×12</span> number of past-paper questions on this topic, all listed with answers when you tap the box</span>
+    <span><span class="sw" style="background:var(--hot)"></span>red outline = 8 or more questions</span>
+    <span>Tap a box to read the key points. Tap + / − to open or close a branch.</span>
+  </div>
+  <div class="pane" id="pane"><svg id="svg" role="img" aria-label="Data Control and Data Organisation mind map"></svg></div>
+  <div class="detail" id="detail" aria-live="polite"><p class="hint">Tap any box on the map to see what to remember and every past-paper question on it.</p></div>
+</div>
+<script>
+const DATA = {"t": "A1 Ch.2\nData Control and\nData Organisation", "ch": [{"t": "2.1 Data\nhierarchy", "n": "Data is stored in levels. Each higher level is a collection of the level below it.", "ch": [{"t": "Field", "n": "Stores one attribute of an entity, e.g. a student's English name. It can hold any data type.", "pg": "pp.30–31"}, {"t": "Record", "n": "A collection of fields about one entity, e.g. student ID, name, sex, class and class number.", "pg": "pp.30–31"}, {"t": "File (table)", "n": "A collection of records with the same record structure, e.g. a table of 100 students.", "pg": "pp.30–31"}, {"t": "Database", "n": "A collection of related files, e.g. tables of students, teachers, classrooms and class schedules.", "pg": "pp.30–31"}, {"t": "Database vs\nspreadsheet", "n": "For a large amount of data a database is usually better. A database management system (DBMS) lets you organise, store and retrieve data efficiently, with a graphical user interface (GUI).", "pg": "pp.30–31"}], "pg": "pp.30–31"}, {"t": "2.2 Data control", "n": "Data control ensures that input data is valid and accurate so the analysis is reliable. Unreliable input gives useless output: garbage in, garbage out (GIGO).", "ch": [{"t": "Input errors", "n": "Data can be wrong when it comes in by manual entry, network transmission or scanners.", "ch": [{"t": "Data source error", "n": "The source gives incorrect data, e.g. an email address that does not exist. Fix: send an activation code to that address.", "pg": "pp.32–33"}, {"t": "Transcription error", "n": "Data is misread, misheard or mistyped, e.g. OCR reads capital I as lowercase l or number 1.", "pg": "pp.32–33"}, {"t": "Transposition error", "n": "Data is put in the wrong place or order, e.g. two adjacent digits reversed so $15 becomes $51.", "pg": "pp.32–33"}], "pg": "pp.32–33"}, {"t": "Good input design", "n": "Drop-down lists and calendar boxes reduce input errors and input time, avoid impossible dates and are user-friendly. They do not make input error-free.", "tip": "MC trap: 'ensures that the input is error-free' is wrong. CAPTCHA and re-entering passwords are human checks (verification).", "qs": [["2012pp-5(a)(i)", "How can drop-down lists on the web page help with data input? (1 mark)", "It can minimise input errors."], ["2015-22", "A drop-down list is used instead of a text box. What are the major benefits? (1) decrease input time (2) reduce input errors (3) allow more input words", "A. (1) and (2) only."], ["2017-2", "Benefits of method 1 (calendar box) over method 2 (typing the date)? (1) reduces input errors (2) more user-friendly (3) detects errors by parity checking", "A. (1) and (2) only."], ["2022-3", "Advantages of a calendar box over a text box? (1) avoids impossible dates (2) input is error-free (3) user-friendly", "B. (1) and (3) only."], ["2015-12", "During data input, which can minimise input errors? (1) two's complement (2) double entry (3) type check", "D. (2) and (3) only."], ["2012sp-5(b)(i)", "Many users enter wrong user numbers. Suggest two ways to improve the system design. (2 marks)", "Ask users to retype the number; show it again to confirm; calculate a check digit; enter user number and password on different pages; limit the length of input; data-type check; saved username (any two)."]], "pg": "pp.34–35"}, {"t": "Data validation\n(by computer)", "n": "The computer checks that data is reasonable. A passed check does not prove the data is correct. Describe the check AND say what it tests in that field.", "tip": "Typical SQ: a table is given (HKID, class code, quota, due date) and you name the check for one field. Accepted names include format, length, presence, unique, data type, range and fixed value.", "qs": [["2019-11", "Online registration form: which is involved? (1) data verification (2) data compression (3) data validation", "C. (1) and (3) only."], ["2014-1(a)(ii)", "POS system: apply validation checks to the quantity input. Give two examples. (2 marks)", "Check the input is a non-negative number / a whole number / an integer."], ["2020-1(a)", "STUDENT table: each CODE is a class name and class number (e.g. 1A01). Describe a validation check for CODE. (1 mark)", "Format check / length check / presence check / unique check, or a proper description."], ["2022sp-8(a)", "Same CODE question as 2020-1(a). (1 mark)", "Format check / data type check / length check / presence check / unique check, with a proper description."], ["2013-4(a)(ii)", "LOAN table: suggest a validation check on DUEDATE and on FINE. (2 marks)", "DUEDATE must not be earlier than LOANDATE (consistency). FINE must be a non-negative number (range)."], ["2017-4(b)", "Give two kinds of validation checks on HKID that John should carry out. (2 marks)", "Format / character / data type check at each position; length check; check digit; uniqueness check (any two)."], ["2018-4(c)(ii)", "ACT table: QUOTA stores the quota of each activity. Suggest two validation checks. (2 marks)", "Type check (number), range check, presence check."], ["2012pp-5(a)(ii)", "Two validation rules on date input: give two different sets of invalid data to show why the rules are needed. (2 marks)", "Unavailable date (before 1-7-2008 or after 30-9-2010); illogical date range (from 1-1-2010 to 1-1-2009); invalid date (30-2-2008). Any two."], ["2024-1(a)(iii)", "Spreadsheet SIGNIN column holds 1 or 0. Besides checking the fields are non-empty, describe a suitable validation for D2:D81. (1 mark)", "Fixed value check / type check / range check. Not accepted: format, presence, length check."], ["2024-35", "Slider puzzle on a login screen: what is its purpose? (1) check login information is correct (2) verify the login is by a human (3) make sure the device has a touch screen", "B. (2) only (a check that the user is human)."]], "ch": [{"t": "Presence check", "n": "A required field must not be empty, e.g. username, an applicant's name.", "pg": "pp.34–35"}, {"t": "Fixed value check", "n": "Value must be one of a fixed list, e.g. sex must be M or F.", "pg": "pp.34–35"}, {"t": "Data type check", "n": "Value must be the right type, e.g. age or quantity must be a number / whole number.", "pg": "pp.34–35"}, {"t": "Range check", "n": "Value must lie between limits, e.g. marks 0 to 100, FINE non-negative.", "pg": "pp.34–35"}, {"t": "Length check", "n": "Value must have the right number of characters, e.g. 8 digits for an ID.", "pg": "pp.34–35"}, {"t": "Format check", "n": "Value must follow a pattern, e.g. class code like 1A01, an email must contain @.", "pg": "pp.34–35"}, {"t": "Consistency check", "n": "Two fields must agree, e.g. DUEDATE not earlier than LOANDATE.", "pg": "pp.34–35"}, {"t": "Uniqueness check", "n": "No two records may have the same value, e.g. account ID.", "pg": "pp.34–35"}, {"t": "Check digit", "n": "An extra digit worked out from the other digits (e.g. the digit sum must be divisible by 10, 7 or 6). It detects a wrong digit or swapped digits, but it cannot find every error and cannot correct errors.", "tip": "Calculation: add the digits and test the rule. Purpose answer: it validates that the number is legitimate. 'Verify' and 'check whether there is an error' were not accepted.", "qs": [["2015-2(a)(ii)", "Last digit of membership number is a check digit. What is its use? (1 mark)", "Validate the digits of the membership number (a legitimate number). Not accepted: 'verify the number', 'check whether there is an error'."], ["2021-4(b)(i)", "IDNO digits must add up to a multiple of 7. Which is valid: 46300, 10409 or 10205?", "10409 (1+0+4+0+9 = 14)."], ["2018-4(c)(i)", "CODE: the sum of five digits must be divisible by 10. Which of the five values is invalid?", "10102 (digit sum 4)."], ["2020-1", "HKID A123456(3) wrongly entered as A213456(3). What helps detect this? (1) range check (2) input twice (3) check digit", "C. (2) and (3) only."], ["2014-2", "Which input errors can the HKID check digit usually find? (1) using another person's number (2) swapping two digits (3) a wrong digit", "C. (2) and (3) only."], ["2016-5", "6-digit code, last digit is the check digit, sum of all 6 digits divisible by 10. Which is valid? 246822 / 246824 / 246826 / 246828", "D. 246828 (sum 30)."], ["2012-11", "Which statement about a check digit is correct?", "B. The check digit cannot find all errors."]], "pg": "pp.36–37"}, {"t": "Parity check", "n": "One extra parity bit is added so the number of 1s is even (even parity) or odd (odd parity). It detects a single flipped bit during transmission. Count the 1s in all the bits, including the parity bit.", "tip": "Find which received code breaks the rule. Work out the parity from the correct example first.", "qs": [["2023-4(d)(i)", "Robot commands are 5-bit codes. An error bit may occur in transmission. How can this be checked? (1 mark)", "Add a parity bit / use a checksum / transmit twice and compare."], ["2022-1", "Three sequences (0101 0111, 1101 0101, 1110 1011), each with a parity bit; two are corrupted. Which pair and which parity?", "A. First and second corrupted, even parity (the first two have 5 ones, the third has 6)."], ["2015-1", "10010011 is received without error, last bit is parity. Which received code has an error? 00111111 / 10000010 / 10011011 / 00110101", "C. 10011011 (5 ones, but the rule is even parity)."], ["2013-9", "Parity check in data transmission: which received code is invalid? 0101 0101 / 1000 0100 / 1111 0001 / 0000 0011", "C. 1111 0001 (5 ones, odd, while the others are even)."], ["2022sp-2", "Same question as 2013-9.", "C. 1111 0001."], ["2019-10", "8-bit data, last bit is parity. Which received data has an error? 0010 0010 / 1111 0000 / 0011 0011 / 1010 0111", "D. 1010 0111 (5 ones)."]], "pg": "pp.38–39"}], "pg": "pp.34–35"}, {"t": "Data verification\n(by humans)", "n": "People confirm that the data typed in matches the source. Verification confirms accuracy, which validation cannot promise.", "tip": "If wrong data still gets in after validation, the answer is verification: double entry or printout for checking.", "qs": [["2021-4(b)(ii)", "22012 was wrongly entered as 22102 in IDNO. Suggest a verification check. (1 mark)", "Double entry / two different people enter the number / print out for checking."], ["2018-4(c)(iii)", "Incorrect data can still be entered even with validation. Suggest a way to improve accuracy. (1 mark)", "Double entry, printout for checking (verification)."], ["2013-3", "A clerk types in exam marks from a mark sheet and prints them out. What should he do next?", "D. Check the printout against the mark sheet."], ["2017-7", "Purpose of re-entering a password when creating an email account?", "B. Data verification."], ["2022sp-3", "Same as 2017-7: re-entering the password.", "B. Data verification."], ["2021-9", "Purpose of asking a user to enter a password twice?", "B. Data verification."], ["2018-3", "Which is an example of data verification when changing an Intranet password?", "A. Input the new password twice."], ["2013-36", "Uses of 'Current password' when changing a password? (1) improves password strength (2) minimises typing errors (3) prevents other people changing the password", "D. (3) only."]], "ch": [{"t": "Input twice", "n": "One person enters the same data two times and the two copies are compared. Example: typing a new password twice.", "pg": "pp.42–43"}, {"t": "Double data entry", "n": "Two people enter the same data independently and the copies are compared.", "pg": "pp.42–43"}, {"t": "Proofreading", "n": "Print the data and compare it with the original, e.g. marks printout against the mark sheet.", "pg": "pp.42–43"}], "pg": "pp.40–41"}], "pg": "pp.32–43"}, {"t": "2.3 Functions of\ndatabase", "n": "A database organises, stores and retrieves data, and can check data with validation rules.", "ch": [{"t": "Organisation", "n": "Data follows the table structure. A good structure lets tables communicate and reduces data redundancy. Choose each field's data type wisely: a student ID with leading zeros must be text (string).", "pg": "pp.44–45"}, {"t": "Storage", "n": "Insert and update records with SQL or a GUI. Import files such as .csv (comma-separated values) to create many records quickly.", "pg": "pp.44–45"}, {"t": "Retrieval", "n": "Get specific data with SQL or a GUI, then sort by chosen fields.", "ch": [{"t": "SQL / GUI", "n": "SELECT * FROM STUDENT WHERE SEX = 'M' retrieves the male students; the GUI can show the same result.", "pg": "pp.44–45"}, {"t": "Indexing", "n": "An index table holds the indexed field (e.g. ENAME) and a pointer to the related record. The computer searches the small sorted index instead of the whole table, so retrieval is faster.", "pg": "pp.46–47"}], "pg": "pp.44–45"}, {"t": "Validation", "n": "Rules in the table: an applicant must provide a name, the sex must be M or F.", "pg": "pp.44–47"}], "pg": "pp.44–47"}, {"t": "2.4 File access\nmethod", "n": "The storage device decides how data is reached: sequentially or directly.", "ch": [{"t": "Sequential access", "n": "To reach the 5th item the computer processes items 1 to 4 first. Data is written from the start. Speed varies with where the data is, and on average is slower. Magnetic tape uses sequential access only.", "pg": "pp.48–49"}, {"t": "Direct access", "n": "Each storage position has a unique address, so the 5th item is reached without processing earlier items. Used by hard disk, USB flash drive, optical disc. Faster on average.", "pg": "pp.48–49"}], "pg": "pp.48–51"}], "pg": "pp.30–51"};
+const HOT = 8;
+const NS='http://www.w3.org/2000/svg';
+const FONT="500 13px 'IBM Plex Sans', system-ui, sans-serif";
+const cv=document.createElement('canvas').getContext('2d');
+const svg=document.getElementById('svg'), detail=document.getElementById('detail');
+let hotOnly=false, selected=null;
+function el(n,a,p){const e=document.createElementNS(NS,n);for(const k in a)e.setAttribute(k,a[k]);if(p)p.appendChild(e);return e}
+function prep(n,d,b){n.d=d;n.b=b;n.open=d<2;n.lines=n.t.split('\n');n.kids=n.ch||[];n.kids.forEach(k=>prep(k,d+1,d===0?(n.kids.indexOf(k)%6)+1:b));}
+prep(DATA,0,0);
+(function tot(n){n.tot=(n.qs?n.qs.length:0)+n.kids.reduce((a,k)=>a+tot(k),0);n.c=n.tot;if(n.d>0)n.hot=n.tot>=HOT;return n.tot})(DATA);
+function hotWithin(n){return !!n.hot||(n.kids||[]).some(hotWithin)}
+function measure(n){cv.font=n.d===0?"700 16px 'Bricolage Grotesque', sans-serif":FONT;
+  n.w=Math.ceil(Math.max(...n.lines.map(l=>cv.measureText(l).width)))+(n.d===0?36:26)+(n.c?(n.kids.length?42:34):0);
+  if(n.pg&&n.d>0){cv.font="500 11px 'IBM Plex Mono', monospace";n.w=Math.max(n.w,Math.ceil(cv.measureText(n.pg).width)+26+(n.c?(n.kids.length?42:34):0))}
+  n.h=n.lines.length*17+14+(n.pg&&n.d>0?14:0);n.kids.forEach(measure)}
+function layout(){
+  measure(DATA);
+  const colW=[];(function m(n){colW[n.d]=Math.max(colW[n.d]||0,n.w);n.kids.forEach(m)})(DATA);
+  const gapX=46,x0=[];let x=16;colW.forEach((w,i)=>{x0[i]=x;x+=w+gapX});
+  let y=16;
+  (function place(n){
+    n.x=x0[n.d];
+    const vis=n.open?n.kids:[];
+    if(!vis.length){n.y=y;y+=n.h+10}
+    else{vis.forEach(place);const f=vis[0],l=vis[vis.length-1];n.y=(f.y+f.h/2+l.y+l.h/2)/2-n.h/2}
+  })(DATA);
+  return {W:x-gapX+16,H:y+6};
+}
+function draw(){
+  const {W,H}=layout();svg.setAttribute('width',W);svg.setAttribute('height',H);svg.setAttribute('viewBox',`0 0 ${W} ${H}`);
+  svg.replaceChildren();
+  const gl=el('g',{},svg),gn=el('g',{},svg);
+  (function walk(n){
+    if(n.open)n.kids.forEach(k=>{
+      const x1=n.x+n.w,y1=n.y+n.h/2,x2=k.x,y2=k.y+k.h/2,mx=(x1+x2)/2;
+      const p=el('path',{d:`M${x1},${y1} C${mx},${y1} ${mx},${y2} ${x2},${y2}`,class:'link'+(hotWithin(k)?'':' cold'),stroke:`var(--b${k.b})`},gl);
+      walk(k)});
+    const g=el('g',{class:'node'+(n.d===0?' root':'')+(n.hot?' hotn':'')+(hotWithin(n)?'':' cold'),tabindex:0,role:'button','aria-label':n.lines.join(' ')+(n.kids.length?(n.open?' (open)':' (closed)'):'')},gn);
+    const r=el('rect',{x:n.x,y:n.y,width:n.w,height:n.h,rx:n.d===0?14:10},g);
+    if(n.d>0){r.setAttribute('fill',n.d===1?`var(--b${n.b})`:`var(--b${n.b}t)`);
+      r.setAttribute('stroke',n.hot?'var(--hot)':`var(--b${n.b})`);if(n.hot)r.setAttribute('stroke-width',3)}
+    n.lines.forEach((l,i)=>{const t=el('text',{x:n.x+(n.d===0?18:13),y:n.y+7+17*(i+1)-4,fill:n.d===1?'var(--bg)':'var(--fg)'},g);t.textContent=l;
+      if(n.d===1)t.setAttribute('style','fill:var(--panel)');
+      if(n.d===1&&document.documentElement.dataset.theme==='dark')t.setAttribute('style','fill:var(--bg)')});
+    if(n.pg&&n.d>0){const t=el('text',{x:n.x+13,y:n.y+7+17*n.lines.length+11,class:'pgtag',fill:n.d===1?'var(--panel)':'var(--muted)'},g);t.textContent=n.pg;if(n.d===1&&document.documentElement.dataset.theme==='dark')t.setAttribute('fill','var(--bg)')}
+    if(n.c){const bg=el('g',{class:'badge'},g),bx=n.x+n.w-(n.kids.length?46:38),by=n.y+n.h/2-9;
+      el('rect',{x:bx,y:by,width:30,height:18,rx:9},bg);const t=el('text',{x:bx+15,y:by+13,'text-anchor':'middle'},bg);t.textContent='×'+n.c}
+    if(n.kids.length){const tg=el('g',{class:'tog'},g),cx=n.x+n.w,cy=n.y+n.h/2;
+      el('circle',{cx,cy,r:9,stroke:`var(--b${n.b||1})`},tg);const t=el('text',{x:cx,y:cy+4,'text-anchor':'middle'},tg);t.textContent=n.open?'−':'+';
+      tg.addEventListener('click',e=>{e.stopPropagation();n.open=!n.open;draw()})}
+    const act=()=>{show(n)};
+    g.addEventListener('click',act);
+    g.addEventListener('keydown',e=>{if(e.key==='Enter'||e.key===' '){e.preventDefault();act()}else if((e.key==='ArrowRight'||e.key==='ArrowLeft')&&n.kids.length){n.open=e.key==='ArrowRight';draw()}});
+  })(DATA);
+  svg.parentNode.classList.toggle('dim',hotOnly);
+}
+function esc(s){return s.replace(/[&<>]/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;'}[c]))}
+function show(n){
+  selected=n;
+  let h=`<div class="dctl"><button class="dbtn" data-act="min" aria-label="Minimise this box" title="Minimise">&#8722;</button><button class="dbtn" data-act="close" aria-label="Close this box" title="Close">&#215;</button></div><h2>${esc(n.lines.join(' '))}${n.c?`<span class="pill">${n.c} past-paper question${n.c>1?'s':''}</span>`:'<span class="pill zero">no past-paper question yet</span>'}</h2>`;
+  if(n.pg)h+=`<p class="pgline"><b>Revise in Book A1:</b> ${esc(n.pg)}</p>`;
+  h+=(n.n?`<p>${esc(n.n)}</p>`:'<p class="hint">Open this branch to see the points inside it.</p>');
+  if(n.tip)h+=`<div class="tip"><b>Exam</b>${esc(n.tip)}</div>`;
+  if(n.qs&&n.qs.length){h+=`<div class="qs"><div class="qh">Questions on this topic (tap one to see the answer)</div>`+n.qs.map(q=>`<details><summary><span class="qid">${esc(q[0])}</span> ${esc(q[1])}</summary><div class="ans">${esc(q[2])}</div></details>`).join('')+`</div>`}
+  else if(n.kids.length&&n.tot){h+=`<p class="hint">${n.tot} question${n.tot>1?'s':''} sit in the boxes inside this branch. Open it and tap each box.</p>`}
+  detail.hidden=false;detail.classList.remove('min');
+  detail.innerHTML=h;
+}
+detail.addEventListener('click',e=>{const b=e.target.closest('.dbtn');if(!b)return;if(b.dataset.act==='close'){detail.hidden=true}else{detail.classList.toggle('min');b.innerHTML=detail.classList.contains('min')?'+':'&#8722;';b.title=detail.classList.contains('min')?'Expand':'Minimise';b.setAttribute('aria-label',b.title+' this box')}});
+document.addEventListener('keydown',e=>{if(e.key==='Escape')detail.hidden=true});
+function setAll(v,n=DATA){if(n.kids.length){n.open=v;n.kids.forEach(k=>setAll(v,k))}}
+document.getElementById('hotBtn').onclick=e=>{hotOnly=!hotOnly;e.currentTarget.setAttribute('aria-pressed',hotOnly);draw()};
+document.getElementById('expBtn').onclick=()=>{setAll(true);draw()};
+document.getElementById('colBtn').onclick=()=>{setAll(false);DATA.open=true;draw()};
+(document.fonts&&document.fonts.ready?document.fonts.ready:Promise.resolve()).then(draw);
+draw();
+</script>
