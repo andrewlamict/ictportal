@@ -64,6 +64,20 @@ svg{display:block}
 .detail.min{max-height:none;overflow:visible;padding-block:8px}
 .detail.min>*:not(.dctl):not(h2){display:none}
 .detail.min h2{margin:0;font-size:16px}
+.detail{display:flex;flex-direction:column;overflow:hidden;max-height:60vh;padding:10px 14px}
+.detail.big{max-height:90vh}
+.dhead{flex:none;display:flex;align-items:flex-start;gap:8px;padding-bottom:6px;margin-bottom:6px;border-bottom:1px solid var(--line)}
+.dhead h2{flex:1;margin:0;font-size:18px}
+.dhead .dctl{float:none;margin:0;flex:none}
+.dtabs{flex:none;display:flex;gap:6px;margin:0 0 8px}
+.dtab{padding:6px 14px;border-radius:99px;font-weight:600;font-size:14px}
+.dtab[aria-selected=true]{background:var(--hot);color:#fff;border-color:var(--hot)}
+.dbody{flex:1;min-height:0;overflow:auto;-webkit-overflow-scrolling:touch}
+.dbody[data-tab=q]>*:not(.qs){display:none}
+.dbody[data-tab=e] .qs{display:none}
+.detail.min{max-height:none}
+.detail.min>.dtabs,.detail.min>.dbody{display:none}
+.detail.min>.dhead{display:flex!important;border-bottom:0;margin:0;padding:0}
 .qs{margin-top:12px;display:flex;flex-direction:column;gap:6px;max-width:90ch}
 .qh{font-family:var(--mono);font-size:11px;letter-spacing:.06em;text-transform:uppercase;color:var(--muted)}
 .qs details{border:1px solid var(--line);border-radius:8px;padding:6px 10px;background:var(--bg)}
@@ -264,6 +278,28 @@ function kidhtml(n){
   if(n.kidq){const q=n.kidq;h+='<div class="kq" data-ex="'+esc(q[3]||'').replace(/"/g,'&quot;')+'"><div class="kqq">❓ '+esc(q[0])+'</div><div class="kqo">'+q[1].map((o,i)=>'<button onclick="kans(this,'+i+','+q[2]+')">'+esc(o)+'</button>').join('')+'</div><div class="kqf" hidden></div></div>'}
   return h+'</div>';
 }
+let lastTab='e';
+function reflow(){
+  const dctl=detail.querySelector('.dctl'),h2=detail.querySelector('h2'),qs=detail.querySelector('.qs');
+  if(!dctl||!h2)return;
+  const head=document.createElement('div');head.className='dhead';
+  const bigb=document.createElement('button');bigb.className='dbtn';bigb.dataset.act='big';bigb.title='Bigger / smaller';bigb.setAttribute('aria-label','Make this box bigger or smaller');bigb.innerHTML=detail.classList.contains('big')?'\u2921':'\u2922';
+  dctl.insertBefore(bigb,dctl.firstChild);
+  head.appendChild(h2);head.appendChild(dctl);
+  const body=document.createElement('div');body.className='dbody';
+  while(detail.firstChild)body.appendChild(detail.firstChild);
+  detail.appendChild(head);
+  if(qs){
+    const nq=qs.querySelectorAll('.qcard').length;
+    const tabs=document.createElement('div');tabs.className='dtabs';tabs.setAttribute('role','tablist');
+    tabs.innerHTML='<button class="dtab" data-t="e">\ud83d\udca1 Explain</button><button class="dtab" data-t="q">\ud83d\udcdd Questions'+(nq?' ('+nq+')':'')+'</button>';
+    detail.appendChild(tabs);
+    const set=t=>{lastTab=t;body.dataset.tab=t;body.scrollTop=0;tabs.querySelectorAll('.dtab').forEach(b=>b.setAttribute('aria-selected',b.dataset.t===t))};
+    tabs.addEventListener('click',e=>{const b=e.target.closest('.dtab');if(b)set(b.dataset.t)});
+    set(lastTab);
+  }
+  detail.appendChild(body);
+}
 function show(n){
   selected=n;
   let h=`<div class="dctl"><button class="dbtn" data-act="min" aria-label="Minimise this box" title="Minimise">&#8722;</button><button class="dbtn" data-act="close" aria-label="Close this box" title="Close">&#215;</button></div><h2>${esc(n.lines.join(' '))}${n.c?`<span class="pill">${n.c} past-paper question${n.c>1?'s':''}</span>`:'<span class="pill zero">no past-paper question yet</span>'}</h2>`;
@@ -276,9 +312,9 @@ function show(n){
   if(n.qs&&n.qs.length){h+=`<div class="qs"><div class="qh">Questions on this topic (read the question first, then tap “Show answer”)</div>`+n.qs.map(qcard).join('')+`</div>`}
   else if(n.kids.length&&n.tot){h+=`<p class="hint">${n.tot} question${n.tot>1?'s':''} sit in the boxes inside this branch. Open it and tap each box.</p>`}
   detail.hidden=false;detail.classList.remove('min');
-  detail.innerHTML=h;
+  detail.innerHTML=h;reflow();
 }
-detail.addEventListener('click',e=>{const b=e.target.closest('.dbtn');if(!b)return;if(b.dataset.act==='close'){detail.hidden=true}else{detail.classList.toggle('min');b.innerHTML=detail.classList.contains('min')?'+':'&#8722;';b.title=detail.classList.contains('min')?'Expand':'Minimise';b.setAttribute('aria-label',b.title+' this box')}});
+detail.addEventListener('click',e=>{const b=e.target.closest('.dbtn');if(!b)return;if(b.dataset.act==='close'){detail.hidden=true}else if(b.dataset.act==='big'){detail.classList.toggle('big');b.innerHTML=detail.classList.contains('big')?'\u2921':'\u2922'}else{detail.classList.toggle('min');b.innerHTML=detail.classList.contains('min')?'+':'&#8722;';b.title=detail.classList.contains('min')?'Expand':'Minimise';b.setAttribute('aria-label',b.title+' this box')}});
 document.addEventListener('keydown',e=>{if(e.key==='Escape')detail.hidden=true});
 function setAll(v,n=DATA){if(n.kids.length){n.open=v;n.kids.forEach(k=>setAll(v,k))}}
 document.getElementById('hotBtn').onclick=e=>{hotOnly=!hotOnly;e.currentTarget.setAttribute('aria-pressed',hotOnly);draw()};
