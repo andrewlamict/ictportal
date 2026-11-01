@@ -1,0 +1,181 @@
+<title>E Ch3 Mindmap</title>
+<meta name="claude:viewport-fit-sides" content="cover">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:wght@500;600&family=IBM+Plex+Sans:wght@400;500;600&family=Bricolage+Grotesque:opsz,wght@12..96,700&display=swap">
+<style>
+/* Layout: left-to-right branching map in a scroll pane, controls above, detail card below. */
+:root{
+  --bg:#f3f5f9; --panel:#ffffff; --fg:#14213d; --muted:#5b6784; --line:#cfd6e4; --hot:#d62839;
+  --b1:#1d4ed8; --b1t:#e3ebff; --b2:#0f766e; --b2t:#dcf5f1; --b3:#b45309; --b3t:#fdebd0;
+  --b4:#7e22ce; --b4t:#f0e2fd; --b5:#be185d; --b5t:#fde2ee; --b6:#3f6212; --b6t:#e8f3d1;
+  --root:#14213d; --rootfg:#ffffff;
+  --font:'IBM Plex Sans',system-ui,sans-serif; --mono:'IBM Plex Mono',ui-monospace,monospace; --disp:'Bricolage Grotesque','IBM Plex Sans',sans-serif;
+}
+@media (prefers-color-scheme:dark){:root:not([data-theme="light"]){
+  --bg:#0d1424; --panel:#16203a; --fg:#e6ebf7; --muted:#9aa7c7; --line:#2b3858; --hot:#ff6b7a;
+  --b1:#7aa2ff; --b1t:#18284f; --b2:#4fd1c1; --b2t:#0f2e2c; --b3:#f4b25c; --b3t:#3a2a12;
+  --b4:#c79bff; --b4t:#2b1c45; --b5:#ff8cbc; --b5t:#40182e; --b6:#b6dd72; --b6t:#26331a;
+  --root:#e6ebf7; --rootfg:#0d1424; color-scheme:dark}}
+:root[data-theme="dark"]{
+  --bg:#0d1424; --panel:#16203a; --fg:#e6ebf7; --muted:#9aa7c7; --line:#2b3858; --hot:#ff6b7a;
+  --b1:#7aa2ff; --b1t:#18284f; --b2:#4fd1c1; --b2t:#0f2e2c; --b3:#f4b25c; --b3t:#3a2a12;
+  --b4:#c79bff; --b4t:#2b1c45; --b5:#ff8cbc; --b5t:#40182e; --b6:#b6dd72; --b6t:#26331a;
+  --root:#e6ebf7; --rootfg:#0d1424; color-scheme:dark}
+body{background:var(--bg);color:var(--fg);font-family:var(--font);font-size:15px;line-height:1.5;
+  padding-block:20px 40px;padding-left:max(16px,env(safe-area-inset-left,0px));padding-right:max(16px,env(safe-area-inset-right,0px))}
+.wrap{max-width:1400px;margin:0 auto;display:flex;flex-direction:column;gap:14px}
+header{display:flex;flex-wrap:wrap;gap:6px 18px;align-items:baseline;justify-content:space-between}
+.kicker{font-family:var(--mono);font-size:12px;letter-spacing:.08em;text-transform:uppercase;color:var(--muted)}
+h1{font-family:var(--disp);font-size:clamp(24px,4vw,36px);line-height:1.1;margin:2px 0 0;text-wrap:balance}
+.sub{color:var(--muted);max-width:60ch;margin:6px 0 0}
+.bar{display:flex;flex-wrap:wrap;gap:8px 10px;align-items:center}
+button{font:inherit;font-size:13px;color:var(--fg);background:var(--panel);border:1px solid var(--line);border-radius:8px;padding:6px 12px;cursor:pointer}
+button:hover{border-color:var(--fg)}
+button[aria-pressed="true"]{background:var(--hot);border-color:var(--hot);color:#fff}
+button:focus-visible,.node:focus-visible{outline:2px solid var(--fg);outline-offset:2px}
+.legend{display:flex;flex-wrap:wrap;gap:6px 16px;font-size:13px;color:var(--muted);align-items:center}
+.legend .pill{font-family:var(--mono);font-size:11px;font-weight:600;background:var(--hot);color:#fff;border-radius:99px;padding:1px 7px}
+.legend .sw{display:inline-block;width:14px;height:14px;border-radius:4px;vertical-align:-2px;margin-right:5px}
+.pane{background:var(--panel);border:1px solid var(--line);border-radius:14px;overflow-x:auto;overflow-y:hidden}
+svg{display:block}
+.link{fill:none;stroke-width:2;opacity:.55}
+.node{cursor:pointer}
+.node rect{stroke-width:1.5;transition:opacity .15s}
+.node text{font-family:var(--font);font-size:13px;font-weight:500;pointer-events:none}
+.node.hotn text{font-weight:600}
+.node text.pgtag{font-family:var(--mono);font-size:11px;font-weight:500;opacity:.85}
+.node .badge rect{fill:var(--hot);stroke:none}
+.node .badge text{fill:#fff;font-family:var(--mono);font-size:11px;font-weight:600}
+.node .tog circle{fill:var(--panel);stroke-width:1.5}
+.node .tog text{font-family:var(--mono);font-size:12px;font-weight:600;fill:var(--fg)}
+.dim .node.cold{opacity:.22}
+.dim .link.cold{opacity:.12}
+.root rect{fill:var(--root);stroke:none}
+.root text{fill:var(--rootfg);font-family:var(--disp);font-size:16px;font-weight:700}
+.detail{background:var(--panel);border:1px solid var(--line);border-radius:14px;padding:14px 18px;min-height:72px;position:sticky;bottom:max(8px,env(safe-area-inset-bottom,0px));z-index:5;box-shadow:0 -6px 18px rgba(20,33,61,.14);max-height:52vh;overflow:auto}
+.detail h2{font-family:var(--disp);font-size:20px;margin:0 0 4px;display:flex;gap:10px;align-items:center;flex-wrap:wrap}
+.detail h2 .pill{font-family:var(--mono);font-size:12px;font-weight:600;background:var(--hot);color:#fff;border-radius:99px;padding:1px 9px}
+.detail p{margin:6px 0 0;max-width:80ch;white-space:pre-line}
+.detail .hint{color:var(--muted)}
+.detail .pgline{margin:0 0 8px;font-family:var(--mono);font-size:13px;color:var(--fg)}
+.detail .pgline b{font-family:var(--font);font-weight:600}
+.detail h2 .pill.zero{background:var(--line);color:var(--muted)}
+.dctl{float:right;display:flex;gap:6px;margin:-2px 0 6px 10px}
+.dbtn{width:32px;height:32px;padding:0;font-size:20px;line-height:1;border-radius:8px}
+.detail.min{max-height:none;overflow:visible;padding-block:8px}
+.detail.min>*:not(.dctl):not(h2){display:none}
+.detail.min h2{margin:0;font-size:16px}
+.qs{margin-top:12px;display:flex;flex-direction:column;gap:6px;max-width:90ch}
+.qh{font-family:var(--mono);font-size:11px;letter-spacing:.06em;text-transform:uppercase;color:var(--muted)}
+.qs details{border:1px solid var(--line);border-radius:8px;padding:6px 10px;background:var(--bg)}
+.qs summary{cursor:pointer;font-size:14px}
+.qid{font-family:var(--mono);font-weight:600;font-size:12px;background:var(--b1t);color:var(--b1);border-radius:6px;padding:1px 6px;margin-right:4px}
+.ans{margin-top:6px;padding-top:6px;border-top:1px dashed var(--line);font-size:14px;white-space:pre-line}
+.tip{margin-top:10px;padding:8px 12px;border-radius:8px;background:var(--b3t);color:var(--fg);max-width:80ch;font-size:14px}
+.tip b{font-family:var(--mono);font-size:11px;letter-spacing:.06em;text-transform:uppercase;color:var(--b3);margin-right:6px}
+code,.m{font-family:var(--mono);font-size:.92em}
+.backlink{display:inline-block;margin-bottom:8px;font-family:var(--mono);font-size:12px;letter-spacing:.06em;text-transform:uppercase;color:var(--muted);text-decoration:none}
+.backlink:hover{color:var(--fg);text-decoration:underline}
+@media (prefers-reduced-motion:reduce){.node rect{transition:none}}
+</style>
+<div class="wrap">
+  <header>
+    <div>
+      <a class="backlink" href="../../index.html#concepts-book-e">&larr; Back to Book E</a>
+      <div class="kicker">Book E · Chapter 3</div>
+      <h1>Intellectual Property</h1>
+      <p class="sub">Every concept in the chapter, with each past-paper question attached to the topic it tests.</p>
+    </div>
+    <div class="bar">
+      <button id="hotBtn" aria-pressed="false">Show topics with 4+ questions only</button>
+      <button id="expBtn">Expand all</button>
+      <button id="colBtn">Collapse all</button>
+    </div>
+  </header>
+  <div class="legend">
+    <span><b style="font-family:var(--mono);font-size:12px">pp.34–35</b> page numbers in Book E to revise this topic</span>
+    <span><span class="pill">×12</span> number of past-paper questions on this topic, all listed with answers when you tap the box</span>
+    <span><span class="sw" style="background:var(--hot)"></span>red outline = 4 or more questions</span>
+    <span>Tap a box to read the key points. Tap + / − to open or close a branch.</span>
+  </div>
+  <div class="pane" id="pane"><svg id="svg" role="img" aria-label="Intellectual Property mind map"></svg></div>
+  <div class="detail" id="detail" aria-live="polite"><p class="hint">Tap any box on the map to see what to remember and every past-paper question on it.</p></div>
+</div>
+<script>
+const DATA = {"t": "E Ch.3\nIntellectual\nProperty", "ch": [{"t": "3.1 Intellectual property", "n": "IP is a creation of the intellect, protected as intangible asset rights. Four main types: copyright (automatic, no registration), registered design, patent, trademark (a unique sign that distinguishes products or services); the last three need registration. Computer programs can be patented if they solve a technical problem.", "qs": [["MC", "Which behaviours may infringe intellectual property rights? (1) email with a virus to a friend (2) hacking into an online bank account (3) posting a scanned newspaper on a personal web site (4) uploading a TV programme video to the Internet", "Answer: D. (3) and (4) only"], ["MC", "Which of the following examples can effectively reduce theft of digital intellectual property? (1) digital watermarks (2) firewalls (3) updating virus definition files", "Answer: A. (1) only"]], "pg": "pp.82–83"}, {"t": "3.2 Copyright", "n": "Copyright protects the expression of an idea in tangible form (not the idea itself); it is given automatically to the author when the work is completed, no registration or '© All rights reserved' needed; in Hong Kong it generally lasts until 50 years after the author's death. Protected works: literary, musical, artistic, dramatic works, sound recordings, films, broadcasts, cable programmes, typographical arrangement of published editions. Owners have exclusive rights (copy, distribute, adapt, communicate to the public) and can sue for compensation. Creative Commons licences (BY, SA, NC, ND) let creators allow some uses. Copyright is given only to human authors (AI-created works are controversial).", "tip": "Copyright is automatic. A missing copyright notice does not mean the work is free to use.", "qs": [["2013-2(c)(ii)", "The school web site includes '© All rights reserved'. If the statement were removed, would the school still own the copyright? Explain. (2 marks)", "Yes. Copyright ownership does not require any registration or declaration."], ["2012-2(e)(i)", "The shopping web site posted Janice's photos. Explain briefly why this is unlawful. (2 marks)", "Janice owns the copyright of the photos. The company should acquire her permission and/or pay for the use."], ["MC", "Which statement about copyright is correct?", "Answer: D. It applies automatically to the owner of the original work."], ["MC", "Which statement about copyright protection in Hong Kong is correct?", "Answer: A. Ideas are not protected unless they are in the form of expressions or products."]], "pg": "pp.84–85"}, {"t": "3.3 Copyright infringement", "n": "Piracy: unauthorised use and reproduction of copyrighted works (photocopying, counterfeits) and Internet piracy (pirated music, games, cracked software via file-sharing and P2P). Impacts: creators lose income and motivation, pirates are punished and lose reputation, the country's reputation declines; pirated software brings malware and no technical support. Law: Copyright Ordinance makes commercial distribution a criminal offence (up to $50,000 fine per copy and 4 years' prison); non-commercial distribution is a crime if it harms the owner; owners can sue in a civil lawsuit for compensation. BT case (Big Crook): 3 months' prison for sharing films with BitTorrent. Customs and Excise Department takes criminal action even if the owner does not; Intellectual Property Department registers and promotes IP.", "tip": "Non-commercial use of copyrighted works is NOT automatically exempt.", "qs": [["2012-2(e)(ii)", "Janice's friends post her photos on their non-commercial web sites. Is this appropriate? Explain. (2 marks)", "No. They still need Janice's permission because non-commercial use of copyrighted works is not exempt."], ["2012pp-2(e)(ii)", "Susan installs a pirated copy of photo editing software. What is the possible legal consequence? (1 mark)", "She may be punished by fine / imprisonment."], ["MC", "Which actions will most likely infringe copyright in Hong Kong?", "Answer: C. Uploading TV programmes to a personal web site and sharing them with friends"], ["MC", "Which Internet activities are probably copyright infringements? (1) extracting a video from a DVD and uploading it (2) drawing a picture and sharing it by P2P (3) downloading newspaper articles and publishing a book", "Answer: B. (1) and (3) only"], ["MC", "Mary shares photos with Peter and John. Which will probably violate her IP rights? (1) Mary shares via BT (2) Peter sells the photos to an advertising company (3) Peter edits the photos with illegally copied software", "Answer: B. (2) only"], ["MC", "Mr Cheung downloads copyrighted photos from Ms Lee's site for his tutorial school without approval. Legal consequences? (1) compensate Ms Lee (2) criminal offence (3) close down his school", "Answer: A. (1) and (2) only"], ["MC", "Peter does these actions. Which are illegal? (1) BT to share his homework (2) BT to download copyrighted songs for his own use (3) copies bought software for best friends", "Answer: C. (2) and (3) only"], ["MC", "Peter installs a software package on two computers and does not infringe copyright because ____ (1) the licence allows such installation (2) the computers are in different countries (3) different operating systems", "Answer: A. (1) only"]], "pg": "pp.86–89"}, {"t": "3.4 Copyright in education", "n": "Copyright exceptions: fair dealing (limited use without permission) for private study, research, criticism, review, reporting current events and instruction (e.g. showing a few minutes of a documentary, using a small portion for discussion). Not exempt: copying the whole e-textbook, selling teaching notes, using too large a portion or for commercial purposes, using unlicensed software for assignments, distributing irrelevant copyrighted material in class.", "tip": "Fair dealing depends on the purpose, amount and effect on the market.", "pg": "pp.90–91"}, {"t": "3.5 Intellectual property protection", "n": "Users avoid infringement: obtain permission from the copyright holder, acknowledge the source, pay royalties, use CC-licensed works, read terms and conditions. Plagiarism = using another person's work without acknowledgement (unethical; copyright infringement is illegal). In-text citation and a reference list in academic writing; attribution to a CC image (title, creator, licence). Copyright holders protect work with copyright notices (e.g. © 2016), CC licences, access limits, watermarks, and by complaining to the Customs and Excise Department.", "tip": "Plagiarism is unethical; copyright infringement is illegal. They can overlap.", "qs": [["2019-2(b)(iii)", "Mr Li plans to post photos found online on his personal web site. Suggest TWO ways of handling the copyright issues. (2 marks)", "Ask for permission; use photos from sites that allow further publication; buy the right to use them."], ["2023-1(d)(ii)", "In terms of copyright, what should students do before using images in their project? Give two suggestions. (2 marks)", "Acknowledge / label the source; get the owner's consent; pay for the usage; use open source / Creative Commons images."], ["2017-2(d)", "Peter wants to use videos published on a web site for his work. What should he do to avoid infringement? (2 marks)", "Obtain permission from the copyright owners before using them and acknowledge the sources afterward."], ["2024-3(d)(ii)", "Suggest two measures to protect the copyright of the past papers. (2 marks)", "Add a watermark / digital signature; use a copyright notice; encrypt the PDF with a password / login page; disable print screen, right-click, download or save."], ["MC", "A photographer posts photos to a social media web site. What can protect his intellectual property?", "Answer: D. Digital watermark"], ["MC", "Appropriate measure(s) to protect IP rights of photos posted on the Internet? (1) digital signature (2) digital watermark (3) firewall", "Answer: B. (2) only"]], "pg": "pp.92–95"}, {"t": "3.6 Software licensing", "n": "Software types: commercial (paid), shareware (free trial, limited time/features, then pay), freeware (free of charge, may show ads, source code not given), open source (source code can be read, modified and redistributed; developers and users contribute; usually no technical support) and public domain (the only uncopyrighted software). Licences: single-user, multi-user / site licence, family plan; perpetual licence versus subscription (Software as a Service: web-hosted, free updates and support, needs Internet). Licence key (activation / product key), device-locked, user-locked, floating licence, hardware key (USB dongle).", "tip": "Freeware and open source are still copyrighted; only public domain is not.", "qs": [["2012pp-2(e)(i)", "Before installation, what copyright issue should Patrick know about? What document should he read? (2 marks)", "He should read the licence agreement to find out the rights and limitations of use of the software."], ["2014-3(c)(i)", "What is the major common characteristic of freeware or open source software? (1 mark)", "No purchase cost for non-commercial purpose."], ["2014-3(c)(ii)", "What is the major difference in terms of resources provided? (1 mark)", "Source code is given in open source software."], ["2014-3(c)(iii)", "Why do some people promote open source software instead of freeware? (2 marks)", "Developers and users (multiple parties) can contribute and develop the software continuously."], ["2015-3(c)", "Compare shareware and open source software: benefit and risk of each. (4 marks)", "Shareware benefit: try before purchase; frequent updates and support. Shareware risk: not free after the trial period; advanced functions only in the paid version; pop-up ads. Open source benefit: free to use, source code can be viewed and modified. Open source risk: usually no technical support; more prone to hacking; file formats may not be compatible."], ["2016-1(e)(ii)", "Although freeware and commercial software have similar functions, Amy decides to use commercial software. Give a reason. (1 mark)", "She can get more proper technical support."], ["2018-5(c)(i)", "Mary licenses her program as open source software. What can users do with it? Give two examples. (2 marks)", "Freely use the program; read and change the source code to improve the game; freely distribute the game."], ["2022-1(d)", "Peter considers installing open source software and freeware. State two differences. (2 marks)", "Source code of open source software can be seen, modified and redistributed (freeware does not give source code)."], ["MC", "Which of the following is not open source software?", "Answer: A. Internet Explorer"], ["MC", "Advantage(s) of open source software over freeware? (1) easier to set up (2) users can improve the source code and share it (3) cross-platform", "Answer: B. (2) only"], ["MC", "Which statement about open source software is correct?", "Answer: C. The source code can be copied, modified and redistributed freely."], ["MC", "Which statement about open source software is correct? (second paper)", "Answer: C. It can be modified and distributed freely."], ["MC", "What can Alice do when using open source software? (1) seek approval before using (2) amend the source code for her own use (3) amend it drastically and own the copyright of the entire software", "Answer: B. (2) only"], ["MC", "Which statements about open source software are correct? (1) everyone can use and modify the source code (2) developers are responsible for updates (3) everyone can rename and redistribute", "Answer: C. (1) and (3) only"], ["MC", "Mrs Lee does not allow her son to use BitTorrent freeware because (1) he may download illegal software (2) it is illegal to use the software (3) his school does not install it", "Answer: A. (1) only"], ["MC", "Major characteristic(s) of open source software? (1) developers set the selling price (2) users can change the source code (3) all functions usable during a trial", "Answer: B. (2) only"], ["MC", "Programs P (trial period), Q (changes source code), R (only some functions). Which is/are shareware?", "Answer: C. P and R only"], ["MC", "Why do people develop open source software? (1) earn money from selling (2) want more people to use their software (3) own the copyright", "Answer: B. (2) only"], ["MC", "Why do many companies prefer commercial software to open source software? (1) more bugs (2) better support from developers (3) cannot be modified", "Answer: B. (2) only"]], "pg": "pp.96–99"}, {"t": "3.7 Technology to protect IP", "n": "Licence key and hardware key control who can use software. Digital watermark: embeds data in images, video, text or other content; visible (clear to the user) or invisible (extracted with algorithms, survives cropping, resizing and compression); used for proving ownership and tracing leaks (different copy per recipient; Alibaba traced a leaked screenshot). Digital signature verifies the sender's identity and detects unauthorised modification and forgery (check the signer in file Properties). Always-online checks use encryption and decryption to prevent illegal modification and piracy.", "tip": "Watermark proves ownership; digital signature proves the source and that the file is unmodified.", "pg": "pp.100–104"}], "pg": "pp.80–111"};
+const HOT = 4;
+const NS='http://www.w3.org/2000/svg';
+const FONT="500 13px 'IBM Plex Sans', system-ui, sans-serif";
+const cv=document.createElement('canvas').getContext('2d');
+const svg=document.getElementById('svg'), detail=document.getElementById('detail');
+let hotOnly=false, selected=null;
+function el(n,a,p){const e=document.createElementNS(NS,n);for(const k in a)e.setAttribute(k,a[k]);if(p)p.appendChild(e);return e}
+function prep(n,d,b){n.d=d;n.b=b;n.open=d<2;n.lines=n.t.split('\n');n.kids=n.ch||[];n.kids.forEach(k=>prep(k,d+1,d===0?(n.kids.indexOf(k)%6)+1:b));}
+prep(DATA,0,0);
+(function tot(n){n.tot=(n.qs?n.qs.length:0)+n.kids.reduce((a,k)=>a+tot(k),0);n.c=n.tot;if(n.d>0)n.hot=n.tot>=HOT;return n.tot})(DATA);
+function hotWithin(n){return !!n.hot||(n.kids||[]).some(hotWithin)}
+function measure(n){cv.font=n.d===0?"700 16px 'Bricolage Grotesque', sans-serif":FONT;
+  n.w=Math.ceil(Math.max(...n.lines.map(l=>cv.measureText(l).width)))+(n.d===0?36:26)+(n.c?(n.kids.length?42:34):0);
+  if(n.pg&&n.d>0){cv.font="500 11px 'IBM Plex Mono', monospace";n.w=Math.max(n.w,Math.ceil(cv.measureText(n.pg).width)+26+(n.c?(n.kids.length?42:34):0))}
+  n.h=n.lines.length*17+14+(n.pg&&n.d>0?14:0);n.kids.forEach(measure)}
+function layout(){
+  measure(DATA);
+  const colW=[];(function m(n){colW[n.d]=Math.max(colW[n.d]||0,n.w);n.kids.forEach(m)})(DATA);
+  const gapX=46,x0=[];let x=16;colW.forEach((w,i)=>{x0[i]=x;x+=w+gapX});
+  let y=16;
+  (function place(n){
+    n.x=x0[n.d];
+    const vis=n.open?n.kids:[];
+    if(!vis.length){n.y=y;y+=n.h+10}
+    else{vis.forEach(place);const f=vis[0],l=vis[vis.length-1];n.y=(f.y+f.h/2+l.y+l.h/2)/2-n.h/2}
+  })(DATA);
+  return {W:x-gapX+16,H:y+6};
+}
+function draw(){
+  const {W,H}=layout();svg.setAttribute('width',W);svg.setAttribute('height',H);svg.setAttribute('viewBox',`0 0 ${W} ${H}`);
+  svg.replaceChildren();
+  const gl=el('g',{},svg),gn=el('g',{},svg);
+  (function walk(n){
+    if(n.open)n.kids.forEach(k=>{
+      const x1=n.x+n.w,y1=n.y+n.h/2,x2=k.x,y2=k.y+k.h/2,mx=(x1+x2)/2;
+      const p=el('path',{d:`M${x1},${y1} C${mx},${y1} ${mx},${y2} ${x2},${y2}`,class:'link'+(hotWithin(k)?'':' cold'),stroke:`var(--b${k.b})`},gl);
+      walk(k)});
+    const g=el('g',{class:'node'+(n.d===0?' root':'')+(n.hot?' hotn':'')+(hotWithin(n)?'':' cold'),tabindex:0,role:'button','aria-label':n.lines.join(' ')+(n.kids.length?(n.open?' (open)':' (closed)'):'')},gn);
+    const r=el('rect',{x:n.x,y:n.y,width:n.w,height:n.h,rx:n.d===0?14:10},g);
+    if(n.d>0){r.setAttribute('fill',n.d===1?`var(--b${n.b})`:`var(--b${n.b}t)`);
+      r.setAttribute('stroke',n.hot?'var(--hot)':`var(--b${n.b})`);if(n.hot)r.setAttribute('stroke-width',3)}
+    n.lines.forEach((l,i)=>{const t=el('text',{x:n.x+(n.d===0?18:13),y:n.y+7+17*(i+1)-4,fill:n.d===1?'var(--bg)':'var(--fg)'},g);t.textContent=l;
+      if(n.d===1)t.setAttribute('style','fill:var(--panel)');
+      if(n.d===1&&document.documentElement.dataset.theme==='dark')t.setAttribute('style','fill:var(--bg)')});
+    if(n.pg&&n.d>0){const t=el('text',{x:n.x+13,y:n.y+7+17*n.lines.length+11,class:'pgtag',fill:n.d===1?'var(--panel)':'var(--muted)'},g);t.textContent=n.pg;if(n.d===1&&document.documentElement.dataset.theme==='dark')t.setAttribute('fill','var(--bg)')}
+    if(n.c){const bg=el('g',{class:'badge'},g),bx=n.x+n.w-(n.kids.length?46:38),by=n.y+n.h/2-9;
+      el('rect',{x:bx,y:by,width:30,height:18,rx:9},bg);const t=el('text',{x:bx+15,y:by+13,'text-anchor':'middle'},bg);t.textContent='×'+n.c}
+    if(n.kids.length){const tg=el('g',{class:'tog'},g),cx=n.x+n.w,cy=n.y+n.h/2;
+      el('circle',{cx,cy,r:9,stroke:`var(--b${n.b||1})`},tg);const t=el('text',{x:cx,y:cy+4,'text-anchor':'middle'},tg);t.textContent=n.open?'−':'+';
+      tg.addEventListener('click',e=>{e.stopPropagation();n.open=!n.open;draw()})}
+    const act=()=>{show(n)};
+    g.addEventListener('click',act);
+    g.addEventListener('keydown',e=>{if(e.key==='Enter'||e.key===' '){e.preventDefault();act()}else if((e.key==='ArrowRight'||e.key==='ArrowLeft')&&n.kids.length){n.open=e.key==='ArrowRight';draw()}});
+  })(DATA);
+  svg.parentNode.classList.toggle('dim',hotOnly);
+}
+function esc(s){return s.replace(/[&<>]/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;'}[c]))}
+function show(n){
+  selected=n;
+  let h=`<div class="dctl"><button class="dbtn" data-act="min" aria-label="Minimise this box" title="Minimise">&#8722;</button><button class="dbtn" data-act="close" aria-label="Close this box" title="Close">&#215;</button></div><h2>${esc(n.lines.join(' '))}${n.c?`<span class="pill">${n.c} past-paper question${n.c>1?'s':''}</span>`:'<span class="pill zero">no past-paper question yet</span>'}</h2>`;
+  if(n.pg)h+=`<p class="pgline"><b>Revise in Book E:</b> ${esc(n.pg)}</p>`;
+  h+=(n.n?`<p>${esc(n.n)}</p>`:'<p class="hint">Open this branch to see the points inside it.</p>');
+  if(n.tip)h+=`<div class="tip"><b>Exam</b>${esc(n.tip)}</div>`;
+  if(n.qs&&n.qs.length){h+=`<div class="qs"><div class="qh">Questions on this topic (tap one to see the answer)</div>`+n.qs.map(q=>`<details><summary><span class="qid">${esc(q[0])}</span> ${esc(q[1])}</summary><div class="ans">${esc(q[2])}</div></details>`).join('')+`</div>`}
+  else if(n.kids.length&&n.tot){h+=`<p class="hint">${n.tot} question${n.tot>1?'s':''} sit in the boxes inside this branch. Open it and tap each box.</p>`}
+  detail.hidden=false;detail.classList.remove('min');
+  detail.innerHTML=h;
+}
+detail.addEventListener('click',e=>{const b=e.target.closest('.dbtn');if(!b)return;if(b.dataset.act==='close'){detail.hidden=true}else{detail.classList.toggle('min');b.innerHTML=detail.classList.contains('min')?'+':'&#8722;';b.title=detail.classList.contains('min')?'Expand':'Minimise';b.setAttribute('aria-label',b.title+' this box')}});
+document.addEventListener('keydown',e=>{if(e.key==='Escape')detail.hidden=true});
+function setAll(v,n=DATA){if(n.kids.length){n.open=v;n.kids.forEach(k=>setAll(v,k))}}
+document.getElementById('hotBtn').onclick=e=>{hotOnly=!hotOnly;e.currentTarget.setAttribute('aria-pressed',hotOnly);draw()};
+document.getElementById('expBtn').onclick=()=>{setAll(true);draw()};
+document.getElementById('colBtn').onclick=()=>{setAll(false);DATA.open=true;draw()};
+(document.fonts&&document.fonts.ready?document.fonts.ready:Promise.resolve()).then(draw);
+draw();
+</script>

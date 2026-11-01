@@ -1,0 +1,181 @@
+<title>E Ch1 Mindmap</title>
+<meta name="claude:viewport-fit-sides" content="cover">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:wght@500;600&family=IBM+Plex+Sans:wght@400;500;600&family=Bricolage+Grotesque:opsz,wght@12..96,700&display=swap">
+<style>
+/* Layout: left-to-right branching map in a scroll pane, controls above, detail card below. */
+:root{
+  --bg:#f3f5f9; --panel:#ffffff; --fg:#14213d; --muted:#5b6784; --line:#cfd6e4; --hot:#d62839;
+  --b1:#1d4ed8; --b1t:#e3ebff; --b2:#0f766e; --b2t:#dcf5f1; --b3:#b45309; --b3t:#fdebd0;
+  --b4:#7e22ce; --b4t:#f0e2fd; --b5:#be185d; --b5t:#fde2ee; --b6:#3f6212; --b6t:#e8f3d1;
+  --root:#14213d; --rootfg:#ffffff;
+  --font:'IBM Plex Sans',system-ui,sans-serif; --mono:'IBM Plex Mono',ui-monospace,monospace; --disp:'Bricolage Grotesque','IBM Plex Sans',sans-serif;
+}
+@media (prefers-color-scheme:dark){:root:not([data-theme="light"]){
+  --bg:#0d1424; --panel:#16203a; --fg:#e6ebf7; --muted:#9aa7c7; --line:#2b3858; --hot:#ff6b7a;
+  --b1:#7aa2ff; --b1t:#18284f; --b2:#4fd1c1; --b2t:#0f2e2c; --b3:#f4b25c; --b3t:#3a2a12;
+  --b4:#c79bff; --b4t:#2b1c45; --b5:#ff8cbc; --b5t:#40182e; --b6:#b6dd72; --b6t:#26331a;
+  --root:#e6ebf7; --rootfg:#0d1424; color-scheme:dark}}
+:root[data-theme="dark"]{
+  --bg:#0d1424; --panel:#16203a; --fg:#e6ebf7; --muted:#9aa7c7; --line:#2b3858; --hot:#ff6b7a;
+  --b1:#7aa2ff; --b1t:#18284f; --b2:#4fd1c1; --b2t:#0f2e2c; --b3:#f4b25c; --b3t:#3a2a12;
+  --b4:#c79bff; --b4t:#2b1c45; --b5:#ff8cbc; --b5t:#40182e; --b6:#b6dd72; --b6t:#26331a;
+  --root:#e6ebf7; --rootfg:#0d1424; color-scheme:dark}
+body{background:var(--bg);color:var(--fg);font-family:var(--font);font-size:15px;line-height:1.5;
+  padding-block:20px 40px;padding-left:max(16px,env(safe-area-inset-left,0px));padding-right:max(16px,env(safe-area-inset-right,0px))}
+.wrap{max-width:1400px;margin:0 auto;display:flex;flex-direction:column;gap:14px}
+header{display:flex;flex-wrap:wrap;gap:6px 18px;align-items:baseline;justify-content:space-between}
+.kicker{font-family:var(--mono);font-size:12px;letter-spacing:.08em;text-transform:uppercase;color:var(--muted)}
+h1{font-family:var(--disp);font-size:clamp(24px,4vw,36px);line-height:1.1;margin:2px 0 0;text-wrap:balance}
+.sub{color:var(--muted);max-width:60ch;margin:6px 0 0}
+.bar{display:flex;flex-wrap:wrap;gap:8px 10px;align-items:center}
+button{font:inherit;font-size:13px;color:var(--fg);background:var(--panel);border:1px solid var(--line);border-radius:8px;padding:6px 12px;cursor:pointer}
+button:hover{border-color:var(--fg)}
+button[aria-pressed="true"]{background:var(--hot);border-color:var(--hot);color:#fff}
+button:focus-visible,.node:focus-visible{outline:2px solid var(--fg);outline-offset:2px}
+.legend{display:flex;flex-wrap:wrap;gap:6px 16px;font-size:13px;color:var(--muted);align-items:center}
+.legend .pill{font-family:var(--mono);font-size:11px;font-weight:600;background:var(--hot);color:#fff;border-radius:99px;padding:1px 7px}
+.legend .sw{display:inline-block;width:14px;height:14px;border-radius:4px;vertical-align:-2px;margin-right:5px}
+.pane{background:var(--panel);border:1px solid var(--line);border-radius:14px;overflow-x:auto;overflow-y:hidden}
+svg{display:block}
+.link{fill:none;stroke-width:2;opacity:.55}
+.node{cursor:pointer}
+.node rect{stroke-width:1.5;transition:opacity .15s}
+.node text{font-family:var(--font);font-size:13px;font-weight:500;pointer-events:none}
+.node.hotn text{font-weight:600}
+.node text.pgtag{font-family:var(--mono);font-size:11px;font-weight:500;opacity:.85}
+.node .badge rect{fill:var(--hot);stroke:none}
+.node .badge text{fill:#fff;font-family:var(--mono);font-size:11px;font-weight:600}
+.node .tog circle{fill:var(--panel);stroke-width:1.5}
+.node .tog text{font-family:var(--mono);font-size:12px;font-weight:600;fill:var(--fg)}
+.dim .node.cold{opacity:.22}
+.dim .link.cold{opacity:.12}
+.root rect{fill:var(--root);stroke:none}
+.root text{fill:var(--rootfg);font-family:var(--disp);font-size:16px;font-weight:700}
+.detail{background:var(--panel);border:1px solid var(--line);border-radius:14px;padding:14px 18px;min-height:72px;position:sticky;bottom:max(8px,env(safe-area-inset-bottom,0px));z-index:5;box-shadow:0 -6px 18px rgba(20,33,61,.14);max-height:52vh;overflow:auto}
+.detail h2{font-family:var(--disp);font-size:20px;margin:0 0 4px;display:flex;gap:10px;align-items:center;flex-wrap:wrap}
+.detail h2 .pill{font-family:var(--mono);font-size:12px;font-weight:600;background:var(--hot);color:#fff;border-radius:99px;padding:1px 9px}
+.detail p{margin:6px 0 0;max-width:80ch;white-space:pre-line}
+.detail .hint{color:var(--muted)}
+.detail .pgline{margin:0 0 8px;font-family:var(--mono);font-size:13px;color:var(--fg)}
+.detail .pgline b{font-family:var(--font);font-weight:600}
+.detail h2 .pill.zero{background:var(--line);color:var(--muted)}
+.dctl{float:right;display:flex;gap:6px;margin:-2px 0 6px 10px}
+.dbtn{width:32px;height:32px;padding:0;font-size:20px;line-height:1;border-radius:8px}
+.detail.min{max-height:none;overflow:visible;padding-block:8px}
+.detail.min>*:not(.dctl):not(h2){display:none}
+.detail.min h2{margin:0;font-size:16px}
+.qs{margin-top:12px;display:flex;flex-direction:column;gap:6px;max-width:90ch}
+.qh{font-family:var(--mono);font-size:11px;letter-spacing:.06em;text-transform:uppercase;color:var(--muted)}
+.qs details{border:1px solid var(--line);border-radius:8px;padding:6px 10px;background:var(--bg)}
+.qs summary{cursor:pointer;font-size:14px}
+.qid{font-family:var(--mono);font-weight:600;font-size:12px;background:var(--b1t);color:var(--b1);border-radius:6px;padding:1px 6px;margin-right:4px}
+.ans{margin-top:6px;padding-top:6px;border-top:1px dashed var(--line);font-size:14px;white-space:pre-line}
+.tip{margin-top:10px;padding:8px 12px;border-radius:8px;background:var(--b3t);color:var(--fg);max-width:80ch;font-size:14px}
+.tip b{font-family:var(--mono);font-size:11px;letter-spacing:.06em;text-transform:uppercase;color:var(--b3);margin-right:6px}
+code,.m{font-family:var(--mono);font-size:.92em}
+.backlink{display:inline-block;margin-bottom:8px;font-family:var(--mono);font-size:12px;letter-spacing:.06em;text-transform:uppercase;color:var(--muted);text-decoration:none}
+.backlink:hover{color:var(--fg);text-decoration:underline}
+@media (prefers-reduced-motion:reduce){.node rect{transition:none}}
+</style>
+<div class="wrap">
+  <header>
+    <div>
+      <a class="backlink" href="../../index.html#concepts-book-e">&larr; Back to Book E</a>
+      <div class="kicker">Book E · Chapter 1</div>
+      <h1>Technological Innovations</h1>
+      <p class="sub">Every concept in the chapter, with each past-paper question attached to the topic it tests.</p>
+    </div>
+    <div class="bar">
+      <button id="hotBtn" aria-pressed="false">Show topics with 2+ questions only</button>
+      <button id="expBtn">Expand all</button>
+      <button id="colBtn">Collapse all</button>
+    </div>
+  </header>
+  <div class="legend">
+    <span><b style="font-family:var(--mono);font-size:12px">pp.34–35</b> page numbers in Book E to revise this topic</span>
+    <span><span class="pill">×12</span> number of past-paper questions on this topic, all listed with answers when you tap the box</span>
+    <span><span class="sw" style="background:var(--hot)"></span>red outline = 2 or more questions</span>
+    <span>Tap a box to read the key points. Tap + / − to open or close a branch.</span>
+  </div>
+  <div class="pane" id="pane"><svg id="svg" role="img" aria-label="Technological Innovations mind map"></svg></div>
+  <div class="detail" id="detail" aria-live="polite"><p class="hint">Tap any box on the map to see what to remember and every past-paper question on it.</p></div>
+</div>
+<script>
+const DATA = {"t": "E Ch.1\nTechnological\nInnovations", "ch": [{"t": "1.1 AI and data science", "n": "Big data, AI, data science and the IoT work together: the IoT collects data, big data stores it, AI and data science analyse it so people (or machines) can make data-driven decisions.", "ch": [{"t": "Big data and the 4Vs", "n": "Data collected from many sources (including IoT detectors, clicks, browsing history, cookies, cache) becomes big data once the volume is large enough to analyse as a whole. The 4Vs: volume (storing the growing data), variety (audio, image, video, text, location; integrating sources), velocity (high speed of generation and analysis) and veracity (uncertainty, accuracy and quality of data; e.g. 47% of email is spam).", "tip": "Big data = huge, varied, fast, uncertain data that is hard to process with ordinary database systems (e.g. human DNA, social-network behaviour). It is NOT more accurate by nature.", "qs": [["MC", "US Government 'big data' project: which are examples of big data? (1) Human DNA (2) User behaviour in a social networking web site (3) The total number of government officials in the US", "Answer: A. (1) and (2) only"], ["Book checkpoint (DSE 2014 IA Q13)", "Which are examples of big data collected by Google Maps? (1) Historical traffic patterns (2) Live traffic conditions provided by drivers (3) Users' location history (4) Users' identity", "Answer: D. (1), (2) and (3)"]], "pg": "pp.4–5"}, {"t": "Artificial intelligence and machine learning", "n": "AI is the intelligence of machines, often using heuristic programs so that machines learn from experience and make decisions like humans. Machine learning: the machine trains itself on sample data, finds patterns and generates a model. Supervised learning uses labelled data (more explicit, structured data, fewer training time); unsupervised learning uses unlabelled data to find patterns itself (less explicit, longer training). Deep learning uses artificial neural networks inspired by the brain to solve more complex problems (e.g. AlphaGo). Big data, cloud computing and machine learning support AI.", "tip": "AI needs big data (training data), cloud computing (computing power) and machine learning (the method).", "qs": [["MC", "Which of the following can support an artificial intelligence (AI) system? (1) Big data (2) Cloud computing (3) Machine learning", "Answer: D. (1), (2) and (3)"]], "pg": "pp.6–7"}, {"t": "Pattern recognition in AI", "n": "Pattern recognition finds similarities and relationships in data to solve problems. AI is trained on a set of data (stage 1: training) and then classifies new input (stage 2: prediction).", "ch": [{"t": "Image and facial recognition", "n": "Image recognition: AI scans the pixels of many images, groups pixels into features and recognises the same pattern again (reverse image search, Quick Draw, AutoDraw, signature recognition). Facial recognition is built on image recognition: it captures unique facial features to verify identity (tag suggestions, face filters).", "pg": "pp.8–11"}, {"t": "Speech, music and video recognition", "n": "Speech recognition: digitised waveforms (pitch = frequency, volume = amplitude) are matched to words so speech becomes text (voice typing, voice commands). Music recognition matches melody and lyrics with a database. Computer vision / video recognition analyses many continuous frames (video classification, object tracking, self-driving vehicles). Digital assistants use natural language processing (NLP).", "pg": "pp.12–13"}, {"t": "Spam detection and CAPTCHA", "n": "AI blocks about 100 million spam messages every day and customises the filter from users' manual reports. reCAPTCHA (OCR text and image tasks) separates humans from computers while users unknowingly help digitise books, annotate images and improve maps.", "pg": "pp.14–15"}], "pg": "pp.8–15"}, {"t": "Applications of AI and data science", "n": "Digital assistants, autocorrect, machine translation, intelligent transport systems, facial recognition, route planning, personalised marketing, monitoring health through wearable data, expert systems, recommendation systems. Data science extracts useful information through data mining (sorting structured data to find patterns), predictive modelling, statistics and data visualisation.", "tip": "Recommendation systems: big data tracks you, AI predicts your next action.", "qs": [["Book checkpoint (DSE 2014 IA)", "Real-time adaptive traffic signal system: what is its advantage over conventional signal control? (1) reduce unnecessary waiting time (2) handle irregular variations of traffic flow (3) relieve crowdedness at rush hour", "Answer: D. (1), (2) and (3)"]], "pg": "pp.16–19"}, {"t": "Ethics and challenges", "n": "Risks and ethical concerns: threats to privacy, discriminatory outcomes, liability for unintended consequences (who is accountable for a self-driving car accident?), AI as a weapon. Automation can replace repetitive jobs but creates new ones (AI specialist, data protection officer, robotics engineer). Advantages of data science: better customer experience, effective targeted advertising. Disadvantages: privacy and security concerns, high cost of data scientists. Protect your data: read terms and conditions, check app permissions, disable cookies, clear browsing history.", "pg": "pp.18–21"}], "pg": "pp.4–21"}, {"t": "1.2 3D printing technologies", "n": "2D printers print on a page with ink or toner; 3D printers eject materials (plastic, metal, even food) layer by layer to form 3D objects.", "ch": [{"t": "How 3D printing works", "n": "Draw a 3D model with 3D design software (Tinkercad, SketchUp), or download it from a sharing platform (Thingiverse) or scan an object, then 'slice' the model into layers and build it layer by layer (e.g. Fused Deposition Modelling, FDM).", "qs": [["Book exercise 1(b)", "Andy plans to design a birthday gift with modelling software. Suggest TWO advantages of printing it with a 3D printer.", "Easier and cheaper to create customised products without moulding; flexible to modify the design; rapid verification of the design; less material waste."]], "pg": "pp.22–23"}, {"t": "Applications and benefits", "n": "Education (prototypes, organ models), food, space, healthcare (prosthetics, replacement organs, aligners), textile and fashion, architecture and construction, toys, spare parts. Benefits: additive manufacturing is faster for prototyping than subtractive, one-step production lowers costs, easy customisation without moulds, less waste, reuse of plastic waste, local production cuts shipping carbon footprint.", "tip": "Cheaper for small production, easier for complex designs, flexible to modify. 3D printing is NOT limited to plastic.", "qs": [["Book checkpoint", "Which statements about 3D printing are correct? (1) easier to produce complex designs (2) cheaper for small production (3) more flexible to modify the design (4) can only create 3D objects with plastic", "Answer: C. (1), (2) and (3) only"], ["Book checkpoint (DSE 2016 IA Q37)", "Government grants schools 3D printers for STEM learning. What are the aims? (1) integrate knowledge of subjects (2) prepare students for a digital workplace (3) computational thinking (4) bridge the digital divide among schools", "Answer: D. (1), (2), (3) and (4)"]], "pg": "pp.24–25"}, {"t": "Challenges and impacts", "n": "Intellectual property: easier and cheaper to fake products by 3D scanning, illegal file sharing and downloading of copyrighted designs; the IP law must be updated. Community safety: 3D printable gun files online and undetectable plastic firearms. Industrial revolution: decentralisation of local production and fiercer competition; more environmentally friendly and cheaper for small-scale production.", "tip": "Downloading and sharing copyrighted 3D files without permission is infringement; downloading free 3D files for personal use is not.", "qs": [["Book exercise 1(a)", "Andy downloads 3D model files from the Internet. State one potential problem of printing them.", "The files may be copyrighted, so printing/sharing them may infringe intellectual property rights; printable files may be unsafe or illegal (e.g. weapons)."], ["Book checkpoint (DSE 2019 IA)", "Which is most likely copyright infringement in Hong Kong? A. Downloading free 3D printable files and printing for personal use B. Sharing copyrighted 3D printable files with friends without permission C. Searching 3D files with P2P software D. Designing 3D models and printing as a gift", "Answer: B. Sharing copyrighted 3D printable files with friends without permission"]], "pg": "p.26"}], "pg": "pp.22–26"}, {"t": "1.3 3D visualisation", "n": "3D visualisation (3D glasses, autostereoscopic display, AR, VR, hologram) gives a greater sense of depth than 2D images and helps shape and access the metaverse.", "ch": [{"t": "Virtual reality (VR)", "n": "A computer-simulated environment that gives users a feeling of being in the virtual environment. Worlds are made by imagination (3D models in CAD software) or replication (360-degree cameras). Equipment: phone-based headsets (cheap), independent headsets (built-in processor, more expensive), remote controllers, motion controllers, full-body trackers. Applications: gaming, media, military, healthcare (VR surgery), education, sports, theme-park VR coasters, Google Street View, training simulators for soldiers, pilots and doctors. Risks: prolonged use, eyestrain, being less aware of surroundings, privacy of body data.", "tip": "VR replaces the real world; AR adds to it.", "qs": [["Book exercise 2(a) (DSE 2017)", "Patrick plays VR games for 6 hours every day. State TWO possible risks of prolonged use of VR.", "Eyestrain / dizziness / motion sickness; neck, back or muscle fatigue; addiction; less aware of surroundings (accidents)."], ["Book exercise 2(b)", "Patrick uploads selfies and body measurements to the VR platform to personalise his 3D character. What is the possible risk?", "Privacy risk: personal and biometric data may be leaked, misused or sold."], ["Book exercise 4", "A school develops an interview training app: students wear a headset and feel in an interview room. (a) What technology? (b) TWO advantages over watching a video.", "(a) Virtual reality (VR). (b) Immersive and interactive, so students practise realistic responses; can be repeated any time with randomised questions at lower cost and risk."], ["MC", "Book exercise: which can apply virtual reality technology? (1) Surgical training (2) Lift maintenance training (3) Watching movies (4) Theme park rides", "Answer: D. (1), (2), (3) and (4)"]], "pg": "pp.28–31"}, {"t": "Augmented reality (AR)", "n": "Overlays digital images and information onto the real world (made of 3D models, or captured by 3D scanning). Examples: furniture preview, make-up filters, Google Translate camera translation (OCR + AR), AR walking directions, 3D anatomy, smart glasses in surgery, AR games. Heavily depends on data collection from the camera, which raises privacy and security concerns.", "tip": "AR = real world + virtual overlay, viewed through a phone camera or smart glasses.", "qs": [["MC", "An animation is shown on a smart phone when its camera views a product in a supermarket. What technology/technologies? (1) Data science (2) Augmented reality (AR) (3) 3D printing", "Answer: B. (2) only"], ["Book exercise 3", "Susan scans an image with her phone and a 3D model of a heart appears; she can view it from different perspectives. (a) What technology? (b) How does it help learning?", "(a) Augmented reality (AR). (b) Makes abstract content visual and interactive, so students understand the structure better; learn anywhere without a real specimen."], ["Book checkpoint (DSE 2012 PP 1A Q40)", "Furniture stores develop AR apps to preview furniture in the customer's place. Related domains of knowledge? (1) Web authoring (2) Algorithm design (3) Machine organisation", "Answer: A. (1) and (2)"], ["Book checkpoint", "Fashion brands closed physical stores and added AR try-on to online shopping. What is the drawback?", "Answer: A. Widening the digital divide"]], "pg": "pp.30–33"}, {"t": "Hologram", "n": "Virtual images produced by holograms can be seen with bare eyes, unlike VR and AR which need devices (e.g. holographic concerts, a DIY holographic pyramid projector).", "pg": "p.34"}, {"t": "Benefits and limitations", "n": "Benefits: virtual hands-on training and lower risk of failure in real life, more flexible (anytime, anywhere), lower cost. Limitations: digital divide caused by lack of devices, privacy and security concerns about data collection by AR, being less aware of surroundings, technical expertise required.", "qs": [["Book checkpoint", "Schools use AR and VR for teaching Geography and Biology. Benefits? (1) Alternative to real field trips and experiments (2) Widening the digital divide (3) Enhancing engagement (4) Deepening understanding", "Answer: D. (1), (3) and (4)"]], "pg": "pp.34–35"}], "pg": "pp.27–35"}], "pg": "pp.2–41"};
+const HOT = 2;
+const NS='http://www.w3.org/2000/svg';
+const FONT="500 13px 'IBM Plex Sans', system-ui, sans-serif";
+const cv=document.createElement('canvas').getContext('2d');
+const svg=document.getElementById('svg'), detail=document.getElementById('detail');
+let hotOnly=false, selected=null;
+function el(n,a,p){const e=document.createElementNS(NS,n);for(const k in a)e.setAttribute(k,a[k]);if(p)p.appendChild(e);return e}
+function prep(n,d,b){n.d=d;n.b=b;n.open=d<2;n.lines=n.t.split('\n');n.kids=n.ch||[];n.kids.forEach(k=>prep(k,d+1,d===0?(n.kids.indexOf(k)%6)+1:b));}
+prep(DATA,0,0);
+(function tot(n){n.tot=(n.qs?n.qs.length:0)+n.kids.reduce((a,k)=>a+tot(k),0);n.c=n.tot;if(n.d>0)n.hot=n.tot>=HOT;return n.tot})(DATA);
+function hotWithin(n){return !!n.hot||(n.kids||[]).some(hotWithin)}
+function measure(n){cv.font=n.d===0?"700 16px 'Bricolage Grotesque', sans-serif":FONT;
+  n.w=Math.ceil(Math.max(...n.lines.map(l=>cv.measureText(l).width)))+(n.d===0?36:26)+(n.c?(n.kids.length?42:34):0);
+  if(n.pg&&n.d>0){cv.font="500 11px 'IBM Plex Mono', monospace";n.w=Math.max(n.w,Math.ceil(cv.measureText(n.pg).width)+26+(n.c?(n.kids.length?42:34):0))}
+  n.h=n.lines.length*17+14+(n.pg&&n.d>0?14:0);n.kids.forEach(measure)}
+function layout(){
+  measure(DATA);
+  const colW=[];(function m(n){colW[n.d]=Math.max(colW[n.d]||0,n.w);n.kids.forEach(m)})(DATA);
+  const gapX=46,x0=[];let x=16;colW.forEach((w,i)=>{x0[i]=x;x+=w+gapX});
+  let y=16;
+  (function place(n){
+    n.x=x0[n.d];
+    const vis=n.open?n.kids:[];
+    if(!vis.length){n.y=y;y+=n.h+10}
+    else{vis.forEach(place);const f=vis[0],l=vis[vis.length-1];n.y=(f.y+f.h/2+l.y+l.h/2)/2-n.h/2}
+  })(DATA);
+  return {W:x-gapX+16,H:y+6};
+}
+function draw(){
+  const {W,H}=layout();svg.setAttribute('width',W);svg.setAttribute('height',H);svg.setAttribute('viewBox',`0 0 ${W} ${H}`);
+  svg.replaceChildren();
+  const gl=el('g',{},svg),gn=el('g',{},svg);
+  (function walk(n){
+    if(n.open)n.kids.forEach(k=>{
+      const x1=n.x+n.w,y1=n.y+n.h/2,x2=k.x,y2=k.y+k.h/2,mx=(x1+x2)/2;
+      const p=el('path',{d:`M${x1},${y1} C${mx},${y1} ${mx},${y2} ${x2},${y2}`,class:'link'+(hotWithin(k)?'':' cold'),stroke:`var(--b${k.b})`},gl);
+      walk(k)});
+    const g=el('g',{class:'node'+(n.d===0?' root':'')+(n.hot?' hotn':'')+(hotWithin(n)?'':' cold'),tabindex:0,role:'button','aria-label':n.lines.join(' ')+(n.kids.length?(n.open?' (open)':' (closed)'):'')},gn);
+    const r=el('rect',{x:n.x,y:n.y,width:n.w,height:n.h,rx:n.d===0?14:10},g);
+    if(n.d>0){r.setAttribute('fill',n.d===1?`var(--b${n.b})`:`var(--b${n.b}t)`);
+      r.setAttribute('stroke',n.hot?'var(--hot)':`var(--b${n.b})`);if(n.hot)r.setAttribute('stroke-width',3)}
+    n.lines.forEach((l,i)=>{const t=el('text',{x:n.x+(n.d===0?18:13),y:n.y+7+17*(i+1)-4,fill:n.d===1?'var(--bg)':'var(--fg)'},g);t.textContent=l;
+      if(n.d===1)t.setAttribute('style','fill:var(--panel)');
+      if(n.d===1&&document.documentElement.dataset.theme==='dark')t.setAttribute('style','fill:var(--bg)')});
+    if(n.pg&&n.d>0){const t=el('text',{x:n.x+13,y:n.y+7+17*n.lines.length+11,class:'pgtag',fill:n.d===1?'var(--panel)':'var(--muted)'},g);t.textContent=n.pg;if(n.d===1&&document.documentElement.dataset.theme==='dark')t.setAttribute('fill','var(--bg)')}
+    if(n.c){const bg=el('g',{class:'badge'},g),bx=n.x+n.w-(n.kids.length?46:38),by=n.y+n.h/2-9;
+      el('rect',{x:bx,y:by,width:30,height:18,rx:9},bg);const t=el('text',{x:bx+15,y:by+13,'text-anchor':'middle'},bg);t.textContent='×'+n.c}
+    if(n.kids.length){const tg=el('g',{class:'tog'},g),cx=n.x+n.w,cy=n.y+n.h/2;
+      el('circle',{cx,cy,r:9,stroke:`var(--b${n.b||1})`},tg);const t=el('text',{x:cx,y:cy+4,'text-anchor':'middle'},tg);t.textContent=n.open?'−':'+';
+      tg.addEventListener('click',e=>{e.stopPropagation();n.open=!n.open;draw()})}
+    const act=()=>{show(n)};
+    g.addEventListener('click',act);
+    g.addEventListener('keydown',e=>{if(e.key==='Enter'||e.key===' '){e.preventDefault();act()}else if((e.key==='ArrowRight'||e.key==='ArrowLeft')&&n.kids.length){n.open=e.key==='ArrowRight';draw()}});
+  })(DATA);
+  svg.parentNode.classList.toggle('dim',hotOnly);
+}
+function esc(s){return s.replace(/[&<>]/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;'}[c]))}
+function show(n){
+  selected=n;
+  let h=`<div class="dctl"><button class="dbtn" data-act="min" aria-label="Minimise this box" title="Minimise">&#8722;</button><button class="dbtn" data-act="close" aria-label="Close this box" title="Close">&#215;</button></div><h2>${esc(n.lines.join(' '))}${n.c?`<span class="pill">${n.c} past-paper question${n.c>1?'s':''}</span>`:'<span class="pill zero">no past-paper question yet</span>'}</h2>`;
+  if(n.pg)h+=`<p class="pgline"><b>Revise in Book E:</b> ${esc(n.pg)}</p>`;
+  h+=(n.n?`<p>${esc(n.n)}</p>`:'<p class="hint">Open this branch to see the points inside it.</p>');
+  if(n.tip)h+=`<div class="tip"><b>Exam</b>${esc(n.tip)}</div>`;
+  if(n.qs&&n.qs.length){h+=`<div class="qs"><div class="qh">Questions on this topic (tap one to see the answer)</div>`+n.qs.map(q=>`<details><summary><span class="qid">${esc(q[0])}</span> ${esc(q[1])}</summary><div class="ans">${esc(q[2])}</div></details>`).join('')+`</div>`}
+  else if(n.kids.length&&n.tot){h+=`<p class="hint">${n.tot} question${n.tot>1?'s':''} sit in the boxes inside this branch. Open it and tap each box.</p>`}
+  detail.hidden=false;detail.classList.remove('min');
+  detail.innerHTML=h;
+}
+detail.addEventListener('click',e=>{const b=e.target.closest('.dbtn');if(!b)return;if(b.dataset.act==='close'){detail.hidden=true}else{detail.classList.toggle('min');b.innerHTML=detail.classList.contains('min')?'+':'&#8722;';b.title=detail.classList.contains('min')?'Expand':'Minimise';b.setAttribute('aria-label',b.title+' this box')}});
+document.addEventListener('keydown',e=>{if(e.key==='Escape')detail.hidden=true});
+function setAll(v,n=DATA){if(n.kids.length){n.open=v;n.kids.forEach(k=>setAll(v,k))}}
+document.getElementById('hotBtn').onclick=e=>{hotOnly=!hotOnly;e.currentTarget.setAttribute('aria-pressed',hotOnly);draw()};
+document.getElementById('expBtn').onclick=()=>{setAll(true);draw()};
+document.getElementById('colBtn').onclick=()=>{setAll(false);DATA.open=true;draw()};
+(document.fonts&&document.fonts.ready?document.fonts.ready:Promise.resolve()).then(draw);
+draw();
+</script>
