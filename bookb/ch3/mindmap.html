@@ -1,0 +1,181 @@
+<title>B Ch3 Mindmap</title>
+<meta name="claude:viewport-fit-sides" content="cover">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:wght@500;600&family=IBM+Plex+Sans:wght@400;500;600&family=Bricolage+Grotesque:opsz,wght@12..96,700&display=swap">
+<style>
+/* Layout: left-to-right branching map in a scroll pane, controls above, detail card below. */
+:root{
+  --bg:#f3f5f9; --panel:#ffffff; --fg:#14213d; --muted:#5b6784; --line:#cfd6e4; --hot:#d62839;
+  --b1:#1d4ed8; --b1t:#e3ebff; --b2:#0f766e; --b2t:#dcf5f1; --b3:#b45309; --b3t:#fdebd0;
+  --b4:#7e22ce; --b4t:#f0e2fd; --b5:#be185d; --b5t:#fde2ee; --b6:#3f6212; --b6t:#e8f3d1;
+  --root:#14213d; --rootfg:#ffffff;
+  --font:'IBM Plex Sans',system-ui,sans-serif; --mono:'IBM Plex Mono',ui-monospace,monospace; --disp:'Bricolage Grotesque','IBM Plex Sans',sans-serif;
+}
+@media (prefers-color-scheme:dark){:root:not([data-theme="light"]){
+  --bg:#0d1424; --panel:#16203a; --fg:#e6ebf7; --muted:#9aa7c7; --line:#2b3858; --hot:#ff6b7a;
+  --b1:#7aa2ff; --b1t:#18284f; --b2:#4fd1c1; --b2t:#0f2e2c; --b3:#f4b25c; --b3t:#3a2a12;
+  --b4:#c79bff; --b4t:#2b1c45; --b5:#ff8cbc; --b5t:#40182e; --b6:#b6dd72; --b6t:#26331a;
+  --root:#e6ebf7; --rootfg:#0d1424; color-scheme:dark}}
+:root[data-theme="dark"]{
+  --bg:#0d1424; --panel:#16203a; --fg:#e6ebf7; --muted:#9aa7c7; --line:#2b3858; --hot:#ff6b7a;
+  --b1:#7aa2ff; --b1t:#18284f; --b2:#4fd1c1; --b2t:#0f2e2c; --b3:#f4b25c; --b3t:#3a2a12;
+  --b4:#c79bff; --b4t:#2b1c45; --b5:#ff8cbc; --b5t:#40182e; --b6:#b6dd72; --b6t:#26331a;
+  --root:#e6ebf7; --rootfg:#0d1424; color-scheme:dark}
+body{background:var(--bg);color:var(--fg);font-family:var(--font);font-size:15px;line-height:1.5;
+  padding-block:20px 40px;padding-left:max(16px,env(safe-area-inset-left,0px));padding-right:max(16px,env(safe-area-inset-right,0px))}
+.wrap{max-width:1400px;margin:0 auto;display:flex;flex-direction:column;gap:14px}
+header{display:flex;flex-wrap:wrap;gap:6px 18px;align-items:baseline;justify-content:space-between}
+.kicker{font-family:var(--mono);font-size:12px;letter-spacing:.08em;text-transform:uppercase;color:var(--muted)}
+h1{font-family:var(--disp);font-size:clamp(24px,4vw,36px);line-height:1.1;margin:2px 0 0;text-wrap:balance}
+.sub{color:var(--muted);max-width:60ch;margin:6px 0 0}
+.bar{display:flex;flex-wrap:wrap;gap:8px 10px;align-items:center}
+button{font:inherit;font-size:13px;color:var(--fg);background:var(--panel);border:1px solid var(--line);border-radius:8px;padding:6px 12px;cursor:pointer}
+button:hover{border-color:var(--fg)}
+button[aria-pressed="true"]{background:var(--hot);border-color:var(--hot);color:#fff}
+button:focus-visible,.node:focus-visible{outline:2px solid var(--fg);outline-offset:2px}
+.legend{display:flex;flex-wrap:wrap;gap:6px 16px;font-size:13px;color:var(--muted);align-items:center}
+.legend .pill{font-family:var(--mono);font-size:11px;font-weight:600;background:var(--hot);color:#fff;border-radius:99px;padding:1px 7px}
+.legend .sw{display:inline-block;width:14px;height:14px;border-radius:4px;vertical-align:-2px;margin-right:5px}
+.pane{background:var(--panel);border:1px solid var(--line);border-radius:14px;overflow-x:auto;overflow-y:hidden}
+svg{display:block}
+.link{fill:none;stroke-width:2;opacity:.55}
+.node{cursor:pointer}
+.node rect{stroke-width:1.5;transition:opacity .15s}
+.node text{font-family:var(--font);font-size:13px;font-weight:500;pointer-events:none}
+.node.hotn text{font-weight:600}
+.node text.pgtag{font-family:var(--mono);font-size:11px;font-weight:500;opacity:.85}
+.node .badge rect{fill:var(--hot);stroke:none}
+.node .badge text{fill:#fff;font-family:var(--mono);font-size:11px;font-weight:600}
+.node .tog circle{fill:var(--panel);stroke-width:1.5}
+.node .tog text{font-family:var(--mono);font-size:12px;font-weight:600;fill:var(--fg)}
+.dim .node.cold{opacity:.22}
+.dim .link.cold{opacity:.12}
+.root rect{fill:var(--root);stroke:none}
+.root text{fill:var(--rootfg);font-family:var(--disp);font-size:16px;font-weight:700}
+.detail{background:var(--panel);border:1px solid var(--line);border-radius:14px;padding:14px 18px;min-height:72px;position:sticky;bottom:max(8px,env(safe-area-inset-bottom,0px));z-index:5;box-shadow:0 -6px 18px rgba(20,33,61,.14);max-height:52vh;overflow:auto}
+.detail h2{font-family:var(--disp);font-size:20px;margin:0 0 4px;display:flex;gap:10px;align-items:center;flex-wrap:wrap}
+.detail h2 .pill{font-family:var(--mono);font-size:12px;font-weight:600;background:var(--hot);color:#fff;border-radius:99px;padding:1px 9px}
+.detail p{margin:6px 0 0;max-width:80ch;white-space:pre-line}
+.detail .hint{color:var(--muted)}
+.detail .pgline{margin:0 0 8px;font-family:var(--mono);font-size:13px;color:var(--fg)}
+.detail .pgline b{font-family:var(--font);font-weight:600}
+.detail h2 .pill.zero{background:var(--line);color:var(--muted)}
+.dctl{float:right;display:flex;gap:6px;margin:-2px 0 6px 10px}
+.dbtn{width:32px;height:32px;padding:0;font-size:20px;line-height:1;border-radius:8px}
+.detail.min{max-height:none;overflow:visible;padding-block:8px}
+.detail.min>*:not(.dctl):not(h2){display:none}
+.detail.min h2{margin:0;font-size:16px}
+.qs{margin-top:12px;display:flex;flex-direction:column;gap:6px;max-width:90ch}
+.qh{font-family:var(--mono);font-size:11px;letter-spacing:.06em;text-transform:uppercase;color:var(--muted)}
+.qs details{border:1px solid var(--line);border-radius:8px;padding:6px 10px;background:var(--bg)}
+.qs summary{cursor:pointer;font-size:14px}
+.qid{font-family:var(--mono);font-weight:600;font-size:12px;background:var(--b1t);color:var(--b1);border-radius:6px;padding:1px 6px;margin-right:4px}
+.ans{margin-top:6px;padding-top:6px;border-top:1px dashed var(--line);font-size:14px;white-space:pre-line}
+.tip{margin-top:10px;padding:8px 12px;border-radius:8px;background:var(--b3t);color:var(--fg);max-width:80ch;font-size:14px}
+.tip b{font-family:var(--mono);font-size:11px;letter-spacing:.06em;text-transform:uppercase;color:var(--b3);margin-right:6px}
+code,.m{font-family:var(--mono);font-size:.92em}
+.backlink{display:inline-block;margin-bottom:8px;font-family:var(--mono);font-size:12px;letter-spacing:.06em;text-transform:uppercase;color:var(--muted);text-decoration:none}
+.backlink:hover{color:var(--fg);text-decoration:underline}
+@media (prefers-reduced-motion:reduce){.node rect{transition:none}}
+</style>
+<div class="wrap">
+  <header>
+    <div>
+      <a class="backlink" href="../../index.html#concepts-book-b">&larr; Back to Book B</a>
+      <div class="kicker">Book B · Chapter 3</div>
+      <h1>Computer Software</h1>
+      <p class="sub">Every concept in the chapter, with each past-paper question attached to the topic it tests.</p>
+    </div>
+    <div class="bar">
+      <button id="hotBtn" aria-pressed="false">Show topics with 6+ questions only</button>
+      <button id="expBtn">Expand all</button>
+      <button id="colBtn">Collapse all</button>
+    </div>
+  </header>
+  <div class="legend">
+    <span><b style="font-family:var(--mono);font-size:12px">pp.34–35</b> page numbers in Book B to revise this topic</span>
+    <span><span class="pill">×12</span> number of past-paper questions on this topic, all listed with answers when you tap the box</span>
+    <span><span class="sw" style="background:var(--hot)"></span>red outline = 8 or more questions</span>
+    <span>Tap a box to read the key points. Tap + / − to open or close a branch.</span>
+  </div>
+  <div class="pane" id="pane"><svg id="svg" role="img" aria-label="Computer Software mind map"></svg></div>
+  <div class="detail" id="detail" aria-live="polite"><p class="hint">Tap any box on the map to see what to remember and every past-paper question on it.</p></div>
+</div>
+<script>
+const DATA = {"t": "B Ch.3\nComputer Software", "ch": [{"t": "3.1 Computer system", "n": "A computer system has layers: hardware at the bottom, the operating system (system software) on it, and application software on top. The OS plus hardware is the platform that applications run on.", "ch": [{"t": "System vs application software", "n": "System software (OS, utility, driver) manages hardware resources and gives a platform; usually written in low-level languages; interacts with application software; general purpose. Application software does a specific task for users; usually high-level languages; runs on the platform.", "tip": "Say who each one interacts with: system software with hardware and applications, application software with users.", "qs": [["2020-2(a)", "Give two major differences between system software and application software. (2 marks)", "System: low-level language; maintains system resources; interacts with application software; general purpose. Application: high-level language; runs on the platform; interacts with users; specific task."], ["2024-4(c)", "Suggest a function of application software and system software during the operation of a display board. (2 marks)", "Application: lets users manage / edit / display the image or colour on the display. System: the driver lets the system communicate with / control the display."], ["2022sp-1(b)", "We do not use system software to play the video. Why not? (2 marks)", "System software manages hardware resources (OS, utility and driver programs) and provides an interface between hardware and users. Function + description, or two functions."], ["2017-2(a)(ii)", "Mr Wong does not use system software to play the videos. Why not? Explain with the functions of system software. (2 marks)", "System software helps manage hardware resources (operating system, utility, driver). One function described + a second function."], ["2022-21", "In a typical situation, what are P, Q and R? (layers)", "Answer: B. P = Application software, Q = Operating system, R = Hardware"], ["2017-15", "Which of the following items is/are system software? (1) Spreadsheet (2) Operating system (3) Driver program", "Answer: D. (2) and (3) only"], ["2012-15", "Tom installs a software package on his tablet but fails. Why? (1) different operating system (2) virtual keyboard (3) SSD", "Answer: A. (1) only"], ["2012pp-2(f)", "Patrick installs a package so each computer is automatically restored to its original state on every reboot. Give one advantage and one disadvantage. (2 marks)", "Advantage: a virus is cleaned up after a restart. Disadvantage: data, software and OS updates and newly installed software may be removed after a restart."]], "pg": "p.92"}], "pg": "p.92"}, {"t": "3.2 System software", "n": "System software manages the hardware and supports applications: operating system, utility programs and driver programs.", "ch": [{"t": "Operating system functions", "n": "Process (task) management and scheduling, memory management, file management, device management (through drivers), input/output management, user interface (GUI or command line), networking and security. It does not manage email, analyse what-if scenarios or build web pages.", "tip": "Know the OS list: process, memory, file, I/O and device, user interface, network. Play video / email are applications.", "qs": [["2022-1(c)(i)", "List two common functions of the operating system, other than file management. (2 marks)", "Process management / resource management (memory, network, device management) / user interface."], ["2013-20", "The diagram shows a basic computer system. What is K (OS) responsible for? (1) controls devices through drivers (2) manages memory (3) increases number of applications (4) schedules processes", "Answer: B. (1), (2) and (4) only"], ["2015-16", "Which functions does an operating system usually have? (1) user interface (2) what-if analysis (3) allocation of memory (4) web page construction", "Answer: A. (1) and (3) only"], ["2024-21", "Which are functions of an operating system? (1) interact with devices and I/O (2) play video files (3) connect to a network", "Answer: B. (1) and (3) only"], ["2018-17", "Basic functions of an OS? (1) Email management (2) Memory management (3) Input/output management", "Answer: C. (2) and (3) only"], ["2019-20", "Major networking functions of an OS? (1) allow communication (2) control network bandwidth (3) basic network security", "Answer: B. (1) and (3) only"], ["2023-16", "Functions of an OS? (1) allocate hardware resources (2) schedule jobs (3) store user programs permanently", "Answer: A. (1) and (2) only"], ["2016-19", "Functions an OS usually provides? (1) control of processes (2) allocation of memory (3) record of network traffic", "Answer: D. (1), (2) and (3)"], ["2017-19", "What information does system monitoring software in an OS provide? (1) current processes (2) memory usage (3) network traffic", "Answer: D. (1), (2) and (3)"]], "pg": "pp.94–95"}, {"t": "Types of operating systems", "n": "Single-user (one user at a time, e.g. Windows on a PC) vs multi-user (many users at once, e.g. Linux server, web booking system). Windows, macOS, Linux and Android differ in user interface (Linux supports full command line), hardware support (macOS on proprietary hardware), licence, memory management and file management. Computers on a LAN need the same protocol, not the same OS.", "tip": "Different OS: user interface, hardware support, licence, memory and file management. Not: ease of use or programming language.", "qs": [["2013-5(d)(i)", "Should the system that finds the top 20 spenders be a single-user or multi-user system? Explain. (2 marks)", "Single-user: one user is enough to generate the list."], ["2019-1(a)(i)", "If the clinic booking system is multi-user, what is the major benefit for citizens? (1 mark)", "Many users can use it at the same time / shorter waiting time."], ["2018-2(b)(ii)", "Give two differences between the Linux, MacOS and Windows operating systems. (2 marks)", "Linux fully supports a command line interface; macOS usually runs on proprietary hardware; different software licences; different memory and file management."], ["2012sp-2(d)", "To preserve connectivity of X and Y in the LAN, should both have the same version of the OS? Explain. (2 marks)", "No. They need not be the same OS; the only condition is the same connection protocol."]], "pg": "pp.94–95"}, {"t": "Command line vs GUI", "n": "A command line interface (CLI) manages files by typed commands; a graphical user interface (GUI) uses windows, icons and a mouse. Administrator Command Prompt gives more rights.", "pg": "pp.96–97"}, {"t": "Utility programs", "n": "Help maintain the computer: file manager, antivirus, backup, file compression (e.g. ZIP, no help if the file is already compressed), defragmentation (rejoins fragmented file pieces on an HDD, so access is faster; free space and file size do not change; not needed for SSD).", "tip": "Defragmentation: pieces of a file moved together on a hard disk = faster access. It does not free space.", "qs": [["2018-3(c)(i)", "He finds that using a data compressor cannot help much. Why not? (1 mark)", "Compression has already been applied to the videos because of their video format."], ["2018-3(c)(ii)", "He finds that using defragmentation software cannot help much either. Why not? (2 marks)", "It rearranges fragments of files close together (concept of fragmentation); this speeds up file access but does not increase free space or change file size."], ["MC", "Which can help reduce the time needed to access files in a hard disk drive?", "Answer: D. Defragmentation software"], ["MC", "Which program is used to improve the access time of files in a hard disk?", "Answer: B. Defragmentation program"]], "pg": "pp.98–99"}, {"t": "Driver program", "n": "Lets the operating system control and communicate with a hardware device (printer, scanner, camera). Many common devices work at once because the OS already contains the driver. A missing or corrupted driver makes the device fail.", "qs": [["2012pp-3(d)(iii)", "A USB printer connection fails. What is the potential software problem? (1 mark)", "The driver is corrupted / has not been installed."], ["MC", "Driver programs P and Q are used in video conferencing and printing. Which description is reasonable?", "Answer: A. P allows the operating system and web cameras to interact with each other."], ["MC", "Which requires a driver program? (1) editing a document (2) connecting to a new printer (3) removing a software package", "Answer: B. (2) only"], ["MC", "Mary connects a new USB flash drive and needs no driver. Why not?", "Answer: D. The OS already has the driver program for the flash drive."], ["MC", "Which description of a driver program is correct?", "Answer: B. Enables the operating system to control a scanner."], ["MC", "John connects a new USB printer and can use it immediately. Why?", "Answer: B. The operating system already has a driver program for the printer."]], "pg": "pp.102–103"}], "pg": "pp.93–104"}, {"t": "3.3 Application\nsoftware", "n": "Programs written for users' tasks.", "ch": [{"t": "Productivity software", "n": "Word processor, spreadsheet, database management system, presentation software.", "qs": [["2023-1(c)(i)", "Mary can use (1) a word processor in a browser or (2) one installed on her laptop. Other than cost, give a benefit of each. (2 marks)", "Browser: updated functions / no installation / usable on any computer. Installed: no Internet needed / more functions."]], "pg": "p.105"}, {"t": "Media development software", "n": "Image editing, video editing (e.g. Adobe Premiere, Corel VideoStudio), audio editing.", "pg": "pp.106–107"}, {"t": "Communication software", "n": "Email (Outlook, Thunderbird), web browser, FTP (FileZilla), BitTorrent for peer-to-peer sharing, instant messaging. Different OSs need different versions of an app.", "qs": [["2019-1(c)(ii)", "Different versions of the mobile application with the same function will be developed at the same time. Why? (1 mark)", "There are a number of operating systems for mobile devices (support different OSs)."]], "pg": "pp.106–107"}, {"t": "Educational software", "n": "Software that teaches or trains, such as language, maths and e-learning platforms.", "qs": [["MC", "Which statements about free online encyclopedias such as Wikipedia are correct? (1) quick searching (2) no copyright (3) updated frequently", "Answer: B. (1) and (3) only"]], "pg": "p.107"}], "pg": "pp.105–107"}, {"t": "3.4 Mode of operation", "n": "How a computer system runs its jobs: batch, real-time, parallel, distributed, plus multi-user and multitasking.", "ch": [{"t": "Batch processing", "n": "Jobs are collected over a period and run together, with no user interaction while running, e.g. monthly top-20 spenders, scheduled antivirus scan, installing software every Saturday, uploading a data file every 5 minutes.", "tip": "Batch = data collected over time, processed together at a scheduled time. Real-time = responds at once.", "qs": [["2013-5(d)(ii)", "Should the system be a batch processing system or a real-time system? Explain. (2 marks)", "Batch: it generates the list from monthly totals, so all tasks are done in one batch each month."], ["2018-2(b)(i)", "Peter installs software on teachers' computers every Saturday morning. Which mode (batch, parallel, real-time) best describes it? (2 marks)", "Batch: he collects tasks for a period and does them all in one go."], ["2023-5(b)(i)", "Heartbeat devices record data and upload the data file every 5 minutes. Batch or real-time? Explain. (1 mark)", "Batch: data is recorded over a period and uploaded together; not processed up to date."], ["2024-2(b)(ii)", "Anti-virus shows Message A and Message B on two occasions. Which mode best describes the virus scanning on each? (2 marks)", "A: real-time (stops the infected file at once). B: batch (scans at a scheduled time)."]], "pg": "pp.108–109"}, {"t": "Real-time processing", "n": "Input is processed immediately so output is available with no delay: ATM, ticket booking counters, security alarms, GPS, autopilot, smart thermostat.", "qs": [["2019-1(a)(ii)", "If the booking system is real-time, what is the major benefit for citizens? (1 mark)", "The system responds to users' requests as early as possible."], ["2015-1(b)", "The drone flies and takes videos at the same time. Distributed processing cannot describe the two operations. What kind of system does? (2 marks)", "Multitasking system (controls flight and processes the video at once) OR real-time processing system."], ["MC", "Which systems can Mary run on a computer with no network connection? (1) Distributed (2) Real-time (3) Batch", "Answer: D. (2) and (3) only"], ["MC", "Autopilot driving is a real-time processing system because _____.", "Answer: B. there should be no time delay between data input and the data processing"], ["MC", "A booking system has several counters in a city. Which best describes it?", "Answer: A. Real-time system"], ["MC", "Bank customers withdraw cash through ATMs. Which describe this? (1) Interactive (2) Real-time (3) Batch", "Answer: C. (1) and (2) only"], ["MC", "A security system sounds the alarm if a main door opens between 12 a.m. and 6 a.m. What kind of system?", "Answer: B. Real-time system"], ["MC", "A car GPS gives location and time while driving. Mode of operation?", "Answer: B. Real-time processing"], ["2015-20", "A smart thermostat controlled through the Internet from a phone. Which describe it? (1) multi-user (2) batch (3) distributed (4) real-time", "Answer: B. (1) and (4) only"]], "pg": "pp.108–109"}, {"t": "Parallel processing", "n": "One job is split into parts that run on several CPUs or cores at the same time, so it finishes faster.", "qs": [["2014-3(b)(i)", "If the application is a parallel processing system, how does it work? (2 marks)", "A process is divided into different portions / threads and executed in different CPUs independently at the same time."]], "pg": "pp.108–109"}, {"t": "Distributed processing", "n": "Components on different networked computers interact (under a managing program) to run one application. It depends on network connectivity.", "qs": [["2014-3(b)(ii)", "If the application is a distributed processing system, how does it work? (2 marks)", "The system consists of components that interact with each other (managed by a program) through a networked environment to execute the application."], ["MC", "Which of the following systems depends on network connectivity?", "Answer: D. Distributed processing system"]], "pg": "pp.108–109"}, {"t": "Virtualisation", "n": "One physical computer runs several virtual computers (virtual machines), each with its own OS, sharing the hardware.", "pg": "pp.110–111"}], "pg": "pp.108–112"}], "pg": "pp.90–115"};
+const HOT = 6;
+const NS='http://www.w3.org/2000/svg';
+const FONT="500 13px 'IBM Plex Sans', system-ui, sans-serif";
+const cv=document.createElement('canvas').getContext('2d');
+const svg=document.getElementById('svg'), detail=document.getElementById('detail');
+let hotOnly=false, selected=null;
+function el(n,a,p){const e=document.createElementNS(NS,n);for(const k in a)e.setAttribute(k,a[k]);if(p)p.appendChild(e);return e}
+function prep(n,d,b){n.d=d;n.b=b;n.open=d<2;n.lines=n.t.split('\n');n.kids=n.ch||[];n.kids.forEach(k=>prep(k,d+1,d===0?(n.kids.indexOf(k)%6)+1:b));}
+prep(DATA,0,0);
+(function tot(n){n.tot=(n.qs?n.qs.length:0)+n.kids.reduce((a,k)=>a+tot(k),0);n.c=n.tot;if(n.d>0)n.hot=n.tot>=HOT;return n.tot})(DATA);
+function hotWithin(n){return !!n.hot||(n.kids||[]).some(hotWithin)}
+function measure(n){cv.font=n.d===0?"700 16px 'Bricolage Grotesque', sans-serif":FONT;
+  n.w=Math.ceil(Math.max(...n.lines.map(l=>cv.measureText(l).width)))+(n.d===0?36:26)+(n.c?(n.kids.length?42:34):0);
+  if(n.pg&&n.d>0){cv.font="500 11px 'IBM Plex Mono', monospace";n.w=Math.max(n.w,Math.ceil(cv.measureText(n.pg).width)+26+(n.c?(n.kids.length?42:34):0))}
+  n.h=n.lines.length*17+14+(n.pg&&n.d>0?14:0);n.kids.forEach(measure)}
+function layout(){
+  measure(DATA);
+  const colW=[];(function m(n){colW[n.d]=Math.max(colW[n.d]||0,n.w);n.kids.forEach(m)})(DATA);
+  const gapX=46,x0=[];let x=16;colW.forEach((w,i)=>{x0[i]=x;x+=w+gapX});
+  let y=16;
+  (function place(n){
+    n.x=x0[n.d];
+    const vis=n.open?n.kids:[];
+    if(!vis.length){n.y=y;y+=n.h+10}
+    else{vis.forEach(place);const f=vis[0],l=vis[vis.length-1];n.y=(f.y+f.h/2+l.y+l.h/2)/2-n.h/2}
+  })(DATA);
+  return {W:x-gapX+16,H:y+6};
+}
+function draw(){
+  const {W,H}=layout();svg.setAttribute('width',W);svg.setAttribute('height',H);svg.setAttribute('viewBox',`0 0 ${W} ${H}`);
+  svg.replaceChildren();
+  const gl=el('g',{},svg),gn=el('g',{},svg);
+  (function walk(n){
+    if(n.open)n.kids.forEach(k=>{
+      const x1=n.x+n.w,y1=n.y+n.h/2,x2=k.x,y2=k.y+k.h/2,mx=(x1+x2)/2;
+      const p=el('path',{d:`M${x1},${y1} C${mx},${y1} ${mx},${y2} ${x2},${y2}`,class:'link'+(hotWithin(k)?'':' cold'),stroke:`var(--b${k.b})`},gl);
+      walk(k)});
+    const g=el('g',{class:'node'+(n.d===0?' root':'')+(n.hot?' hotn':'')+(hotWithin(n)?'':' cold'),tabindex:0,role:'button','aria-label':n.lines.join(' ')+(n.kids.length?(n.open?' (open)':' (closed)'):'')},gn);
+    const r=el('rect',{x:n.x,y:n.y,width:n.w,height:n.h,rx:n.d===0?14:10},g);
+    if(n.d>0){r.setAttribute('fill',n.d===1?`var(--b${n.b})`:`var(--b${n.b}t)`);
+      r.setAttribute('stroke',n.hot?'var(--hot)':`var(--b${n.b})`);if(n.hot)r.setAttribute('stroke-width',3)}
+    n.lines.forEach((l,i)=>{const t=el('text',{x:n.x+(n.d===0?18:13),y:n.y+7+17*(i+1)-4,fill:n.d===1?'var(--bg)':'var(--fg)'},g);t.textContent=l;
+      if(n.d===1)t.setAttribute('style','fill:var(--panel)');
+      if(n.d===1&&document.documentElement.dataset.theme==='dark')t.setAttribute('style','fill:var(--bg)')});
+    if(n.pg&&n.d>0){const t=el('text',{x:n.x+13,y:n.y+7+17*n.lines.length+11,class:'pgtag',fill:n.d===1?'var(--panel)':'var(--muted)'},g);t.textContent=n.pg;if(n.d===1&&document.documentElement.dataset.theme==='dark')t.setAttribute('fill','var(--bg)')}
+    if(n.c){const bg=el('g',{class:'badge'},g),bx=n.x+n.w-(n.kids.length?46:38),by=n.y+n.h/2-9;
+      el('rect',{x:bx,y:by,width:30,height:18,rx:9},bg);const t=el('text',{x:bx+15,y:by+13,'text-anchor':'middle'},bg);t.textContent='×'+n.c}
+    if(n.kids.length){const tg=el('g',{class:'tog'},g),cx=n.x+n.w,cy=n.y+n.h/2;
+      el('circle',{cx,cy,r:9,stroke:`var(--b${n.b||1})`},tg);const t=el('text',{x:cx,y:cy+4,'text-anchor':'middle'},tg);t.textContent=n.open?'−':'+';
+      tg.addEventListener('click',e=>{e.stopPropagation();n.open=!n.open;draw()})}
+    const act=()=>{show(n)};
+    g.addEventListener('click',act);
+    g.addEventListener('keydown',e=>{if(e.key==='Enter'||e.key===' '){e.preventDefault();act()}else if((e.key==='ArrowRight'||e.key==='ArrowLeft')&&n.kids.length){n.open=e.key==='ArrowRight';draw()}});
+  })(DATA);
+  svg.parentNode.classList.toggle('dim',hotOnly);
+}
+function esc(s){return s.replace(/[&<>]/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;'}[c]))}
+function show(n){
+  selected=n;
+  let h=`<div class="dctl"><button class="dbtn" data-act="min" aria-label="Minimise this box" title="Minimise">&#8722;</button><button class="dbtn" data-act="close" aria-label="Close this box" title="Close">&#215;</button></div><h2>${esc(n.lines.join(' '))}${n.c?`<span class="pill">${n.c} past-paper question${n.c>1?'s':''}</span>`:'<span class="pill zero">no past-paper question yet</span>'}</h2>`;
+  if(n.pg)h+=`<p class="pgline"><b>Revise in Book B:</b> ${esc(n.pg)}</p>`;
+  h+=(n.n?`<p>${esc(n.n)}</p>`:'<p class="hint">Open this branch to see the points inside it.</p>');
+  if(n.tip)h+=`<div class="tip"><b>Exam</b>${esc(n.tip)}</div>`;
+  if(n.qs&&n.qs.length){h+=`<div class="qs"><div class="qh">Questions on this topic (tap one to see the answer)</div>`+n.qs.map(q=>`<details><summary><span class="qid">${esc(q[0])}</span> ${esc(q[1])}</summary><div class="ans">${esc(q[2])}</div></details>`).join('')+`</div>`}
+  else if(n.kids.length&&n.tot){h+=`<p class="hint">${n.tot} question${n.tot>1?'s':''} sit in the boxes inside this branch. Open it and tap each box.</p>`}
+  detail.hidden=false;detail.classList.remove('min');
+  detail.innerHTML=h;
+}
+detail.addEventListener('click',e=>{const b=e.target.closest('.dbtn');if(!b)return;if(b.dataset.act==='close'){detail.hidden=true}else{detail.classList.toggle('min');b.innerHTML=detail.classList.contains('min')?'+':'&#8722;';b.title=detail.classList.contains('min')?'Expand':'Minimise';b.setAttribute('aria-label',b.title+' this box')}});
+document.addEventListener('keydown',e=>{if(e.key==='Escape')detail.hidden=true});
+function setAll(v,n=DATA){if(n.kids.length){n.open=v;n.kids.forEach(k=>setAll(v,k))}}
+document.getElementById('hotBtn').onclick=e=>{hotOnly=!hotOnly;e.currentTarget.setAttribute('aria-pressed',hotOnly);draw()};
+document.getElementById('expBtn').onclick=()=>{setAll(true);draw()};
+document.getElementById('colBtn').onclick=()=>{setAll(false);DATA.open=true;draw()};
+(document.fonts&&document.fonts.ready?document.fonts.ready:Promise.resolve()).then(draw);
+draw();
+</script>

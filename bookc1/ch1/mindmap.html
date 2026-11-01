@@ -1,0 +1,180 @@
+<title>C1 Ch1 Mindmap</title>
+<meta name="claude:viewport-fit-sides" content="cover">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:wght@500;600&family=IBM+Plex+Sans:wght@400;500;600&family=Bricolage+Grotesque:opsz,wght@12..96,700&display=swap">
+<style>
+/* Layout: left-to-right branching map in a scroll pane, controls above, detail card below. */
+:root{
+  --bg:#f3f5f9; --panel:#ffffff; --fg:#14213d; --muted:#5b6784; --line:#cfd6e4; --hot:#d62839;
+  --b1:#1d4ed8; --b1t:#e3ebff; --b2:#0f766e; --b2t:#dcf5f1; --b3:#b45309; --b3t:#fdebd0;
+  --b4:#7e22ce; --b4t:#f0e2fd; --b5:#be185d; --b5t:#fde2ee; --b6:#3f6212; --b6t:#e8f3d1;
+  --root:#14213d; --rootfg:#ffffff;
+  --font:'IBM Plex Sans',system-ui,sans-serif; --mono:'IBM Plex Mono',ui-monospace,monospace; --disp:'Bricolage Grotesque','IBM Plex Sans',sans-serif;
+}
+@media (prefers-color-scheme:dark){:root:not([data-theme="light"]){
+  --bg:#0d1424; --panel:#16203a; --fg:#e6ebf7; --muted:#9aa7c7; --line:#2b3858; --hot:#ff6b7a;
+  --b1:#7aa2ff; --b1t:#18284f; --b2:#4fd1c1; --b2t:#0f2e2c; --b3:#f4b25c; --b3t:#3a2a12;
+  --b4:#c79bff; --b4t:#2b1c45; --b5:#ff8cbc; --b5t:#40182e; --b6:#b6dd72; --b6t:#26331a;
+  --root:#e6ebf7; --rootfg:#0d1424; color-scheme:dark}}
+:root[data-theme="dark"]{
+  --bg:#0d1424; --panel:#16203a; --fg:#e6ebf7; --muted:#9aa7c7; --line:#2b3858; --hot:#ff6b7a;
+  --b1:#7aa2ff; --b1t:#18284f; --b2:#4fd1c1; --b2t:#0f2e2c; --b3:#f4b25c; --b3t:#3a2a12;
+  --b4:#c79bff; --b4t:#2b1c45; --b5:#ff8cbc; --b5t:#40182e; --b6:#b6dd72; --b6t:#26331a;
+  --root:#e6ebf7; --rootfg:#0d1424; color-scheme:dark}
+body{background:var(--bg);color:var(--fg);font-family:var(--font);font-size:15px;line-height:1.5;
+  padding-block:20px 40px;padding-left:max(16px,env(safe-area-inset-left,0px));padding-right:max(16px,env(safe-area-inset-right,0px))}
+.wrap{max-width:1400px;margin:0 auto;display:flex;flex-direction:column;gap:14px}
+header{display:flex;flex-wrap:wrap;gap:6px 18px;align-items:baseline;justify-content:space-between}
+.kicker{font-family:var(--mono);font-size:12px;letter-spacing:.08em;text-transform:uppercase;color:var(--muted)}
+h1{font-family:var(--disp);font-size:clamp(24px,4vw,36px);line-height:1.1;margin:2px 0 0;text-wrap:balance}
+.sub{color:var(--muted);max-width:60ch;margin:6px 0 0}
+.bar{display:flex;flex-wrap:wrap;gap:8px 10px;align-items:center}
+button{font:inherit;font-size:13px;color:var(--fg);background:var(--panel);border:1px solid var(--line);border-radius:8px;padding:6px 12px;cursor:pointer}
+button:hover{border-color:var(--fg)}
+button[aria-pressed="true"]{background:var(--hot);border-color:var(--hot);color:#fff}
+button:focus-visible,.node:focus-visible{outline:2px solid var(--fg);outline-offset:2px}
+.legend{display:flex;flex-wrap:wrap;gap:6px 16px;font-size:13px;color:var(--muted);align-items:center}
+.legend .pill{font-family:var(--mono);font-size:11px;font-weight:600;background:var(--hot);color:#fff;border-radius:99px;padding:1px 7px}
+.legend .sw{display:inline-block;width:14px;height:14px;border-radius:4px;vertical-align:-2px;margin-right:5px}
+.pane{background:var(--panel);border:1px solid var(--line);border-radius:14px;overflow-x:auto;overflow-y:hidden}
+svg{display:block}
+.link{fill:none;stroke-width:2;opacity:.55}
+.node{cursor:pointer}
+.node rect{stroke-width:1.5;transition:opacity .15s}
+.node text{font-family:var(--font);font-size:13px;font-weight:500;pointer-events:none}
+.node.hotn text{font-weight:600}
+.node text.pgtag{font-family:var(--mono);font-size:11px;font-weight:500;opacity:.85}
+.node .badge rect{fill:var(--hot);stroke:none}
+.node .badge text{fill:#fff;font-family:var(--mono);font-size:11px;font-weight:600}
+.node .tog circle{fill:var(--panel);stroke-width:1.5}
+.node .tog text{font-family:var(--mono);font-size:12px;font-weight:600;fill:var(--fg)}
+.dim .node.cold{opacity:.22}
+.dim .link.cold{opacity:.12}
+.root rect{fill:var(--root);stroke:none}
+.root text{fill:var(--rootfg);font-family:var(--disp);font-size:16px;font-weight:700}
+.detail{background:var(--panel);border:1px solid var(--line);border-radius:14px;padding:14px 18px;min-height:72px;position:sticky;bottom:max(8px,env(safe-area-inset-bottom,0px));z-index:5;box-shadow:0 -6px 18px rgba(20,33,61,.14);max-height:52vh;overflow:auto}
+.detail h2{font-family:var(--disp);font-size:20px;margin:0 0 4px;display:flex;gap:10px;align-items:center;flex-wrap:wrap}
+.detail h2 .pill{font-family:var(--mono);font-size:12px;font-weight:600;background:var(--hot);color:#fff;border-radius:99px;padding:1px 9px}
+.detail p{margin:6px 0 0;max-width:80ch;white-space:pre-line}
+.detail .hint{color:var(--muted)}
+.detail .pgline{margin:0 0 8px;font-family:var(--mono);font-size:13px;color:var(--fg)}
+.detail .pgline b{font-family:var(--font);font-weight:600}
+.detail h2 .pill.zero{background:var(--line);color:var(--muted)}
+.dctl{float:right;display:flex;gap:6px;margin:-2px 0 6px 10px}
+.dbtn{width:32px;height:32px;padding:0;font-size:20px;line-height:1;border-radius:8px}
+.detail.min{max-height:none;overflow:visible;padding-block:8px}
+.detail.min>*:not(.dctl):not(h2){display:none}
+.detail.min h2{margin:0;font-size:16px}
+.qs{margin-top:12px;display:flex;flex-direction:column;gap:6px;max-width:90ch}
+.qh{font-family:var(--mono);font-size:11px;letter-spacing:.06em;text-transform:uppercase;color:var(--muted)}
+.qs details{border:1px solid var(--line);border-radius:8px;padding:6px 10px;background:var(--bg)}
+.qs summary{cursor:pointer;font-size:14px}
+.qid{font-family:var(--mono);font-weight:600;font-size:12px;background:var(--b1t);color:var(--b1);border-radius:6px;padding:1px 6px;margin-right:4px}
+.ans{margin-top:6px;padding-top:6px;border-top:1px dashed var(--line);font-size:14px;white-space:pre-line}
+.tip{margin-top:10px;padding:8px 12px;border-radius:8px;background:var(--b3t);color:var(--fg);max-width:80ch;font-size:14px}
+.tip b{font-family:var(--mono);font-size:11px;letter-spacing:.06em;text-transform:uppercase;color:var(--b3);margin-right:6px}
+code,.m{font-family:var(--mono);font-size:.92em}
+.backlink{display:inline-block;margin-bottom:8px;font-family:var(--mono);font-size:12px;letter-spacing:.06em;text-transform:uppercase;color:var(--muted);text-decoration:none}
+.backlink:hover{color:var(--fg);text-decoration:underline}
+@media (prefers-reduced-motion:reduce){.node rect{transition:none}}
+</style>
+<div class="wrap">
+  <header>
+    <div>
+      <a class="backlink" href="../../index.html#concepts-book-c1">&larr; Back to Book C1</a>
+      <div class="kicker">Book C1 · Chapter 1</div>
+      <h1>Networking and Internet Basics</h1>
+      <p class="sub">Every concept in the chapter, with each past-paper question attached to the topic it tests.</p>
+    </div>
+    <div class="bar">
+      <button id="hotBtn" aria-pressed="false">Show topics with 8+ questions only</button>
+      <button id="expBtn">Expand all</button>
+      <button id="colBtn">Collapse all</button>
+    </div>
+  </header>
+  <div class="legend">
+    <span><span class="pill">×12</span> number of past-paper questions on this topic, all listed with answers when you tap the box</span>
+    <span><span class="sw" style="background:var(--hot)"></span>red outline = 8 or more questions</span>
+    <span>Tap a box to read the key points. Tap + / − to open or close a branch.</span>
+  </div>
+  <div class="pane" id="pane"><svg id="svg" role="img" aria-label="Networking and Internet Basics mind map"></svg></div>
+  <div class="detail" id="detail" aria-live="polite"><p class="hint">Tap any box on the map to see what to remember and every past-paper question on it.</p></div>
+</div>
+<script>
+const DATA = {"t": "C1 Ch.1\nNetworking and\nInternet Basics", "ch": [{"t": "1.1 Introduction to\ncomputer networks", "n": "A computer network interconnects devices to exchange information and share resources. Every network needs a sender, a receiver, a message, a communication link (physical way to carry the message) and a protocol (rules of transmission)."}, {"t": "1.2 Network architecture", "n": "Networks are classified by coverage (LAN, WAN) and by how resources are managed (client-server, peer-to-peer).", "ch": [{"t": "LAN vs WAN", "n": "LAN (local area network): smaller coverage, lower setup and maintenance cost, higher data transfer rate, higher security. WAN (wide area network): larger coverage, higher cost, lower rate, lower security. A LAN linked to an ISP becomes part of a WAN.", "tip": "Remember the 4 comparison points: coverage, cost, transfer rate, security.", "qs": [["MC", "Which are the advantages of using a LAN over a WAN? (1) Higher data transfer rate (2) Larger network coverage (3) Lower setup cost", "Answer: B. (1) and (3) only"], ["MC", "A company establishes a WAN instead of a LAN mainly because of the ______.", "Answer: B. coverage"]]}, {"t": "Client-server vs peer-to-peer", "n": "Client-server: a server gives centralised administration; resources and access control come from the server. Pros: high security (user management), same version of resources, easier backup. Cons: higher cost, harder setup, services stop when the server is down. Peer-to-peer: no central administration, devices share files themselves. Pros: lower cost, easy setup, flexible. Cons: less security, needs dedicated software, harder version control.", "tip": "Server down = whole service stops in client-server; P2P has weaker security and version control.", "qs": [["2017-1(e)(i)", "Give two possible uses of the users' data stored in the centralised servers that can benefit Mary. (2 marks)", "Helps recover users' contact lists / previous messages through the Internet. Data on the tablet can be deleted to save storage space. Maintains consistency of data across multiple devices."], ["2020-4(a)(ii)", "Describe two major network services for the dedicated terminals provided by the server. (2 marks)", "Price searching (database access); store the transaction (data storage); deduct the item count (database update); calculation for transactions (computation); connection with printers in terminals / kitchen (communication)."], ["MC", "What service will the teacher's computer commonly provide for the desktop computers? (1) File sharing (2) Email (3) Web browsing", "Answer: A. (1) only"]]}, {"t": "Peer-to-peer file sharing (BitTorrent)", "n": "Fast when many peers are sharing, but files come from unidentified users: possible pirated copies (copyright infringement), malware and spread of viruses. Efficient for sharing working files inside a group. Downloading from a hyperlink has a more reliable source, but speed depends on the site's bandwidth and a broken download may have to restart.", "tip": "Social impacts of P2P: pirated copies, virus spread. A trusted hyperlink is more reliable, P2P is faster.", "qs": [["2012sp-3(c)", "List two social impacts of the inappropriate use of this P2P freeware. (2 marks)", "Promotes sharing of pirated copies. Increases the chance of virus spreading."], ["2013-3(b)(i)", "Give a reason to support Billy's recommendation (delete the BT program). (1 mark)", "Software comes from unidentified individual users and might be pirated copies."], ["2013-3(b)(ii)", "Give a reason to support Charles' decision (keep the BT program). (1 mark)", "Charles can share working files with colleagues efficiently."], ["2016-1(e)(i)", "Amy downloaded a seed file through a forum hyperlink and obtained the software through BT. Give two potential problems. (1 mark)", "Computer might be infected by malware upon installation; software may not be the updated version; source might not be legitimate and may violate intellectual property rights."], ["2012sp-3(b)", "Give one advantage and one disadvantage of using a hyperlink over P2P freeware to download the file. (2 marks)", "Advantage: the source is more reliable. Disadvantage: transfer rate depends on the bandwidth allocated by the site (slower); the whole program may have to be downloaded again if the connection closes."], ["MC", "Peter can download by Method 1 (direct download through HTTP) or Method 2 (P2P). He chooses Method 1. Why?", "Answer: B. No dedicated software is required."], ["MC", "Peter uses P2P software to download a commercial program; friends advise against. Why? (1) digital divide (2) may be spyware (3) may infringe copyright", "Answer: D. (2) and (3) only"]]}]}, {"t": "1.3 Network services", "n": "Devices on a network do two main things: resource sharing (hardware, software, data, Internet access) and communication (internal and external, conferencing).", "tip": "Resource sharing: hardware, software, files and data, Internet access.", "qs": [["2021-1(a)", "Give two uses of the network for John, other than Internet access. (2 marks)", "Share printer / storage space (hardware sharing); exchange data (file sharing)."], ["2013-1(a)(i)", "John connects the printer to the network at P (the desktop computer) instead of Q. Advantage and disadvantage? (2 marks)", "Advantage: easy to control / set up the printer. Disadvantage: printer can be used only when the desktop is on; desktop runs slower while the printer is printing."]]}, {"t": "1.4 Network hardware", "n": "Internet -> Modem -> Router -> Switch -> other devices (MRS). Plus access points, NICs and cables.", "ch": [{"t": "Network interface card (NIC)", "n": "A card (wired or wireless) that connects a device to the network, sending and receiving network signals. Each NIC has a unique 48-bit MAC address hard-coded by the manufacturer.", "qs": [["2018-1(b)", "NICs, network cables and switches are needed to install the workstations. Briefly explain the uses of these. (3 marks)", "NIC: installed in each workstation to manage data sent and received through the cables. Cables: communication links between NICs and switches. Switch: manages data transmission between workstations and servers."], ["MC", "Why should NICs be used in a computer network? (1) 10 GB per second (2) NICs connect computers to the network (3) convert analog signals to digital", "Answer: B. (2) only"], ["MC", "What is the main function of a network interface card?", "Answer: B. To make a computer communicate over a network"], ["MC", "Which is the main function of a NIC in a computer?", "Answer: D. To send and receive network signals."], ["MC", "Mary cannot access the Internet through her computer at home. Possible cause?", "Answer: D. The network interface card is out of order."]]}, {"t": "Modem", "n": "Connects the ISP with a network for Internet access and converts signals between analog and digital (modulation / demodulation). ADSL modem: download faster than upload (homes). SDSL: equal speeds (service providers). A cable modem uses radio-frequency signals on cable.", "qs": [["2012pp-4(b)", "What is the function of the cable modem? (2 marks)", "Modulates digital signals into radio-frequency signals carried by cable and demodulates the incoming radio-frequency signals into digital signals for computer processing."]]}, {"t": "Router", "n": "Connects LANs together or a LAN to a WAN (the Internet) and directs data by IP address. The WAN port faces the Internet; LAN ports connect local devices. A home (all-in-one) router = router + switch + access point.", "tip": "Router: IP address, connects different networks. Switch: MAC address, forms one LAN.", "qs": [["2013-1(c)", "On the rear of the router, mark where cables X and Y should be connected. (2 marks)", "X: LAN. Y: WAN."], ["2024-3(a)(i)", "Suggest a port for each device: broadband modem, desktop computer. (2 marks)", "Modem: port 5 (WAN / Internet). Computer: any of ports 1-4 (LAN)."], ["2022sp-6(a)(i)", "Suggest a port on the router that can be connected to the Internet. (1 mark)", "WAN."], ["2012pp-4(a)(i)", "What network connecting devices are X (inside a building) and Y (to the other building / outside)? (2 marks)", "X: switch / hub. Y: router."], ["2021-1(a)(i)", "X and Z are network devices. The tablet connects to Z for Internet access. What are X and Z? (2 marks)", "X: modem / router. Z: access point / wireless router."], ["MC", "A router should be used to connect ______.", "Answer: A. two different networks"], ["MC", "In the network diagram, what is the major function of X (router)?", "Answer: D. To connect multiple networks together."], ["MC", "Which is commonly used for connecting two LANs?", "Answer: C. Router"], ["MC", "A search engine returns results related to the country where the computer is. What discloses this location?", "Answer: D. The Internet Service Provider"], ["MC", "Advantages of a leased line over broadband? (1) more reliable (2) lower cost (3) guaranteed bandwidth", "Answer: C. (1) and (3) only"], ["MC", "A company subscribes to a 10M leased line instead of 10M broadband because ______.", "Answer: C. it is more secure"], ["MC", "Buying a wireless broadband router for home: which consideration is not necessary?", "Answer: C. The IP address of the router"]]}, {"t": "Switch", "n": "Connects all devices (AP, PS5, laptop) to form a LAN and directs data by MAC address. Facilitates data transmission between computers and controls traffic. It does not join networks or connect a LAN to the Internet (that is the router).", "qs": [["2020-4(a)(i)", "X is a network connecting device. What should X be? (1 mark)", "Switch / hub."], ["2023-4(a)(ii)", "David uses a switch instead of a router. Give a reason. (1 mark)", "He wants one single network / to connect all devices in the shop; a switch helps one device communicate with another."], ["2022-3(a)(i)", "A school network: P connects computer X; Q connects tablets. What are P and Q? (2 marks)", "P: switch / hub. Q: (wireless) access point / wireless router."], ["MC", "Major function of a switch in a school network?", "Answer: A. Facilitates data transmission between computers."], ["MC", "Which is a function of a switch? (1) connects computers to form a LAN (2) controls network traffic (3) joins two networks (4) connects LAN to Internet", "Answer: A. (1) and (2) only"]]}, {"t": "Access point (AP)", "n": "Provides wireless connection and forms a wireless LAN. Identified by SSID (Wi-Fi name). APs with the same SSID allow Wi-Fi roaming. Wireless devices (printer, tablets) connect through the AP.", "qs": [["2015-1(a)(ii)", "The wireless router is connected to the Internet. One advantage and one disadvantage? (2 marks)", "Advantage: the mobile device and router need not be near each other (distance). Disadvantage: higher security risk."], ["MC", "To let all desktop computers connect to the wireless printer, what should be done?", "Answer: D. The wireless printer should be connected to the AP."], ["MC", "School playground has wired network but also installs an AP. Why? (1) tablets for lessons (2) 24 hours (3) higher transfer rate", "Answer: A. (1) only"]]}, {"t": "Wired links (cables)", "n": "UTP: low cost, easy to install, ~100 m, short range inside a LAN. STP: faster and less interference than UTP, higher cost, ~100 m. Fibre optic: fastest, no electromagnetic interference, long distance, highest cost, hard to install, easily damaged. Use fibre between buildings or far away.", "tip": "Between buildings 600 m apart: optical fibre (distance). Home: UTP / STP / CAT5e / CAT6.", "qs": [["2013-1(b)(ii)", "X and Z are two different cables. Major difference in functional characteristic? (1 mark)", "Data transfer rate / maximum length of a cable segment."], ["2023-4(a)(i)", "Name two transmission media for a wired network. (2 marks)", "Twisted pair (UTP / STP), fibre optics, coaxial cable."], ["2012pp-4(a)(ii)", "Suggest a cable for the connection across two buildings 600 m apart and justify. (1 mark)", "Optical fibre, because it supports a distance of 600 m."], ["2022sp-6(a)(ii)", "Suggest the type of cable for home. (1 mark)", "UTP / STP / twisted pair / CAT5 / CAT5e / CAT6."], ["2014-2(d)", "Ms Wong in a hotel with a wall data port must connect notebook, tablet and phone. State the hardware and describe the connection. (2 marks)", "UTP (Cat5) cable plus a wireless router to build a Wi-Fi network; or turn the notebook into a hotspot for the other two."], ["MC", "Which comparison of effective data transfer rate is correct?", "Answer: B. Satellite < Cat 6 (twisted pair) < Fibre optics"], ["MC", "Fibre optics is used in a network because (1) supports wired and wireless (2) very high rate (3) long distance", "Answer: C. (2) and (3) only"], ["MC", "Upgrading school bandwidth from 100 Mbps to 10 Gbps: suggest", "Answer: C. Replace CAT 5 cable with optical fibre"]]}, {"t": "Wireless links", "n": "Far away: satellite (wide coverage, highest cost, weather-affected) and microwave (cheaper, shorter range, weather-affected, exposed to air so less secure). Short range: Wi-Fi (2.4 / 5 GHz, high rate, large coverage) and Bluetooth (2.4 GHz, low power, peer-to-peer). 2.4 GHz: slower, longer range, more interference. 5 GHz: faster, shorter range, less interference. Standards: 802.11n (600 Mbps), 802.11ac (1 Gbps), 802.11ax / Wi-Fi 6 (10 Gbps).", "tip": "Slow Wi-Fi: change channel, limit connections, move to 5 GHz. Wired = more stable and secure than wireless.", "qs": [["2012pp-4(a)(iii)", "Connect two networks with microwave dishes instead of wire. State two disadvantages. (2 marks)", "Low data transfer rate; easily affected by weather; transmission exposed to the air so security is vulnerable."], ["2019-4(a)(i)", "Wired connections for online game booths: give two reasons. (2 marks)", "Stable connections (less interference), lower security risk, higher data transfer rate."], ["2019-4(a)(ii)", "Suggest a common wireless method for controlling the drones. (1 mark)", "Wi-Fi / 802.11ac."], ["2021-2(a)", "Two benefits of a wireless network instead of wired in the library. (2 marks)", "Access anywhere in the library without cable limits; flexible number of connections; allows Wi-Fi-only devices to access services."], ["2023-5(b)(iii)", "Two potential problems of using Wi-Fi to upload data files to the server. (2 marks)", "Security problem (e.g. eavesdropping); unstable connection."], ["2024-3(a)(ii)", "Other than bandwidth, an advantage of wired over wireless between router and computer. (1 mark)", "More stable connection / higher security."], ["2022sp-6(b)", "Wireless speed is occasionally very slow. Suggest a change to wireless settings and justify. (2 marks)", "Change to another channel to avoid busy channels; restrict the maximum number of connections; change frequency (2.4 GHz to 5 GHz)."], ["2014-2(b)", "At an airport the Wi-Fi signal is strong but the Internet is slow. Why? (2 marks)", "Many users connect to the AP and each shares a narrower bandwidth; or the airport sets a bandwidth limit per connection."], ["MC", "About wired vs wireless networks, which is correct?", "Answer: A. Wired: more stable connection; Wireless: flexible network access"], ["MC", "Best practice for online banking? (1) uncommon login name (2) letters and numbers password, change regularly (3) avoid wired when wireless available", "Answer: B. (1) and (2) only"], ["MC", "Advantage of wireless replacing wired? (1) faster (2) more secure (3) increased mobility", "Answer: B. (3) only"], ["MC", "Smart thermostat connects to the Internet wirelessly. Advantage?", "Answer: A. Convenient for installing and controlling the thermostat."], ["MC", "File transfer between notebook and desktop through home wireless is very slow. Possible reason?", "Answer: D. A thick wall between the computers and the wireless router."], ["MC", "John finds the neighbour's unsecured WiFi and can fully control the router. What should he do?", "Answer: A. Ignore the network connection."], ["MC", "Mary uses her phone in the office to control appliances on home Wi-Fi. What is involved? (1) LAN (2) Internet (3) Access Point", "Answer: D. (1), (2) and (3)"]]}]}]};
+const HOT = 8;
+const NS='http://www.w3.org/2000/svg';
+const FONT="500 13px 'IBM Plex Sans', system-ui, sans-serif";
+const cv=document.createElement('canvas').getContext('2d');
+const svg=document.getElementById('svg'), detail=document.getElementById('detail');
+let hotOnly=false, selected=null;
+function el(n,a,p){const e=document.createElementNS(NS,n);for(const k in a)e.setAttribute(k,a[k]);if(p)p.appendChild(e);return e}
+function prep(n,d,b){n.d=d;n.b=b;n.open=d<2;n.lines=n.t.split('\n');n.kids=n.ch||[];n.kids.forEach(k=>prep(k,d+1,d===0?(n.kids.indexOf(k)%6)+1:b));}
+prep(DATA,0,0);
+(function tot(n){n.tot=(n.qs?n.qs.length:0)+n.kids.reduce((a,k)=>a+tot(k),0);n.c=n.tot;if(n.d>0)n.hot=n.tot>=HOT;return n.tot})(DATA);
+function hotWithin(n){return !!n.hot||(n.kids||[]).some(hotWithin)}
+function measure(n){cv.font=n.d===0?"700 16px 'Bricolage Grotesque', sans-serif":FONT;
+  n.w=Math.ceil(Math.max(...n.lines.map(l=>cv.measureText(l).width)))+(n.d===0?36:26)+(n.c?(n.kids.length?42:34):0);
+  if(n.pg&&n.d>0){cv.font="500 11px 'IBM Plex Mono', monospace";n.w=Math.max(n.w,Math.ceil(cv.measureText(n.pg).width)+26+(n.c?(n.kids.length?42:34):0))}
+  n.h=n.lines.length*17+14+(n.pg&&n.d>0?14:0);n.kids.forEach(measure)}
+function layout(){
+  measure(DATA);
+  const colW=[];(function m(n){colW[n.d]=Math.max(colW[n.d]||0,n.w);n.kids.forEach(m)})(DATA);
+  const gapX=46,x0=[];let x=16;colW.forEach((w,i)=>{x0[i]=x;x+=w+gapX});
+  let y=16;
+  (function place(n){
+    n.x=x0[n.d];
+    const vis=n.open?n.kids:[];
+    if(!vis.length){n.y=y;y+=n.h+10}
+    else{vis.forEach(place);const f=vis[0],l=vis[vis.length-1];n.y=(f.y+f.h/2+l.y+l.h/2)/2-n.h/2}
+  })(DATA);
+  return {W:x-gapX+16,H:y+6};
+}
+function draw(){
+  const {W,H}=layout();svg.setAttribute('width',W);svg.setAttribute('height',H);svg.setAttribute('viewBox',`0 0 ${W} ${H}`);
+  svg.replaceChildren();
+  const gl=el('g',{},svg),gn=el('g',{},svg);
+  (function walk(n){
+    if(n.open)n.kids.forEach(k=>{
+      const x1=n.x+n.w,y1=n.y+n.h/2,x2=k.x,y2=k.y+k.h/2,mx=(x1+x2)/2;
+      const p=el('path',{d:`M${x1},${y1} C${mx},${y1} ${mx},${y2} ${x2},${y2}`,class:'link'+(hotWithin(k)?'':' cold'),stroke:`var(--b${k.b})`},gl);
+      walk(k)});
+    const g=el('g',{class:'node'+(n.d===0?' root':'')+(n.hot?' hotn':'')+(hotWithin(n)?'':' cold'),tabindex:0,role:'button','aria-label':n.lines.join(' ')+(n.kids.length?(n.open?' (open)':' (closed)'):'')},gn);
+    const r=el('rect',{x:n.x,y:n.y,width:n.w,height:n.h,rx:n.d===0?14:10},g);
+    if(n.d>0){r.setAttribute('fill',n.d===1?`var(--b${n.b})`:`var(--b${n.b}t)`);
+      r.setAttribute('stroke',n.hot?'var(--hot)':`var(--b${n.b})`);if(n.hot)r.setAttribute('stroke-width',3)}
+    n.lines.forEach((l,i)=>{const t=el('text',{x:n.x+(n.d===0?18:13),y:n.y+7+17*(i+1)-4,fill:n.d===1?'var(--bg)':'var(--fg)'},g);t.textContent=l;
+      if(n.d===1)t.setAttribute('style','fill:var(--panel)');
+      if(n.d===1&&document.documentElement.dataset.theme==='dark')t.setAttribute('style','fill:var(--bg)')});
+    if(n.pg&&n.d>0){const t=el('text',{x:n.x+13,y:n.y+7+17*n.lines.length+11,class:'pgtag',fill:n.d===1?'var(--panel)':'var(--muted)'},g);t.textContent=n.pg;if(n.d===1&&document.documentElement.dataset.theme==='dark')t.setAttribute('fill','var(--bg)')}
+    if(n.c){const bg=el('g',{class:'badge'},g),bx=n.x+n.w-(n.kids.length?46:38),by=n.y+n.h/2-9;
+      el('rect',{x:bx,y:by,width:30,height:18,rx:9},bg);const t=el('text',{x:bx+15,y:by+13,'text-anchor':'middle'},bg);t.textContent='×'+n.c}
+    if(n.kids.length){const tg=el('g',{class:'tog'},g),cx=n.x+n.w,cy=n.y+n.h/2;
+      el('circle',{cx,cy,r:9,stroke:`var(--b${n.b||1})`},tg);const t=el('text',{x:cx,y:cy+4,'text-anchor':'middle'},tg);t.textContent=n.open?'−':'+';
+      tg.addEventListener('click',e=>{e.stopPropagation();n.open=!n.open;draw()})}
+    const act=()=>{show(n)};
+    g.addEventListener('click',act);
+    g.addEventListener('keydown',e=>{if(e.key==='Enter'||e.key===' '){e.preventDefault();act()}else if((e.key==='ArrowRight'||e.key==='ArrowLeft')&&n.kids.length){n.open=e.key==='ArrowRight';draw()}});
+  })(DATA);
+  svg.parentNode.classList.toggle('dim',hotOnly);
+}
+function esc(s){return s.replace(/[&<>]/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;'}[c]))}
+function show(n){
+  selected=n;
+  let h=`<div class="dctl"><button class="dbtn" data-act="min" aria-label="Minimise this box" title="Minimise">&#8722;</button><button class="dbtn" data-act="close" aria-label="Close this box" title="Close">&#215;</button></div><h2>${esc(n.lines.join(' '))}${n.c?`<span class="pill">${n.c} past-paper question${n.c>1?'s':''}</span>`:'<span class="pill zero">no past-paper question yet</span>'}</h2>`;
+  if(n.pg)h+=`<p class="pgline"><b>Revise in Book C1:</b> ${esc(n.pg)}</p>`;
+  h+=(n.n?`<p>${esc(n.n)}</p>`:'<p class="hint">Open this branch to see the points inside it.</p>');
+  if(n.tip)h+=`<div class="tip"><b>Exam</b>${esc(n.tip)}</div>`;
+  if(n.qs&&n.qs.length){h+=`<div class="qs"><div class="qh">Questions on this topic (tap one to see the answer)</div>`+n.qs.map(q=>`<details><summary><span class="qid">${esc(q[0])}</span> ${esc(q[1])}</summary><div class="ans">${esc(q[2])}</div></details>`).join('')+`</div>`}
+  else if(n.kids.length&&n.tot){h+=`<p class="hint">${n.tot} question${n.tot>1?'s':''} sit in the boxes inside this branch. Open it and tap each box.</p>`}
+  detail.hidden=false;detail.classList.remove('min');
+  detail.innerHTML=h;
+}
+detail.addEventListener('click',e=>{const b=e.target.closest('.dbtn');if(!b)return;if(b.dataset.act==='close'){detail.hidden=true}else{detail.classList.toggle('min');b.innerHTML=detail.classList.contains('min')?'+':'&#8722;';b.title=detail.classList.contains('min')?'Expand':'Minimise';b.setAttribute('aria-label',b.title+' this box')}});
+document.addEventListener('keydown',e=>{if(e.key==='Escape')detail.hidden=true});
+function setAll(v,n=DATA){if(n.kids.length){n.open=v;n.kids.forEach(k=>setAll(v,k))}}
+document.getElementById('hotBtn').onclick=e=>{hotOnly=!hotOnly;e.currentTarget.setAttribute('aria-pressed',hotOnly);draw()};
+document.getElementById('expBtn').onclick=()=>{setAll(true);draw()};
+document.getElementById('colBtn').onclick=()=>{setAll(false);DATA.open=true;draw()};
+(document.fonts&&document.fonts.ready?document.fonts.ready:Promise.resolve()).then(draw);
+draw();
+</script>

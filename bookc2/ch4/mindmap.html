@@ -1,0 +1,180 @@
+<title>C2 Ch4 Mindmap</title>
+<meta name="claude:viewport-fit-sides" content="cover">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:wght@500;600&family=IBM+Plex+Sans:wght@400;500;600&family=Bricolage+Grotesque:opsz,wght@12..96,700&display=swap">
+<style>
+/* Layout: left-to-right branching map in a scroll pane, controls above, detail card below. */
+:root{
+  --bg:#f3f5f9; --panel:#ffffff; --fg:#14213d; --muted:#5b6784; --line:#cfd6e4; --hot:#d62839;
+  --b1:#1d4ed8; --b1t:#e3ebff; --b2:#0f766e; --b2t:#dcf5f1; --b3:#b45309; --b3t:#fdebd0;
+  --b4:#7e22ce; --b4t:#f0e2fd; --b5:#be185d; --b5t:#fde2ee; --b6:#3f6212; --b6t:#e8f3d1;
+  --root:#14213d; --rootfg:#ffffff;
+  --font:'IBM Plex Sans',system-ui,sans-serif; --mono:'IBM Plex Mono',ui-monospace,monospace; --disp:'Bricolage Grotesque','IBM Plex Sans',sans-serif;
+}
+@media (prefers-color-scheme:dark){:root:not([data-theme="light"]){
+  --bg:#0d1424; --panel:#16203a; --fg:#e6ebf7; --muted:#9aa7c7; --line:#2b3858; --hot:#ff6b7a;
+  --b1:#7aa2ff; --b1t:#18284f; --b2:#4fd1c1; --b2t:#0f2e2c; --b3:#f4b25c; --b3t:#3a2a12;
+  --b4:#c79bff; --b4t:#2b1c45; --b5:#ff8cbc; --b5t:#40182e; --b6:#b6dd72; --b6t:#26331a;
+  --root:#e6ebf7; --rootfg:#0d1424; color-scheme:dark}}
+:root[data-theme="dark"]{
+  --bg:#0d1424; --panel:#16203a; --fg:#e6ebf7; --muted:#9aa7c7; --line:#2b3858; --hot:#ff6b7a;
+  --b1:#7aa2ff; --b1t:#18284f; --b2:#4fd1c1; --b2t:#0f2e2c; --b3:#f4b25c; --b3t:#3a2a12;
+  --b4:#c79bff; --b4t:#2b1c45; --b5:#ff8cbc; --b5t:#40182e; --b6:#b6dd72; --b6t:#26331a;
+  --root:#e6ebf7; --rootfg:#0d1424; color-scheme:dark}
+body{background:var(--bg);color:var(--fg);font-family:var(--font);font-size:15px;line-height:1.5;
+  padding-block:20px 40px;padding-left:max(16px,env(safe-area-inset-left,0px));padding-right:max(16px,env(safe-area-inset-right,0px))}
+.wrap{max-width:1400px;margin:0 auto;display:flex;flex-direction:column;gap:14px}
+header{display:flex;flex-wrap:wrap;gap:6px 18px;align-items:baseline;justify-content:space-between}
+.kicker{font-family:var(--mono);font-size:12px;letter-spacing:.08em;text-transform:uppercase;color:var(--muted)}
+h1{font-family:var(--disp);font-size:clamp(24px,4vw,36px);line-height:1.1;margin:2px 0 0;text-wrap:balance}
+.sub{color:var(--muted);max-width:60ch;margin:6px 0 0}
+.bar{display:flex;flex-wrap:wrap;gap:8px 10px;align-items:center}
+button{font:inherit;font-size:13px;color:var(--fg);background:var(--panel);border:1px solid var(--line);border-radius:8px;padding:6px 12px;cursor:pointer}
+button:hover{border-color:var(--fg)}
+button[aria-pressed="true"]{background:var(--hot);border-color:var(--hot);color:#fff}
+button:focus-visible,.node:focus-visible{outline:2px solid var(--fg);outline-offset:2px}
+.legend{display:flex;flex-wrap:wrap;gap:6px 16px;font-size:13px;color:var(--muted);align-items:center}
+.legend .pill{font-family:var(--mono);font-size:11px;font-weight:600;background:var(--hot);color:#fff;border-radius:99px;padding:1px 7px}
+.legend .sw{display:inline-block;width:14px;height:14px;border-radius:4px;vertical-align:-2px;margin-right:5px}
+.pane{background:var(--panel);border:1px solid var(--line);border-radius:14px;overflow-x:auto;overflow-y:hidden}
+svg{display:block}
+.link{fill:none;stroke-width:2;opacity:.55}
+.node{cursor:pointer}
+.node rect{stroke-width:1.5;transition:opacity .15s}
+.node text{font-family:var(--font);font-size:13px;font-weight:500;pointer-events:none}
+.node.hotn text{font-weight:600}
+.node text.pgtag{font-family:var(--mono);font-size:11px;font-weight:500;opacity:.85}
+.node .badge rect{fill:var(--hot);stroke:none}
+.node .badge text{fill:#fff;font-family:var(--mono);font-size:11px;font-weight:600}
+.node .tog circle{fill:var(--panel);stroke-width:1.5}
+.node .tog text{font-family:var(--mono);font-size:12px;font-weight:600;fill:var(--fg)}
+.dim .node.cold{opacity:.22}
+.dim .link.cold{opacity:.12}
+.root rect{fill:var(--root);stroke:none}
+.root text{fill:var(--rootfg);font-family:var(--disp);font-size:16px;font-weight:700}
+.detail{background:var(--panel);border:1px solid var(--line);border-radius:14px;padding:14px 18px;min-height:72px;position:sticky;bottom:max(8px,env(safe-area-inset-bottom,0px));z-index:5;box-shadow:0 -6px 18px rgba(20,33,61,.14);max-height:52vh;overflow:auto}
+.detail h2{font-family:var(--disp);font-size:20px;margin:0 0 4px;display:flex;gap:10px;align-items:center;flex-wrap:wrap}
+.detail h2 .pill{font-family:var(--mono);font-size:12px;font-weight:600;background:var(--hot);color:#fff;border-radius:99px;padding:1px 9px}
+.detail p{margin:6px 0 0;max-width:80ch;white-space:pre-line}
+.detail .hint{color:var(--muted)}
+.detail .pgline{margin:0 0 8px;font-family:var(--mono);font-size:13px;color:var(--fg)}
+.detail .pgline b{font-family:var(--font);font-weight:600}
+.detail h2 .pill.zero{background:var(--line);color:var(--muted)}
+.dctl{float:right;display:flex;gap:6px;margin:-2px 0 6px 10px}
+.dbtn{width:32px;height:32px;padding:0;font-size:20px;line-height:1;border-radius:8px}
+.detail.min{max-height:none;overflow:visible;padding-block:8px}
+.detail.min>*:not(.dctl):not(h2){display:none}
+.detail.min h2{margin:0;font-size:16px}
+.qs{margin-top:12px;display:flex;flex-direction:column;gap:6px;max-width:90ch}
+.qh{font-family:var(--mono);font-size:11px;letter-spacing:.06em;text-transform:uppercase;color:var(--muted)}
+.qs details{border:1px solid var(--line);border-radius:8px;padding:6px 10px;background:var(--bg)}
+.qs summary{cursor:pointer;font-size:14px}
+.qid{font-family:var(--mono);font-weight:600;font-size:12px;background:var(--b1t);color:var(--b1);border-radius:6px;padding:1px 6px;margin-right:4px}
+.ans{margin-top:6px;padding-top:6px;border-top:1px dashed var(--line);font-size:14px;white-space:pre-line}
+.tip{margin-top:10px;padding:8px 12px;border-radius:8px;background:var(--b3t);color:var(--fg);max-width:80ch;font-size:14px}
+.tip b{font-family:var(--mono);font-size:11px;letter-spacing:.06em;text-transform:uppercase;color:var(--b3);margin-right:6px}
+code,.m{font-family:var(--mono);font-size:.92em}
+.backlink{display:inline-block;margin-bottom:8px;font-family:var(--mono);font-size:12px;letter-spacing:.06em;text-transform:uppercase;color:var(--muted);text-decoration:none}
+.backlink:hover{color:var(--fg);text-decoration:underline}
+@media (prefers-reduced-motion:reduce){.node rect{transition:none}}
+</style>
+<div class="wrap">
+  <header>
+    <div>
+      <a class="backlink" href="../../index.html#concepts-book-c2">&larr; Back to Book C2</a>
+      <div class="kicker">Book C2 · Chapter 4</div>
+      <h1>Elementary Web Authoring</h1>
+      <p class="sub">Every concept in the chapter, with each past-paper question attached to the topic it tests.</p>
+    </div>
+    <div class="bar">
+      <button id="hotBtn" aria-pressed="false">Show topics with 6+ questions only</button>
+      <button id="expBtn">Expand all</button>
+      <button id="colBtn">Collapse all</button>
+    </div>
+  </header>
+  <div class="legend">
+    <span><span class="pill">×12</span> number of past-paper questions on this topic, all listed with answers when you tap the box</span>
+    <span><span class="sw" style="background:var(--hot)"></span>red outline = 8 or more questions</span>
+    <span>Tap a box to read the key points. Tap + / − to open or close a branch.</span>
+  </div>
+  <div class="pane" id="pane"><svg id="svg" role="img" aria-label="Elementary Web Authoring mind map"></svg></div>
+  <div class="detail" id="detail" aria-live="polite"><p class="hint">Tap any box on the map to see what to remember and every past-paper question on it.</p></div>
+</div>
+<script>
+const DATA = {"t": "C2 Ch.4\nElementary Web\nAuthoring", "ch": [{"t": "4.1 Basic components of a webpage", "n": "HTML: content and structure. CSS: appearance of HTML elements. JavaScript: dynamic behaviour and interaction."}, {"t": "4.2 HTML", "n": "HTML is the hypertext format a server sends after an HTTP request; the browser interprets it into a web page. It is cross-platform because browsers run on every OS.", "ch": [{"t": "HTML format and editors", "n": "HTML supports hyperlinks, text formatting and multimedia, and is portable (only a browser is needed). Text editors: found in all OS, simple, concise code. Web authoring tools (WYSIWYG, e.g. Visual Studio): built-in tools, templates, user-friendly. HTML is written, not compiled.", "tip": "HTML vs plain text email: text formatting, hyperlinks, multimedia. HTML presentation: only a browser, format kept, updated online.", "qs": [["2014-2(e)", "Text editor vs web authoring tool: one benefit each. (2 marks)", "Text editor: available in all OS / concise code. Authoring tool: built-in tools and functions / templates / user-friendly."], ["2012-5(b)(i)", "Students submit in HTML. Two reasons. (2 marks)", "Opened by browsers on different tablets (portability); many simple tools to create; supports hyperlinks."], ["2015-2(c)(iii)", "Presentations stored in HTML instead of PPT: two benefits. (2 marks)", "Only a browser required; format kept (cross-platform); updated information online; no need to download."], ["2024-3(c)", "Two benefits of HTML emails instead of plain text. (2 marks)", "Text can be formatted; multimedia and hyperlinks can be included."], ["MC", "Mary creates an HTML file instead of text. Why? (1) text not cross-platform (2) file can store hyperlinks (3) videos displayed", "Answer: C. (2) and (3) only"], ["MC", "An internal email system uses HTML instead of plain text because ______.", "Answer: C. text formatting can be applied."], ["MC", "Which should not be done when constructing a web page?", "Answer: B. Compile the HTML file."], ["MC", "Peter changes from Design View to Code View. Which could be shown?", "Answer: B. The HTML tag version (<HTML><HEAD>... <IMG SRC='smile.png'> ...). Answer not marked in the source file."], ["MC", "Which is the HTML code of a simple 'Hello!' web page?", "Answer: A. <HTML><HEAD></HEAD><BODY>Hello!</BODY></HTML>. Answer not marked in the source file."]]}, {"t": "Tags and attributes", "n": "Structure: html, head (information), body (content). Headings h1 to h6, p, hr, br. Formatting: pre, b, i, u, sup, sub; font-family, font-size, color; text-align. Lists: ul, ol, li. Table: table, tr, th, td, border, colspan, rowspan, height, width, padding, border-spacing. Colours are hexadecimal #RRGGBB, each 00 to FF, so 256 x 256 x 256 colours.", "tip": "#112233 = three hexadecimal values for red, green and blue. Table settings: border, spacing, alignment, background colour. Not formulas.", "qs": [["MC", "Colour codes for a background colour: range of hexadecimal values?", "Answer: B. 0 to FF"], ["MC", "John edits a font colour. How many different colours?", "Answer: A. 256 x 256 x 256"], ["MC", "What are the six digits after '#' in <BODY BGCOLOR=\"#112233\">? (1) red, green, blue values (2) transfer to DNS (3) three hexadecimal values", "Answer: C. (1) and (3) only"], ["MC", "Attributes of an HTML table? (1) URLs of cell contents (2) space between cells (3) media types (4) background colour", "Answer: D. (2) and (4) only"], ["MC", "When placing a table, which is not a table setting?", "Answer: B. Formulas in cells"], ["MC", "Which attributes of tables can be set? (1) page margin (2) border (3) text alignment", "Answer: C. (2) and (3) only"]]}, {"t": "Images, hyperlinks, frames", "n": "img with src (source path), alt (text if not found), width and height. Anchor a with href (destination) and name (anchor). iframe embeds another HTML file (src, width, height). A broken image usually means a wrong filename or path.", "qs": [["MC", "Fiona's photo cannot be displayed. Possible mistake?", "Answer: B. Used an incorrect filename for the photo."], ["MC", "Besides file names, what else is in the HTML for images? (1) paths (2) size (3) IP address of server", "Answer: A. (1) only"], ["MC", "Mary inserts a hyperlink in a document. Possible consequences? (1) open a video (2) jump to another page (3) jump to another document", "Answer: D. (1), (2) and (3)"], ["MC", "About traditional frames: (1) more than one HTML file needed (2) table needed (3) more than one background colour", "Answer: A. (1) only"]]}]}, {"t": "4.3 Website structure", "n": "Architecture design: well-organised content, easy navigation and site structure. Good structure improves user interface (UI) and user experience (UX).", "qs": [["MC", "Which can improve the ease of navigation? (1) tables (2) frames (3) background music", "Answer: C. (1) and (2) only"]]}, {"t": "4.4 Web interface design", "n": "Clear navigation bar; responsive design for different devices; high readability (lists, tables, multimedia, large font, high contrast, simple background); suitable input methods; web accessibility (visual, hearing, physical); short loading time (reduce multimedia file size). Mobile apps: screen size, input method (touch), system resources (notifications), and separate versions for different OSs.", "tip": "Design answers should be concrete: font size, colour contrast, language choice, few large buttons, dropdown menus, + / - buttons, navigation.", "qs": [["2017-3(a)", "Design an interactive layout for the kiosks with annotations. (3 marks)", "Display of all information, interactive layout, ease of input."], ["2019-1", "Major concerns when designing web pages for senior citizens. (marks)", "Font size, colour scheme, languages available, simple navigation with a few large buttons."], ["2019-1(c)(i)", "Two technical considerations for the mobile application. (2 marks)", "Screen size; input methods (touch screen); system resources such as notification."], ["2019-1(c)(ii)", "Why develop different versions of the app at the same time? (1 mark)", "There are many mobile operating systems."], ["2019-1(c)(iii)", "Why citizens prefer the app to a browser. (1 mark)", "Information pre-loaded so access is faster; offline use; start by clicking the icon."], ["2022-4(a)(ii)", "Improvement for visually impaired people. (1 mark)", "Audio input / text to speech / text size / colour contrast."], ["2016-3(c)", "Two designs reducing health hazards from prolonged use. (2 marks)", "Consistent user interface; colour mix, font size, contrast for comfortable display."], ["2018-4", "Draft the layout of the presentation with annotations. (3 marks)", "At least one page per activity; clear heading on each slide; proper design of text and images."], ["2019-1", "Draft the layout of the clinic booking web page with annotations. (4 marks)", "Choices of 18 districts and 10+ clinics; choices of date and time; list of available choices; confirmation button."], ["2020-4(b)(i)", "Two advantages of the - and + buttons. (2 marks)", "Minimise input errors; increase efficiency of input / user-friendliness."], ["2020-4(b)(ii)", "Draft a user-friendly design for the new dessert items. (marks)", "Arrange 20/26 items properly (page, category, sorting); provide quantity input (+ / -)."], ["2021-4(a)", "Which design is better? Two reasons. (2 marks)", "Design 1: marks other than multiples of 10 can be entered. Design 2: one subject must be selected, easy to add subjects, ensures numeric marks."], ["2024-3(d)(i)", "Redesign the layout to improve user-friendliness. (3 marks)", "Dropdown menu for subject and year; page navigation / search or thumbnails; zoom or full-screen."], ["2012sp-3(a)(i)", "Animation shows on one computer but not another. Reason? (2 marks)", "No suitable plug-in installed in the browser."], ["2012sp-3(a)(ii)", "One unsatisfactory design aspect other than animation. (1 mark)", "Content cannot be fully displayed on screen; scrolling needed."], ["MC", "A web page lists eight branches; which lets users view all without scrolling? (1) smaller font (2) smaller spacing (3) table with columns", "Answer: B. (1) and (3) only"], ["MC", "Supermarket online platform: consider (1) font size (2) colour (3) language", "Answer: D. (1), (2) and (3)"], ["MC", "Greg builds a site for friends. Concerned about (1) multimedia file sizes (2) friends' storage (3) user-friendliness", "Answer: B. (1) and (3) only"], ["MC", "Considered when designing web pages? (1) loading time (2) browsing ease (3) colour combination", "Answer: D. (1), (2) and (3)"], ["MC", "Good ergonomic practice? (1) fixed font size (2) appropriate system messages (3) consistent user interface", "Answer: C. (2) and (3) only"], ["MC", "Help visually impaired persons browse? (1) Braille display (2) web filtering (3) screen magnification", "Answer: C. (1) and (3) only"]]}]};
+const HOT = 6;
+const NS='http://www.w3.org/2000/svg';
+const FONT="500 13px 'IBM Plex Sans', system-ui, sans-serif";
+const cv=document.createElement('canvas').getContext('2d');
+const svg=document.getElementById('svg'), detail=document.getElementById('detail');
+let hotOnly=false, selected=null;
+function el(n,a,p){const e=document.createElementNS(NS,n);for(const k in a)e.setAttribute(k,a[k]);if(p)p.appendChild(e);return e}
+function prep(n,d,b){n.d=d;n.b=b;n.open=d<2;n.lines=n.t.split('\n');n.kids=n.ch||[];n.kids.forEach(k=>prep(k,d+1,d===0?(n.kids.indexOf(k)%6)+1:b));}
+prep(DATA,0,0);
+(function tot(n){n.tot=(n.qs?n.qs.length:0)+n.kids.reduce((a,k)=>a+tot(k),0);n.c=n.tot;if(n.d>0)n.hot=n.tot>=HOT;return n.tot})(DATA);
+function hotWithin(n){return !!n.hot||(n.kids||[]).some(hotWithin)}
+function measure(n){cv.font=n.d===0?"700 16px 'Bricolage Grotesque', sans-serif":FONT;
+  n.w=Math.ceil(Math.max(...n.lines.map(l=>cv.measureText(l).width)))+(n.d===0?36:26)+(n.c?(n.kids.length?42:34):0);
+  if(n.pg&&n.d>0){cv.font="500 11px 'IBM Plex Mono', monospace";n.w=Math.max(n.w,Math.ceil(cv.measureText(n.pg).width)+26+(n.c?(n.kids.length?42:34):0))}
+  n.h=n.lines.length*17+14+(n.pg&&n.d>0?14:0);n.kids.forEach(measure)}
+function layout(){
+  measure(DATA);
+  const colW=[];(function m(n){colW[n.d]=Math.max(colW[n.d]||0,n.w);n.kids.forEach(m)})(DATA);
+  const gapX=46,x0=[];let x=16;colW.forEach((w,i)=>{x0[i]=x;x+=w+gapX});
+  let y=16;
+  (function place(n){
+    n.x=x0[n.d];
+    const vis=n.open?n.kids:[];
+    if(!vis.length){n.y=y;y+=n.h+10}
+    else{vis.forEach(place);const f=vis[0],l=vis[vis.length-1];n.y=(f.y+f.h/2+l.y+l.h/2)/2-n.h/2}
+  })(DATA);
+  return {W:x-gapX+16,H:y+6};
+}
+function draw(){
+  const {W,H}=layout();svg.setAttribute('width',W);svg.setAttribute('height',H);svg.setAttribute('viewBox',`0 0 ${W} ${H}`);
+  svg.replaceChildren();
+  const gl=el('g',{},svg),gn=el('g',{},svg);
+  (function walk(n){
+    if(n.open)n.kids.forEach(k=>{
+      const x1=n.x+n.w,y1=n.y+n.h/2,x2=k.x,y2=k.y+k.h/2,mx=(x1+x2)/2;
+      const p=el('path',{d:`M${x1},${y1} C${mx},${y1} ${mx},${y2} ${x2},${y2}`,class:'link'+(hotWithin(k)?'':' cold'),stroke:`var(--b${k.b})`},gl);
+      walk(k)});
+    const g=el('g',{class:'node'+(n.d===0?' root':'')+(n.hot?' hotn':'')+(hotWithin(n)?'':' cold'),tabindex:0,role:'button','aria-label':n.lines.join(' ')+(n.kids.length?(n.open?' (open)':' (closed)'):'')},gn);
+    const r=el('rect',{x:n.x,y:n.y,width:n.w,height:n.h,rx:n.d===0?14:10},g);
+    if(n.d>0){r.setAttribute('fill',n.d===1?`var(--b${n.b})`:`var(--b${n.b}t)`);
+      r.setAttribute('stroke',n.hot?'var(--hot)':`var(--b${n.b})`);if(n.hot)r.setAttribute('stroke-width',3)}
+    n.lines.forEach((l,i)=>{const t=el('text',{x:n.x+(n.d===0?18:13),y:n.y+7+17*(i+1)-4,fill:n.d===1?'var(--bg)':'var(--fg)'},g);t.textContent=l;
+      if(n.d===1)t.setAttribute('style','fill:var(--panel)');
+      if(n.d===1&&document.documentElement.dataset.theme==='dark')t.setAttribute('style','fill:var(--bg)')});
+    if(n.pg&&n.d>0){const t=el('text',{x:n.x+13,y:n.y+7+17*n.lines.length+11,class:'pgtag',fill:n.d===1?'var(--panel)':'var(--muted)'},g);t.textContent=n.pg;if(n.d===1&&document.documentElement.dataset.theme==='dark')t.setAttribute('fill','var(--bg)')}
+    if(n.c){const bg=el('g',{class:'badge'},g),bx=n.x+n.w-(n.kids.length?46:38),by=n.y+n.h/2-9;
+      el('rect',{x:bx,y:by,width:30,height:18,rx:9},bg);const t=el('text',{x:bx+15,y:by+13,'text-anchor':'middle'},bg);t.textContent='×'+n.c}
+    if(n.kids.length){const tg=el('g',{class:'tog'},g),cx=n.x+n.w,cy=n.y+n.h/2;
+      el('circle',{cx,cy,r:9,stroke:`var(--b${n.b||1})`},tg);const t=el('text',{x:cx,y:cy+4,'text-anchor':'middle'},tg);t.textContent=n.open?'−':'+';
+      tg.addEventListener('click',e=>{e.stopPropagation();n.open=!n.open;draw()})}
+    const act=()=>{show(n)};
+    g.addEventListener('click',act);
+    g.addEventListener('keydown',e=>{if(e.key==='Enter'||e.key===' '){e.preventDefault();act()}else if((e.key==='ArrowRight'||e.key==='ArrowLeft')&&n.kids.length){n.open=e.key==='ArrowRight';draw()}});
+  })(DATA);
+  svg.parentNode.classList.toggle('dim',hotOnly);
+}
+function esc(s){return s.replace(/[&<>]/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;'}[c]))}
+function show(n){
+  selected=n;
+  let h=`<div class="dctl"><button class="dbtn" data-act="min" aria-label="Minimise this box" title="Minimise">&#8722;</button><button class="dbtn" data-act="close" aria-label="Close this box" title="Close">&#215;</button></div><h2>${esc(n.lines.join(' '))}${n.c?`<span class="pill">${n.c} past-paper question${n.c>1?'s':''}</span>`:'<span class="pill zero">no past-paper question yet</span>'}</h2>`;
+  if(n.pg)h+=`<p class="pgline"><b>Revise in Book C2:</b> ${esc(n.pg)}</p>`;
+  h+=(n.n?`<p>${esc(n.n)}</p>`:'<p class="hint">Open this branch to see the points inside it.</p>');
+  if(n.tip)h+=`<div class="tip"><b>Exam</b>${esc(n.tip)}</div>`;
+  if(n.qs&&n.qs.length){h+=`<div class="qs"><div class="qh">Questions on this topic (tap one to see the answer)</div>`+n.qs.map(q=>`<details><summary><span class="qid">${esc(q[0])}</span> ${esc(q[1])}</summary><div class="ans">${esc(q[2])}</div></details>`).join('')+`</div>`}
+  else if(n.kids.length&&n.tot){h+=`<p class="hint">${n.tot} question${n.tot>1?'s':''} sit in the boxes inside this branch. Open it and tap each box.</p>`}
+  detail.hidden=false;detail.classList.remove('min');
+  detail.innerHTML=h;
+}
+detail.addEventListener('click',e=>{const b=e.target.closest('.dbtn');if(!b)return;if(b.dataset.act==='close'){detail.hidden=true}else{detail.classList.toggle('min');b.innerHTML=detail.classList.contains('min')?'+':'&#8722;';b.title=detail.classList.contains('min')?'Expand':'Minimise';b.setAttribute('aria-label',b.title+' this box')}});
+document.addEventListener('keydown',e=>{if(e.key==='Escape')detail.hidden=true});
+function setAll(v,n=DATA){if(n.kids.length){n.open=v;n.kids.forEach(k=>setAll(v,k))}}
+document.getElementById('hotBtn').onclick=e=>{hotOnly=!hotOnly;e.currentTarget.setAttribute('aria-pressed',hotOnly);draw()};
+document.getElementById('expBtn').onclick=()=>{setAll(true);draw()};
+document.getElementById('colBtn').onclick=()=>{setAll(false);DATA.open=true;draw()};
+(document.fonts&&document.fonts.ready?document.fonts.ready:Promise.resolve()).then(draw);
+draw();
+</script>

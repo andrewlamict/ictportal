@@ -1,0 +1,180 @@
+<title>C2 Ch6 Mindmap</title>
+<meta name="claude:viewport-fit-sides" content="cover">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:wght@500;600&family=IBM+Plex+Sans:wght@400;500;600&family=Bricolage+Grotesque:opsz,wght@12..96,700&display=swap">
+<style>
+/* Layout: left-to-right branching map in a scroll pane, controls above, detail card below. */
+:root{
+  --bg:#f3f5f9; --panel:#ffffff; --fg:#14213d; --muted:#5b6784; --line:#cfd6e4; --hot:#d62839;
+  --b1:#1d4ed8; --b1t:#e3ebff; --b2:#0f766e; --b2t:#dcf5f1; --b3:#b45309; --b3t:#fdebd0;
+  --b4:#7e22ce; --b4t:#f0e2fd; --b5:#be185d; --b5t:#fde2ee; --b6:#3f6212; --b6t:#e8f3d1;
+  --root:#14213d; --rootfg:#ffffff;
+  --font:'IBM Plex Sans',system-ui,sans-serif; --mono:'IBM Plex Mono',ui-monospace,monospace; --disp:'Bricolage Grotesque','IBM Plex Sans',sans-serif;
+}
+@media (prefers-color-scheme:dark){:root:not([data-theme="light"]){
+  --bg:#0d1424; --panel:#16203a; --fg:#e6ebf7; --muted:#9aa7c7; --line:#2b3858; --hot:#ff6b7a;
+  --b1:#7aa2ff; --b1t:#18284f; --b2:#4fd1c1; --b2t:#0f2e2c; --b3:#f4b25c; --b3t:#3a2a12;
+  --b4:#c79bff; --b4t:#2b1c45; --b5:#ff8cbc; --b5t:#40182e; --b6:#b6dd72; --b6t:#26331a;
+  --root:#e6ebf7; --rootfg:#0d1424; color-scheme:dark}}
+:root[data-theme="dark"]{
+  --bg:#0d1424; --panel:#16203a; --fg:#e6ebf7; --muted:#9aa7c7; --line:#2b3858; --hot:#ff6b7a;
+  --b1:#7aa2ff; --b1t:#18284f; --b2:#4fd1c1; --b2t:#0f2e2c; --b3:#f4b25c; --b3t:#3a2a12;
+  --b4:#c79bff; --b4t:#2b1c45; --b5:#ff8cbc; --b5t:#40182e; --b6:#b6dd72; --b6t:#26331a;
+  --root:#e6ebf7; --rootfg:#0d1424; color-scheme:dark}
+body{background:var(--bg);color:var(--fg);font-family:var(--font);font-size:15px;line-height:1.5;
+  padding-block:20px 40px;padding-left:max(16px,env(safe-area-inset-left,0px));padding-right:max(16px,env(safe-area-inset-right,0px))}
+.wrap{max-width:1400px;margin:0 auto;display:flex;flex-direction:column;gap:14px}
+header{display:flex;flex-wrap:wrap;gap:6px 18px;align-items:baseline;justify-content:space-between}
+.kicker{font-family:var(--mono);font-size:12px;letter-spacing:.08em;text-transform:uppercase;color:var(--muted)}
+h1{font-family:var(--disp);font-size:clamp(24px,4vw,36px);line-height:1.1;margin:2px 0 0;text-wrap:balance}
+.sub{color:var(--muted);max-width:60ch;margin:6px 0 0}
+.bar{display:flex;flex-wrap:wrap;gap:8px 10px;align-items:center}
+button{font:inherit;font-size:13px;color:var(--fg);background:var(--panel);border:1px solid var(--line);border-radius:8px;padding:6px 12px;cursor:pointer}
+button:hover{border-color:var(--fg)}
+button[aria-pressed="true"]{background:var(--hot);border-color:var(--hot);color:#fff}
+button:focus-visible,.node:focus-visible{outline:2px solid var(--fg);outline-offset:2px}
+.legend{display:flex;flex-wrap:wrap;gap:6px 16px;font-size:13px;color:var(--muted);align-items:center}
+.legend .pill{font-family:var(--mono);font-size:11px;font-weight:600;background:var(--hot);color:#fff;border-radius:99px;padding:1px 7px}
+.legend .sw{display:inline-block;width:14px;height:14px;border-radius:4px;vertical-align:-2px;margin-right:5px}
+.pane{background:var(--panel);border:1px solid var(--line);border-radius:14px;overflow-x:auto;overflow-y:hidden}
+svg{display:block}
+.link{fill:none;stroke-width:2;opacity:.55}
+.node{cursor:pointer}
+.node rect{stroke-width:1.5;transition:opacity .15s}
+.node text{font-family:var(--font);font-size:13px;font-weight:500;pointer-events:none}
+.node.hotn text{font-weight:600}
+.node text.pgtag{font-family:var(--mono);font-size:11px;font-weight:500;opacity:.85}
+.node .badge rect{fill:var(--hot);stroke:none}
+.node .badge text{fill:#fff;font-family:var(--mono);font-size:11px;font-weight:600}
+.node .tog circle{fill:var(--panel);stroke-width:1.5}
+.node .tog text{font-family:var(--mono);font-size:12px;font-weight:600;fill:var(--fg)}
+.dim .node.cold{opacity:.22}
+.dim .link.cold{opacity:.12}
+.root rect{fill:var(--root);stroke:none}
+.root text{fill:var(--rootfg);font-family:var(--disp);font-size:16px;font-weight:700}
+.detail{background:var(--panel);border:1px solid var(--line);border-radius:14px;padding:14px 18px;min-height:72px;position:sticky;bottom:max(8px,env(safe-area-inset-bottom,0px));z-index:5;box-shadow:0 -6px 18px rgba(20,33,61,.14);max-height:52vh;overflow:auto}
+.detail h2{font-family:var(--disp);font-size:20px;margin:0 0 4px;display:flex;gap:10px;align-items:center;flex-wrap:wrap}
+.detail h2 .pill{font-family:var(--mono);font-size:12px;font-weight:600;background:var(--hot);color:#fff;border-radius:99px;padding:1px 9px}
+.detail p{margin:6px 0 0;max-width:80ch;white-space:pre-line}
+.detail .hint{color:var(--muted)}
+.detail .pgline{margin:0 0 8px;font-family:var(--mono);font-size:13px;color:var(--fg)}
+.detail .pgline b{font-family:var(--font);font-weight:600}
+.detail h2 .pill.zero{background:var(--line);color:var(--muted)}
+.dctl{float:right;display:flex;gap:6px;margin:-2px 0 6px 10px}
+.dbtn{width:32px;height:32px;padding:0;font-size:20px;line-height:1;border-radius:8px}
+.detail.min{max-height:none;overflow:visible;padding-block:8px}
+.detail.min>*:not(.dctl):not(h2){display:none}
+.detail.min h2{margin:0;font-size:16px}
+.qs{margin-top:12px;display:flex;flex-direction:column;gap:6px;max-width:90ch}
+.qh{font-family:var(--mono);font-size:11px;letter-spacing:.06em;text-transform:uppercase;color:var(--muted)}
+.qs details{border:1px solid var(--line);border-radius:8px;padding:6px 10px;background:var(--bg)}
+.qs summary{cursor:pointer;font-size:14px}
+.qid{font-family:var(--mono);font-weight:600;font-size:12px;background:var(--b1t);color:var(--b1);border-radius:6px;padding:1px 6px;margin-right:4px}
+.ans{margin-top:6px;padding-top:6px;border-top:1px dashed var(--line);font-size:14px;white-space:pre-line}
+.tip{margin-top:10px;padding:8px 12px;border-radius:8px;background:var(--b3t);color:var(--fg);max-width:80ch;font-size:14px}
+.tip b{font-family:var(--mono);font-size:11px;letter-spacing:.06em;text-transform:uppercase;color:var(--b3);margin-right:6px}
+code,.m{font-family:var(--mono);font-size:.92em}
+.backlink{display:inline-block;margin-bottom:8px;font-family:var(--mono);font-size:12px;letter-spacing:.06em;text-transform:uppercase;color:var(--muted);text-decoration:none}
+.backlink:hover{color:var(--fg);text-decoration:underline}
+@media (prefers-reduced-motion:reduce){.node rect{transition:none}}
+</style>
+<div class="wrap">
+  <header>
+    <div>
+      <a class="backlink" href="../../index.html#concepts-book-c2">&larr; Back to Book C2</a>
+      <div class="kicker">Book C2 · Chapter 6</div>
+      <h1>Network Security Measures</h1>
+      <p class="sub">Every concept in the chapter, with each past-paper question attached to the topic it tests.</p>
+    </div>
+    <div class="bar">
+      <button id="hotBtn" aria-pressed="false">Show topics with 5+ questions only</button>
+      <button id="expBtn">Expand all</button>
+      <button id="colBtn">Collapse all</button>
+    </div>
+  </header>
+  <div class="legend">
+    <span><span class="pill">×12</span> number of past-paper questions on this topic, all listed with answers when you tap the box</span>
+    <span><span class="sw" style="background:var(--hot)"></span>red outline = 8 or more questions</span>
+    <span>Tap a box to read the key points. Tap + / − to open or close a branch.</span>
+  </div>
+  <div class="pane" id="pane"><svg id="svg" role="img" aria-label="Network Security Measures mind map"></svg></div>
+  <div class="detail" id="detail" aria-live="polite"><p class="hint">Tap any box on the map to see what to remember and every past-paper question on it.</p></div>
+</div>
+<script>
+const DATA = {"t": "C2 Ch.6\nNetwork Security\nMeasures", "ch": [{"t": "6.1 Information encryption", "n": "Encryption turns data into unreadable form; decryption reverses it.", "ch": [{"t": "Private-key vs public-key encryption", "n": "Private (symmetric) key: the same key encrypts and decrypts, exchanged beforehand and kept secret; hard to manage with many keys. Public (asymmetric) key: a pair of keys; the public key is shared, the private key is kept. Privacy: encrypt with the recipient's public key, only the recipient's private key decrypts. Authentication and integrity: encrypt with the sender's private key, anyone can verify with the sender's public key. Longer keys (2048 vs 1024 bits) take longer to crack.", "tip": "Confidentiality: receiver's public key. Proof of sender: sender's private key. Both: do both.", "qs": [["2014-4(c)", "Protect the file from unauthorised access: two methods. (2 marks)", "Password-protect the file; enforce access-right control; encrypt with a key known only to Mr Chan; secure storage device."], ["2017-1(a)", "Message encryption: a benefit and a drawback. (2 marks)", "Benefit: protects from eavesdropping / interception. Drawback: takes time to encrypt."], ["2012-2(b)", "How are public and private keys used when the website sends sensitive data to Janice? (2 marks)", "Company encrypts with its private key and Janice decrypts with the company's public key; or company encrypts with Janice's public key and Janice decrypts with her private key."], ["2012sp-5(c)(i)", "Advantage of method 1 (encrypt with Mary's public key). (1 mark)", "Only Mary can read the email."], ["2012sp-5(c)(ii)", "Why might Peter still use method 2 (encrypt with his private key)? (1 mark)", "Mary can confirm the email was sent by Peter."], ["2012sp-5(c)(iii)", "A method better than methods 1 and 2. (2 marks)", "Peter encrypts with his private key then Mary's public key; Mary decrypts with her private key then Peter's public key (or the reverse order)."], ["MC", "A website uses a 2048-bit key instead of 1024-bit. Why more secure?", "Answer: A. Hackers take more time to crack the system."], ["MC", "Major benefit of data encryption for confidential information? (1) hackers cannot collect easily (2) cannot read easily (3) cannot delete easily", "Answer: B. (2) only"]]}, {"t": "PKI and digital signature", "n": "Public key infrastructure: a Certification Authority (CA) issues and manages digital certificates after verifying the holder's identity. A digital signature (sender's private key) gives authentication, integrity and non-repudiation. Ensures data integrity and supports encryption.", "qs": [["2014-2(f)(i)", "Benefit of having the PKI? (1 mark)", "Avoid unauthorised person opening the file / authenticate sender's identity."], ["2014-2(f)(ii)", "Describe a way PKI is used to complete the file transfer. (2 marks)", "Ms Wong encrypts with David's public key; David decrypts with his private key (or sign with her private key and David verifies with her public key)."], ["2018-3(e)", "Is PKI suitable for preventing eavesdropping and interception? (2 marks)", "Yes: sender encrypts with the receiver's public key and the receiver decrypts with their private key."], ["2023-4(c)(ii)", "Who should use the public key and private key respectively? (2 marks)", "Public key: customers / users. Private key: David."], ["2024-3(b)", "PKI guarantees the message originated from Ada. State the keys. (2 marks)", "Ada uses Ada's private key to sign; Bob uses Ada's public key to verify."], ["MC", "Major functions of PKI? (1) ensure data integrity (2) longer password (3) support data encryption", "Answer: B. (1) and (3) only"]]}]}, {"t": "6.2 Authentication methods", "n": "Username and password; token (one-time password, connected token, plug or NFC tap); smart card (hard token, e.g. Octopus, student card); biometrics (fingerprint, retina, iris, face, voiceprint, signature dynamics); digital certificate; two-factor authentication = two of something you know, hold or are.", "tip": "Smart card disadvantages: must carry, may be lost, can be duplicated or used by non-holder. Biometrics is hardest to forge.", "qs": [["2012-2(a)(i)", "Session ends automatically after five idle minutes. How does it help? (1 mark)", "Minimises the chance that others use the account when unattended."], ["2014-2(c)", "Two benefits of a client program to connect to the branch office Wi-Fi. (2 marks)", "Security (authentication / encryption); better control of network resources."], ["2023-5(a)(i)", "Advantage of a smart card over a QR code card. (1 mark)", "More secure; harder to replicate."], ["2023-5(a)(ii)", "Advantage of the QR code card over the smart card. (1 mark)", "Lower cost; easier to implement."], ["2023-5(a)(iii)", "Advantage of a mobile app over cards. (1 mark)", "More functions (view profile, records, validity, amend data)."], ["2017-5(c)(ii)", "How does a token help customer authentication? (2 marks)", "Stores a key / passcode / value to strengthen security on top of the password; may be a one-time password, hardware or contactless device."], ["2020-3(c)(i)", "Another biometric method to open a door. (1 mark)", "Face recognition, iris / retinal scan, hand geometry, palm vein, voice."], ["2020-3(c)(ii)", "Two disadvantages of a smart card vs biometrics. (2 marks)", "Need to carry it; may be lost; a non-holder may use it or it may be duplicated."], ["MC", "Most secure measure for a bank's secure room?", "Answer: C. fingerprint"], ["MC", "Security measure to authenticate online bank customers? (1) antivirus (2) security token (3) digital watermark", "Answer: B. (2) only"], ["MC", "A 6-digit token number at login. Purpose?", "Answer: C. Authenticate customers' identity."], ["MC", "Common measures to authenticate user identities? (1) DNS (2) security tokens (3) firewalls", "Answer: B. (2) only"], ["MC", "Disconnected security token: which is correct?", "Answer: B. The six-digit number changes regularly."], ["MC", "Tom registers and receives an emailed code. Purpose? (1) verify identity (2) not spam (3) SSL protection", "Answer: A. (1) only"], ["MC", "Eva logs on and gets an SMS password. What is it about?", "Answer: D. Authentication"], ["MC", "Enhance online banking security? (1) remote logon (2) tokens (3) peer-to-peer network", "Answer: B. (2) only"]]}, {"t": "6.3 Security in online transactions", "n": "SSL encryption with HTTPS encrypts data; a digital certificate (from a CA) proves the website is genuine; two-factor authentication adds something you hold (token, smart card, SMS one-time password, QR code). SSL protects transmission only, not account access.", "tip": "SSL: data encrypted and website identity validated. It does not stop someone logging into an account.", "qs": [["2012-2(a)(ii)", "How does SSL help keep the account secure? (1 mark)", "Data are encrypted; the website identity can be validated."], ["2013-3(f)", "Can SSL prevent Charles accessing the email account? (2 marks)", "No; SSL secures data transmission (encryption)."], ["2017-5(a)", "Example Internet activities for HTTP and SSL. (3 marks)", "HTTP: browse the shopping site. SSL: payment or any sensitive data (login, registration)."], ["2021-1(d)(ii)", "How can SSL support a secured online service? (2 marks)", "Encrypts sensitive data (username, password, credit card) sent between customers and the website."], ["2023-4(c)(i)", "What should David obtain before implementing HTTPS? (1 mark)", "Digital certificate (SSL / TLS certificate)."], ["2022sp-7(b)(ii)", "How can SSL support a secure online service? (2 marks)", "Encrypts sensitive data transmitted between customers and the site."], ["2022-3(e)", "Other than security tokens, two methods for secure e-payment. (2 marks)", "SSL encryption, two-factor authentication, biometrics, SMS one-time password, smart card, digital certificate."], ["MC", "Why need Secure Sockets Layer (SSL) on the Internet?", "Answer: D. Data can be safely transmitted."], ["MC", "Which function is provided by a typical browser?", "Answer: D. Support SSL in online transactions."], ["MC", "Advantage of SSL? (1) higher rate (2) encrypted data (3) hide IP addresses", "Answer: B. (2) only"], ["MC", "How can Cathy ensure a website is trusted?", "Answer: B. Verify the digital certificates of the web site."]]}, {"t": "6.4 Latest security measures", "n": "Multi-factor authentication (know, hold, are). AI in cybersecurity: analyses login patterns (location, time, IP, typing behaviour) and demands stronger login on irregular requests. Blockchain: decentralised peer-to-peer ledger where every party records and verifies each transaction."}]};
+const HOT = 5;
+const NS='http://www.w3.org/2000/svg';
+const FONT="500 13px 'IBM Plex Sans', system-ui, sans-serif";
+const cv=document.createElement('canvas').getContext('2d');
+const svg=document.getElementById('svg'), detail=document.getElementById('detail');
+let hotOnly=false, selected=null;
+function el(n,a,p){const e=document.createElementNS(NS,n);for(const k in a)e.setAttribute(k,a[k]);if(p)p.appendChild(e);return e}
+function prep(n,d,b){n.d=d;n.b=b;n.open=d<2;n.lines=n.t.split('\n');n.kids=n.ch||[];n.kids.forEach(k=>prep(k,d+1,d===0?(n.kids.indexOf(k)%6)+1:b));}
+prep(DATA,0,0);
+(function tot(n){n.tot=(n.qs?n.qs.length:0)+n.kids.reduce((a,k)=>a+tot(k),0);n.c=n.tot;if(n.d>0)n.hot=n.tot>=HOT;return n.tot})(DATA);
+function hotWithin(n){return !!n.hot||(n.kids||[]).some(hotWithin)}
+function measure(n){cv.font=n.d===0?"700 16px 'Bricolage Grotesque', sans-serif":FONT;
+  n.w=Math.ceil(Math.max(...n.lines.map(l=>cv.measureText(l).width)))+(n.d===0?36:26)+(n.c?(n.kids.length?42:34):0);
+  if(n.pg&&n.d>0){cv.font="500 11px 'IBM Plex Mono', monospace";n.w=Math.max(n.w,Math.ceil(cv.measureText(n.pg).width)+26+(n.c?(n.kids.length?42:34):0))}
+  n.h=n.lines.length*17+14+(n.pg&&n.d>0?14:0);n.kids.forEach(measure)}
+function layout(){
+  measure(DATA);
+  const colW=[];(function m(n){colW[n.d]=Math.max(colW[n.d]||0,n.w);n.kids.forEach(m)})(DATA);
+  const gapX=46,x0=[];let x=16;colW.forEach((w,i)=>{x0[i]=x;x+=w+gapX});
+  let y=16;
+  (function place(n){
+    n.x=x0[n.d];
+    const vis=n.open?n.kids:[];
+    if(!vis.length){n.y=y;y+=n.h+10}
+    else{vis.forEach(place);const f=vis[0],l=vis[vis.length-1];n.y=(f.y+f.h/2+l.y+l.h/2)/2-n.h/2}
+  })(DATA);
+  return {W:x-gapX+16,H:y+6};
+}
+function draw(){
+  const {W,H}=layout();svg.setAttribute('width',W);svg.setAttribute('height',H);svg.setAttribute('viewBox',`0 0 ${W} ${H}`);
+  svg.replaceChildren();
+  const gl=el('g',{},svg),gn=el('g',{},svg);
+  (function walk(n){
+    if(n.open)n.kids.forEach(k=>{
+      const x1=n.x+n.w,y1=n.y+n.h/2,x2=k.x,y2=k.y+k.h/2,mx=(x1+x2)/2;
+      const p=el('path',{d:`M${x1},${y1} C${mx},${y1} ${mx},${y2} ${x2},${y2}`,class:'link'+(hotWithin(k)?'':' cold'),stroke:`var(--b${k.b})`},gl);
+      walk(k)});
+    const g=el('g',{class:'node'+(n.d===0?' root':'')+(n.hot?' hotn':'')+(hotWithin(n)?'':' cold'),tabindex:0,role:'button','aria-label':n.lines.join(' ')+(n.kids.length?(n.open?' (open)':' (closed)'):'')},gn);
+    const r=el('rect',{x:n.x,y:n.y,width:n.w,height:n.h,rx:n.d===0?14:10},g);
+    if(n.d>0){r.setAttribute('fill',n.d===1?`var(--b${n.b})`:`var(--b${n.b}t)`);
+      r.setAttribute('stroke',n.hot?'var(--hot)':`var(--b${n.b})`);if(n.hot)r.setAttribute('stroke-width',3)}
+    n.lines.forEach((l,i)=>{const t=el('text',{x:n.x+(n.d===0?18:13),y:n.y+7+17*(i+1)-4,fill:n.d===1?'var(--bg)':'var(--fg)'},g);t.textContent=l;
+      if(n.d===1)t.setAttribute('style','fill:var(--panel)');
+      if(n.d===1&&document.documentElement.dataset.theme==='dark')t.setAttribute('style','fill:var(--bg)')});
+    if(n.pg&&n.d>0){const t=el('text',{x:n.x+13,y:n.y+7+17*n.lines.length+11,class:'pgtag',fill:n.d===1?'var(--panel)':'var(--muted)'},g);t.textContent=n.pg;if(n.d===1&&document.documentElement.dataset.theme==='dark')t.setAttribute('fill','var(--bg)')}
+    if(n.c){const bg=el('g',{class:'badge'},g),bx=n.x+n.w-(n.kids.length?46:38),by=n.y+n.h/2-9;
+      el('rect',{x:bx,y:by,width:30,height:18,rx:9},bg);const t=el('text',{x:bx+15,y:by+13,'text-anchor':'middle'},bg);t.textContent='×'+n.c}
+    if(n.kids.length){const tg=el('g',{class:'tog'},g),cx=n.x+n.w,cy=n.y+n.h/2;
+      el('circle',{cx,cy,r:9,stroke:`var(--b${n.b||1})`},tg);const t=el('text',{x:cx,y:cy+4,'text-anchor':'middle'},tg);t.textContent=n.open?'−':'+';
+      tg.addEventListener('click',e=>{e.stopPropagation();n.open=!n.open;draw()})}
+    const act=()=>{show(n)};
+    g.addEventListener('click',act);
+    g.addEventListener('keydown',e=>{if(e.key==='Enter'||e.key===' '){e.preventDefault();act()}else if((e.key==='ArrowRight'||e.key==='ArrowLeft')&&n.kids.length){n.open=e.key==='ArrowRight';draw()}});
+  })(DATA);
+  svg.parentNode.classList.toggle('dim',hotOnly);
+}
+function esc(s){return s.replace(/[&<>]/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;'}[c]))}
+function show(n){
+  selected=n;
+  let h=`<div class="dctl"><button class="dbtn" data-act="min" aria-label="Minimise this box" title="Minimise">&#8722;</button><button class="dbtn" data-act="close" aria-label="Close this box" title="Close">&#215;</button></div><h2>${esc(n.lines.join(' '))}${n.c?`<span class="pill">${n.c} past-paper question${n.c>1?'s':''}</span>`:'<span class="pill zero">no past-paper question yet</span>'}</h2>`;
+  if(n.pg)h+=`<p class="pgline"><b>Revise in Book C2:</b> ${esc(n.pg)}</p>`;
+  h+=(n.n?`<p>${esc(n.n)}</p>`:'<p class="hint">Open this branch to see the points inside it.</p>');
+  if(n.tip)h+=`<div class="tip"><b>Exam</b>${esc(n.tip)}</div>`;
+  if(n.qs&&n.qs.length){h+=`<div class="qs"><div class="qh">Questions on this topic (tap one to see the answer)</div>`+n.qs.map(q=>`<details><summary><span class="qid">${esc(q[0])}</span> ${esc(q[1])}</summary><div class="ans">${esc(q[2])}</div></details>`).join('')+`</div>`}
+  else if(n.kids.length&&n.tot){h+=`<p class="hint">${n.tot} question${n.tot>1?'s':''} sit in the boxes inside this branch. Open it and tap each box.</p>`}
+  detail.hidden=false;detail.classList.remove('min');
+  detail.innerHTML=h;
+}
+detail.addEventListener('click',e=>{const b=e.target.closest('.dbtn');if(!b)return;if(b.dataset.act==='close'){detail.hidden=true}else{detail.classList.toggle('min');b.innerHTML=detail.classList.contains('min')?'+':'&#8722;';b.title=detail.classList.contains('min')?'Expand':'Minimise';b.setAttribute('aria-label',b.title+' this box')}});
+document.addEventListener('keydown',e=>{if(e.key==='Escape')detail.hidden=true});
+function setAll(v,n=DATA){if(n.kids.length){n.open=v;n.kids.forEach(k=>setAll(v,k))}}
+document.getElementById('hotBtn').onclick=e=>{hotOnly=!hotOnly;e.currentTarget.setAttribute('aria-pressed',hotOnly);draw()};
+document.getElementById('expBtn').onclick=()=>{setAll(true);draw()};
+document.getElementById('colBtn').onclick=()=>{setAll(false);DATA.open=true;draw()};
+(document.fonts&&document.fonts.ready?document.fonts.ready:Promise.resolve()).then(draw);
+draw();
+</script>

@@ -1,0 +1,181 @@
+<title>B Ch1 Mindmap</title>
+<meta name="claude:viewport-fit-sides" content="cover">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:wght@500;600&family=IBM+Plex+Sans:wght@400;500;600&family=Bricolage+Grotesque:opsz,wght@12..96,700&display=swap">
+<style>
+/* Layout: left-to-right branching map in a scroll pane, controls above, detail card below. */
+:root{
+  --bg:#f3f5f9; --panel:#ffffff; --fg:#14213d; --muted:#5b6784; --line:#cfd6e4; --hot:#d62839;
+  --b1:#1d4ed8; --b1t:#e3ebff; --b2:#0f766e; --b2t:#dcf5f1; --b3:#b45309; --b3t:#fdebd0;
+  --b4:#7e22ce; --b4t:#f0e2fd; --b5:#be185d; --b5t:#fde2ee; --b6:#3f6212; --b6t:#e8f3d1;
+  --root:#14213d; --rootfg:#ffffff;
+  --font:'IBM Plex Sans',system-ui,sans-serif; --mono:'IBM Plex Mono',ui-monospace,monospace; --disp:'Bricolage Grotesque','IBM Plex Sans',sans-serif;
+}
+@media (prefers-color-scheme:dark){:root:not([data-theme="light"]){
+  --bg:#0d1424; --panel:#16203a; --fg:#e6ebf7; --muted:#9aa7c7; --line:#2b3858; --hot:#ff6b7a;
+  --b1:#7aa2ff; --b1t:#18284f; --b2:#4fd1c1; --b2t:#0f2e2c; --b3:#f4b25c; --b3t:#3a2a12;
+  --b4:#c79bff; --b4t:#2b1c45; --b5:#ff8cbc; --b5t:#40182e; --b6:#b6dd72; --b6t:#26331a;
+  --root:#e6ebf7; --rootfg:#0d1424; color-scheme:dark}}
+:root[data-theme="dark"]{
+  --bg:#0d1424; --panel:#16203a; --fg:#e6ebf7; --muted:#9aa7c7; --line:#2b3858; --hot:#ff6b7a;
+  --b1:#7aa2ff; --b1t:#18284f; --b2:#4fd1c1; --b2t:#0f2e2c; --b3:#f4b25c; --b3t:#3a2a12;
+  --b4:#c79bff; --b4t:#2b1c45; --b5:#ff8cbc; --b5t:#40182e; --b6:#b6dd72; --b6t:#26331a;
+  --root:#e6ebf7; --rootfg:#0d1424; color-scheme:dark}
+body{background:var(--bg);color:var(--fg);font-family:var(--font);font-size:15px;line-height:1.5;
+  padding-block:20px 40px;padding-left:max(16px,env(safe-area-inset-left,0px));padding-right:max(16px,env(safe-area-inset-right,0px))}
+.wrap{max-width:1400px;margin:0 auto;display:flex;flex-direction:column;gap:14px}
+header{display:flex;flex-wrap:wrap;gap:6px 18px;align-items:baseline;justify-content:space-between}
+.kicker{font-family:var(--mono);font-size:12px;letter-spacing:.08em;text-transform:uppercase;color:var(--muted)}
+h1{font-family:var(--disp);font-size:clamp(24px,4vw,36px);line-height:1.1;margin:2px 0 0;text-wrap:balance}
+.sub{color:var(--muted);max-width:60ch;margin:6px 0 0}
+.bar{display:flex;flex-wrap:wrap;gap:8px 10px;align-items:center}
+button{font:inherit;font-size:13px;color:var(--fg);background:var(--panel);border:1px solid var(--line);border-radius:8px;padding:6px 12px;cursor:pointer}
+button:hover{border-color:var(--fg)}
+button[aria-pressed="true"]{background:var(--hot);border-color:var(--hot);color:#fff}
+button:focus-visible,.node:focus-visible{outline:2px solid var(--fg);outline-offset:2px}
+.legend{display:flex;flex-wrap:wrap;gap:6px 16px;font-size:13px;color:var(--muted);align-items:center}
+.legend .pill{font-family:var(--mono);font-size:11px;font-weight:600;background:var(--hot);color:#fff;border-radius:99px;padding:1px 7px}
+.legend .sw{display:inline-block;width:14px;height:14px;border-radius:4px;vertical-align:-2px;margin-right:5px}
+.pane{background:var(--panel);border:1px solid var(--line);border-radius:14px;overflow-x:auto;overflow-y:hidden}
+svg{display:block}
+.link{fill:none;stroke-width:2;opacity:.55}
+.node{cursor:pointer}
+.node rect{stroke-width:1.5;transition:opacity .15s}
+.node text{font-family:var(--font);font-size:13px;font-weight:500;pointer-events:none}
+.node.hotn text{font-weight:600}
+.node text.pgtag{font-family:var(--mono);font-size:11px;font-weight:500;opacity:.85}
+.node .badge rect{fill:var(--hot);stroke:none}
+.node .badge text{fill:#fff;font-family:var(--mono);font-size:11px;font-weight:600}
+.node .tog circle{fill:var(--panel);stroke-width:1.5}
+.node .tog text{font-family:var(--mono);font-size:12px;font-weight:600;fill:var(--fg)}
+.dim .node.cold{opacity:.22}
+.dim .link.cold{opacity:.12}
+.root rect{fill:var(--root);stroke:none}
+.root text{fill:var(--rootfg);font-family:var(--disp);font-size:16px;font-weight:700}
+.detail{background:var(--panel);border:1px solid var(--line);border-radius:14px;padding:14px 18px;min-height:72px;position:sticky;bottom:max(8px,env(safe-area-inset-bottom,0px));z-index:5;box-shadow:0 -6px 18px rgba(20,33,61,.14);max-height:52vh;overflow:auto}
+.detail h2{font-family:var(--disp);font-size:20px;margin:0 0 4px;display:flex;gap:10px;align-items:center;flex-wrap:wrap}
+.detail h2 .pill{font-family:var(--mono);font-size:12px;font-weight:600;background:var(--hot);color:#fff;border-radius:99px;padding:1px 9px}
+.detail p{margin:6px 0 0;max-width:80ch;white-space:pre-line}
+.detail .hint{color:var(--muted)}
+.detail .pgline{margin:0 0 8px;font-family:var(--mono);font-size:13px;color:var(--fg)}
+.detail .pgline b{font-family:var(--font);font-weight:600}
+.detail h2 .pill.zero{background:var(--line);color:var(--muted)}
+.dctl{float:right;display:flex;gap:6px;margin:-2px 0 6px 10px}
+.dbtn{width:32px;height:32px;padding:0;font-size:20px;line-height:1;border-radius:8px}
+.detail.min{max-height:none;overflow:visible;padding-block:8px}
+.detail.min>*:not(.dctl):not(h2){display:none}
+.detail.min h2{margin:0;font-size:16px}
+.qs{margin-top:12px;display:flex;flex-direction:column;gap:6px;max-width:90ch}
+.qh{font-family:var(--mono);font-size:11px;letter-spacing:.06em;text-transform:uppercase;color:var(--muted)}
+.qs details{border:1px solid var(--line);border-radius:8px;padding:6px 10px;background:var(--bg)}
+.qs summary{cursor:pointer;font-size:14px}
+.qid{font-family:var(--mono);font-weight:600;font-size:12px;background:var(--b1t);color:var(--b1);border-radius:6px;padding:1px 6px;margin-right:4px}
+.ans{margin-top:6px;padding-top:6px;border-top:1px dashed var(--line);font-size:14px;white-space:pre-line}
+.tip{margin-top:10px;padding:8px 12px;border-radius:8px;background:var(--b3t);color:var(--fg);max-width:80ch;font-size:14px}
+.tip b{font-family:var(--mono);font-size:11px;letter-spacing:.06em;text-transform:uppercase;color:var(--b3);margin-right:6px}
+code,.m{font-family:var(--mono);font-size:.92em}
+.backlink{display:inline-block;margin-bottom:8px;font-family:var(--mono);font-size:12px;letter-spacing:.06em;text-transform:uppercase;color:var(--muted);text-decoration:none}
+.backlink:hover{color:var(--fg);text-decoration:underline}
+@media (prefers-reduced-motion:reduce){.node rect{transition:none}}
+</style>
+<div class="wrap">
+  <header>
+    <div>
+      <a class="backlink" href="../../index.html#concepts-book-b">&larr; Back to Book B</a>
+      <div class="kicker">Book B · Chapter 1</div>
+      <h1>Input and Output Devices</h1>
+      <p class="sub">Every concept in the chapter, with each past-paper question attached to the topic it tests.</p>
+    </div>
+    <div class="bar">
+      <button id="hotBtn" aria-pressed="false">Show topics with 5+ questions only</button>
+      <button id="expBtn">Expand all</button>
+      <button id="colBtn">Collapse all</button>
+    </div>
+  </header>
+  <div class="legend">
+    <span><b style="font-family:var(--mono);font-size:12px">pp.34–35</b> page numbers in Book B to revise this topic</span>
+    <span><span class="pill">×12</span> number of past-paper questions on this topic, all listed with answers when you tap the box</span>
+    <span><span class="sw" style="background:var(--hot)"></span>red outline = 8 or more questions</span>
+    <span>Tap a box to read the key points. Tap + / − to open or close a branch.</span>
+  </div>
+  <div class="pane" id="pane"><svg id="svg" role="img" aria-label="Input and Output Devices mind map"></svg></div>
+  <div class="detail" id="detail" aria-live="polite"><p class="hint">Tap any box on the map to see what to remember and every past-paper question on it.</p></div>
+</div>
+<script>
+const DATA = {"t": "B Ch.1\nInput and Output\nDevices", "ch": [{"t": "1.1 Input-process-\noutput cycle", "n": "To turn data into information: (1) data is input, (2) a program processes it (data in storage may be retrieved or updated), (3) meaningful information is output. This is the IPO cycle, with storage beside the process step.", "ch": [{"t": "IPO cycle and storage", "n": "Input -> Process -> Output, with Storage connected to the process. Example: weights typed into a spreadsheet (input), the CPU and program calculate (process), a histogram appears (output), the file is saved on the hard disk (storage).", "tip": "Be ready to label X and Y in an IPO chart: the process box holds the program, and storage links to it.", "qs": [["MC", "Which of the following I/O devices are commonly used by a cashier in a restaurant? (1) Magnetic strip card reader (2) Optical character reader (3) Inkjet printer (4) Thermal printer", "Answer: B. (1) and (4) only"], ["MC", "The basic concept of the Input-Process-Output cycle is shown in a chart. What are X and Y?", "Answer: C. X = Program, Y = Storage"]], "pg": "p.6"}], "pg": "p.6"}, {"t": "1.2 Input device", "n": "Input devices send commands to the computer or capture data from the real world and pass it to the computer. They can be wired or wireless.", "ch": [{"t": "Connection methods", "n": "Wired: USB port. Wireless: radio frequency (RF, e.g. 2.4 GHz dongle), Bluetooth, Wi-Fi. USB gives a higher transfer rate, better security and a more stable link; Bluetooth uses little power and links device to device; Wi-Fi gives a high transfer rate and wider coverage.", "tip": "Give one benefit for each connection type and state the cost, not just the name.", "qs": [["2012-1(c)", "Peter wants to connect a printer to the tablet computer. Suggest two types of connectivity and describe the benefits of each. (2 marks)", "USB: higher data transfer rate / better data security / less interference (stable). Wi-Fi: the printer is more portable."], ["2013-1(b)(i)", "Suggest two possible ways to link up the desktop computer and the smartphone. (2 marks)", "WiFi network through the wireless router; Bluetooth; USB cable."], ["2016-5(a)(ii)", "Give one benefit of using each of the following wireless transmission media: Bluetooth, Wi-Fi. (2 marks)", "Bluetooth: low power consumption / simple technology / supports peer-to-peer connection. Wi-Fi: high data transfer rate / larger network coverage."], ["2012pp-3(d)(ii)", "Suggest a common way to connect a keyboard to the workstation other than using a USB port. (1 mark)", "Bluetooth."], ["MC", "Mary wants to buy a keyboard for her tablet computer. Which connections are commonly used for keyboards? (1) Fibre optics (2) USB cable (3) Bluetooth", "Answer: D. (2) and (3) only"]], "pg": "p.7"}, {"t": "Keyboard", "n": "A full-size keyboard has 100 or more keys and each key sends its own unique code. A numeric keypad suits banks and point-of-sale terminals. QWERTY layout was designed to slow typing and stop typewriters jamming. A virtual (on-screen) keyboard is compact and needs fewer peripherals, but it is not ergonomic, its position is fixed and it covers part of the screen.", "tip": "Virtual keyboard: advantage = compact / fewer peripherals; disadvantage = not ergonomic, occupies screen.", "qs": [["2012pp-3(d)(i)", "Give one advantage and one disadvantage of a virtual keyboard on the screen. (2 marks)", "Advantage: compact design / fewer peripherals. Disadvantage: not a good ergonomic design / keyboard location is rigid / occupies a portion of the screen."], ["2015-3(a)", "Other than a virtual keyboard, suggest a way for John to input data into a tablet (1 GB RAM, 32 GB flash, 10-inch touch screen, microphone). (1 mark)", "Voice / speech recognition, handwriting, barcode or QR code scanning with the built-in camera. (Not accepted: Siri, voice control, microphone, touch screen.)"], ["2021-2(d)", "Without additional devices, suggest two ways that users input text in Q. (2 marks)", "Virtual (on-screen) keyboard, speech (voice) recognition, handwriting recognition."]], "pg": "pp.8–9"}, {"t": "Pointing devices", "n": "Motion-tracking: mouse (optical or laser; the old mechanical mouse used a ball) with scroll wheel, and touchpad. Position-tracking: touch screen, stylus, joystick and racing wheel.", "ch": [{"t": "Mouse and touchpad", "n": "A mouse tracks its movement over a surface (optical or laser light sensor). A touchpad tracks finger movement on a pad built into a notebook.", "pg": "pp.8–9"}, {"t": "Touch screen and stylus", "n": "The touch point itself is the position, so no cursor movement is needed. Easier hand-eye coordination and takes less space than keyboard and mouse, but typing is slower and less ergonomic.", "tip": "Touch screen: easy to operate, less space, hand-eye coordination. Keyboard and mouse: faster input, cheaper, more ergonomic.", "qs": [["2018-1(a)(i)", "There are two options for installing the input devices of the workstations. Give an advantage of each: touch screen, keyboard and mouse. (2 marks)", "Touch screen: easy for students to operate / occupies less space / easier hand-eye coordination. Keyboard and mouse: input is diversified (e.g. mouse-over) / faster input / lower cost / more ergonomic."], ["MC", "Peter upgrades his desktop computer with a touch screen. Why?", "Answer: D. A touch screen allows for easier hand eye coordination than a keyboard."]], "pg": "pp.12–13"}, {"t": "Joystick and racing wheel", "n": "Position-tracking devices for games and simulations; they send the stick or wheel position to the computer.", "pg": "pp.12–13"}], "pg": "pp.8–13"}, {"t": "Audio input", "n": "Microphone captures sound and works with speech (voice) recognition. A MIDI keyboard sends note data (not sound) so music software can play it.", "pg": "pp.14–15"}, {"t": "Image and video input", "n": "Image scanner turns paper into a digital image. Settings that change quality: resolution (dpi), colour depth, file format. OCR software turns scanned text into editable characters. Digital camera, webcam and digital video camera capture images and video.", "ch": [{"t": "Image scanner", "n": "Key specs: optical resolution (dpi), colour depth (24-bit gives more colours and a larger file than 8-bit), interface (USB, Wi-Fi 802.11n). OCR needs enough dpi to recognise characters, and is not needed for photos.", "tip": "Higher dpi or colour depth gives better quality AND a larger file. OCR only helps when the picture contains characters.", "qs": [["2016-1(c)(i)", "Give two settings of the scanner that will affect the quality of the scanned photos. (2 marks)", "Resolution (dpi/ppi), colour depth, file format (compression ratio)."], ["2016-1(c)(ii)", "Amy does not need optical character recognition (OCR) software to process the scanned photos. Why not? (1 mark)", "There is no character in the photos to be recognised."], ["MC", "A colour photo is scanned with 24-bit colours instead of 8-bit colours. This means that, in the chosen scanner, (1) the resolution is higher (2) the file size is larger (3) more different colours can be scanned.", "Answer: C. (2) and (3) only"], ["MC", "Which can be the specifications of a scanner for scanning documents and photos? (1) 802.11n supported (2) 24-bit colour depth (3) Built-in 64 MB RAM", "Answer: D. (1), (2) and (3)"], ["MC", "A law firm uses OCR to convert digital images into document files. Which attribute highly affects the accuracy of the conversion?", "Answer: A. DPI (dots per inch) resolution"]], "pg": "pp.16–17"}, {"t": "Webcam and video camera", "n": "Capture video frames, usually with sound. Used for video conferencing and recording.", "pg": "pp.18–19"}], "pg": "pp.16–19"}, {"t": "Automatic input devices", "n": "Read data directly from the item with no typing: optical readers (barcode, QR code, OMR, OCR), magnetic stripe reader, smart card reader, RFID, and sensors.", "ch": [{"t": "Barcode and QR code scanner", "n": "Optical readers decode the black-and-white pattern into data such as a product ID. QR codes hold more data and can be read from any direction.", "qs": [["2023-5(a)(i)", "John identifies fitness-centre members by (1) a smart card, (2) a plastic card with a printed QR code, (3) a mobile app. Give an advantage of (1) over (2). (1 mark)", "Smart card is more secure than a QR code; it is harder to replicate while a QR code is copied more easily."], ["2023-5(a)(ii)", "Give an advantage of (2) over (1). (1 mark)", "QR code is cheaper (lower cost) and easier to implement or manufacture."], ["2023-5(a)(iii)", "Give an advantage of (3) over (1) and (2). (1 mark)", "More or additional functions can be provided in the mobile app (view profile, usage records, check membership validity, amend personal data); no need to carry a card."]], "pg": "pp.18–19"}, {"t": "RFID, magnetic stripe, smart card", "n": "RFID reads a tag by radio, with no line of sight, so input is faster, but the system costs more than barcodes. A magnetic stripe reader reads data stored on a stripe. A smart card reader reads a chip, which is harder to copy.", "qs": [["2012pp-1(e)", "Mr Wong considers replacing the barcode system with a Radio Frequency Identification (RFID) system. State one advantage and one disadvantage of RFID over barcode. (2 marks)", "Advantage: speeds up the input process. Disadvantage: expensive to implement an RFID system."]], "pg": "p.22"}, {"t": "Optical mark reader", "n": "Reads marks made in set positions on a form, such as multiple-choice answer sheets.", "pg": "pp.20–21"}, {"t": "Sensor", "n": "Detects physical signals (light, heat, humidity, motion, smoke) and passes them to the computer, for example automatic doors and air-conditioner control.", "pg": "p.22"}], "pg": "pp.18–22"}], "pg": "pp.7–24"}, {"t": "1.3 Output device", "n": "Output devices present the processed information to the user as sight, sound or paper.", "ch": [{"t": "Monitor", "n": "Types: LCD/LED, OLED (each pixel gives its own light), old CRT. Specs: screen size, resolution, aspect ratio, ports (HDMI for HD video). Colour comes from red, green and blue pixels. Lower resolution makes icons and text look bigger. Trends: lower power use, thinner, more sizes. VR headset is a head-worn display.", "tip": "Environment: power-management mode, LED instead of CRT. Lowering resolution enlarges icons; it does not save the eyes.", "qs": [["MC", "Peter configures the colour quality of a display unit. Which pixels are involved? (1) Black (2) White (3) Green (4) Red (5) Blue", "Answer: B. (3), (4) and (5) only"], ["MC", "What is the main development trend for display units in desktop computers?", "Answer: D. Energy saving"], ["MC", "Which actions for desktop computers are environmentally friendly? (1) Enable power management (2) Lower the screen resolution (3) Use LED monitors instead of CRT", "Answer: C. (1) and (3) only"], ["MC", "Which operation will enlarge the icons and text displayed on a visual display unit?", "Answer: C. Reduce the screen resolution."], ["MC", "A TV unit has three ports. HD videos will be output to the TV. Which port should be used?", "Answer: A. (1) only (the HDMI port)"]], "pg": "pp.26–27"}, {"t": "Projector", "n": "Throws the image on a screen. Specs: brightness in lumens (lm), resolution, connection ports. Rotation speed (rpm) belongs to a hard disk, not a projector.", "qs": [["MC", "Which of the following is not a specification of a projector?", "Answer: D. 5400 rpm (revolutions per minute)"]], "pg": "pp.30–31"}, {"t": "Printers", "n": "Compare by speed (ppm), resolution (dpi), running cost, noise and connection (USB, Wi-Fi 802.11n; not fibre optics).", "ch": [{"t": "Thermal printer", "n": "Heats special paper, so there is no ink or toner. Quiet, small, fast; printouts fade, so receipts are less durable. Used for receipts and kiosk tickets.", "tip": "Thermal vs dot matrix or laser: quiet, small, fast, no toner to replace.", "qs": [["2016-4(a)(iv)", "Mary chooses thermal printers instead of dot-matrix printers for the POS system. Give two reasons. (2 marks)", "Quiet in operation / smaller in size / shorter printing time."], ["2020-4(c)", "Give two technical reasons why a thermal printer is commonly used instead of a laser printer in self-service kiosks. (2 marks)", "Fast in printing; no need to replace toner; smaller in size."], ["MC", "A supermarket uses thermal printers instead of dot-matrix printers for receipts. Major reasons? (1) Less printing noise (2) Shorter printing time (3) More durable receipts", "Answer: A. (1) and (2) only"], ["MC", "In a POS system, reasons for thermal printers? (1) receipt kept longer (2) quiet (3) short printing time", "Answer: D. (2) and (3) only"]], "pg": "pp.30–31"}, {"t": "Inkjet, laser, dot matrix, plotter, 3D printer", "n": "Inkjet: sprays ink, cheap colour. Laser: toner and drum, fast and sharp. Dot matrix: impact printing, noisy, multi-part forms. Plotter: large drawings with pens. 3D printer: builds an object layer by layer.", "qs": [["MC", "Which is not commonly used for connecting to a home-use laser printer?", "Answer: D. Fibre optics"], ["MC", "Which is/are the common specification(s) of a home use printer? (1) 802.11n (2) Parallel port (3) 1200 dpi", "Answer: C. (1) and (3) only"], ["MC", "Amy wants to buy a colour laser printer for home use. What specifications should she consider? (1) Brightness (lm) (2) Printing speed (ppm) (3) Resolution (dpi)", "Answer: C. (2) and (3) only"]], "pg": "pp.32–33"}], "pg": "pp.30–33"}, {"t": "Speakers and headphones", "n": "Output sound. Headphones suit private listening, for example pronouncing English vocabulary in a language lab.", "qs": [["2018-1(a)(ii)", "Other than display panels and printers, suggest an additional output device for the workstations to learn English and justify its use. (1 mark)", "Speaker (headphone): pronounces English vocabulary / plays videos."]], "pg": "pp.34–35"}], "pg": "pp.25–37"}, {"t": "1.4 Application of\ncomputers", "n": "Input and output devices combine into real systems in business and in education.", "ch": [{"t": "Business use", "n": "Video conferencing (camera, microphone, speaker, display). Cashier service: barcode or QR scanner in, thermal printer out. Electronic payment systems.", "tip": "For kiosk questions say how the work changes (less staff on terminals, more technical and service staff).", "qs": [["2020-4(d)(i)", "Many fast food restaurants plan to install self-service kiosks to replace some dedicated terminals. How will this change affect the nature of the work done in the restaurants? (2 marks)", "Less manpower on terminals; more technical staff for the maintenance of the kiosks; more staff on customer service."], ["2020-4(d)(ii)", "What is the benefit to customers of this change? (1 mark)", "Streamlined service and a better customer experience / shorter waiting time for ordering / suitable for speech-impaired customers."]], "pg": "pp.38–39"}, {"t": "Educational use", "n": "Library circulation (barcode or RFID), online lessons, museum exhibitions with touch or QR guides.", "pg": "pp.40–41"}], "pg": "pp.38–43"}], "pg": "pp.2–47"};
+const HOT = 5;
+const NS='http://www.w3.org/2000/svg';
+const FONT="500 13px 'IBM Plex Sans', system-ui, sans-serif";
+const cv=document.createElement('canvas').getContext('2d');
+const svg=document.getElementById('svg'), detail=document.getElementById('detail');
+let hotOnly=false, selected=null;
+function el(n,a,p){const e=document.createElementNS(NS,n);for(const k in a)e.setAttribute(k,a[k]);if(p)p.appendChild(e);return e}
+function prep(n,d,b){n.d=d;n.b=b;n.open=d<2;n.lines=n.t.split('\n');n.kids=n.ch||[];n.kids.forEach(k=>prep(k,d+1,d===0?(n.kids.indexOf(k)%6)+1:b));}
+prep(DATA,0,0);
+(function tot(n){n.tot=(n.qs?n.qs.length:0)+n.kids.reduce((a,k)=>a+tot(k),0);n.c=n.tot;if(n.d>0)n.hot=n.tot>=HOT;return n.tot})(DATA);
+function hotWithin(n){return !!n.hot||(n.kids||[]).some(hotWithin)}
+function measure(n){cv.font=n.d===0?"700 16px 'Bricolage Grotesque', sans-serif":FONT;
+  n.w=Math.ceil(Math.max(...n.lines.map(l=>cv.measureText(l).width)))+(n.d===0?36:26)+(n.c?(n.kids.length?42:34):0);
+  if(n.pg&&n.d>0){cv.font="500 11px 'IBM Plex Mono', monospace";n.w=Math.max(n.w,Math.ceil(cv.measureText(n.pg).width)+26+(n.c?(n.kids.length?42:34):0))}
+  n.h=n.lines.length*17+14+(n.pg&&n.d>0?14:0);n.kids.forEach(measure)}
+function layout(){
+  measure(DATA);
+  const colW=[];(function m(n){colW[n.d]=Math.max(colW[n.d]||0,n.w);n.kids.forEach(m)})(DATA);
+  const gapX=46,x0=[];let x=16;colW.forEach((w,i)=>{x0[i]=x;x+=w+gapX});
+  let y=16;
+  (function place(n){
+    n.x=x0[n.d];
+    const vis=n.open?n.kids:[];
+    if(!vis.length){n.y=y;y+=n.h+10}
+    else{vis.forEach(place);const f=vis[0],l=vis[vis.length-1];n.y=(f.y+f.h/2+l.y+l.h/2)/2-n.h/2}
+  })(DATA);
+  return {W:x-gapX+16,H:y+6};
+}
+function draw(){
+  const {W,H}=layout();svg.setAttribute('width',W);svg.setAttribute('height',H);svg.setAttribute('viewBox',`0 0 ${W} ${H}`);
+  svg.replaceChildren();
+  const gl=el('g',{},svg),gn=el('g',{},svg);
+  (function walk(n){
+    if(n.open)n.kids.forEach(k=>{
+      const x1=n.x+n.w,y1=n.y+n.h/2,x2=k.x,y2=k.y+k.h/2,mx=(x1+x2)/2;
+      const p=el('path',{d:`M${x1},${y1} C${mx},${y1} ${mx},${y2} ${x2},${y2}`,class:'link'+(hotWithin(k)?'':' cold'),stroke:`var(--b${k.b})`},gl);
+      walk(k)});
+    const g=el('g',{class:'node'+(n.d===0?' root':'')+(n.hot?' hotn':'')+(hotWithin(n)?'':' cold'),tabindex:0,role:'button','aria-label':n.lines.join(' ')+(n.kids.length?(n.open?' (open)':' (closed)'):'')},gn);
+    const r=el('rect',{x:n.x,y:n.y,width:n.w,height:n.h,rx:n.d===0?14:10},g);
+    if(n.d>0){r.setAttribute('fill',n.d===1?`var(--b${n.b})`:`var(--b${n.b}t)`);
+      r.setAttribute('stroke',n.hot?'var(--hot)':`var(--b${n.b})`);if(n.hot)r.setAttribute('stroke-width',3)}
+    n.lines.forEach((l,i)=>{const t=el('text',{x:n.x+(n.d===0?18:13),y:n.y+7+17*(i+1)-4,fill:n.d===1?'var(--bg)':'var(--fg)'},g);t.textContent=l;
+      if(n.d===1)t.setAttribute('style','fill:var(--panel)');
+      if(n.d===1&&document.documentElement.dataset.theme==='dark')t.setAttribute('style','fill:var(--bg)')});
+    if(n.pg&&n.d>0){const t=el('text',{x:n.x+13,y:n.y+7+17*n.lines.length+11,class:'pgtag',fill:n.d===1?'var(--panel)':'var(--muted)'},g);t.textContent=n.pg;if(n.d===1&&document.documentElement.dataset.theme==='dark')t.setAttribute('fill','var(--bg)')}
+    if(n.c){const bg=el('g',{class:'badge'},g),bx=n.x+n.w-(n.kids.length?46:38),by=n.y+n.h/2-9;
+      el('rect',{x:bx,y:by,width:30,height:18,rx:9},bg);const t=el('text',{x:bx+15,y:by+13,'text-anchor':'middle'},bg);t.textContent='×'+n.c}
+    if(n.kids.length){const tg=el('g',{class:'tog'},g),cx=n.x+n.w,cy=n.y+n.h/2;
+      el('circle',{cx,cy,r:9,stroke:`var(--b${n.b||1})`},tg);const t=el('text',{x:cx,y:cy+4,'text-anchor':'middle'},tg);t.textContent=n.open?'−':'+';
+      tg.addEventListener('click',e=>{e.stopPropagation();n.open=!n.open;draw()})}
+    const act=()=>{show(n)};
+    g.addEventListener('click',act);
+    g.addEventListener('keydown',e=>{if(e.key==='Enter'||e.key===' '){e.preventDefault();act()}else if((e.key==='ArrowRight'||e.key==='ArrowLeft')&&n.kids.length){n.open=e.key==='ArrowRight';draw()}});
+  })(DATA);
+  svg.parentNode.classList.toggle('dim',hotOnly);
+}
+function esc(s){return s.replace(/[&<>]/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;'}[c]))}
+function show(n){
+  selected=n;
+  let h=`<div class="dctl"><button class="dbtn" data-act="min" aria-label="Minimise this box" title="Minimise">&#8722;</button><button class="dbtn" data-act="close" aria-label="Close this box" title="Close">&#215;</button></div><h2>${esc(n.lines.join(' '))}${n.c?`<span class="pill">${n.c} past-paper question${n.c>1?'s':''}</span>`:'<span class="pill zero">no past-paper question yet</span>'}</h2>`;
+  if(n.pg)h+=`<p class="pgline"><b>Revise in Book B:</b> ${esc(n.pg)}</p>`;
+  h+=(n.n?`<p>${esc(n.n)}</p>`:'<p class="hint">Open this branch to see the points inside it.</p>');
+  if(n.tip)h+=`<div class="tip"><b>Exam</b>${esc(n.tip)}</div>`;
+  if(n.qs&&n.qs.length){h+=`<div class="qs"><div class="qh">Questions on this topic (tap one to see the answer)</div>`+n.qs.map(q=>`<details><summary><span class="qid">${esc(q[0])}</span> ${esc(q[1])}</summary><div class="ans">${esc(q[2])}</div></details>`).join('')+`</div>`}
+  else if(n.kids.length&&n.tot){h+=`<p class="hint">${n.tot} question${n.tot>1?'s':''} sit in the boxes inside this branch. Open it and tap each box.</p>`}
+  detail.hidden=false;detail.classList.remove('min');
+  detail.innerHTML=h;
+}
+detail.addEventListener('click',e=>{const b=e.target.closest('.dbtn');if(!b)return;if(b.dataset.act==='close'){detail.hidden=true}else{detail.classList.toggle('min');b.innerHTML=detail.classList.contains('min')?'+':'&#8722;';b.title=detail.classList.contains('min')?'Expand':'Minimise';b.setAttribute('aria-label',b.title+' this box')}});
+document.addEventListener('keydown',e=>{if(e.key==='Escape')detail.hidden=true});
+function setAll(v,n=DATA){if(n.kids.length){n.open=v;n.kids.forEach(k=>setAll(v,k))}}
+document.getElementById('hotBtn').onclick=e=>{hotOnly=!hotOnly;e.currentTarget.setAttribute('aria-pressed',hotOnly);draw()};
+document.getElementById('expBtn').onclick=()=>{setAll(true);draw()};
+document.getElementById('colBtn').onclick=()=>{setAll(false);DATA.open=true;draw()};
+(document.fonts&&document.fonts.ready?document.fonts.ready:Promise.resolve()).then(draw);
+draw();
+</script>

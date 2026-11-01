@@ -1,0 +1,181 @@
+<title>B Ch2 Mindmap</title>
+<meta name="claude:viewport-fit-sides" content="cover">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:wght@500;600&family=IBM+Plex+Sans:wght@400;500;600&family=Bricolage+Grotesque:opsz,wght@12..96,700&display=swap">
+<style>
+/* Layout: left-to-right branching map in a scroll pane, controls above, detail card below. */
+:root{
+  --bg:#f3f5f9; --panel:#ffffff; --fg:#14213d; --muted:#5b6784; --line:#cfd6e4; --hot:#d62839;
+  --b1:#1d4ed8; --b1t:#e3ebff; --b2:#0f766e; --b2t:#dcf5f1; --b3:#b45309; --b3t:#fdebd0;
+  --b4:#7e22ce; --b4t:#f0e2fd; --b5:#be185d; --b5t:#fde2ee; --b6:#3f6212; --b6t:#e8f3d1;
+  --root:#14213d; --rootfg:#ffffff;
+  --font:'IBM Plex Sans',system-ui,sans-serif; --mono:'IBM Plex Mono',ui-monospace,monospace; --disp:'Bricolage Grotesque','IBM Plex Sans',sans-serif;
+}
+@media (prefers-color-scheme:dark){:root:not([data-theme="light"]){
+  --bg:#0d1424; --panel:#16203a; --fg:#e6ebf7; --muted:#9aa7c7; --line:#2b3858; --hot:#ff6b7a;
+  --b1:#7aa2ff; --b1t:#18284f; --b2:#4fd1c1; --b2t:#0f2e2c; --b3:#f4b25c; --b3t:#3a2a12;
+  --b4:#c79bff; --b4t:#2b1c45; --b5:#ff8cbc; --b5t:#40182e; --b6:#b6dd72; --b6t:#26331a;
+  --root:#e6ebf7; --rootfg:#0d1424; color-scheme:dark}}
+:root[data-theme="dark"]{
+  --bg:#0d1424; --panel:#16203a; --fg:#e6ebf7; --muted:#9aa7c7; --line:#2b3858; --hot:#ff6b7a;
+  --b1:#7aa2ff; --b1t:#18284f; --b2:#4fd1c1; --b2t:#0f2e2c; --b3:#f4b25c; --b3t:#3a2a12;
+  --b4:#c79bff; --b4t:#2b1c45; --b5:#ff8cbc; --b5t:#40182e; --b6:#b6dd72; --b6t:#26331a;
+  --root:#e6ebf7; --rootfg:#0d1424; color-scheme:dark}
+body{background:var(--bg);color:var(--fg);font-family:var(--font);font-size:15px;line-height:1.5;
+  padding-block:20px 40px;padding-left:max(16px,env(safe-area-inset-left,0px));padding-right:max(16px,env(safe-area-inset-right,0px))}
+.wrap{max-width:1400px;margin:0 auto;display:flex;flex-direction:column;gap:14px}
+header{display:flex;flex-wrap:wrap;gap:6px 18px;align-items:baseline;justify-content:space-between}
+.kicker{font-family:var(--mono);font-size:12px;letter-spacing:.08em;text-transform:uppercase;color:var(--muted)}
+h1{font-family:var(--disp);font-size:clamp(24px,4vw,36px);line-height:1.1;margin:2px 0 0;text-wrap:balance}
+.sub{color:var(--muted);max-width:60ch;margin:6px 0 0}
+.bar{display:flex;flex-wrap:wrap;gap:8px 10px;align-items:center}
+button{font:inherit;font-size:13px;color:var(--fg);background:var(--panel);border:1px solid var(--line);border-radius:8px;padding:6px 12px;cursor:pointer}
+button:hover{border-color:var(--fg)}
+button[aria-pressed="true"]{background:var(--hot);border-color:var(--hot);color:#fff}
+button:focus-visible,.node:focus-visible{outline:2px solid var(--fg);outline-offset:2px}
+.legend{display:flex;flex-wrap:wrap;gap:6px 16px;font-size:13px;color:var(--muted);align-items:center}
+.legend .pill{font-family:var(--mono);font-size:11px;font-weight:600;background:var(--hot);color:#fff;border-radius:99px;padding:1px 7px}
+.legend .sw{display:inline-block;width:14px;height:14px;border-radius:4px;vertical-align:-2px;margin-right:5px}
+.pane{background:var(--panel);border:1px solid var(--line);border-radius:14px;overflow-x:auto;overflow-y:hidden}
+svg{display:block}
+.link{fill:none;stroke-width:2;opacity:.55}
+.node{cursor:pointer}
+.node rect{stroke-width:1.5;transition:opacity .15s}
+.node text{font-family:var(--font);font-size:13px;font-weight:500;pointer-events:none}
+.node.hotn text{font-weight:600}
+.node text.pgtag{font-family:var(--mono);font-size:11px;font-weight:500;opacity:.85}
+.node .badge rect{fill:var(--hot);stroke:none}
+.node .badge text{fill:#fff;font-family:var(--mono);font-size:11px;font-weight:600}
+.node .tog circle{fill:var(--panel);stroke-width:1.5}
+.node .tog text{font-family:var(--mono);font-size:12px;font-weight:600;fill:var(--fg)}
+.dim .node.cold{opacity:.22}
+.dim .link.cold{opacity:.12}
+.root rect{fill:var(--root);stroke:none}
+.root text{fill:var(--rootfg);font-family:var(--disp);font-size:16px;font-weight:700}
+.detail{background:var(--panel);border:1px solid var(--line);border-radius:14px;padding:14px 18px;min-height:72px;position:sticky;bottom:max(8px,env(safe-area-inset-bottom,0px));z-index:5;box-shadow:0 -6px 18px rgba(20,33,61,.14);max-height:52vh;overflow:auto}
+.detail h2{font-family:var(--disp);font-size:20px;margin:0 0 4px;display:flex;gap:10px;align-items:center;flex-wrap:wrap}
+.detail h2 .pill{font-family:var(--mono);font-size:12px;font-weight:600;background:var(--hot);color:#fff;border-radius:99px;padding:1px 9px}
+.detail p{margin:6px 0 0;max-width:80ch;white-space:pre-line}
+.detail .hint{color:var(--muted)}
+.detail .pgline{margin:0 0 8px;font-family:var(--mono);font-size:13px;color:var(--fg)}
+.detail .pgline b{font-family:var(--font);font-weight:600}
+.detail h2 .pill.zero{background:var(--line);color:var(--muted)}
+.dctl{float:right;display:flex;gap:6px;margin:-2px 0 6px 10px}
+.dbtn{width:32px;height:32px;padding:0;font-size:20px;line-height:1;border-radius:8px}
+.detail.min{max-height:none;overflow:visible;padding-block:8px}
+.detail.min>*:not(.dctl):not(h2){display:none}
+.detail.min h2{margin:0;font-size:16px}
+.qs{margin-top:12px;display:flex;flex-direction:column;gap:6px;max-width:90ch}
+.qh{font-family:var(--mono);font-size:11px;letter-spacing:.06em;text-transform:uppercase;color:var(--muted)}
+.qs details{border:1px solid var(--line);border-radius:8px;padding:6px 10px;background:var(--bg)}
+.qs summary{cursor:pointer;font-size:14px}
+.qid{font-family:var(--mono);font-weight:600;font-size:12px;background:var(--b1t);color:var(--b1);border-radius:6px;padding:1px 6px;margin-right:4px}
+.ans{margin-top:6px;padding-top:6px;border-top:1px dashed var(--line);font-size:14px;white-space:pre-line}
+.tip{margin-top:10px;padding:8px 12px;border-radius:8px;background:var(--b3t);color:var(--fg);max-width:80ch;font-size:14px}
+.tip b{font-family:var(--mono);font-size:11px;letter-spacing:.06em;text-transform:uppercase;color:var(--b3);margin-right:6px}
+code,.m{font-family:var(--mono);font-size:.92em}
+.backlink{display:inline-block;margin-bottom:8px;font-family:var(--mono);font-size:12px;letter-spacing:.06em;text-transform:uppercase;color:var(--muted);text-decoration:none}
+.backlink:hover{color:var(--fg);text-decoration:underline}
+@media (prefers-reduced-motion:reduce){.node rect{transition:none}}
+</style>
+<div class="wrap">
+  <header>
+    <div>
+      <a class="backlink" href="../../index.html#concepts-book-b">&larr; Back to Book B</a>
+      <div class="kicker">Book B · Chapter 2</div>
+      <h1>Computer Hardware</h1>
+      <p class="sub">Every concept in the chapter, with each past-paper question attached to the topic it tests.</p>
+    </div>
+    <div class="bar">
+      <button id="hotBtn" aria-pressed="false">Show topics with 8+ questions only</button>
+      <button id="expBtn">Expand all</button>
+      <button id="colBtn">Collapse all</button>
+    </div>
+  </header>
+  <div class="legend">
+    <span><b style="font-family:var(--mono);font-size:12px">pp.34–35</b> page numbers in Book B to revise this topic</span>
+    <span><span class="pill">×12</span> number of past-paper questions on this topic, all listed with answers when you tap the box</span>
+    <span><span class="sw" style="background:var(--hot)"></span>red outline = 8 or more questions</span>
+    <span>Tap a box to read the key points. Tap + / − to open or close a branch.</span>
+  </div>
+  <div class="pane" id="pane"><svg id="svg" role="img" aria-label="Computer Hardware mind map"></svg></div>
+  <div class="detail" id="detail" aria-live="polite"><p class="hint">Tap any box on the map to see what to remember and every past-paper question on it.</p></div>
+</div>
+<script>
+const DATA = {"t": "B Ch.2\nComputer Hardware", "ch": [{"t": "2.1 System unit", "n": "The system unit is the case holding the motherboard, CPU, memory, storage, power supply and buses.", "ch": [{"t": "Motherboard and buses", "n": "The motherboard connects CPU, RAM, ROM, storage and ports. Buses carry signals: address bus (where), data bus (what), system bus (whole link), SATA bus (storage), USB (devices). Upgrading to a faster part (SATA SSD to M.2 NVMe, DDR II to DDR III) means checking that the mainboard supports it.", "tip": "Faster RAM or SSD: the feature to check is the motherboard design.", "qs": [["2022sp-11", "Mary wants to upgrade the SATA SSD to M.2 NVMe SSD with a higher data transfer rate. Which feature should be considered? (A mainboard design / B CPU power / C power consumption / D storage size)", "A. Mainboard design (same item in 2012-17 for RAM: motherboard design)."], ["MC", "Which of the following statements about the components in a computer is not correct? (2022sp-13)", "Answer: D. Data buses are used to transfer control signals between the main board and input/output devices. (Data buses carry data; control buses carry control signals.)"], ["2016-3(b)(i)", "When purchasing a server, give a function of the memory cache and the bus system. (2 marks)", "Memory cache: stores frequently-used program instructions/data. Bus system: a communication system that transfers data between major components of the server."]], "pg": "pp.54–55"}, {"t": "GPU and power supply", "n": "Graphics processing unit (GPU): processes graphics in parallel. Integrated GPU shares the CPU chip (cheaper, less power); dedicated GPU has its own memory (better for video and 3D). Power supply unit converts mains power for the components.", "qs": [["2024-2(a)(iii)", "Tom argues that Q (8 cores 4.4 GHz, standalone 16 GB GPU) is better for 4K video rendering. Give two reasons. (2 marks)", "Q has a CPU with better processing power as it has a higher clock rate. Q has a dedicated GPU with standalone memory for better graphical processing."], ["2022-1(b)", "Peter will edit and render videos. Give two hardware components he should consider, other than the CPU. Explain briefly. (2 marks)", "RAM / hard disk (SSD) / GPU, each with a simple but reasonable explanation."]], "pg": "pp.54–55"}], "pg": "pp.52–62"}, {"t": "2.2 Central\nprocessing unit", "n": "The CPU runs program instructions. It has the ALU, control unit and registers, and uses cache memory.", "ch": [{"t": "ALU and control unit", "n": "ALU: arithmetic and logic operations. Control unit (CU): fetches, decodes and controls the execution of instructions. The CPU performs calculation and executes instructions; it does not store data permanently or provide the user interface.", "qs": [["2012pp-19", "Which of the following are the main functions of a CPU? (1) arithmetic and logical operations (2) storing system data permanently (3) executing instructions (4) interface between user and system", "Answer: A. (1) and (3) only"], ["2015-13", "Which component in a CPU fetches an instruction from the main memory?", "Answer: D. Control Unit (CU)"], ["MC", "The assembly instruction LOAD 1000 is executed. Which component decodes the instruction?", "Answer: D. CU"]], "pg": "p.63"}, {"t": "Registers", "n": "Very fast memory inside the CPU. Program counter (PC): address of the next instruction. Memory address register (MAR): address being read or written. Memory data register (MDR): data being transferred. Current instruction register (CIR/IR): the instruction being run. Accumulator: holds results of ALU calculations. Registers have the highest data transfer rate.", "tip": "PC = memory address of next instruction; accumulator = ALU results; MAR/MDR in every fetch.", "qs": [["2017-18", "Which statement about the registers in the CPU is correct?", "Answer: A. Their read/write data transfer rates are high."], ["2019-15", "Which statement about the accumulator in a CPU is correct?", "Answer: A. It is used by the ALU for calculation."], ["MC", "Which temporarily hold data or instructions? (1) Accumulator (2) Instruction register (3) Memory address register", "Answer: A. (1) and (2) only"], ["MC", "Which statements about registers are correct? (1) They are 8 bits long (2) Cache memory is a kind of register (3) Accumulator is a kind of register", "Answer: C. (3) only"], ["MC", "Which data will be stored in the program counter in a machine cycle?", "Answer: A. Memory address"], ["2022-5(g)", "State two components in the CPU involved in the fetch-decode-execute cycle, other than IR. (2 marks)", "MDR / MAR / PC / ALU / CU / SR (any two)."]], "pg": "p.63"}, {"t": "Cache memory", "n": "Small, very fast memory between the CPU and RAM that holds frequently used and recently used data and instructions, so the CPU waits less. More cache improves throughput (for example in a NAS file server). It is volatile.", "tip": "Cache is faster than RAM and stores frequently-used data and instructions. It is not non-volatile.", "qs": [["MC", "Which statements about cache memory in a CPU are correct? (1) better than main memory in access speed (2) stores frequently- and recently-used data (3) non-volatile", "Answer: A. (1) and (2) only"], ["MC", "Which statement about cache memory is correct?", "Answer: C. It stores frequently-used data and instructions."], ["MC", "Joseph adds more cache memory to a NAS file server. What can be greatly improved?", "Answer: D. Data throughput"], ["MC", "What is the main purpose of having a memory cache in a CPU?", "Answer: B. It facilitates the CPU processing."]], "pg": "pp.64–65"}, {"t": "Machine cycle", "n": "Fetch the instruction from memory (PC to MAR, instruction via MDR to IR), decode it into operation code and operands, execute it, then store the result. The cycle repeats for each instruction.", "tip": "Order: fetch, decode, execute, store. Fetch uses the address held in the PC.", "qs": [["MC", "What does 'fetch' do for the instruction at address 1000 (STORE 1111)?", "Answer: A. Obtains the instruction from the main memory with the address 1000."], ["MC", "In an instruction fetch cycle, which registers are involved? (1) Accumulator (2) MDR (3) MAR", "Answer: C. (2) and (3) only"], ["MC", "Steps: (1) executes the instruction (2) writes data in memory (3) translates the instruction into operation code and operands (4) retrieves the instruction from memory. Correct order?", "Answer: D. (4) -> (3) -> (1) -> (2)"], ["MC", "Which statement about the fetch-decode-execute cycle in a CPU is correct?", "Answer: A. Registers are used in the cycle."], ["2023-4(d)(iii)", "Robots use 5-bit commands. What is the benefit of using 2-bit commands instead? (1 mark)", "The design of the machine can be simplified / fewer commands are implemented."]], "pg": "pp.64–65"}, {"t": "CPU specifications", "n": "Clock rate (GHz): clock cycles per second, so 2 GHz = 2x10^9 cycles per second; higher means more computational power but more power use. Number of cores: processing units in the CPU, more cores can run more tasks at once. Word length (32-bit or 64-bit): data handled at one time; 64-bit can address more memory. Rotation latency is a hard-disk spec, not a CPU spec.", "tip": "Quad-core beats dual-core because more instructions run at the same time. Lowering clock rate saves electricity.", "qs": [["2022-1(a)(i)", "Why does Peter buy a quad-core CPU instead of a dual-core CPU? (1 mark)", "It executes instructions faster / more computational power / performs more tasks simultaneously."], ["2022-1(a)(ii)", "Suggest another CPU technical specification that he might consider. (1 mark)", "Clock rate / word length (word size)."], ["2021-2(c)", "The CPU specifications of P are 5 GHz and 10 cores. Describe what they represent. (2 marks)", "5 GHz: the clock rate of the CPU. 10 cores: 10 processing units within a CPU."], ["2019-5(c)(ii)", "Peter runs a program millions of times with N >= 64 and wants to improve performance significantly. Suggest a hardware component to upgrade. (1 mark)", "CPU."], ["2021-5(c)(iv)", "What computer resource should be considered for implementing the encoding scheme, other than the storage size? (2 marks)", "The computation power (CPU), because the encoding scheme involves extra computation for representation."], ["2012sp-4", "Which is not a specification of a CPU?", "Answer: C. 4.2ms Rotation latency"], ["2023-14", "A CPU has 16 cores, 5 GHz and a 30 MB cache. Which are correct? (1) clock rate 5 GHz (2) max 16 programs at the same time (3) cache faster than RAM", "Answer: B. (1) and (3) only"], ["MC", "What is the possible outcome of lowering the clock rate of a CPU in a desktop computer?", "Answer: A. Consumes less electricity."], ["MC", "The clock rate of a CPU is 2 GHz. Which statement is correct?", "Answer: B. The CPU performs 2x10^9 clock cycles in a second."], ["MC", "The specification of a CPU, 3.0 GHz, indicates _____.", "Answer: A. the computational power"], ["MC", "A quad-core processor is generally better than a dual-core because _____.", "Answer: C. more instructions can be executed at the same time."], ["MC", "The 64-bit version of an operating system is better than the 32-bit version because _____.", "Answer: B. the operating system can address more memory locations."]], "pg": "pp.66–67"}], "pg": "pp.63–69"}, {"t": "2.3 Storage device", "n": "Main memory (RAM, ROM) is read by the CPU directly. Secondary storage keeps data long term.", "ch": [{"t": "RAM and ROM", "n": "RAM: volatile, read and write, holds the programs and data being used, so more RAM cuts the time spent reading secondary storage. ROM: non-volatile, stores firmware such as the BIOS / bootstrap (start-up) program. Flash memory (EEPROM) is non-volatile and rewritable.", "tip": "RAM = volatile, temporary, CPU accesses directly. ROM = non-volatile, start-up program. Flash is non-volatile AND rewritable.", "qs": [["2012pp-2(c)", "What is the most important program stored in the ROM of the tablet PC? (1 mark)", "BIOS / POST / bootstrap program / start-up program."], ["2013-1(a)(ii)", "The printer is equipped with RAM and ROM. When John prints a document, what will the RAM and ROM store? (2 marks)", "RAM: data of the document. ROM: printer's firmware / start-up program."], ["2015-4(a)(i)", "Other than the operating system, what will the secondary storage in the vending machine's embedded computer store? (1 mark)", "The program that monitors the sales of the products / drivers."], ["2015-4(a)(ii)", "The operating system is not installed in the ROM of the embedded computer. Why not? (1 mark)", "It is not easy to update the operating system."], ["2017-3(b)(i)", "Give one difference between flash memory (EEPROM) and RAM. (1 mark)", "Flash memory is non-volatile."], ["2017-3(b)(ii)", "Give one difference between flash memory and ROM. (1 mark)", "Flash memory (EEPROM) is re-writable."], ["2019-5(c)(i)", "Increasing the size of RAM does not help. Why not? (1 mark)", "The algorithm does not need much memory to be executed."], ["2020-5(c)(i)", "In which type of memory, RAM or ROM, should the information about the pixels in the display be stored? Give a reason. (1 mark)", "RAM, as it is volatile and its content can be over-written."], ["2023-1(b)", "What is the main function of RAM? How can it enhance the computational power? (2 marks)", "RAM temporarily stores user programs / data. Increasing RAM decreases the time needed to access the secondary storage devices."], ["MC", "Eva has a power failure while word processing. Some working data can be restored. Why? (1) saved in hard disk (2) saved in RAM (3) saved in ROM", "Answer: A. (1) only"], ["MC", "Where is a bootstrap program for starting up a computer usually stored?", "Answer: C. ROM"], ["MC", "At start-up the PC loads data from ROM to check components. ROM cannot be replaced by RAM because _____.", "Answer: B. RAM is volatile."], ["2022-15", "A standalone computer runs slow with database software. Which component should be upgraded? (1) RAM (2) ROM (3) NIC", "Answer: A. (1) only"]], "pg": "pp.70–71"}, {"t": "Secondary storage: access methods", "n": "Sequential access (magnetic tape): read from the start, slow to find a file. Direct (random) access (HDD, SSD, flash, DVD-RW): jump straight to the data, so seek time is shorter.", "qs": [["MC", "Which statements about direct access on a storage device are correct? (1) writing starts from the beginning (2) seek time generally faster than sequential (3) more common in hard disks", "Answer: C. (2) and (3) only"], ["MC", "In which components can files be accessed in direct access mode? (1) Flash memory card (2) DVD-RW (3) Hard disk (4) Magnetic tape", "Answer: D. (1), (2) and (3) only"], ["MC", "Which only support(s) sequential access? (1) DVD-RW (2) Magnetic tape (3) Flash memory", "Answer: B. (2) only"]], "pg": "pp.74–75"}, {"t": "Hard disk drive (HDD)", "n": "Spinning magnetic platters. Large capacity and low cost per GB, but heavier, slower, uses more power and breaks if shocked. Trends: lower power use, longer lifespan. Defragmentation speeds up file access. Rotation speed in rpm.", "qs": [["2012-1(a)", "Name the storage devices commonly used in the two computers (notebook and tablet). (2 marks)", "Notebook: hard disk. Tablet: flash memory / SSD."], ["MC", "Which are the latest trends in hard disk drive development? (1) Lower power consumption (2) Longer lifespan (3) More built-in software", "Answer: A. (1) and (2) only"]], "pg": "pp.74–75"}, {"t": "Solid-state drive (SSD) and flash", "n": "No moving parts. Higher transfer rate, faster seek time, shock resistant, lighter, smaller, less power and heat, quiet. Cost per GB is higher. Used in tablets and phones, and for the operating system in desktops because system files are used often. Flash memory is the type used in SSDs, USB drives and memory cards.", "tip": "Quote specific benefits: transfer rate, seek time, shock resistance, weight, size, power. 'Larger capacity' and 'cheaper' are not accepted.", "qs": [["2016-5(a)(i)", "What kind of memory storage should be used in a wearable device? Why? (2 marks)", "Flash memory, as it is light in weight (small, anti-shock, portable, low power consumption)."], ["2012pp-2(b)(i)", "The tablet PC has a 64 GB SSD, quite different from an ordinary computer. Why? (1 mark)", "Because of the absence of a hard disk, it is lighter / has lower power consumption."], ["2013-2(c)(i)", "The notebook uses an SSD instead of a general hard disk. Give two benefits. (2 marks)", "Higher data transfer rate / less electricity / smaller / better shock resistance / lighter / more durable."], ["2015-3(b)", "The tablet has flash memory instead of a small hard disk. Give two advantages. (2 marks)", "Two of: more portable (lighter, smaller); higher transfer rate / faster access / lower latency; more resistant to shock; quiet; lower power consumption / less heat. (Not accepted: higher capacity, lower cost, non-volatile.)"], ["2023-1(a)", "Give two benefits of replacing the hard disk with an SSD. (2 marks)", "Faster seek time / shock resistance / lighter / less heat / less power consumption / smaller."], ["MC", "Which is not an advantage of an SSD over a hard drive?", "Answer: C. Supports random access."], ["MC", "John has a 500GB SSD and a 2TB hard disk. Why is the operating system installed in the SSD?", "Answer: B. The files of the operating system are frequently used."], ["MC", "Why is an SSD commonly used in mobile devices instead of a hard disk drive?", "Answer: A. The physical size of a SSD is smaller."], ["MC", "Peter replaces a server hard disk with an SSD. Which SSD properties benefit the upgrade? (1) Higher transfer rate (2) Lower power (3) Smaller capacity", "Answer: C. (1) and (2) only"]], "pg": "pp.76–77"}, {"t": "Optical disc, memory card, magnetic tape", "n": "CD-RW, DVD-RW, BD-RE: rewritable optical discs, weak to scratches and fading in use. Memory card (SD): small, for cameras and IP cameras. Magnetic tape: sequential access, very cheap per GB, used for backup. Cloud storage and NAS are other ways to store data (for example IP camera videos).", "qs": [["2022sp-7(c)(i)", "The IP camera does not have sufficient storage. Suggest two methods of storing videos. (2 marks)", "SD card / NAS / cloud storage."]], "pg": "pp.78–79"}, {"t": "Memory hierarchy and transfer rate", "n": "From fastest, smallest and dearest to slowest, largest and cheapest: registers, cache, RAM, SSD, HDD, optical / tape. Compare volatile or not, transfer rate, size and cost per GB.", "tip": "Order by transfer rate: RAM > SSD > HDD. Cache is faster than RAM.", "qs": [["2021-2(b)", "Describe two differences in characteristics between RAM and SSD. (2 marks)", "RAM: volatile, higher transfer rate, smaller, directly accessed by CPU, holds data being executed. SSD: non-volatile, lower rate, larger, not directly accessed by CPU, long-term storage."], ["2024-2(a)(i)", "Arrange SSD, HDD and RAM in descending order by data transfer rate. (1 mark)", "RAM > SSD > HDD."], ["2024-2(a)(ii)", "Other than data transfer rate and storage capacity, describe a functional difference between RAM and SSD. (1 mark)", "RAM is volatile and SSD is non-volatile / RAM is primary storage and SSD is secondary storage."], ["MC", "Arrange in ascending order by data transfer rate: (1) SSD (2) Memory cache (3) RAM", "Answer: A. (1), (3), (2)"]], "pg": "pp.78–79"}], "pg": "pp.70–81"}, {"t": "2.4 Type of\ncomputers", "n": "Compare desktop, notebook, tablet, smartphone and e-book reader by portability, power, screen, input, battery life and computational power.", "tip": "Pick the spec that fits the user's need (portability, 4K video editing, e-learning) and ignore specs that do not matter (USB ports, ROM size).", "qs": [["2012pp-2(a)", "State two features of the tablet PC mainly designed for mobility. (2 marks)", "Light weight (0.5 kg); wireless Internet connection."], ["2012-1(b)(i)", "Justify: the tablet computer has longer battery operating time. (1 mark)", "The CPU / storage device / display unit consumes less electricity."], ["2012-1(b)(ii)", "Justify: the tablet computer needs a shorter start-up time. (1 mark)", "The operating system (Android) / flash memory supports the shorter start-up / fewer peripherals to load."], ["2014-5(b)", "Give two advantages of desktop computers over smart phones. (2 marks)", "Higher computational power and larger screen (also faster stable transfer, easier typing, more programs)."], ["2015-1(a)(i)", "If the mobile device connects to the drone through the mobile phone network, what is the advantage? (1 mark)", "The coverage is wider."], ["2021-2(e)", "Students choose Q instead of P to conduct a survey on the street. Give two reasons. (2 marks)", "Internet access via SIM card / cellular when Wi-Fi is not available; lighter and smaller, so more portable."], ["2022sp-1(a)", "Ada edits and renders a video. Choose Device A (desktop, dedicated GPU, 8TB HDD) or B (smartphone). Give two reasons. (2 marks)", "A: larger storage, larger screen, higher computational power, dedicated GPU. B: flash memory has higher transfer rate, smaller, less power with integrated GPU."], ["MC", "Why do many readers use mobile devices to read books? (1) ergonomic design relieves eye strain (2) various functions make reading convenient (3) convenient to carry many books", "Answer: C. (2) and (3) only"], ["MC", "Advantages of an e-book reading device over a tablet? (1) lower power (2) lighter (3) higher computational power", "Answer: A. (1) and (2) only"], ["MC", "Config: Intel i7, 16GB DDR4, 1TB SSD, 802.11ac Wi-Fi. What can be found out? (1) display size (2) max wireless data rate (3) start-up time", "Answer: B. (2) only"], ["MC", "Peter buys a computer for multimedia learning software. Least important factor?", "Answer: C. Storage size of ROM"], ["MC", "X streams HD video from the Internet to a TV. Which specs are necessary in X? (1) 2TB HDD (2) 8GB flash (3) audio output (4) HDMI (5) VGA", "Answer: A. (2) and (4) only"], ["MC", "A charity donates laptops for e-learning; only one item can be upgraded. Most appropriate?", "Answer: A. No network card -> 802.11n network interface card"], ["MC", "Tasks: database queries poor, online meetings smooth, 4K video on hard disk fair. Which to upgrade? (1) NIC (2) Display card (3) CPU", "Answer: C. (2) and (3) only"], ["MC", "A computer edits videos. Which specs have significant impact? (1) RAM size (2) number of USB ports (3) CPU clock rate", "Answer: B. (1) and (3) only"], ["MC", "Susan buys a computer for video editing. Least important factor?", "Answer: C. Number of USB ports"], ["MC", "Computers X, Y, Z (X: quad-core 2.8 GHz, 4 GB, 2TB HDD). Which has the best computational power?", "Answer: A. X"], ["MC", "Same computers: which takes the shortest time to boot up?", "Answer: C. Z (quad-core, SSD)"], ["MC", "Peter's home PC edits video better than his office PC. Possible causes? (1) HDD read/write speed (2) ROM size (3) CPU clock rate", "Answer: C. (1) and (3) only"]], "pg": "p.82"}, {"t": "2.5 Latest development\nof hardware", "n": "CPU: more cores, higher efficiency, lower energy per task. GPU: also used for artificial intelligence and data processing. Storage: SSD replaces HDD, optical drives decline, cloud storage grows. Displays: more screen sizes, higher energy efficiency.", "qs": [["2021-18", "Which of the following is a recent development in CPU? (A pre-installed OS / B fewer processing units / C increasing the clock rate / D higher power consumption)", "Answer: C. Increasing the clock rate"]], "pg": "pp.83–84"}], "pg": "pp.50–88"};
+const HOT = 8;
+const NS='http://www.w3.org/2000/svg';
+const FONT="500 13px 'IBM Plex Sans', system-ui, sans-serif";
+const cv=document.createElement('canvas').getContext('2d');
+const svg=document.getElementById('svg'), detail=document.getElementById('detail');
+let hotOnly=false, selected=null;
+function el(n,a,p){const e=document.createElementNS(NS,n);for(const k in a)e.setAttribute(k,a[k]);if(p)p.appendChild(e);return e}
+function prep(n,d,b){n.d=d;n.b=b;n.open=d<2;n.lines=n.t.split('\n');n.kids=n.ch||[];n.kids.forEach(k=>prep(k,d+1,d===0?(n.kids.indexOf(k)%6)+1:b));}
+prep(DATA,0,0);
+(function tot(n){n.tot=(n.qs?n.qs.length:0)+n.kids.reduce((a,k)=>a+tot(k),0);n.c=n.tot;if(n.d>0)n.hot=n.tot>=HOT;return n.tot})(DATA);
+function hotWithin(n){return !!n.hot||(n.kids||[]).some(hotWithin)}
+function measure(n){cv.font=n.d===0?"700 16px 'Bricolage Grotesque', sans-serif":FONT;
+  n.w=Math.ceil(Math.max(...n.lines.map(l=>cv.measureText(l).width)))+(n.d===0?36:26)+(n.c?(n.kids.length?42:34):0);
+  if(n.pg&&n.d>0){cv.font="500 11px 'IBM Plex Mono', monospace";n.w=Math.max(n.w,Math.ceil(cv.measureText(n.pg).width)+26+(n.c?(n.kids.length?42:34):0))}
+  n.h=n.lines.length*17+14+(n.pg&&n.d>0?14:0);n.kids.forEach(measure)}
+function layout(){
+  measure(DATA);
+  const colW=[];(function m(n){colW[n.d]=Math.max(colW[n.d]||0,n.w);n.kids.forEach(m)})(DATA);
+  const gapX=46,x0=[];let x=16;colW.forEach((w,i)=>{x0[i]=x;x+=w+gapX});
+  let y=16;
+  (function place(n){
+    n.x=x0[n.d];
+    const vis=n.open?n.kids:[];
+    if(!vis.length){n.y=y;y+=n.h+10}
+    else{vis.forEach(place);const f=vis[0],l=vis[vis.length-1];n.y=(f.y+f.h/2+l.y+l.h/2)/2-n.h/2}
+  })(DATA);
+  return {W:x-gapX+16,H:y+6};
+}
+function draw(){
+  const {W,H}=layout();svg.setAttribute('width',W);svg.setAttribute('height',H);svg.setAttribute('viewBox',`0 0 ${W} ${H}`);
+  svg.replaceChildren();
+  const gl=el('g',{},svg),gn=el('g',{},svg);
+  (function walk(n){
+    if(n.open)n.kids.forEach(k=>{
+      const x1=n.x+n.w,y1=n.y+n.h/2,x2=k.x,y2=k.y+k.h/2,mx=(x1+x2)/2;
+      const p=el('path',{d:`M${x1},${y1} C${mx},${y1} ${mx},${y2} ${x2},${y2}`,class:'link'+(hotWithin(k)?'':' cold'),stroke:`var(--b${k.b})`},gl);
+      walk(k)});
+    const g=el('g',{class:'node'+(n.d===0?' root':'')+(n.hot?' hotn':'')+(hotWithin(n)?'':' cold'),tabindex:0,role:'button','aria-label':n.lines.join(' ')+(n.kids.length?(n.open?' (open)':' (closed)'):'')},gn);
+    const r=el('rect',{x:n.x,y:n.y,width:n.w,height:n.h,rx:n.d===0?14:10},g);
+    if(n.d>0){r.setAttribute('fill',n.d===1?`var(--b${n.b})`:`var(--b${n.b}t)`);
+      r.setAttribute('stroke',n.hot?'var(--hot)':`var(--b${n.b})`);if(n.hot)r.setAttribute('stroke-width',3)}
+    n.lines.forEach((l,i)=>{const t=el('text',{x:n.x+(n.d===0?18:13),y:n.y+7+17*(i+1)-4,fill:n.d===1?'var(--bg)':'var(--fg)'},g);t.textContent=l;
+      if(n.d===1)t.setAttribute('style','fill:var(--panel)');
+      if(n.d===1&&document.documentElement.dataset.theme==='dark')t.setAttribute('style','fill:var(--bg)')});
+    if(n.pg&&n.d>0){const t=el('text',{x:n.x+13,y:n.y+7+17*n.lines.length+11,class:'pgtag',fill:n.d===1?'var(--panel)':'var(--muted)'},g);t.textContent=n.pg;if(n.d===1&&document.documentElement.dataset.theme==='dark')t.setAttribute('fill','var(--bg)')}
+    if(n.c){const bg=el('g',{class:'badge'},g),bx=n.x+n.w-(n.kids.length?46:38),by=n.y+n.h/2-9;
+      el('rect',{x:bx,y:by,width:30,height:18,rx:9},bg);const t=el('text',{x:bx+15,y:by+13,'text-anchor':'middle'},bg);t.textContent='×'+n.c}
+    if(n.kids.length){const tg=el('g',{class:'tog'},g),cx=n.x+n.w,cy=n.y+n.h/2;
+      el('circle',{cx,cy,r:9,stroke:`var(--b${n.b||1})`},tg);const t=el('text',{x:cx,y:cy+4,'text-anchor':'middle'},tg);t.textContent=n.open?'−':'+';
+      tg.addEventListener('click',e=>{e.stopPropagation();n.open=!n.open;draw()})}
+    const act=()=>{show(n)};
+    g.addEventListener('click',act);
+    g.addEventListener('keydown',e=>{if(e.key==='Enter'||e.key===' '){e.preventDefault();act()}else if((e.key==='ArrowRight'||e.key==='ArrowLeft')&&n.kids.length){n.open=e.key==='ArrowRight';draw()}});
+  })(DATA);
+  svg.parentNode.classList.toggle('dim',hotOnly);
+}
+function esc(s){return s.replace(/[&<>]/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;'}[c]))}
+function show(n){
+  selected=n;
+  let h=`<div class="dctl"><button class="dbtn" data-act="min" aria-label="Minimise this box" title="Minimise">&#8722;</button><button class="dbtn" data-act="close" aria-label="Close this box" title="Close">&#215;</button></div><h2>${esc(n.lines.join(' '))}${n.c?`<span class="pill">${n.c} past-paper question${n.c>1?'s':''}</span>`:'<span class="pill zero">no past-paper question yet</span>'}</h2>`;
+  if(n.pg)h+=`<p class="pgline"><b>Revise in Book B:</b> ${esc(n.pg)}</p>`;
+  h+=(n.n?`<p>${esc(n.n)}</p>`:'<p class="hint">Open this branch to see the points inside it.</p>');
+  if(n.tip)h+=`<div class="tip"><b>Exam</b>${esc(n.tip)}</div>`;
+  if(n.qs&&n.qs.length){h+=`<div class="qs"><div class="qh">Questions on this topic (tap one to see the answer)</div>`+n.qs.map(q=>`<details><summary><span class="qid">${esc(q[0])}</span> ${esc(q[1])}</summary><div class="ans">${esc(q[2])}</div></details>`).join('')+`</div>`}
+  else if(n.kids.length&&n.tot){h+=`<p class="hint">${n.tot} question${n.tot>1?'s':''} sit in the boxes inside this branch. Open it and tap each box.</p>`}
+  detail.hidden=false;detail.classList.remove('min');
+  detail.innerHTML=h;
+}
+detail.addEventListener('click',e=>{const b=e.target.closest('.dbtn');if(!b)return;if(b.dataset.act==='close'){detail.hidden=true}else{detail.classList.toggle('min');b.innerHTML=detail.classList.contains('min')?'+':'&#8722;';b.title=detail.classList.contains('min')?'Expand':'Minimise';b.setAttribute('aria-label',b.title+' this box')}});
+document.addEventListener('keydown',e=>{if(e.key==='Escape')detail.hidden=true});
+function setAll(v,n=DATA){if(n.kids.length){n.open=v;n.kids.forEach(k=>setAll(v,k))}}
+document.getElementById('hotBtn').onclick=e=>{hotOnly=!hotOnly;e.currentTarget.setAttribute('aria-pressed',hotOnly);draw()};
+document.getElementById('expBtn').onclick=()=>{setAll(true);draw()};
+document.getElementById('colBtn').onclick=()=>{setAll(false);DATA.open=true;draw()};
+(document.fonts&&document.fonts.ready?document.fonts.ready:Promise.resolve()).then(draw);
+draw();
+</script>
