@@ -1,0 +1,210 @@
+<title>EC Ch2 Mindmap</title>
+<meta name="claude:viewport-fit-sides" content="cover">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:wght@500;600&family=IBM+Plex+Sans:wght@400;500;600&family=Bricolage+Grotesque:opsz,wght@12..96,700&display=swap">
+<style>
+/* Layout: left-to-right branching map in a scroll pane, controls above, detail card below. */
+:root{
+  --bg:#f3f5f9; --panel:#ffffff; --fg:#14213d; --muted:#5b6784; --line:#cfd6e4; --hot:#d62839;
+  --b1:#1d4ed8; --b1t:#e3ebff; --b2:#0f766e; --b2t:#dcf5f1; --b3:#b45309; --b3t:#fdebd0;
+  --b4:#7e22ce; --b4t:#f0e2fd; --b5:#be185d; --b5t:#fde2ee; --b6:#3f6212; --b6t:#e8f3d1;
+  --root:#14213d; --rootfg:#ffffff;
+  --font:'IBM Plex Sans',system-ui,sans-serif; --mono:'IBM Plex Mono',ui-monospace,monospace; --disp:'Bricolage Grotesque','IBM Plex Sans',sans-serif;
+}
+@media (prefers-color-scheme:dark){:root:not([data-theme="light"]){
+  --bg:#0d1424; --panel:#16203a; --fg:#e6ebf7; --muted:#9aa7c7; --line:#2b3858; --hot:#ff6b7a;
+  --b1:#7aa2ff; --b1t:#18284f; --b2:#4fd1c1; --b2t:#0f2e2c; --b3:#f4b25c; --b3t:#3a2a12;
+  --b4:#c79bff; --b4t:#2b1c45; --b5:#ff8cbc; --b5t:#40182e; --b6:#b6dd72; --b6t:#26331a;
+  --root:#e6ebf7; --rootfg:#0d1424; color-scheme:dark}}
+:root[data-theme="dark"]{
+  --bg:#0d1424; --panel:#16203a; --fg:#e6ebf7; --muted:#9aa7c7; --line:#2b3858; --hot:#ff6b7a;
+  --b1:#7aa2ff; --b1t:#18284f; --b2:#4fd1c1; --b2t:#0f2e2c; --b3:#f4b25c; --b3t:#3a2a12;
+  --b4:#c79bff; --b4t:#2b1c45; --b5:#ff8cbc; --b5t:#40182e; --b6:#b6dd72; --b6t:#26331a;
+  --root:#e6ebf7; --rootfg:#0d1424; color-scheme:dark}
+body{background:var(--bg);color:var(--fg);font-family:var(--font);font-size:15px;line-height:1.5;
+  padding-block:20px 40px;padding-left:max(16px,env(safe-area-inset-left,0px));padding-right:max(16px,env(safe-area-inset-right,0px))}
+.wrap{max-width:1400px;margin:0 auto;display:flex;flex-direction:column;gap:14px}
+header{display:flex;flex-wrap:wrap;gap:6px 18px;align-items:baseline;justify-content:space-between}
+.kicker{font-family:var(--mono);font-size:12px;letter-spacing:.08em;text-transform:uppercase;color:var(--muted)}
+h1{font-family:var(--disp);font-size:clamp(24px,4vw,36px);line-height:1.1;margin:2px 0 0;text-wrap:balance}
+.sub{color:var(--muted);max-width:60ch;margin:6px 0 0}
+.bar{display:flex;flex-wrap:wrap;gap:8px 10px;align-items:center}
+button{font:inherit;font-size:13px;color:var(--fg);background:var(--panel);border:1px solid var(--line);border-radius:8px;padding:6px 12px;cursor:pointer}
+button:hover{border-color:var(--fg)}
+button[aria-pressed="true"]{background:var(--hot);border-color:var(--hot);color:#fff}
+button:focus-visible,.node:focus-visible{outline:2px solid var(--fg);outline-offset:2px}
+.legend{display:flex;flex-wrap:wrap;gap:6px 16px;font-size:13px;color:var(--muted);align-items:center}
+.legend .pill{font-family:var(--mono);font-size:11px;font-weight:600;background:var(--hot);color:#fff;border-radius:99px;padding:1px 7px}
+.legend .sw{display:inline-block;width:14px;height:14px;border-radius:4px;vertical-align:-2px;margin-right:5px}
+.pane{background:var(--panel);border:1px solid var(--line);border-radius:14px;overflow-x:auto;overflow-y:hidden}
+svg{display:block}
+.link{fill:none;stroke-width:2;opacity:.55}
+.node{cursor:pointer}
+.node rect{stroke-width:1.5;transition:opacity .15s}
+.node text{font-family:var(--font);font-size:13px;font-weight:500;pointer-events:none}
+.node.hotn text{font-weight:600}
+.node text.pgtag{font-family:var(--mono);font-size:11px;font-weight:500;opacity:.85}
+.node .badge rect{fill:var(--hot);stroke:none}
+.node .badge text{fill:#fff;font-family:var(--mono);font-size:11px;font-weight:600}
+.node .tog circle{fill:var(--panel);stroke-width:1.5}
+.node .tog text{font-family:var(--mono);font-size:12px;font-weight:600;fill:var(--fg)}
+.dim .node.cold{opacity:.22}
+.dim .link.cold{opacity:.12}
+.root rect{fill:var(--root);stroke:none}
+.root text{fill:var(--rootfg);font-family:var(--disp);font-size:16px;font-weight:700}
+.detail{background:var(--panel);border:1px solid var(--line);border-radius:14px;padding:14px 18px;min-height:72px;position:sticky;bottom:max(8px,env(safe-area-inset-bottom,0px));z-index:5;box-shadow:0 -6px 18px rgba(20,33,61,.14);max-height:52vh;overflow:auto}
+.detail h2{font-family:var(--disp);font-size:20px;margin:0 0 4px;display:flex;gap:10px;align-items:center;flex-wrap:wrap}
+.detail h2 .pill{font-family:var(--mono);font-size:12px;font-weight:600;background:var(--hot);color:#fff;border-radius:99px;padding:1px 9px}
+.detail p{margin:6px 0 0;max-width:80ch;white-space:pre-line}
+.detail .hint{color:var(--muted)}
+.detail .pgline{margin:0 0 8px;font-family:var(--mono);font-size:13px;color:var(--fg)}
+.detail .pgline b{font-family:var(--font);font-weight:600}
+.detail h2 .pill.zero{background:var(--line);color:var(--muted)}
+.dctl{float:right;display:flex;gap:6px;margin:-2px 0 6px 10px}
+.dbtn{width:32px;height:32px;padding:0;font-size:20px;line-height:1;border-radius:8px}
+.detail.min{max-height:none;overflow:visible;padding-block:8px}
+.detail.min>*:not(.dctl):not(h2){display:none}
+.detail.min h2{margin:0;font-size:16px}
+.qs{margin-top:12px;display:flex;flex-direction:column;gap:6px;max-width:90ch}
+.qh{font-family:var(--mono);font-size:11px;letter-spacing:.06em;text-transform:uppercase;color:var(--muted)}
+.qs details{border:1px solid var(--line);border-radius:8px;padding:6px 10px;background:var(--bg)}
+.qs summary{cursor:pointer;font-size:14px}
+.qctx{margin-top:8px;padding:8px 10px;border:1px solid var(--line);border-radius:8px;background:var(--b1t);font-size:13px;overflow-x:auto}.qcl{font-size:11px;font-weight:700;letter-spacing:.04em;text-transform:uppercase;opacity:.7;margin-bottom:4px}.qctx p{margin:4px 0}.qctx p.qsub{opacity:.85;font-style:italic}.qctx table.qt{border-collapse:collapse;margin:6px 0;font-family:var(--mono);font-size:12.5px;background:var(--card,transparent)}.qctx table.qt td,.qctx table.qt th{border:1px solid var(--line);padding:2px 8px;text-align:left;white-space:nowrap}.qctx table.qt th{background:rgba(127,127,127,.15);font-weight:600}.qctx table.qt td.dk,.qctx table.qt th.dk{background:#222}.qctx img{max-width:100%;height:auto;border:1px solid var(--line);border-radius:6px;margin:4px 0;background:#fff}.qctx ul.opts{list-style:none;padding:0;margin:6px 0 0}.qctx ul.opts li{margin:2px 0}.qctx ul.opts li table{margin:4px 0}
+.kid{margin:6px 0 12px;padding:12px 14px;border-radius:14px;border:2px dashed #f59e0b;background:#fffbeb;color:#422006}.kid p{margin:6px 0 0;font-size:16px;line-height:1.5}.kidh{font-weight:800;font-size:13px;letter-spacing:.04em;text-transform:uppercase;color:#b45309}.kidfig{display:flex;flex-wrap:wrap;gap:10px;margin-top:6px}.kidfig svg{max-width:100%;height:auto;background:#fff;border-radius:10px}
+@media (prefers-color-scheme:dark){:root:not([data-theme="light"]) .kid{background:#3b2a0a;color:#fde68a;border-color:#d97706}:root:not([data-theme="light"]) .kidh{color:#fbbf24}}
+.qid{font-family:var(--mono);font-weight:600;font-size:12px;background:var(--b1t);color:var(--b1);border-radius:6px;padding:1px 6px;margin-right:4px}
+.ans{margin-top:6px;padding-top:6px;border-top:1px dashed var(--line);font-size:14px;white-space:pre-line}
+.tip{margin-top:10px;padding:8px 12px;border-radius:8px;background:var(--b3t);color:var(--fg);max-width:80ch;font-size:14px}
+.tip b{font-family:var(--mono);font-size:11px;letter-spacing:.06em;text-transform:uppercase;color:var(--b3);margin-right:6px}
+code,.m{font-family:var(--mono);font-size:.92em}
+.backlink{display:inline-block;margin-bottom:8px;font-family:var(--mono);font-size:12px;letter-spacing:.06em;text-transform:uppercase;color:var(--muted);text-decoration:none}
+.backlink:hover{color:var(--fg);text-decoration:underline}
+@media (prefers-reduced-motion:reduce){.node rect{transition:none}}
+.fg text{fill:var(--fg);font-family:var(--font);font-size:13px}
+.fg text.m{font-family:var(--mono);font-size:12.5px}
+.fg text.lb{fill:var(--muted);font-size:11.5px;font-family:var(--mono)}
+.fg text.ix{fill:var(--muted);font-size:11px;font-family:var(--mono)}
+.fg .ahp{fill:var(--muted)}
+.fg line,.fg path.ar{stroke:var(--muted);stroke-width:1.6;fill:none}
+.fg .axis{stroke:var(--fg);stroke-width:2}.fg .bd{stroke:var(--hot);stroke-width:2;stroke-dasharray:4 3}
+.fg .proc{fill:var(--b1t);stroke:var(--b1);stroke-width:1.5}.fg .io{fill:var(--b2t);stroke:var(--b2);stroke-width:1.5}
+.fg .dec{fill:var(--b3t);stroke:var(--b3);stroke-width:1.5}.fg .term{fill:var(--b4t);stroke:var(--b4);stroke-width:1.5}
+.fg .good{fill:var(--b6t);stroke:var(--b6);stroke-width:1.5}.fg .bad{fill:var(--b5t);stroke:var(--b5);stroke-width:1.5}
+.fg .hot{fill:var(--b3t);stroke:var(--hot);stroke-width:2.5}
+.figs{display:flex;flex-wrap:wrap;gap:14px 22px;margin:8px 0 4px;align-items:flex-start}
+figure.fig{margin:0;max-width:100%}
+figure.fig figcaption{font-size:12.5px;color:var(--muted);margin-top:3px;max-width:44ch}
+table.ft{border-collapse:collapse;font-size:13.5px}
+table.ft th{background:var(--b1t);color:var(--fg);text-align:left;font-weight:600}
+table.ft th,table.ft td{border:1px solid var(--line);padding:4px 10px}
+table.ft td.m{font-family:var(--mono);font-size:12.5px}
+ul.key{margin:8px 0 0;padding-left:20px;max-width:70ch;font-size:16px;font-weight:500}
+ul.key li{margin:3px 0}
+details.more{margin-top:10px}
+details.more>summary{cursor:pointer;color:var(--muted);font-size:13px}
+.ans img{max-width:100%;background:#fff;border-radius:8px;margin-top:6px;display:block}
+</style>
+<div class="wrap">
+  <header>
+    <div>
+      <a class="backlink" href="../../index.html#concepts-book-ec">&larr; Back to Elective C</a>
+      <div class="kicker">Elective C · Chapter 2</div>
+      <h1>Program Testing and Debugging</h1>
+      <p class="sub">Every concept in the chapter in picture-first, simple words, with each past-paper question attached to the topic it tests.</p>
+    </div>
+    <div class="bar">
+      <button id="hotBtn" aria-pressed="false">Show topics with 4+ questions only</button>
+      <button id="expBtn">Expand all</button>
+      <button id="colBtn">Collapse all</button>
+    </div>
+  </header>
+  <div class="legend">
+    <span><b style="font-family:var(--mono);font-size:12px">pp.34–35</b> page numbers in Book EC to revise this topic</span>
+    <span><span class="pill">×12</span> number of past-paper questions on this topic, all listed with answers when you tap the box</span>
+    <span><span class="sw" style="background:var(--hot)"></span>red outline = 4 or more questions</span>
+    <span>Tap a box to read the key points. Tap + / − to open or close a branch.</span>
+  </div>
+  <div class="pane" id="pane"><svg id="svg" role="img" aria-label="Program Testing and Debugging mind map"></svg></div>
+  <div class="detail" id="detail" aria-live="polite"><p class="hint">Tap any box on the map to see what to remember and every past-paper question on it.</p></div>
+</div>
+<script>
+const DATA = {"t": "EC Ch.2\nProgram Testing and Debugging", "n": "Errors, test data, trace tables, debugging tools and the testing stages.", "ch": [{"t": "Three kinds of errors", "n": "Syntax error: breaks the language rules (missing colon, wrong keyword); found when compiling/interpreting. Run-time error: happens while running (divide by zero, index out of range, file not found). Logic error: runs but gives wrong results (wrong formula, wrong condition, off-by-one); hardest to find, so test with data.", "tip": "Program stops with a message → syntax/run-time. Runs but wrong output → logic.", "pg": "EC Ch.2", "key": ["Syntax: breaks language rules", "Run-time: crashes while running", "Logic: runs, wrong result"], "fig": ["<figure class=\"fig\"><table class=\"ft\"><thead><tr><th>Error</th><th>Example</th><th>When found</th><th>Message?</th></tr></thead><tbody><tr><td class=\"\">Syntax</td><td class=\"m\">if x &gt; 3  (no colon)</td><td class=\"\">before running</td><td class=\"\">yes</td></tr><tr><td class=\"\">Run-time</td><td class=\"m\">10 / 0 · A[11] of 10</td><td class=\"\">while running</td><td class=\"\">yes</td></tr><tr><td class=\"\">Logic</td><td class=\"m\">area = w + h</td><td class=\"\">by testing</td><td class=\"\">no</td></tr></tbody></table><figcaption>Spot the type</figcaption></figure>"], "kid": "Syntax error: you spelled a word wrong, so the robot cannot read it. Runtime error: the robot is told to do something impossible, like dividing a pizza among 0 kids. Logic error: the robot happily does the wrong thing – you asked for 2+2 and it adds 3.", "kidfig": ["<figure class=\"fig kf\" style=\"margin:0\"><svg viewBox=\"0 0 520 200\" width=\"520\" style=\"max-width:100%;height:auto\" role=\"img\"><rect width=\"520\" height=\"200\" rx=\"12\" fill=\"#ffffff\"/><rect x=\"30\" y=\"28\" width=\"120\" height=\"44\" rx=\"9\" fill=\"#fee2e2\" stroke=\"#dc2626\" stroke-width=\"2\"/><text x=\"90\" y=\"46.2\" font-size=\"12\" text-anchor=\"middle\" fill=\"#422006\" style=\"font-family:system-ui,-apple-system,'Segoe UI','Noto Sans',sans-serif;font-weight:700\">✏️ syntax</text><text x=\"90\" y=\"62.2\" font-size=\"12\" text-anchor=\"middle\" fill=\"#422006\" style=\"font-family:system-ui,-apple-system,'Segoe UI','Noto Sans',sans-serif;font-weight:700\">spelling</text><rect x=\"200\" y=\"28\" width=\"120\" height=\"44\" rx=\"9\" fill=\"#fef9c3\" stroke=\"#f59e0b\" stroke-width=\"2\"/><text x=\"260\" y=\"46.2\" font-size=\"12\" text-anchor=\"middle\" fill=\"#422006\" style=\"font-family:system-ui,-apple-system,'Segoe UI','Noto Sans',sans-serif;font-weight:700\">💥 run-time</text><text x=\"260\" y=\"62.2\" font-size=\"12\" text-anchor=\"middle\" fill=\"#422006\" style=\"font-family:system-ui,-apple-system,'Segoe UI','Noto Sans',sans-serif;font-weight:700\">÷ by 0</text><rect x=\"370\" y=\"28\" width=\"120\" height=\"44\" rx=\"9\" fill=\"#dbeafe\" stroke=\"#3b82f6\" stroke-width=\"2\"/><text x=\"430\" y=\"46.2\" font-size=\"12\" text-anchor=\"middle\" fill=\"#422006\" style=\"font-family:system-ui,-apple-system,'Segoe UI','Noto Sans',sans-serif;font-weight:700\">🤷 logic</text><text x=\"430\" y=\"62.2\" font-size=\"12\" text-anchor=\"middle\" fill=\"#422006\" style=\"font-family:system-ui,-apple-system,'Segoe UI','Noto Sans',sans-serif;font-weight:700\">wrong answer</text><text x=\"90\" y=\"149.0\" font-size=\"40\" text-anchor=\"middle\">🤖❌</text><text x=\"260\" y=\"149.0\" font-size=\"40\" text-anchor=\"middle\">🤖💥</text><text x=\"430\" y=\"149.0\" font-size=\"40\" text-anchor=\"middle\">🤖🤪</text><rect x=\"113\" y=\"170\" width=\"293\" height=\"29\" rx=\"12\" fill=\"#ffffff\" stroke=\"#f59e0b\" stroke-width=\"2\"/><path d=\"M252 200 L260 212 L268 200\" fill=\"#ffffff\" stroke=\"#f59e0b\" stroke-width=\"2\"/><rect x=\"253\" y=\"198\" width=\"14\" height=\"4\" fill=\"#ffffff\"/><text x=\"260\" y=\"189.55\" font-size=\"13\" text-anchor=\"middle\" fill=\"#422006\" style=\"font-family:system-ui,-apple-system,'Segoe UI','Noto Sans',sans-serif;font-weight:500\">Only the 1st stops it before running</text></svg><figcaption style=\"color:inherit;font-size:13px;margin-top:4px\">Three ways a program goes wrong</figcaption></figure>"]}, {"t": "Test cases: normal, boundary, error", "n": "A test plan lists test data with the expected result. Normal data: typical valid values. Boundary data: values at the limits of valid range (and just outside). Error (invalid) data: wrong type or out of range, to check the program rejects it. Always write the EXPECTED output beforehand.", "tip": "For range 1–100: normal 50 · boundary 1, 100 (and 0, 101) · error 'abc', −5.", "pg": "EC Ch.2", "key": ["Normal · boundary · error (invalid)", "Expected result written beforehand", "Boundary = limits of range and just outside"], "fig": ["<figure class=\"fig\"><svg class=\"fg\" viewBox=\"0 0 460 92\" width=\"460\" style=\"max-width:100%;height:auto\" role=\"img\"><defs><marker id=\"ah\" viewBox=\"0 0 10 10\" refX=\"9\" refY=\"5\" markerWidth=\"7\" markerHeight=\"7\" orient=\"auto-start-reverse\"><path d=\"M0 0L10 5L0 10z\" class=\"ahp\"/></marker></defs><line x1=\"10\" y1=\"52\" x2=\"450\" y2=\"52\" class=\"axis\"/><rect x=\"10\" y=\"30\" width=\"110\" height=\"22\" class=\"bad\"/><text x=\"65\" y=\"45.0\" text-anchor=\"middle\" class=\"\">error ≤ 0 or ≥ 101</text><rect x=\"260\" y=\"30\" width=\"190\" height=\"22\" class=\"bad\"/><text x=\"355\" y=\"45.0\" text-anchor=\"middle\" class=\"\">error ≤ 0 or ≥ 101</text><rect x=\"120\" y=\"30\" width=\"140\" height=\"22\" class=\"good\"/><text x=\"190\" y=\"45.0\" text-anchor=\"middle\" class=\"\">normal 2–99</text><line x1=\"120\" y1=\"24\" x2=\"120\" y2=\"64\" class=\"bd\"/><line x1=\"260\" y1=\"24\" x2=\"260\" y2=\"64\" class=\"bd\"/><text x=\"120\" y=\"82.0\" text-anchor=\"middle\" class=\"m\">1</text><text x=\"260\" y=\"82.0\" text-anchor=\"middle\" class=\"m\">100</text><text x=\"120\" y=\"18.0\" text-anchor=\"middle\" class=\"lb\">boundary</text><text x=\"260\" y=\"18.0\" text-anchor=\"middle\" class=\"lb\">boundary</text></svg><figcaption>Valid range 1 to 100: where to test</figcaption></figure>", "<figure class=\"fig\"><table class=\"ft\"><thead><tr><th>Test</th><th>Data</th><th>Expected</th></tr></thead><tbody><tr><td class=\"\">normal</td><td class=\"m\">50</td><td class=\"\">accepted</td></tr><tr><td class=\"\">boundary</td><td class=\"m\">1 and 100</td><td class=\"\">accepted</td></tr><tr><td class=\"\">boundary out</td><td class=\"m\">0 and 101</td><td class=\"\">rejected</td></tr><tr><td class=\"\">error</td><td class=\"m\">&#x27;abc&#x27;</td><td class=\"\">rejected</td></tr></tbody></table><figcaption>A test plan</figcaption></figure>"], "kid": "Testing a lift that holds 1 to 8 kids: try 4 kids (normal), 1 and 8 kids (edge – right at the door of the rule), 0 and 9 kids (not allowed – must say no!). Edges are where bugs hide.", "kidfig": ["<figure class=\"fig kf\" style=\"margin:0\"><svg viewBox=\"0 0 520 190\" width=\"520\" style=\"max-width:100%;height:auto\" role=\"img\"><rect width=\"520\" height=\"190\" rx=\"12\" fill=\"#ffffff\"/><text x=\"60\" y=\"114.6\" font-size=\"56\" text-anchor=\"middle\">🛗</text><rect x=\"115\" y=\"36\" width=\"150\" height=\"28\" rx=\"9\" fill=\"#dcfce7\" stroke=\"#22c55e\" stroke-width=\"2\"/><text x=\"190\" y=\"54.2\" font-size=\"12\" text-anchor=\"middle\" fill=\"#422006\" style=\"font-family:system-ui,-apple-system,'Segoe UI','Noto Sans',sans-serif;font-weight:700\">4 kids ✅ normal</text><rect x=\"115\" y=\"86\" width=\"150\" height=\"28\" rx=\"9\" fill=\"#fef9c3\" stroke=\"#f59e0b\" stroke-width=\"2\"/><text x=\"190\" y=\"104.2\" font-size=\"12\" text-anchor=\"middle\" fill=\"#422006\" style=\"font-family:system-ui,-apple-system,'Segoe UI','Noto Sans',sans-serif;font-weight:700\">1 and 8 ⚠️ boundary</text><rect x=\"115\" y=\"136\" width=\"150\" height=\"28\" rx=\"9\" fill=\"#fee2e2\" stroke=\"#dc2626\" stroke-width=\"2\"/><text x=\"190\" y=\"154.2\" font-size=\"12\" text-anchor=\"middle\" fill=\"#422006\" style=\"font-family:system-ui,-apple-system,'Segoe UI','Noto Sans',sans-serif;font-weight:700\">0 and 9 ❌ error</text><rect x=\"351\" y=\"77\" width=\"97\" height=\"46\" rx=\"12\" fill=\"#ffffff\" stroke=\"#f59e0b\" stroke-width=\"2\"/><path d=\"M351 94 L339 100 L351 106\" fill=\"#ffffff\" stroke=\"#f59e0b\" stroke-width=\"2\"/><rect x=\"350\" y=\"95\" width=\"4\" height=\"10\" fill=\"#ffffff\"/><text x=\"400\" y=\"96.05\" font-size=\"13\" text-anchor=\"middle\" fill=\"#422006\" style=\"font-family:system-ui,-apple-system,'Segoe UI','Noto Sans',sans-serif;font-weight:500\">Bugs love</text><text x=\"400\" y=\"113.05\" font-size=\"13\" text-anchor=\"middle\" fill=\"#422006\" style=\"font-family:system-ui,-apple-system,'Segoe UI','Noto Sans',sans-serif;font-weight:500\">the edges!</text></svg><figcaption style=\"color:inherit;font-size:13px;margin-top:4px\">Three kinds of test data</figcaption></figure>"]}, {"t": "Dry run and trace table", "n": "A trace table has one column per variable and one row each time a value changes. Used to find the output of an algorithm and to find logic errors. Steps: write initial values, execute one statement at a time, update only the changed variable, stop when the loop condition fails.", "tip": "Write every variable in a column; never skip a loop round.", "pg": "EC Ch.2", "key": ["One column per variable", "One row per change / loop round", "Finds logic errors and outputs"], "fig": ["<figure class=\"fig\"><table class=\"ft\"><thead><tr><th>i</th><th>sum</th></tr></thead><tbody><tr><td class=\"m\">—</td><td class=\"m\">0</td></tr><tr><td class=\"m\">1</td><td class=\"m\">1</td></tr><tr><td class=\"m\">2</td><td class=\"m\">3</td></tr><tr><td class=\"m\">3</td><td class=\"m\">6</td></tr></tbody></table><figcaption>sum ← 0; FOR i FROM 1 TO 3: sum ← sum + i</figcaption></figure>"], "kid": "Dry run = play the robot with a pencil. Write each variable in a table, do each step slowly, and write the new values. Like playing a board game by hand, one move per row.", "kidfig": ["<figure class=\"fig kf\" style=\"margin:0\"><svg viewBox=\"0 0 520 190\" width=\"520\" style=\"max-width:100%;height:auto\" role=\"img\"><rect width=\"520\" height=\"190\" rx=\"12\" fill=\"#ffffff\"/><text x=\"60\" y=\"111.1\" font-size=\"46\" text-anchor=\"middle\">🧒✏️</text><rect x=\"185\" y=\"36\" width=\"130\" height=\"29\" rx=\"9\" fill=\"#e0f2fe\" stroke=\"#0284c7\" stroke-width=\"2\"/><text x=\"250\" y=\"54.55\" font-size=\"13\" text-anchor=\"middle\" fill=\"#422006\" style=\"font-family:system-ui,-apple-system,'Segoe UI','Noto Sans',sans-serif;font-weight:700\">i | sum</text><rect x=\"185\" y=\"76\" width=\"130\" height=\"29\" rx=\"9\" fill=\"#fef3c7\" stroke=\"#f59e0b\" stroke-width=\"2\"/><text x=\"250\" y=\"94.55\" font-size=\"13\" text-anchor=\"middle\" fill=\"#422006\" style=\"font-family:system-ui,-apple-system,'Segoe UI','Noto Sans',sans-serif;font-weight:700\">1 | 1</text><rect x=\"185\" y=\"116\" width=\"130\" height=\"29\" rx=\"9\" fill=\"#fef3c7\" stroke=\"#f59e0b\" stroke-width=\"2\"/><text x=\"250\" y=\"134.55\" font-size=\"13\" text-anchor=\"middle\" fill=\"#422006\" style=\"font-family:system-ui,-apple-system,'Segoe UI','Noto Sans',sans-serif;font-weight:700\">2 | 3</text><rect x=\"185\" y=\"156\" width=\"130\" height=\"29\" rx=\"9\" fill=\"#fef3c7\" stroke=\"#f59e0b\" stroke-width=\"2\"/><text x=\"250\" y=\"174.55\" font-size=\"13\" text-anchor=\"middle\" fill=\"#422006\" style=\"font-family:system-ui,-apple-system,'Segoe UI','Noto Sans',sans-serif;font-weight:700\">3 | 6</text><rect x=\"368\" y=\"87\" width=\"105\" height=\"46\" rx=\"12\" fill=\"#ffffff\" stroke=\"#f59e0b\" stroke-width=\"2\"/><path d=\"M368 104 L356 110 L368 116\" fill=\"#ffffff\" stroke=\"#f59e0b\" stroke-width=\"2\"/><rect x=\"367\" y=\"105\" width=\"4\" height=\"10\" fill=\"#ffffff\"/><text x=\"420\" y=\"106.05\" font-size=\"13\" text-anchor=\"middle\" fill=\"#422006\" style=\"font-family:system-ui,-apple-system,'Segoe UI','Noto Sans',sans-serif;font-weight:500\">one row per</text><text x=\"420\" y=\"123.05\" font-size=\"13\" text-anchor=\"middle\" fill=\"#422006\" style=\"font-family:system-ui,-apple-system,'Segoe UI','Noto Sans',sans-serif;font-weight:500\">loop round</text></svg><figcaption style=\"color:inherit;font-size:13px;margin-top:4px\">Trace table = pencil play</figcaption></figure>"]}, {"t": "Debugging tools", "n": "Debugging = finding and fixing errors. Breakpoint: program pauses at a chosen line. Single-step: execute one statement at a time. Watch / variable window: display current values of variables. Other methods: trace table, adding print statements, desk-checking the code.", "tip": "Describe all three: set breakpoint → run → step → watch the variable → find the wrong value.", "pg": "EC Ch.2", "key": ["Breakpoint: pause at a line", "Single-step: one statement at a time", "Watch window: see variable values"], "fig": ["<figure class=\"fig\"><svg class=\"fg\" viewBox=\"0 0 874 50\" width=\"874\" style=\"max-width:100%;height:auto\" role=\"img\"><defs><marker id=\"ah\" viewBox=\"0 0 10 10\" refX=\"9\" refY=\"5\" markerWidth=\"7\" markerHeight=\"7\" orient=\"auto-start-reverse\"><path d=\"M0 0L10 5L0 10z\" class=\"ahp\"/></marker></defs><rect x=\"2\" y=\"2\" width=\"195\" height=\"46\" rx=\"6\" class=\"proc\"/><text x=\"99.5\" y=\"21.5\" text-anchor=\"middle\" class=\"\">Set a breakpoint</text><text x=\"99.5\" y=\"36.5\" text-anchor=\"middle\" class=\"\">before the doubtful line</text><line x1=\"197\" y1=\"25.0\" x2=\"227\" y2=\"25.0\" marker-end=\"url(#ah)\"/><rect x=\"227\" y=\"2\" width=\"195\" height=\"46\" rx=\"6\" class=\"io\"/><text x=\"324.5\" y=\"21.5\" text-anchor=\"middle\" class=\"\">Run: program</text><text x=\"324.5\" y=\"36.5\" text-anchor=\"middle\" class=\"\">pauses there</text><line x1=\"422\" y1=\"25.0\" x2=\"452\" y2=\"25.0\" marker-end=\"url(#ah)\"/><rect x=\"452\" y=\"2\" width=\"195\" height=\"46\" rx=\"6\" class=\"dec\"/><text x=\"549.5\" y=\"21.5\" text-anchor=\"middle\" class=\"\">Single-step</text><text x=\"549.5\" y=\"36.5\" text-anchor=\"middle\" class=\"\">statement by statement</text><line x1=\"647\" y1=\"25.0\" x2=\"677\" y2=\"25.0\" marker-end=\"url(#ah)\"/><rect x=\"677\" y=\"2\" width=\"195\" height=\"46\" rx=\"6\" class=\"term\"/><text x=\"774.5\" y=\"21.5\" text-anchor=\"middle\" class=\"\">Watch variables</text><text x=\"774.5\" y=\"36.5\" text-anchor=\"middle\" class=\"\">until one is wrong</text></svg><figcaption>How to use a debugger</figcaption></figure>"], "kid": "When the robot makes a mess, we freeze it (breakpoint), let it move one step at a time (step through), and peek in its pockets (watch variables) to see where it went wrong.", "kidfig": ["<figure class=\"fig kf\" style=\"margin:0\"><svg viewBox=\"0 0 520 170\" width=\"520\" style=\"max-width:100%;height:auto\" role=\"img\"><rect width=\"520\" height=\"170\" rx=\"12\" fill=\"#ffffff\"/><text x=\"60\" y=\"107.5\" font-size=\"50\" text-anchor=\"middle\">🤖</text><rect x=\"120\" y=\"76\" width=\"120\" height=\"28\" rx=\"9\" fill=\"#fee2e2\" stroke=\"#dc2626\" stroke-width=\"2\"/><text x=\"180\" y=\"94.2\" font-size=\"12\" text-anchor=\"middle\" fill=\"#422006\" style=\"font-family:system-ui,-apple-system,'Segoe UI','Noto Sans',sans-serif;font-weight:700\">⛔ breakpoint</text><rect x=\"260\" y=\"76\" width=\"100\" height=\"28\" rx=\"9\" fill=\"#dcfce7\" stroke=\"#22c55e\" stroke-width=\"2\"/><text x=\"310\" y=\"94.2\" font-size=\"12\" text-anchor=\"middle\" fill=\"#422006\" style=\"font-family:system-ui,-apple-system,'Segoe UI','Noto Sans',sans-serif;font-weight:700\">👣 step</text><rect x=\"380\" y=\"76\" width=\"100\" height=\"28\" rx=\"9\" fill=\"#dbeafe\" stroke=\"#3b82f6\" stroke-width=\"2\"/><text x=\"430\" y=\"94.2\" font-size=\"12\" text-anchor=\"middle\" fill=\"#422006\" style=\"font-family:system-ui,-apple-system,'Segoe UI','Noto Sans',sans-serif;font-weight:700\">👀 watch</text></svg><figcaption style=\"color:inherit;font-size:13px;margin-top:4px\">Freeze · step · peek</figcaption></figure>"]}, {"t": "Levels of testing and release", "n": "Unit test: one sub-program or module alone (first). System test: the whole system with all modules integrated. User acceptance test: carried out by the client/users to confirm requirements are met (last before delivery). Pilot run: new system in a small place first (e.g. several schools) to find problems cheaply before full use.", "tip": "Order: unit → system → user acceptance. Pilot = small trial before full release.", "pg": "EC Ch.2", "key": ["Unit → system → acceptance", "Acceptance: user checks the needs", "Pilot: small first, finds problems cheaply"], "fig": ["<figure class=\"fig\"><svg class=\"fg\" viewBox=\"0 0 304 116\" width=\"304\" style=\"max-width:100%;height:auto\" role=\"img\"><defs><marker id=\"ah\" viewBox=\"0 0 10 10\" refX=\"9\" refY=\"5\" markerWidth=\"7\" markerHeight=\"7\" orient=\"auto-start-reverse\"><path d=\"M0 0L10 5L0 10z\" class=\"ahp\"/></marker></defs><rect x=\"2\" y=\"2\" width=\"300\" height=\"34\" rx=\"6\" class=\"proc\"/><text x=\"152.0\" y=\"23.0\" text-anchor=\"middle\" class=\"\">User acceptance test (customer, last)</text><rect x=\"2\" y=\"40\" width=\"300\" height=\"34\" rx=\"6\" class=\"io\"/><text x=\"152.0\" y=\"61.0\" text-anchor=\"middle\" class=\"\">System test (all modules together)</text><rect x=\"2\" y=\"78\" width=\"300\" height=\"34\" rx=\"6\" class=\"dec\"/><text x=\"152.0\" y=\"99.0\" text-anchor=\"middle\" class=\"\">Unit test (one sub-program, first)</text></svg><figcaption>Three levels (bottom happens first)</figcaption></figure>"], "kid": "Building a LEGO castle: first check each brick (unit test), then check pieces stuck together (system test), and last let the king (customer) look at it (acceptance test).", "kidfig": ["<figure class=\"fig kf\" style=\"margin:0\"><svg viewBox=\"0 0 520 190\" width=\"520\" style=\"max-width:100%;height:auto\" role=\"img\"><rect width=\"520\" height=\"190\" rx=\"12\" fill=\"#ffffff\"/><text x=\"60\" y=\"115.4\" font-size=\"44\" text-anchor=\"middle\">🧱</text><rect x=\"125\" y=\"33\" width=\"110\" height=\"44\" rx=\"9\" fill=\"#fef3c7\" stroke=\"#f59e0b\" stroke-width=\"2\"/><text x=\"180\" y=\"51.2\" font-size=\"12\" text-anchor=\"middle\" fill=\"#422006\" style=\"font-family:system-ui,-apple-system,'Segoe UI','Noto Sans',sans-serif;font-weight:700\">1 unit</text><text x=\"180\" y=\"67.2\" font-size=\"12\" text-anchor=\"middle\" fill=\"#422006\" style=\"font-family:system-ui,-apple-system,'Segoe UI','Noto Sans',sans-serif;font-weight:700\">each brick</text><rect x=\"245\" y=\"78\" width=\"110\" height=\"44\" rx=\"9\" fill=\"#dcfce7\" stroke=\"#22c55e\" stroke-width=\"2\"/><text x=\"300\" y=\"96.2\" font-size=\"12\" text-anchor=\"middle\" fill=\"#422006\" style=\"font-family:system-ui,-apple-system,'Segoe UI','Noto Sans',sans-serif;font-weight:700\">2 system</text><text x=\"300\" y=\"112.2\" font-size=\"12\" text-anchor=\"middle\" fill=\"#422006\" style=\"font-family:system-ui,-apple-system,'Segoe UI','Noto Sans',sans-serif;font-weight:700\">all together</text><rect x=\"360\" y=\"123\" width=\"120\" height=\"44\" rx=\"9\" fill=\"#fce7f3\" stroke=\"#ec4899\" stroke-width=\"2\"/><text x=\"420\" y=\"141.2\" font-size=\"12\" text-anchor=\"middle\" fill=\"#422006\" style=\"font-family:system-ui,-apple-system,'Segoe UI','Noto Sans',sans-serif;font-weight:700\">3 acceptance</text><text x=\"420\" y=\"157.2\" font-size=\"12\" text-anchor=\"middle\" fill=\"#422006\" style=\"font-family:system-ui,-apple-system,'Segoe UI','Noto Sans',sans-serif;font-weight:700\">the king</text><line x1=\"235\" y1=\"62\" x2=\"250\" y2=\"83\" stroke=\"#d97706\" stroke-width=\"3\" stroke-linecap=\"round\"/><path d=\"M255 90 L245 85 L253 79Z\" fill=\"#d97706\"/><line x1=\"355\" y1=\"108\" x2=\"370\" y2=\"128\" stroke=\"#d97706\" stroke-width=\"3\" stroke-linecap=\"round\"/><path d=\"M375 135 L365 130 L373 124Z\" fill=\"#d97706\"/></svg><figcaption style=\"color:inherit;font-size:13px;margin-top:4px\">Small → big → customer</figcaption></figure>"]}], "pg": "EC Ch.2", "kid": "Robots make mistakes. We learn to find the mistakes (testing) and fix them (debugging) before the customer sees them – like checking your homework before handing it in.", "kidfig": ["<figure class=\"fig kf\" style=\"margin:0\"><svg viewBox=\"0 0 520 170\" width=\"520\" style=\"max-width:100%;height:auto\" role=\"img\"><rect width=\"520\" height=\"170\" rx=\"12\" fill=\"#ffffff\"/><text x=\"70\" y=\"106.1\" font-size=\"46\" text-anchor=\"middle\">🤖</text><text x=\"130\" y=\"74.0\" font-size=\"40\" text-anchor=\"middle\">🐛</text><rect x=\"204\" y=\"26\" width=\"112\" height=\"29\" rx=\"12\" fill=\"#ffffff\" stroke=\"#f59e0b\" stroke-width=\"2\"/><path d=\"M252 54 L260 66 L268 54\" fill=\"#ffffff\" stroke=\"#f59e0b\" stroke-width=\"2\"/><rect x=\"253\" y=\"52\" width=\"14\" height=\"4\" fill=\"#ffffff\"/><text x=\"260\" y=\"44.55\" font-size=\"13\" text-anchor=\"middle\" fill=\"#422006\" style=\"font-family:system-ui,-apple-system,'Segoe UI','Noto Sans',sans-serif;font-weight:500\">Found a bug!</text><text x=\"330\" y=\"112.5\" font-size=\"50\" text-anchor=\"middle\">🔎</text><line x1=\"370\" y1=\"95\" x2=\"421\" y2=\"95\" stroke=\"#d97706\" stroke-width=\"3\" stroke-linecap=\"round\"/><path d=\"M430 95 L420 100 L420 90Z\" fill=\"#d97706\"/><text x=\"460\" y=\"109.0\" font-size=\"40\" text-anchor=\"middle\">✅</text></svg><figcaption style=\"color:inherit;font-size:13px;margin-top:4px\">Find the bug · fix the bug</figcaption></figure>"]};
+const HOT = 4;
+const NS='http://www.w3.org/2000/svg';
+const FONT="500 13px 'IBM Plex Sans', system-ui, sans-serif";
+const cv=document.createElement('canvas').getContext('2d');
+const svg=document.getElementById('svg'), detail=document.getElementById('detail');
+let hotOnly=false, selected=null;
+function el(n,a,p){const e=document.createElementNS(NS,n);for(const k in a)e.setAttribute(k,a[k]);if(p)p.appendChild(e);return e}
+function prep(n,d,b){n.d=d;n.b=b;n.open=d<2;n.lines=n.t.split('\n');n.kids=n.ch||[];n.kids.forEach(k=>prep(k,d+1,d===0?(n.kids.indexOf(k)%6)+1:b));}
+prep(DATA,0,0);
+(function tot(n){n.tot=(n.qs?n.qs.length:0)+n.kids.reduce((a,k)=>a+tot(k),0);n.c=n.tot;if(n.d>0)n.hot=n.tot>=HOT;return n.tot})(DATA);
+function hotWithin(n){return !!n.hot||(n.kids||[]).some(hotWithin)}
+function measure(n){cv.font=n.d===0?"700 16px 'Bricolage Grotesque', sans-serif":FONT;
+  n.w=Math.ceil(Math.max(...n.lines.map(l=>cv.measureText(l).width)))+(n.d===0?36:26)+(n.c?(n.kids.length?42:34):0);
+  if(n.pg&&n.d>0){cv.font="500 11px 'IBM Plex Mono', monospace";n.w=Math.max(n.w,Math.ceil(cv.measureText(n.pg).width)+26+(n.c?(n.kids.length?42:34):0))}
+  n.h=n.lines.length*17+14+(n.pg&&n.d>0?14:0);n.kids.forEach(measure)}
+function layout(){
+  measure(DATA);
+  const colW=[];(function m(n){colW[n.d]=Math.max(colW[n.d]||0,n.w);n.kids.forEach(m)})(DATA);
+  const gapX=46,x0=[];let x=16;colW.forEach((w,i)=>{x0[i]=x;x+=w+gapX});
+  let y=16;
+  (function place(n){
+    n.x=x0[n.d];
+    const vis=n.open?n.kids:[];
+    if(!vis.length){n.y=y;y+=n.h+10}
+    else{vis.forEach(place);const f=vis[0],l=vis[vis.length-1];n.y=(f.y+f.h/2+l.y+l.h/2)/2-n.h/2}
+  })(DATA);
+  return {W:x-gapX+16,H:y+6};
+}
+function draw(){
+  const {W,H}=layout();svg.setAttribute('width',W);svg.setAttribute('height',H);svg.setAttribute('viewBox',`0 0 ${W} ${H}`);
+  svg.replaceChildren();
+  const gl=el('g',{},svg),gn=el('g',{},svg);
+  (function walk(n){
+    if(n.open)n.kids.forEach(k=>{
+      const x1=n.x+n.w,y1=n.y+n.h/2,x2=k.x,y2=k.y+k.h/2,mx=(x1+x2)/2;
+      const p=el('path',{d:`M${x1},${y1} C${mx},${y1} ${mx},${y2} ${x2},${y2}`,class:'link'+(hotWithin(k)?'':' cold'),stroke:`var(--b${k.b})`},gl);
+      walk(k)});
+    const g=el('g',{class:'node'+(n.d===0?' root':'')+(n.hot?' hotn':'')+(hotWithin(n)?'':' cold'),tabindex:0,role:'button','aria-label':n.lines.join(' ')+(n.kids.length?(n.open?' (open)':' (closed)'):'')},gn);
+    const r=el('rect',{x:n.x,y:n.y,width:n.w,height:n.h,rx:n.d===0?14:10},g);
+    if(n.d>0){r.setAttribute('fill',n.d===1?`var(--b${n.b})`:`var(--b${n.b}t)`);
+      r.setAttribute('stroke',n.hot?'var(--hot)':`var(--b${n.b})`);if(n.hot)r.setAttribute('stroke-width',3)}
+    n.lines.forEach((l,i)=>{const t=el('text',{x:n.x+(n.d===0?18:13),y:n.y+7+17*(i+1)-4,fill:n.d===1?'var(--bg)':'var(--fg)'},g);t.textContent=l;
+      if(n.d===1)t.setAttribute('style','fill:var(--panel)');
+      if(n.d===1&&document.documentElement.dataset.theme==='dark')t.setAttribute('style','fill:var(--bg)')});
+    if(n.pg&&n.d>0){const t=el('text',{x:n.x+13,y:n.y+7+17*n.lines.length+11,class:'pgtag',fill:n.d===1?'var(--panel)':'var(--muted)'},g);t.textContent=n.pg;if(n.d===1&&document.documentElement.dataset.theme==='dark')t.setAttribute('fill','var(--bg)')}
+    if(n.c){const bg=el('g',{class:'badge'},g),bx=n.x+n.w-(n.kids.length?46:38),by=n.y+n.h/2-9;
+      el('rect',{x:bx,y:by,width:30,height:18,rx:9},bg);const t=el('text',{x:bx+15,y:by+13,'text-anchor':'middle'},bg);t.textContent='×'+n.c}
+    if(n.kids.length){const tg=el('g',{class:'tog'},g),cx=n.x+n.w,cy=n.y+n.h/2;
+      el('circle',{cx,cy,r:9,stroke:`var(--b${n.b||1})`},tg);const t=el('text',{x:cx,y:cy+4,'text-anchor':'middle'},tg);t.textContent=n.open?'−':'+';
+      tg.addEventListener('click',e=>{e.stopPropagation();n.open=!n.open;draw()})}
+    const act=()=>{show(n)};
+    g.addEventListener('click',act);
+    g.addEventListener('keydown',e=>{if(e.key==='Enter'||e.key===' '){e.preventDefault();act()}else if((e.key==='ArrowRight'||e.key==='ArrowLeft')&&n.kids.length){n.open=e.key==='ArrowRight';draw()}});
+  })(DATA);
+  svg.parentNode.classList.toggle('dim',hotOnly);
+}
+function esc(s){return s.replace(/[&<>]/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;'}[c]))}
+function show(n){
+  selected=n;
+  let h=`<div class="dctl"><button class="dbtn" data-act="min" aria-label="Minimise this box" title="Minimise">&#8722;</button><button class="dbtn" data-act="close" aria-label="Close this box" title="Close">&#215;</button></div><h2>${esc(n.lines.join(' '))}${n.c?`<span class="pill">${n.c} past-paper question${n.c>1?'s':''}</span>`:'<span class="pill zero">no past-paper question yet</span>'}</h2>`;
+  if(n.pg)h+=`<p class="pgline"><b>Revise in Book EC:</b> ${esc(n.pg)}</p>`;
+  if(n.kid)h+='<div class="kid"><div class="kidh">🧒 Like you\'re 5</div>'+(n.kidfig&&n.kidfig.length?'<div class="kidfig">'+n.kidfig.join('')+'</div>':'')+'<p>'+esc(n.kid)+'</p></div>';
+  if(n.fig&&n.fig.length)h+='<div class="figs">'+n.fig.join('')+'</div>';
+  if(n.key&&n.key.length)h+='<ul class="key">'+n.key.map(k=>'<li>'+esc(k)+'</li>').join('')+'</ul>';
+  if(n.n){const full=`<p>${esc(n.n)}</p>`;h+=((n.fig&&n.fig.length)||(n.key&&n.key.length)?`<details class="more"><summary>More explanation</summary>${full}</details>`:full)}else h+='<p class="hint">Open this branch to see the points inside it.</p>';
+  if(n.tip)h+=`<div class="tip"><b>Exam</b>${esc(n.tip)}</div>`;
+  if(n.qs&&n.qs.length){h+=`<div class="qs"><div class="qh">Questions on this topic (tap one to see the answer)</div>`+n.qs.map(q=>`<details><summary><span class="qid">${esc(q[0])}</span> ${esc(q[1])}</summary>${q[3]?`<div class="qctx"><div class="qcl">Given (question data)</div>${q[3]}</div>`:''}<div class="ans">${esc(q[2])}${q[4]||''}</div></details>`).join('')+`</div>`}
+  else if(n.kids.length&&n.tot){h+=`<p class="hint">${n.tot} question${n.tot>1?'s':''} sit in the boxes inside this branch. Open it and tap each box.</p>`}
+  detail.hidden=false;detail.classList.remove('min');
+  detail.innerHTML=h;
+}
+detail.addEventListener('click',e=>{const b=e.target.closest('.dbtn');if(!b)return;if(b.dataset.act==='close'){detail.hidden=true}else{detail.classList.toggle('min');b.innerHTML=detail.classList.contains('min')?'+':'&#8722;';b.title=detail.classList.contains('min')?'Expand':'Minimise';b.setAttribute('aria-label',b.title+' this box')}});
+document.addEventListener('keydown',e=>{if(e.key==='Escape')detail.hidden=true});
+function setAll(v,n=DATA){if(n.kids.length){n.open=v;n.kids.forEach(k=>setAll(v,k))}}
+document.getElementById('hotBtn').onclick=e=>{hotOnly=!hotOnly;e.currentTarget.setAttribute('aria-pressed',hotOnly);draw()};
+document.getElementById('expBtn').onclick=()=>{setAll(true);draw()};
+document.getElementById('colBtn').onclick=()=>{setAll(false);DATA.open=true;draw()};
+(document.fonts&&document.fonts.ready?document.fonts.ready:Promise.resolve()).then(draw);
+draw();
+</script>

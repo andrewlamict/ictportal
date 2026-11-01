@@ -1,0 +1,210 @@
+<title>EC Ch8 Mindmap</title>
+<meta name="claude:viewport-fit-sides" content="cover">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:wght@500;600&family=IBM+Plex+Sans:wght@400;500;600&family=Bricolage+Grotesque:opsz,wght@12..96,700&display=swap">
+<style>
+/* Layout: left-to-right branching map in a scroll pane, controls above, detail card below. */
+:root{
+  --bg:#f3f5f9; --panel:#ffffff; --fg:#14213d; --muted:#5b6784; --line:#cfd6e4; --hot:#d62839;
+  --b1:#1d4ed8; --b1t:#e3ebff; --b2:#0f766e; --b2t:#dcf5f1; --b3:#b45309; --b3t:#fdebd0;
+  --b4:#7e22ce; --b4t:#f0e2fd; --b5:#be185d; --b5t:#fde2ee; --b6:#3f6212; --b6t:#e8f3d1;
+  --root:#14213d; --rootfg:#ffffff;
+  --font:'IBM Plex Sans',system-ui,sans-serif; --mono:'IBM Plex Mono',ui-monospace,monospace; --disp:'Bricolage Grotesque','IBM Plex Sans',sans-serif;
+}
+@media (prefers-color-scheme:dark){:root:not([data-theme="light"]){
+  --bg:#0d1424; --panel:#16203a; --fg:#e6ebf7; --muted:#9aa7c7; --line:#2b3858; --hot:#ff6b7a;
+  --b1:#7aa2ff; --b1t:#18284f; --b2:#4fd1c1; --b2t:#0f2e2c; --b3:#f4b25c; --b3t:#3a2a12;
+  --b4:#c79bff; --b4t:#2b1c45; --b5:#ff8cbc; --b5t:#40182e; --b6:#b6dd72; --b6t:#26331a;
+  --root:#e6ebf7; --rootfg:#0d1424; color-scheme:dark}}
+:root[data-theme="dark"]{
+  --bg:#0d1424; --panel:#16203a; --fg:#e6ebf7; --muted:#9aa7c7; --line:#2b3858; --hot:#ff6b7a;
+  --b1:#7aa2ff; --b1t:#18284f; --b2:#4fd1c1; --b2t:#0f2e2c; --b3:#f4b25c; --b3t:#3a2a12;
+  --b4:#c79bff; --b4t:#2b1c45; --b5:#ff8cbc; --b5t:#40182e; --b6:#b6dd72; --b6t:#26331a;
+  --root:#e6ebf7; --rootfg:#0d1424; color-scheme:dark}
+body{background:var(--bg);color:var(--fg);font-family:var(--font);font-size:15px;line-height:1.5;
+  padding-block:20px 40px;padding-left:max(16px,env(safe-area-inset-left,0px));padding-right:max(16px,env(safe-area-inset-right,0px))}
+.wrap{max-width:1400px;margin:0 auto;display:flex;flex-direction:column;gap:14px}
+header{display:flex;flex-wrap:wrap;gap:6px 18px;align-items:baseline;justify-content:space-between}
+.kicker{font-family:var(--mono);font-size:12px;letter-spacing:.08em;text-transform:uppercase;color:var(--muted)}
+h1{font-family:var(--disp);font-size:clamp(24px,4vw,36px);line-height:1.1;margin:2px 0 0;text-wrap:balance}
+.sub{color:var(--muted);max-width:60ch;margin:6px 0 0}
+.bar{display:flex;flex-wrap:wrap;gap:8px 10px;align-items:center}
+button{font:inherit;font-size:13px;color:var(--fg);background:var(--panel);border:1px solid var(--line);border-radius:8px;padding:6px 12px;cursor:pointer}
+button:hover{border-color:var(--fg)}
+button[aria-pressed="true"]{background:var(--hot);border-color:var(--hot);color:#fff}
+button:focus-visible,.node:focus-visible{outline:2px solid var(--fg);outline-offset:2px}
+.legend{display:flex;flex-wrap:wrap;gap:6px 16px;font-size:13px;color:var(--muted);align-items:center}
+.legend .pill{font-family:var(--mono);font-size:11px;font-weight:600;background:var(--hot);color:#fff;border-radius:99px;padding:1px 7px}
+.legend .sw{display:inline-block;width:14px;height:14px;border-radius:4px;vertical-align:-2px;margin-right:5px}
+.pane{background:var(--panel);border:1px solid var(--line);border-radius:14px;overflow-x:auto;overflow-y:hidden}
+svg{display:block}
+.link{fill:none;stroke-width:2;opacity:.55}
+.node{cursor:pointer}
+.node rect{stroke-width:1.5;transition:opacity .15s}
+.node text{font-family:var(--font);font-size:13px;font-weight:500;pointer-events:none}
+.node.hotn text{font-weight:600}
+.node text.pgtag{font-family:var(--mono);font-size:11px;font-weight:500;opacity:.85}
+.node .badge rect{fill:var(--hot);stroke:none}
+.node .badge text{fill:#fff;font-family:var(--mono);font-size:11px;font-weight:600}
+.node .tog circle{fill:var(--panel);stroke-width:1.5}
+.node .tog text{font-family:var(--mono);font-size:12px;font-weight:600;fill:var(--fg)}
+.dim .node.cold{opacity:.22}
+.dim .link.cold{opacity:.12}
+.root rect{fill:var(--root);stroke:none}
+.root text{fill:var(--rootfg);font-family:var(--disp);font-size:16px;font-weight:700}
+.detail{background:var(--panel);border:1px solid var(--line);border-radius:14px;padding:14px 18px;min-height:72px;position:sticky;bottom:max(8px,env(safe-area-inset-bottom,0px));z-index:5;box-shadow:0 -6px 18px rgba(20,33,61,.14);max-height:52vh;overflow:auto}
+.detail h2{font-family:var(--disp);font-size:20px;margin:0 0 4px;display:flex;gap:10px;align-items:center;flex-wrap:wrap}
+.detail h2 .pill{font-family:var(--mono);font-size:12px;font-weight:600;background:var(--hot);color:#fff;border-radius:99px;padding:1px 9px}
+.detail p{margin:6px 0 0;max-width:80ch;white-space:pre-line}
+.detail .hint{color:var(--muted)}
+.detail .pgline{margin:0 0 8px;font-family:var(--mono);font-size:13px;color:var(--fg)}
+.detail .pgline b{font-family:var(--font);font-weight:600}
+.detail h2 .pill.zero{background:var(--line);color:var(--muted)}
+.dctl{float:right;display:flex;gap:6px;margin:-2px 0 6px 10px}
+.dbtn{width:32px;height:32px;padding:0;font-size:20px;line-height:1;border-radius:8px}
+.detail.min{max-height:none;overflow:visible;padding-block:8px}
+.detail.min>*:not(.dctl):not(h2){display:none}
+.detail.min h2{margin:0;font-size:16px}
+.qs{margin-top:12px;display:flex;flex-direction:column;gap:6px;max-width:90ch}
+.qh{font-family:var(--mono);font-size:11px;letter-spacing:.06em;text-transform:uppercase;color:var(--muted)}
+.qs details{border:1px solid var(--line);border-radius:8px;padding:6px 10px;background:var(--bg)}
+.qs summary{cursor:pointer;font-size:14px}
+.qctx{margin-top:8px;padding:8px 10px;border:1px solid var(--line);border-radius:8px;background:var(--b1t);font-size:13px;overflow-x:auto}.qcl{font-size:11px;font-weight:700;letter-spacing:.04em;text-transform:uppercase;opacity:.7;margin-bottom:4px}.qctx p{margin:4px 0}.qctx p.qsub{opacity:.85;font-style:italic}.qctx table.qt{border-collapse:collapse;margin:6px 0;font-family:var(--mono);font-size:12.5px;background:var(--card,transparent)}.qctx table.qt td,.qctx table.qt th{border:1px solid var(--line);padding:2px 8px;text-align:left;white-space:nowrap}.qctx table.qt th{background:rgba(127,127,127,.15);font-weight:600}.qctx table.qt td.dk,.qctx table.qt th.dk{background:#222}.qctx img{max-width:100%;height:auto;border:1px solid var(--line);border-radius:6px;margin:4px 0;background:#fff}.qctx ul.opts{list-style:none;padding:0;margin:6px 0 0}.qctx ul.opts li{margin:2px 0}.qctx ul.opts li table{margin:4px 0}
+.kid{margin:6px 0 12px;padding:12px 14px;border-radius:14px;border:2px dashed #f59e0b;background:#fffbeb;color:#422006}.kid p{margin:6px 0 0;font-size:16px;line-height:1.5}.kidh{font-weight:800;font-size:13px;letter-spacing:.04em;text-transform:uppercase;color:#b45309}.kidfig{display:flex;flex-wrap:wrap;gap:10px;margin-top:6px}.kidfig svg{max-width:100%;height:auto;background:#fff;border-radius:10px}
+@media (prefers-color-scheme:dark){:root:not([data-theme="light"]) .kid{background:#3b2a0a;color:#fde68a;border-color:#d97706}:root:not([data-theme="light"]) .kidh{color:#fbbf24}}
+.qid{font-family:var(--mono);font-weight:600;font-size:12px;background:var(--b1t);color:var(--b1);border-radius:6px;padding:1px 6px;margin-right:4px}
+.ans{margin-top:6px;padding-top:6px;border-top:1px dashed var(--line);font-size:14px;white-space:pre-line}
+.tip{margin-top:10px;padding:8px 12px;border-radius:8px;background:var(--b3t);color:var(--fg);max-width:80ch;font-size:14px}
+.tip b{font-family:var(--mono);font-size:11px;letter-spacing:.06em;text-transform:uppercase;color:var(--b3);margin-right:6px}
+code,.m{font-family:var(--mono);font-size:.92em}
+.backlink{display:inline-block;margin-bottom:8px;font-family:var(--mono);font-size:12px;letter-spacing:.06em;text-transform:uppercase;color:var(--muted);text-decoration:none}
+.backlink:hover{color:var(--fg);text-decoration:underline}
+@media (prefers-reduced-motion:reduce){.node rect{transition:none}}
+.fg text{fill:var(--fg);font-family:var(--font);font-size:13px}
+.fg text.m{font-family:var(--mono);font-size:12.5px}
+.fg text.lb{fill:var(--muted);font-size:11.5px;font-family:var(--mono)}
+.fg text.ix{fill:var(--muted);font-size:11px;font-family:var(--mono)}
+.fg .ahp{fill:var(--muted)}
+.fg line,.fg path.ar{stroke:var(--muted);stroke-width:1.6;fill:none}
+.fg .axis{stroke:var(--fg);stroke-width:2}.fg .bd{stroke:var(--hot);stroke-width:2;stroke-dasharray:4 3}
+.fg .proc{fill:var(--b1t);stroke:var(--b1);stroke-width:1.5}.fg .io{fill:var(--b2t);stroke:var(--b2);stroke-width:1.5}
+.fg .dec{fill:var(--b3t);stroke:var(--b3);stroke-width:1.5}.fg .term{fill:var(--b4t);stroke:var(--b4);stroke-width:1.5}
+.fg .good{fill:var(--b6t);stroke:var(--b6);stroke-width:1.5}.fg .bad{fill:var(--b5t);stroke:var(--b5);stroke-width:1.5}
+.fg .hot{fill:var(--b3t);stroke:var(--hot);stroke-width:2.5}
+.figs{display:flex;flex-wrap:wrap;gap:14px 22px;margin:8px 0 4px;align-items:flex-start}
+figure.fig{margin:0;max-width:100%}
+figure.fig figcaption{font-size:12.5px;color:var(--muted);margin-top:3px;max-width:44ch}
+table.ft{border-collapse:collapse;font-size:13.5px}
+table.ft th{background:var(--b1t);color:var(--fg);text-align:left;font-weight:600}
+table.ft th,table.ft td{border:1px solid var(--line);padding:4px 10px}
+table.ft td.m{font-family:var(--mono);font-size:12.5px}
+ul.key{margin:8px 0 0;padding-left:20px;max-width:70ch;font-size:16px;font-weight:500}
+ul.key li{margin:3px 0}
+details.more{margin-top:10px}
+details.more>summary{cursor:pointer;color:var(--muted);font-size:13px}
+.ans img{max-width:100%;background:#fff;border-radius:8px;margin-top:6px;display:block}
+</style>
+<div class="wrap">
+  <header>
+    <div>
+      <a class="backlink" href="../../index.html#concepts-book-ec">&larr; Back to Elective C</a>
+      <div class="kicker">Elective C · Chapter 8</div>
+      <h1>Applications of Programming in Real Life</h1>
+      <p class="sub">Every concept in the chapter in picture-first, simple words, with each past-paper question attached to the topic it tests.</p>
+    </div>
+    <div class="bar">
+      <button id="hotBtn" aria-pressed="false">Show topics with 4+ questions only</button>
+      <button id="expBtn">Expand all</button>
+      <button id="colBtn">Collapse all</button>
+    </div>
+  </header>
+  <div class="legend">
+    <span><b style="font-family:var(--mono);font-size:12px">pp.34–35</b> page numbers in Book EC to revise this topic</span>
+    <span><span class="pill">×12</span> number of past-paper questions on this topic, all listed with answers when you tap the box</span>
+    <span><span class="sw" style="background:var(--hot)"></span>red outline = 4 or more questions</span>
+    <span>Tap a box to read the key points. Tap + / − to open or close a branch.</span>
+  </div>
+  <div class="pane" id="pane"><svg id="svg" role="img" aria-label="Applications of Programming in Real Life mind map"></svg></div>
+  <div class="detail" id="detail" aria-live="polite"><p class="hint">Tap any box on the map to see what to remember and every past-paper question on it.</p></div>
+</div>
+<script>
+const DATA = {"t": "EC Ch.8\nApplications of Programming in Real Life", "n": "Applications: validation, check digits, games, sensors.", "ch": [{"t": "Check digits and validation", "n": "A check digit is calculated from the other characters (e.g. weighted sum mod 10) to detect typing errors. It cannot detect all errors: two different codes can give the same check digit (e.g. swapped or changed data that results in the same remainder). Other validation: range check, fixed-value (list) check, type check, presence check.", "tip": "Calculate: weighted sum → mod → compare. Weakness: different codes, same digit.", "pg": "EC Ch.8", "key": ["Check digit from a weighted sum mod 10", "Detects most typing errors", "Cannot detect errors that give the same digit"], "fig": ["<figure class=\"fig\"><table class=\"ft\"><thead><tr><th>Check</th><th>Example</th></tr></thead><tbody><tr><td class=\"\">range</td><td class=\"m\">1 ≤ F ≤ 6, 1 ≤ N ≤ 40</td></tr><tr><td class=\"\">fixed value</td><td class=\"m\">class letter is A or B</td></tr><tr><td class=\"\">check digit</td><td class=\"m\">(11 + 4) mod 10 = 5</td></tr></tbody></table><figcaption>Validation (DSE 2025 Paper 1B)</figcaption></figure>"], "kid": "The last number on your library card is a secret helper. Add the others in a special way; if the helper does not match, someone typed it wrong!", "kidfig": ["<figure class=\"fig kf\" style=\"margin:0\"><svg viewBox=\"0 0 520 180\" width=\"520\" style=\"max-width:100%;height:auto\" role=\"img\"><rect width=\"520\" height=\"180\" rx=\"12\" fill=\"#ffffff\"/><rect x=\"45\" y=\"53\" width=\"230\" height=\"34\" rx=\"9\" fill=\"#fef3c7\" stroke=\"#f59e0b\" stroke-width=\"2\"/><text x=\"160\" y=\"76.3\" font-size=\"18\" text-anchor=\"middle\" fill=\"#422006\" style=\"font-family:system-ui,-apple-system,'Segoe UI','Noto Sans',sans-serif;font-weight:700\">4 B 1 1 | 5</text><rect x=\"108\" y=\"10\" width=\"105\" height=\"29\" rx=\"12\" fill=\"#ffffff\" stroke=\"#f59e0b\" stroke-width=\"2\"/><path d=\"M152 40 L160 52 L168 40\" fill=\"#ffffff\" stroke=\"#f59e0b\" stroke-width=\"2\"/><rect x=\"153\" y=\"38\" width=\"14\" height=\"4\" fill=\"#ffffff\"/><text x=\"160\" y=\"29.55\" font-size=\"13\" text-anchor=\"middle\" fill=\"#422006\" style=\"font-family:system-ui,-apple-system,'Segoe UI','Noto Sans',sans-serif;font-weight:500\">check digit</text><text x=\"340\" y=\"85.4\" font-size=\"44\" text-anchor=\"middle\">🕵️</text><rect x=\"394\" y=\"56\" width=\"112\" height=\"29\" rx=\"12\" fill=\"#ffffff\" stroke=\"#f59e0b\" stroke-width=\"2\"/><path d=\"M394 64 L382 70 L394 76\" fill=\"#ffffff\" stroke=\"#f59e0b\" stroke-width=\"2\"/><rect x=\"393\" y=\"65\" width=\"4\" height=\"10\" fill=\"#ffffff\"/><text x=\"450\" y=\"74.55\" font-size=\"13\" text-anchor=\"middle\" fill=\"#422006\" style=\"font-family:system-ui,-apple-system,'Segoe UI','Noto Sans',sans-serif;font-weight:500\">typo caught!</text></svg><figcaption style=\"color:inherit;font-size:13px;margin-top:4px\">The last digit checks the others</figcaption></figure>"]}, {"t": "Grid, game and simulation programs", "n": "Real-life applications combine the structures: 2D arrays for boards and images, queues for waiting lines/playlists, stacks for undo/history, files for saving. The number-game (guess N digits, hints for wrong guesses) and the restaurant tables (combine adjacent empty zones) in DSE 2025 are examples: store state in arrays, loop through them and compare. Use sensors (ultrasonic, light, motion, infrared, touch, temperature) to feed real-world data into programs.", "tip": "Name the structure first (array? queue? stack? file?), then write the loop.", "pg": "EC Ch.8", "key": ["State in arrays; loop + compare", "Queue: playlist · Stack: undo/history", "Sensors feed real data"], "fig": ["<figure class=\"fig\"><table class=\"ft\"><thead><tr><th>Problem</th><th>Structure</th></tr></thead><tbody><tr><td class=\"\">game board / image</td><td class=\"m\">2D array</td></tr><tr><td class=\"\">playlist / waiting line</td><td class=\"m\">queue</td></tr><tr><td class=\"\">undo / back button</td><td class=\"m\">stack</td></tr><tr><td class=\"\">save progress</td><td class=\"m\">text file</td></tr></tbody></table><figcaption>Which structure?</figcaption></figure>"], "kid": "A computer game is a big grid where little programs move pieces, check the score and decide who wins. Every game is loops, ifs, arrays and sub-programs we already know.", "kidfig": ["<figure class=\"fig kf\" style=\"margin:0\"><svg viewBox=\"0 0 520 180\" width=\"520\" style=\"max-width:100%;height:auto\" role=\"img\"><rect width=\"520\" height=\"180\" rx=\"12\" fill=\"#ffffff\"/><text x=\"80\" y=\"109.6\" font-size=\"56\" text-anchor=\"middle\">🎮</text><rect x=\"175\" y=\"46\" width=\"130\" height=\"28\" rx=\"9\" fill=\"#fef3c7\" stroke=\"#f59e0b\" stroke-width=\"2\"/><text x=\"240\" y=\"64.2\" font-size=\"12\" text-anchor=\"middle\" fill=\"#422006\" style=\"font-family:system-ui,-apple-system,'Segoe UI','Noto Sans',sans-serif;font-weight:700\">grid 🔲🔲🔲</text><rect x=\"160\" y=\"101\" width=\"160\" height=\"28\" rx=\"9\" fill=\"#fef3c7\" stroke=\"#f59e0b\" stroke-width=\"2\"/><text x=\"240\" y=\"119.2\" font-size=\"12\" text-anchor=\"middle\" fill=\"#422006\" style=\"font-family:system-ui,-apple-system,'Segoe UI','Noto Sans',sans-serif;font-weight:700\">loop + if + array</text><text x=\"410\" y=\"107.5\" font-size=\"50\" text-anchor=\"middle\">🏆</text></svg><figcaption style=\"color:inherit;font-size:13px;margin-top:4px\">Games = what we have learned</figcaption></figure>"]}], "pg": "EC Ch.8", "kid": "Now we use everything: arrays, loops, helpers and notebooks to make games, check numbers, and control machines. This is what real programmers do all day.", "kidfig": ["<figure class=\"fig kf\" style=\"margin:0\"><svg viewBox=\"0 0 520 170\" width=\"520\" style=\"max-width:100%;height:auto\" role=\"img\"><rect width=\"520\" height=\"170\" rx=\"12\" fill=\"#ffffff\"/><text x=\"70\" y=\"106.1\" font-size=\"46\" text-anchor=\"middle\">🧑‍💻</text><text x=\"190\" y=\"74.0\" font-size=\"40\" text-anchor=\"middle\">🎮</text><text x=\"250\" y=\"124.0\" font-size=\"40\" text-anchor=\"middle\">🤖</text><text x=\"310\" y=\"74.0\" font-size=\"40\" text-anchor=\"middle\">🔢</text><text x=\"430\" y=\"106.1\" font-size=\"46\" text-anchor=\"middle\">🌟</text></svg><figcaption style=\"color:inherit;font-size:13px;margin-top:4px\">Real jobs for the robot</figcaption></figure>"]};
+const HOT = 4;
+const NS='http://www.w3.org/2000/svg';
+const FONT="500 13px 'IBM Plex Sans', system-ui, sans-serif";
+const cv=document.createElement('canvas').getContext('2d');
+const svg=document.getElementById('svg'), detail=document.getElementById('detail');
+let hotOnly=false, selected=null;
+function el(n,a,p){const e=document.createElementNS(NS,n);for(const k in a)e.setAttribute(k,a[k]);if(p)p.appendChild(e);return e}
+function prep(n,d,b){n.d=d;n.b=b;n.open=d<2;n.lines=n.t.split('\n');n.kids=n.ch||[];n.kids.forEach(k=>prep(k,d+1,d===0?(n.kids.indexOf(k)%6)+1:b));}
+prep(DATA,0,0);
+(function tot(n){n.tot=(n.qs?n.qs.length:0)+n.kids.reduce((a,k)=>a+tot(k),0);n.c=n.tot;if(n.d>0)n.hot=n.tot>=HOT;return n.tot})(DATA);
+function hotWithin(n){return !!n.hot||(n.kids||[]).some(hotWithin)}
+function measure(n){cv.font=n.d===0?"700 16px 'Bricolage Grotesque', sans-serif":FONT;
+  n.w=Math.ceil(Math.max(...n.lines.map(l=>cv.measureText(l).width)))+(n.d===0?36:26)+(n.c?(n.kids.length?42:34):0);
+  if(n.pg&&n.d>0){cv.font="500 11px 'IBM Plex Mono', monospace";n.w=Math.max(n.w,Math.ceil(cv.measureText(n.pg).width)+26+(n.c?(n.kids.length?42:34):0))}
+  n.h=n.lines.length*17+14+(n.pg&&n.d>0?14:0);n.kids.forEach(measure)}
+function layout(){
+  measure(DATA);
+  const colW=[];(function m(n){colW[n.d]=Math.max(colW[n.d]||0,n.w);n.kids.forEach(m)})(DATA);
+  const gapX=46,x0=[];let x=16;colW.forEach((w,i)=>{x0[i]=x;x+=w+gapX});
+  let y=16;
+  (function place(n){
+    n.x=x0[n.d];
+    const vis=n.open?n.kids:[];
+    if(!vis.length){n.y=y;y+=n.h+10}
+    else{vis.forEach(place);const f=vis[0],l=vis[vis.length-1];n.y=(f.y+f.h/2+l.y+l.h/2)/2-n.h/2}
+  })(DATA);
+  return {W:x-gapX+16,H:y+6};
+}
+function draw(){
+  const {W,H}=layout();svg.setAttribute('width',W);svg.setAttribute('height',H);svg.setAttribute('viewBox',`0 0 ${W} ${H}`);
+  svg.replaceChildren();
+  const gl=el('g',{},svg),gn=el('g',{},svg);
+  (function walk(n){
+    if(n.open)n.kids.forEach(k=>{
+      const x1=n.x+n.w,y1=n.y+n.h/2,x2=k.x,y2=k.y+k.h/2,mx=(x1+x2)/2;
+      const p=el('path',{d:`M${x1},${y1} C${mx},${y1} ${mx},${y2} ${x2},${y2}`,class:'link'+(hotWithin(k)?'':' cold'),stroke:`var(--b${k.b})`},gl);
+      walk(k)});
+    const g=el('g',{class:'node'+(n.d===0?' root':'')+(n.hot?' hotn':'')+(hotWithin(n)?'':' cold'),tabindex:0,role:'button','aria-label':n.lines.join(' ')+(n.kids.length?(n.open?' (open)':' (closed)'):'')},gn);
+    const r=el('rect',{x:n.x,y:n.y,width:n.w,height:n.h,rx:n.d===0?14:10},g);
+    if(n.d>0){r.setAttribute('fill',n.d===1?`var(--b${n.b})`:`var(--b${n.b}t)`);
+      r.setAttribute('stroke',n.hot?'var(--hot)':`var(--b${n.b})`);if(n.hot)r.setAttribute('stroke-width',3)}
+    n.lines.forEach((l,i)=>{const t=el('text',{x:n.x+(n.d===0?18:13),y:n.y+7+17*(i+1)-4,fill:n.d===1?'var(--bg)':'var(--fg)'},g);t.textContent=l;
+      if(n.d===1)t.setAttribute('style','fill:var(--panel)');
+      if(n.d===1&&document.documentElement.dataset.theme==='dark')t.setAttribute('style','fill:var(--bg)')});
+    if(n.pg&&n.d>0){const t=el('text',{x:n.x+13,y:n.y+7+17*n.lines.length+11,class:'pgtag',fill:n.d===1?'var(--panel)':'var(--muted)'},g);t.textContent=n.pg;if(n.d===1&&document.documentElement.dataset.theme==='dark')t.setAttribute('fill','var(--bg)')}
+    if(n.c){const bg=el('g',{class:'badge'},g),bx=n.x+n.w-(n.kids.length?46:38),by=n.y+n.h/2-9;
+      el('rect',{x:bx,y:by,width:30,height:18,rx:9},bg);const t=el('text',{x:bx+15,y:by+13,'text-anchor':'middle'},bg);t.textContent='×'+n.c}
+    if(n.kids.length){const tg=el('g',{class:'tog'},g),cx=n.x+n.w,cy=n.y+n.h/2;
+      el('circle',{cx,cy,r:9,stroke:`var(--b${n.b||1})`},tg);const t=el('text',{x:cx,y:cy+4,'text-anchor':'middle'},tg);t.textContent=n.open?'−':'+';
+      tg.addEventListener('click',e=>{e.stopPropagation();n.open=!n.open;draw()})}
+    const act=()=>{show(n)};
+    g.addEventListener('click',act);
+    g.addEventListener('keydown',e=>{if(e.key==='Enter'||e.key===' '){e.preventDefault();act()}else if((e.key==='ArrowRight'||e.key==='ArrowLeft')&&n.kids.length){n.open=e.key==='ArrowRight';draw()}});
+  })(DATA);
+  svg.parentNode.classList.toggle('dim',hotOnly);
+}
+function esc(s){return s.replace(/[&<>]/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;'}[c]))}
+function show(n){
+  selected=n;
+  let h=`<div class="dctl"><button class="dbtn" data-act="min" aria-label="Minimise this box" title="Minimise">&#8722;</button><button class="dbtn" data-act="close" aria-label="Close this box" title="Close">&#215;</button></div><h2>${esc(n.lines.join(' '))}${n.c?`<span class="pill">${n.c} past-paper question${n.c>1?'s':''}</span>`:'<span class="pill zero">no past-paper question yet</span>'}</h2>`;
+  if(n.pg)h+=`<p class="pgline"><b>Revise in Book EC:</b> ${esc(n.pg)}</p>`;
+  if(n.kid)h+='<div class="kid"><div class="kidh">🧒 Like you\'re 5</div>'+(n.kidfig&&n.kidfig.length?'<div class="kidfig">'+n.kidfig.join('')+'</div>':'')+'<p>'+esc(n.kid)+'</p></div>';
+  if(n.fig&&n.fig.length)h+='<div class="figs">'+n.fig.join('')+'</div>';
+  if(n.key&&n.key.length)h+='<ul class="key">'+n.key.map(k=>'<li>'+esc(k)+'</li>').join('')+'</ul>';
+  if(n.n){const full=`<p>${esc(n.n)}</p>`;h+=((n.fig&&n.fig.length)||(n.key&&n.key.length)?`<details class="more"><summary>More explanation</summary>${full}</details>`:full)}else h+='<p class="hint">Open this branch to see the points inside it.</p>';
+  if(n.tip)h+=`<div class="tip"><b>Exam</b>${esc(n.tip)}</div>`;
+  if(n.qs&&n.qs.length){h+=`<div class="qs"><div class="qh">Questions on this topic (tap one to see the answer)</div>`+n.qs.map(q=>`<details><summary><span class="qid">${esc(q[0])}</span> ${esc(q[1])}</summary>${q[3]?`<div class="qctx"><div class="qcl">Given (question data)</div>${q[3]}</div>`:''}<div class="ans">${esc(q[2])}${q[4]||''}</div></details>`).join('')+`</div>`}
+  else if(n.kids.length&&n.tot){h+=`<p class="hint">${n.tot} question${n.tot>1?'s':''} sit in the boxes inside this branch. Open it and tap each box.</p>`}
+  detail.hidden=false;detail.classList.remove('min');
+  detail.innerHTML=h;
+}
+detail.addEventListener('click',e=>{const b=e.target.closest('.dbtn');if(!b)return;if(b.dataset.act==='close'){detail.hidden=true}else{detail.classList.toggle('min');b.innerHTML=detail.classList.contains('min')?'+':'&#8722;';b.title=detail.classList.contains('min')?'Expand':'Minimise';b.setAttribute('aria-label',b.title+' this box')}});
+document.addEventListener('keydown',e=>{if(e.key==='Escape')detail.hidden=true});
+function setAll(v,n=DATA){if(n.kids.length){n.open=v;n.kids.forEach(k=>setAll(v,k))}}
+document.getElementById('hotBtn').onclick=e=>{hotOnly=!hotOnly;e.currentTarget.setAttribute('aria-pressed',hotOnly);draw()};
+document.getElementById('expBtn').onclick=()=>{setAll(true);draw()};
+document.getElementById('colBtn').onclick=()=>{setAll(false);DATA.open=true;draw()};
+(document.fonts&&document.fonts.ready?document.fonts.ready:Promise.resolve()).then(draw);
+draw();
+</script>
