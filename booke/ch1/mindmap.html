@@ -68,6 +68,7 @@ svg{display:block}
 .qh{font-family:var(--mono);font-size:11px;letter-spacing:.06em;text-transform:uppercase;color:var(--muted)}
 .qs details{border:1px solid var(--line);border-radius:8px;padding:6px 10px;background:var(--bg)}
 .qs summary{cursor:pointer;font-size:14px}
+.qctx{margin-top:8px;padding:8px 10px;border:1px solid var(--line);border-radius:8px;background:var(--b1t);font-size:13px;overflow-x:auto}.qcl{font-size:11px;font-weight:700;letter-spacing:.04em;text-transform:uppercase;opacity:.7;margin-bottom:4px}.qctx p{margin:4px 0}.qctx p.qsub{opacity:.85;font-style:italic}.qctx table.qt{border-collapse:collapse;margin:6px 0;font-family:var(--mono);font-size:12.5px;background:var(--card,transparent)}.qctx table.qt td,.qctx table.qt th{border:1px solid var(--line);padding:2px 8px;text-align:left;white-space:nowrap}.qctx table.qt th{background:rgba(127,127,127,.15);font-weight:600}.qctx table.qt td.dk,.qctx table.qt th.dk{background:#222}.qctx img{max-width:100%;height:auto;border:1px solid var(--line);border-radius:6px;margin:4px 0;background:#fff}.qctx ul.opts{list-style:none;padding:0;margin:6px 0 0}.qctx ul.opts li{margin:2px 0}.qctx ul.opts li table{margin:4px 0}
 .qid{font-family:var(--mono);font-weight:600;font-size:12px;background:var(--b1t);color:var(--b1);border-radius:6px;padding:1px 6px;margin-right:4px}
 .ans{margin-top:6px;padding-top:6px;border-top:1px dashed var(--line);font-size:14px;white-space:pre-line}
 .tip{margin-top:10px;padding:8px 12px;border-radius:8px;background:var(--b3t);color:var(--fg);max-width:80ch;font-size:14px}
@@ -189,7 +190,7 @@ function show(n){
   if(n.key&&n.key.length)h+='<ul class="key">'+n.key.map(k=>'<li>'+esc(k)+'</li>').join('')+'</ul>';
   if(n.n){const full=`<p>${esc(n.n)}</p>`;h+=((n.fig&&n.fig.length)||(n.key&&n.key.length)?`<details class="more"><summary>More explanation</summary>${full}</details>`:full)}else h+='<p class="hint">Open this branch to see the points inside it.</p>';
   if(n.tip)h+=`<div class="tip"><b>Exam</b>${esc(n.tip)}</div>`;
-  if(n.qs&&n.qs.length){h+=`<div class="qs"><div class="qh">Questions on this topic (tap one to see the answer)</div>`+n.qs.map(q=>`<details><summary><span class="qid">${esc(q[0])}</span> ${esc(q[1])}</summary><div class="ans">${esc(q[2])}</div></details>`).join('')+`</div>`}
+  if(n.qs&&n.qs.length){h+=`<div class="qs"><div class="qh">Questions on this topic (tap one to see the answer)</div>`+n.qs.map(q=>`<details><summary><span class="qid">${esc(q[0])}</span> ${esc(q[1])}</summary>${q[3]?`<div class="qctx"><div class="qcl">Given (question data)</div>${q[3]}</div>`:''}<div class="ans">${esc(q[2])}</div></details>`).join('')+`</div>`}
   else if(n.kids.length&&n.tot){h+=`<p class="hint">${n.tot} question${n.tot>1?'s':''} sit in the boxes inside this branch. Open it and tap each box.</p>`}
   detail.hidden=false;detail.classList.remove('min');
   detail.innerHTML=h;
