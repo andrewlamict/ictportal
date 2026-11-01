@@ -60,6 +60,17 @@ svg{display:block}
 .detail .pgline{margin:0 0 8px;font-family:var(--mono);font-size:13px;color:var(--fg)}
 .detail .pgline b{font-family:var(--font);font-weight:600}
 .detail h2 .pill.zero{background:var(--line);color:var(--muted)}
+.sexbtn{margin:10px 0 0;border-radius:999px;padding:8px 18px;border:1.5px solid var(--b2,#0f766e);background:var(--b2t,#dcf5f1);color:var(--b2,#0f766e);font:inherit;font-weight:700;cursor:pointer}
+.sexbtn:hover{filter:brightness(.96)}
+.sexbox{margin-top:10px;padding:12px 14px;border-radius:10px;border-left:5px solid var(--b2,#0f766e);background:rgba(15,118,110,.08);font-size:15px;line-height:1.65}
+.sexbox[hidden]{display:none}
+.sexbox .sxh{font-family:var(--mono);font-size:11px;font-weight:700;letter-spacing:.05em;text-transform:uppercase;color:var(--b2,#0f766e);margin:0 0 4px}
+.sexbox p{margin:6px 0;white-space:normal;max-width:none}
+.sexbox table{border-collapse:collapse;margin:6px 0;font-size:13.5px}
+.sexbox th,.sexbox td{border:1px solid var(--line);padding:3px 9px;text-align:left}
+.sexbox th{background:rgba(127,127,127,.15)}
+.sexbox code{font-family:var(--mono);font-size:13px;background:rgba(127,127,127,.15);padding:1px 5px;border-radius:4px}
+.sexbox svg{max-width:100%;height:auto}
 .dctl{float:right;display:flex;gap:6px;margin:-2px 0 6px 10px}
 .dbtn{width:32px;height:32px;padding:0;font-size:20px;line-height:1;border-radius:8px}
 .detail.min{max-height:none;overflow:visible;padding-block:8px}
@@ -302,11 +313,15 @@ function reflow(){
   }
   detail.appendChild(body);
 }
+function sexhtml(n){
+  if(!n.sex)return '';
+  return '<button class="sexbtn" type="button" onclick="var a=this.nextElementSibling;a.hidden=!a.hidden;this.textContent=a.hidden?\'Show a school example\':\'Hide the school example\'">Show a school example</button><div class="sexbox" hidden><div class="sxh">School example</div>'+n.sex+'</div>';
+}
 function show(n){
   selected=n;
   let h=`<div class="dctl"><button class="dbtn" data-act="min" aria-label="Minimise this box" title="Minimise">&#8722;</button><button class="dbtn" data-act="close" aria-label="Close this box" title="Close">&#215;</button></div><h2>${esc(n.lines.join(' '))}${n.c?`<span class="pill">${n.c} past-paper question${n.c>1?'s':''}</span>`:'<span class="pill zero">no past-paper question yet</span>'}</h2>`;
   if(n.pg)h+=`<p class="pgline"><b>Revise in Book B:</b> ${esc(n.pg)}</p>`;
-  h+=kidhtml(n);
+  h+=kidhtml(n);h+=sexhtml(n);
   if(n.fig&&n.fig.length)h+='<div class="figs">'+n.fig.join('')+'</div>';
   if(n.key&&n.key.length)h+='<ul class="key">'+n.key.map(k=>'<li>'+esc(k)+'</li>').join('')+'</ul>';
   if(n.n){const full=`<p>${esc(n.n)}</p>`;h+=((n.fig&&n.fig.length)||(n.key&&n.key.length)?`<details class="more"><summary>More explanation</summary>${full}</details>`:full)}else h+='<p class="hint">Open this branch to see the points inside it.</p>';
