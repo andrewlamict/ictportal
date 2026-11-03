@@ -1,0 +1,1137 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+<title>Pseudocode Lab</title>
+<meta name="claude:viewport-fit-sides" content="cover">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=IBM+Plex+Sans:wght@400;500;600&family=JetBrains+Mono:wght@400;500;700&family=Sora:wght@600;700&display=swap">
+<style>
+/* Concept: a bright lab bench. Pale blue-grey page, one dark "screen" for code, a physical amber key for the left arrow. */
+:root{
+  --bg:#eaf0f6; --surface:#ffffff; --ink:#0f1c2e; --muted:#566a82; --line:#d3dce8;
+  --brand:#0b2545; --brand-ink:#ffffff; --key:#f5b301; --key-ink:#2b1d00; --key-edge:#c98f00;
+  --go:#15935a; --go-ink:#ffffff; --stop:#c8302f;
+  --code-bg:#0e1a2c; --code-ink:#e6edf7; --code-dim:#5f7491; --code-line:#1b2b44; --caret:#ffd166;
+  --k-ctl:#7cc4ff; --k-io:#ffd166; --k-log:#c9a7ff; --k-str:#8fe3a8; --k-num:#ffab70; --k-com:#6c819e; --k-arrow:#ffd166; --k-op:#9fb6d2;
+  --out-bg:#0a1322; --out-ink:#dce6f3; --out-in:#8fe3a8; --out-err:#ff8f8f; --out-warn:#ffd166; --out-info:#7f93ad;
+  --shadow:0 1px 2px rgba(15,28,46,.06),0 8px 24px rgba(15,28,46,.07);
+  --disp:"Sora","IBM Plex Sans",system-ui,sans-serif; --font:"IBM Plex Sans",system-ui,-apple-system,"Segoe UI",sans-serif; --mono:"JetBrains Mono",ui-monospace,SFMono-Regular,Menlo,Consolas,monospace;
+}
+@media (prefers-color-scheme:dark){:root:not([data-theme="light"]){
+  --bg:#08111e; --surface:#101c2e; --ink:#e7eef8; --muted:#93a6bd; --line:#223450;
+  --brand:#0b2545; --code-bg:#0a1424; --code-line:#16253c; --out-bg:#060d18;
+  --shadow:0 1px 2px rgba(0,0,0,.3),0 8px 24px rgba(0,0,0,.35); color-scheme:dark}}
+:root[data-theme="dark"]{
+  --bg:#08111e; --surface:#101c2e; --ink:#e7eef8; --muted:#93a6bd; --line:#223450;
+  --brand:#0b2545; --code-bg:#0a1424; --code-line:#16253c; --out-bg:#060d18;
+  --shadow:0 1px 2px rgba(0,0,0,.3),0 8px 24px rgba(0,0,0,.35); color-scheme:dark}
+*{box-sizing:border-box}
+[hidden]{display:none!important}
+body{background:var(--bg);color:var(--ink);font:15px/1.55 var(--font);padding-block:0 40px;padding-left:max(16px,env(safe-area-inset-left,0px));padding-right:max(16px,env(safe-area-inset-right,0px))}
+button,select,input,textarea{font:inherit;color:inherit}
+.wrap{max-width:1200px;margin:0 auto}
+header.top{display:flex;align-items:center;gap:14px;flex-wrap:wrap;padding:22px 0 18px}
+.logo{width:42px;height:42px;border-radius:12px;background:var(--brand);display:grid;place-items:center;flex:none;box-shadow:var(--shadow)}
+.logo svg{width:24px;height:24px}
+h1{font:700 24px/1.15 var(--disp);margin:0;letter-spacing:-.01em;text-wrap:balance}
+.sub{color:var(--muted);font-size:14px;margin:2px 0 0}
+.badge{margin-left:auto;font:600 12px var(--mono);letter-spacing:.04em;text-transform:uppercase;color:var(--muted);border:1px solid var(--line);border-radius:999px;padding:5px 12px;background:var(--surface)}
+.studio{display:grid;grid-template-columns:minmax(0,1.2fr) minmax(0,.8fr);gap:18px;align-items:start}
+@media (max-width:900px){.studio{grid-template-columns:minmax(0,1fr)}}
+.card{background:var(--surface);border:1px solid var(--line);border-radius:16px;box-shadow:var(--shadow);overflow:hidden;min-width:0}
+.card>h2{font:600 12px var(--mono);letter-spacing:.08em;text-transform:uppercase;color:var(--muted);margin:0;padding:12px 16px;border-bottom:1px solid var(--line);display:flex;align-items:center;gap:10px}
+/* tools row */
+.tools{display:flex;flex-wrap:wrap;gap:10px 14px;align-items:center;padding:12px 14px;border-bottom:1px solid var(--line)}
+.keys{display:flex;gap:6px;align-items:center}
+.keys .lbl{font:600 12px var(--mono);letter-spacing:.06em;text-transform:uppercase;color:var(--muted);margin-right:4px}
+.key{min-width:44px;height:44px;border-radius:10px;border:1px solid var(--key-edge);background:var(--key);color:var(--key-ink);font:700 22px/1 var(--mono);cursor:pointer;box-shadow:0 3px 0 var(--key-edge);transition:transform .06s,box-shadow .06s;padding:0 12px;display:inline-flex;align-items:center;justify-content:center;gap:8px}
+.key:active{transform:translateY(3px);box-shadow:0 0 0 var(--key-edge)}
+.key.big{padding:0 16px}
+.key.big small{font:600 12px var(--font);letter-spacing:0}
+.key.sm{background:var(--surface);color:var(--ink);border-color:var(--line);box-shadow:0 3px 0 var(--line);font-size:20px}
+.key.sm:active{box-shadow:none}
+.pick{margin-left:auto;display:flex;align-items:center;gap:8px;min-width:0}
+.pick label{font:600 12px var(--mono);letter-spacing:.06em;text-transform:uppercase;color:var(--muted)}
+select{height:40px;border-radius:10px;border:1px solid var(--line);background:var(--surface);padding:0 34px 0 12px;max-width:100%;min-width:0;cursor:pointer;appearance:none;background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='8' viewBox='0 0 12 8'%3E%3Cpath d='M1 1l5 5 5-5' fill='none' stroke='%23788ba3' stroke-width='2'/%3E%3C/svg%3E");background-repeat:no-repeat;background-position:right 12px center}
+/* editor */
+.editor{display:flex;height:min(58vh,500px);min-height:340px;background:var(--code-bg);position:relative}
+.gut{flex:none;width:46px;overflow:hidden;padding:14px 8px 14px 0;text-align:right;font:400 13px/22px var(--mono);color:var(--code-dim);background:var(--code-bg);border-right:1px solid var(--code-line);user-select:none}
+.gut div{height:22px}
+.gut div.err{color:#fff;background:var(--stop);border-radius:0 4px 4px 0}
+.codewrap{position:relative;flex:1;min-width:0}
+#hl,#code{position:absolute;inset:0;margin:0;padding:14px 16px 14px 14px;font:400 14px/22px var(--mono);white-space:pre;tab-size:4;-moz-tab-size:4;letter-spacing:0;word-spacing:0;border:0}
+#hl{overflow:hidden;pointer-events:none;color:var(--code-ink)}
+#hl .l{height:22px}
+#hl .l.err{background:rgba(200,48,47,.28);box-shadow:inset 3px 0 0 var(--stop);margin-left:-14px;padding-left:14px}
+#code{background:transparent;color:transparent;-webkit-text-fill-color:transparent;caret-color:var(--caret);resize:none;outline:none;overflow:auto}
+#code::selection{background:rgba(124,196,255,.35);-webkit-text-fill-color:transparent}
+.t-ctl{color:var(--k-ctl);font-weight:700}.t-io{color:var(--k-io);font-weight:700}.t-log{color:var(--k-log);font-weight:600}
+.t-str{color:var(--k-str)}.t-num{color:var(--k-num)}.t-com{color:var(--k-com);font-style:italic}.t-arrow{color:var(--k-arrow);font-weight:700}.t-op{color:var(--k-op)}.t-bool{color:var(--k-num);font-weight:600}
+/* actions */
+.actions{display:flex;flex-wrap:wrap;gap:10px;align-items:center;padding:12px 14px;border-top:1px solid var(--code-line);background:var(--surface)}
+.btn{height:44px;border-radius:12px;border:1px solid var(--line);background:var(--surface);padding:0 18px;font-weight:600;cursor:pointer;display:inline-flex;align-items:center;gap:8px}
+.btn:hover{border-color:var(--muted)}
+.btn.run{background:var(--go);border-color:var(--go);color:var(--go-ink);padding:0 24px;font-size:16px;box-shadow:0 3px 0 rgba(0,0,0,.18)}
+.btn.run:hover{filter:brightness(1.06)}
+.btn.run:disabled{opacity:.55;cursor:not-allowed;filter:none}
+.btn.stop{border-color:var(--stop);color:var(--stop)}
+.btn svg{width:16px;height:16px;flex:none}
+.hint{margin-left:auto;color:var(--muted);font-size:13px}
+.hint kbd{font:500 12px var(--mono);border:1px solid var(--line);border-bottom-width:2px;border-radius:6px;padding:1px 6px;background:var(--bg)}
+button:focus-visible,select:focus-visible,input:focus-visible,summary:focus-visible{outline:3px solid #4aa3ff;outline-offset:2px}
+/* output */
+.side{display:grid;gap:18px;min-width:0}
+.status{margin-left:auto;font:600 11px var(--mono);letter-spacing:.06em;text-transform:uppercase;border-radius:999px;padding:3px 10px;border:1px solid var(--line);color:var(--muted)}
+.status.running{color:#fff;background:var(--go);border-color:var(--go)}
+.status.wait{color:var(--key-ink);background:var(--key);border-color:var(--key-edge)}
+.status.error{color:#fff;background:var(--stop);border-color:var(--stop)}
+.status.done{color:var(--go);border-color:var(--go)}
+.out{background:var(--out-bg);color:var(--out-ink);font:400 14px/1.6 var(--mono);height:min(34vh,300px);min-height:200px;overflow:auto;padding:12px 16px;white-space:pre-wrap;overflow-wrap:anywhere}
+.out .o{display:block}
+.out .in{color:var(--out-in)}.out .err{color:var(--out-err)}.out .warn{color:var(--out-warn)}.out .info{color:var(--out-info)}
+.out .empty{color:var(--out-info)}
+.inrow{display:flex;gap:8px;align-items:center;padding:10px 12px;background:var(--out-bg);border-top:1px solid #182740}
+.inrow[hidden]{display:none}
+.inrow label{font:600 12px var(--mono);color:var(--key);white-space:nowrap;max-width:45%;overflow:hidden;text-overflow:ellipsis}
+.inrow input{flex:1;min-width:0;height:40px;border-radius:10px;border:1px solid #2a3f5f;background:#0e1a2c;color:#fff;padding:0 12px;font:500 15px var(--mono)}
+.inrow button{height:40px;border-radius:10px;border:0;background:var(--key);color:var(--key-ink);font-weight:700;padding:0 16px;cursor:pointer}
+.vars{padding:12px 16px 16px;display:grid;gap:12px;max-height:300px;overflow:auto}
+.vars .none{color:var(--muted);font-size:14px;margin:0}
+.var{display:flex;gap:10px;align-items:baseline;flex-wrap:wrap}
+.var b{font:600 14px var(--mono)}
+.var .val{font:500 14px var(--mono);background:var(--bg);border:1px solid var(--line);border-radius:8px;padding:1px 10px}
+.arr{display:grid;gap:6px;min-width:0}
+.arr .cells{display:flex;overflow-x:auto;padding-bottom:4px}
+.cell{flex:none;min-width:46px;text-align:center;font:500 14px var(--mono);border:1px solid var(--line);margin-left:-1px}
+.cell i{display:block;font:500 11px var(--mono);font-style:normal;color:var(--muted);background:var(--bg);border-bottom:1px solid var(--line);padding:1px 6px}
+.cell span{display:block;padding:3px 8px;min-height:28px}
+.cell.empty span{color:var(--muted)}
+/* cheat sheet */
+.cheat{margin-top:22px}
+.cheat>summary{cursor:pointer;font:600 16px var(--disp);padding:14px 18px;list-style:none;display:flex;align-items:center;gap:10px}
+.cheat>summary::-webkit-details-marker{display:none}
+.cheat>summary::after{content:"";margin-left:auto;width:10px;height:10px;border-right:2px solid var(--muted);border-bottom:2px solid var(--muted);transform:rotate(45deg);transition:transform .15s}
+.cheat[open]>summary::after{transform:rotate(-135deg)}
+.cheatgrid{display:grid;grid-template-columns:repeat(auto-fill,minmax(260px,1fr));gap:14px;padding:4px 18px 20px}
+.snip{border:1px solid var(--line);border-radius:12px;overflow:hidden;display:flex;flex-direction:column;min-width:0}
+.snip h3{margin:0;padding:9px 12px;font:600 13px var(--font);display:flex;align-items:center;gap:8px;border-bottom:1px solid var(--line)}
+.snip h3 button{margin-left:auto;font:600 12px var(--font);border:1px solid var(--line);background:var(--bg);border-radius:8px;padding:3px 10px;cursor:pointer}
+.snip h3 button:hover{border-color:var(--muted)}
+.snip pre{margin:0;padding:10px 12px;background:var(--code-bg);color:var(--code-ink);font:400 13px/1.65 var(--mono);overflow-x:auto;flex:1}
+.snip p{margin:0;padding:8px 12px;font-size:13px;color:var(--muted);border-top:1px solid var(--line)}
+.rules{padding:0 18px 18px;display:flex;flex-wrap:wrap;gap:8px 18px;color:var(--muted);font-size:13.5px}
+.rules b{color:var(--ink);font-weight:600}
+.rules code,.snip code{font:500 13px var(--mono)}
+footer{margin-top:26px;color:var(--muted);font-size:13px;text-align:center}
+@media (prefers-reduced-motion:reduce){*{transition:none!important}}
+@media (max-width:560px){.pick{margin-left:0;width:100%}.pick select{flex:1}.hint{display:none}.badge{display:none}}
+</style>
+
+</head>
+<body>
+<div class="wrap">
+  <header class="top">
+    <div class="logo" aria-hidden="true"><svg viewBox="0 0 24 24" fill="none" stroke="#f5b301" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><path d="M9 6 3 12l6 6"/><path d="M21 12H4"/></svg></div>
+    <div>
+      <h1>Pseudocode Lab</h1>
+      <p class="sub">Type your algorithm, press Run, and watch it work.</p>
+    </div>
+    <a class="badge" href="index.html" style="text-decoration:none">&larr; ICT Portal</a>
+  </header>
+
+  <main class="studio">
+    <section class="card" aria-label="Pseudocode editor">
+      <div class="tools">
+        <div class="keys" role="group" aria-label="Symbol keys">
+          <span class="lbl">Keys</span>
+          <button class="key big" type="button" data-ins="←" title="Insert the assignment arrow ←  (you can also type &lt;- )" aria-label="Insert assignment arrow">← <small>assign</small></button>
+          <button class="key sm" type="button" data-ins="≠" title="Not equal" aria-label="Insert not equal sign">≠</button>
+          <button class="key sm" type="button" data-ins="≤" title="Less than or equal to" aria-label="Insert less than or equal sign">≤</button>
+          <button class="key sm" type="button" data-ins="≥" title="Greater than or equal to" aria-label="Insert greater than or equal sign">≥</button>
+        </div>
+        <div class="pick">
+          <label for="ex">Examples</label>
+          <select id="ex" aria-label="Load an example"></select>
+        </div>
+      </div>
+      <div class="editor" id="ed">
+        <div class="gut" id="gut" aria-hidden="true"></div>
+        <div class="codewrap">
+          <pre id="hl" aria-hidden="true"></pre>
+          <textarea id="code" spellcheck="false" autocapitalize="off" autocomplete="off" autocorrect="off" wrap="off" aria-label="Pseudocode editor"></textarea>
+        </div>
+      </div>
+      <div class="actions">
+        <button class="btn run" id="run" type="button"><svg viewBox="0 0 16 16" fill="currentColor" aria-hidden="true"><path d="M3 1.8v12.4a.8.8 0 0 0 1.2.7l10-6.2a.8.8 0 0 0 0-1.4L4.2 1.1A.8.8 0 0 0 3 1.8z"/></svg>Run</button>
+        <button class="btn stop" id="stop" type="button" hidden><svg viewBox="0 0 16 16" fill="currentColor" aria-hidden="true"><rect x="3" y="3" width="10" height="10" rx="2"/></svg>Stop</button>
+        <button class="btn" id="clr" type="button">Clear output</button>
+        <span class="hint"><kbd>Tab</kbd> indent · <kbd>Ctrl</kbd>+<kbd>Enter</kbd> run</span>
+      </div>
+    </section>
+
+    <div class="side">
+      <section class="card" aria-label="Output">
+        <h2>Output <span class="status" id="status">Ready</span></h2>
+        <div class="out" id="out" role="log" aria-live="polite"></div>
+        <form class="inrow" id="inform" hidden>
+          <label for="inval" id="inlab">Input</label>
+          <input id="inval" type="text" autocomplete="off" autocapitalize="off" spellcheck="false" aria-label="Type the input value">
+          <button type="submit">Enter</button>
+        </form>
+      </section>
+      <section class="card" aria-label="Variables">
+        <h2>Variables</h2>
+        <div class="vars" id="vars"><p class="none">Run a program to see its variables and arrays here.</p></div>
+      </section>
+    </div>
+  </main>
+
+  <details class="card cheat" id="cheat">
+    <summary>Pseudocode cheat sheet</summary>
+    <div class="rules">
+      <span><b>Indent</b> the lines inside an if, for, while, do or repeat by 4 spaces (press Tab).</span>
+      <span><b>Array</b> positions start at 1.</span>
+      <span><b>Compare</b> with <code>=</code> <code>≠</code> <code>&lt;</code> <code>&gt;</code> <code>≤</code> <code>≥</code></span>
+      <span><b>Calculate</b> with <code>+</code> <code>-</code> <code>*</code> <code>/</code> <code>div</code> <code>mod</code></span>
+      <span><b>Combine</b> conditions with <code>AND</code> <code>OR</code> <code>NOT</code></span>
+    </div>
+    <div class="cheatgrid" id="cheatgrid"></div>
+  </details>
+  <footer>Everything runs in your browser. Your code is saved on this device.</footer>
+</div>
+
+<script>
+(function(){
+'use strict';
+
+/* ================= Interpreter ================= */
+class PseudoError extends Error{constructor(m,line){super(m);this.line=line==null?null:line}}
+class StopSignal extends Error{}
+class PArr{constructor(){this.a=[]}}
+const TICK={tick:1};
+const MAX_STEPS=3000000;
+
+function show(v){
+  if(v===undefined)return '_';
+  if(v instanceof PArr)return '['+v.a.map(show).join(', ')+']';
+  if(typeof v==='boolean')return v?'True':'False';
+  if(typeof v==='number'){
+    if(Number.isInteger(v))return String(v);
+    return String(parseFloat(v.toPrecision(12)));
+  }
+  return String(v);
+}
+function typeName(v){return v instanceof PArr?'an array':typeof v==='number'?'a number':typeof v==='string'?'text':'True/False'}
+
+/* ---- text helpers ---- */
+function stripComment(s){
+  let q=null;
+  for(let i=0;i<s.length;i++){
+    const c=s[i];
+    if(q){if(c===q)q=null;continue}
+    if(c==='"'||c==="'"){q=c;continue}
+    if(c==='#')return s.slice(0,i);
+    if(c==='/'&&s[i+1]==='/')return s.slice(0,i);
+  }
+  return s;
+}
+function normArrows(s){
+  let q=null,out='';
+  for(let i=0;i<s.length;i++){
+    const c=s[i];
+    if(q){out+=c;if(c===q)q=null;continue}
+    if(c==='"'||c==="'"){q=c;out+=c;continue}
+    if(c==='<'&&s[i+1]==='-'){out+='←';i++;continue}
+    if(c===':'&&s[i+1]==='='){out+='←';i++;continue}
+    out+=c;
+  }
+  return out;
+}
+function splitTop(s,sep){
+  const parts=[];let depth=0,q=null,cur='';
+  for(let i=0;i<s.length;i++){
+    const c=s[i];
+    if(q){cur+=c;if(c===q)q=null;continue}
+    if(c==='"'||c==="'"){q=c;cur+=c;continue}
+    if(c==='('||c==='['||c==='{')depth++;
+    if(c===')'||c===']'||c==='}')depth--;
+    if(c===sep&&depth===0){parts.push(cur);cur='';continue}
+    cur+=c;
+  }
+  parts.push(cur);
+  return parts;
+}
+function findTop(s,ch){
+  let depth=0,q=null;
+  for(let i=0;i<s.length;i++){
+    const c=s[i];
+    if(q){if(c===q)q=null;continue}
+    if(c==='"'||c==="'"){q=c;continue}
+    if(c==='('||c==='['||c==='{')depth++;
+    if(c===')'||c===']'||c==='}')depth--;
+    if(c===ch&&depth===0)return i;
+  }
+  return -1;
+}
+function findTopEq(s){ // a lone "=" at top level (not <=, >=, ≠ ...)
+  let depth=0,q=null;
+  for(let i=0;i<s.length;i++){
+    const c=s[i];
+    if(q){if(c===q)q=null;continue}
+    if(c==='"'||c==="'"){q=c;continue}
+    if(c==='('||c==='['||c==='{')depth++;
+    if(c===')'||c===']'||c==='}')depth--;
+    if(c==='='&&depth===0&&!'<>!='.includes(s[i-1]||' ')&&s[i+1]!=='=')return i;
+  }
+  return -1;
+}
+
+/* ---- expression tokenizer & parser ---- */
+function tokenize(src,line){
+  const t=[];let i=0;
+  while(i<src.length){
+    const c=src[i];
+    if(/\s/.test(c)){i++;continue}
+    if(c==='"'||c==="'"){
+      let j=i+1;while(j<src.length&&src[j]!==c)j++;
+      if(j>=src.length)throw new PseudoError('The text starting with '+c+' needs a closing '+c+'.',line);
+      t.push({k:'str',v:src.slice(i+1,j)});i=j+1;continue;
+    }
+    if(/[0-9]/.test(c)||(c==='.'&&/[0-9]/.test(src[i+1]||''))){
+      const m=/^\d*\.?\d+/.exec(src.slice(i));t.push({k:'num',v:parseFloat(m[0])});i+=m[0].length;continue;
+    }
+    if(/[A-Za-z_]/.test(c)){
+      const m=/^[A-Za-z_][A-Za-z_0-9]*/.exec(src.slice(i));t.push({k:'id',v:m[0]});i+=m[0].length;continue;
+    }
+    const two=src.slice(i,i+2);
+    if(['<=','>=','<>','!=','=='].includes(two)){t.push({k:'op',v:two==='<>'||two==='!='?'≠':two==='=='?'=':two==='<='?'≤':'≥'});i+=2;continue}
+    if('≤≥≠'.includes(c)){t.push({k:'op',v:c});i++;continue}
+    if('+-*/()[]{},=<>&'.includes(c)){t.push({k:'op',v:c});i++;continue}
+    if(c==='×'){t.push({k:'op',v:'*'});i++;continue}
+    if(c==='÷'){t.push({k:'op',v:'/'});i++;continue}
+    if(c==='←')throw new PseudoError('The ← arrow can only be used once per line, to give a value to a variable.',line);
+    throw new PseudoError('I do not know the symbol "'+c+'".',line);
+  }
+  return t;
+}
+const KW_OP={and:1,or:1,not:1,mod:1,div:1};
+function parseExpr(src,line){
+  const toks=tokenize(src,line);let p=0;
+  const peek=()=>toks[p];
+  const isOp=(v)=>toks[p]&&toks[p].k==='op'&&toks[p].v===v;
+  const isKw=(v)=>toks[p]&&toks[p].k==='id'&&toks[p].v.toLowerCase()===v;
+  const bad=(m)=>new PseudoError(m,line);
+  function or(){let l=and();while(isKw('or')){p++;l={t:'bin',o:'or',l,r:and()}}return l}
+  function and(){let l=not();while(isKw('and')){p++;l={t:'bin',o:'and',l,r:not()}}return l}
+  function not(){if(isKw('not')){p++;return {t:'not',e:not()}}return cmp()}
+  function cmp(){
+    let l=add();
+    while(peek()&&peek().k==='op'&&['=','≠','<','>','≤','≥'].includes(peek().v)){const o=peek().v;p++;l={t:'bin',o,l,r:add()}}
+    return l;
+  }
+  function add(){
+    let l=mul();
+    while(peek()&&peek().k==='op'&&['+','-','&'].includes(peek().v)){const o=peek().v;p++;l={t:'bin',o:o==='&'?'+':o,l,r:mul()}}
+    return l;
+  }
+  function mul(){
+    let l=un();
+    for(;;){
+      if(peek()&&peek().k==='op'&&['*','/'].includes(peek().v)){const o=peek().v;p++;l={t:'bin',o,l,r:un()}}
+      else if(isKw('div')||isKw('mod')){const o=peek().v.toLowerCase();p++;l={t:'bin',o,l,r:un()}}
+      else break;
+    }
+    return l;
+  }
+  function un(){
+    if(isOp('-')){p++;return {t:'neg',e:un()}}
+    if(isOp('+')){p++;return un()}
+    return post();
+  }
+  function post(){
+    let e=prim();
+    while(isOp('[')){p++;const i=or();if(!isOp(']'))throw bad('Add a closing ] after the array position.');p++;e={t:'idx',b:e,i}}
+    return e;
+  }
+  function prim(){
+    const k=peek();
+    if(!k)throw bad('The expression is incomplete. Something is missing after the last symbol.');
+    if(k.k==='num'){p++;return {t:'lit',v:k.v}}
+    if(k.k==='str'){p++;return {t:'lit',v:k.v}}
+    if(k.k==='id'){
+      const lw=k.v.toLowerCase();
+      if(lw==='true'){p++;return {t:'lit',v:true}}
+      if(lw==='false'){p++;return {t:'lit',v:false}}
+      if(KW_OP[lw])throw bad('"'+k.v+'" is used in the wrong place. Check the operator before or after it.');
+      p++;
+      if((lw==='length'||lw==='len')&&isOp('(')){
+        p++;const a=or();if(!isOp(')'))throw bad('Add a closing ) after Length(...).');p++;return {t:'len',e:a};
+      }
+      return {t:'var',n:k.v};
+    }
+    if(k.v==='('){p++;const e=or();if(!isOp(')'))throw bad('A bracket ( is not closed. Add the missing ).');p++;return e}
+    throw bad('I did not expect "'+k.v+'" here.');
+  }
+  if(!toks.length)throw bad('Something is missing: this part is empty.');
+  const e=or();
+  if(p<toks.length){
+    const k=toks[p];
+    throw bad('I did not expect "'+(k.v)+'" here. Check for a missing operator such as + or AND.');
+  }
+  return e;
+}
+
+function lookupVar(env,n){
+  if(env.has(n))return env.get(n);
+  let hint='';
+  const lw=n.toLowerCase();
+  for(const k of env.keys()){if(k.toLowerCase()===lw){hint=' Did you mean "'+k+'"? (Names are case-sensitive.)';break}}
+  throw new PseudoError('"'+n+'" has no value yet. Give it a value with ← or Input before using it.'+hint);
+}
+function needNum(v,what){
+  if(typeof v!=='number')throw new PseudoError(what+' needs numbers, but one side is '+typeName(v)+'.');
+  return v;
+}
+function needBool(v,what){
+  if(typeof v!=='boolean')throw new PseudoError(what+' needs True/False on both sides. Write full comparisons, for example x > 1 AND x < 5.');
+  return v;
+}
+function evalE(n,env){
+  switch(n.t){
+    case 'lit':return n.v;
+    case 'var':return lookupVar(env,n.n);
+    case 'neg':return -needNum(evalE(n.e,env),'Minus');
+    case 'not':return !needBool(evalE(n.e,env),'NOT');
+    case 'len':{const v=evalE(n.e,env);if(v instanceof PArr)return v.a.length;if(typeof v==='string')return v.length;throw new PseudoError('Length needs an array or text.')}
+    case 'idx':{
+      const b=evalE(n.b,env),i=evalE(n.i,env);
+      checkIndex(i);
+      if(b instanceof PArr){
+        const v=b.a[i-1];
+        if(v===undefined){
+          const nm=n.b.t==='var'?n.b.n:'The array';
+          if(i>b.a.length)throw new PseudoError(nm+'['+i+'] does not exist. The array only has '+b.a.length+' item'+(b.a.length===1?'':'s')+'.');
+          throw new PseudoError(nm+'['+i+'] has no value yet.');
+        }
+        return v;
+      }
+      if(typeof b==='string'){
+        if(i>b.length)throw new PseudoError('Position '+i+' is beyond the end of the text (length '+b.length+').');
+        return b[i-1];
+      }
+      throw new PseudoError('Only arrays and text can use [ ]. This is '+typeName(b)+'.');
+    }
+    case 'bin':{
+      if(n.o==='and'){const l=needBool(evalE(n.l,env),'AND');if(!l)return false;return needBool(evalE(n.r,env),'AND')}
+      if(n.o==='or'){const l=needBool(evalE(n.l,env),'OR');if(l)return true;return needBool(evalE(n.r,env),'OR')}
+      const l=evalE(n.l,env),r=evalE(n.r,env);
+      switch(n.o){
+        case '+':if(typeof l==='string'||typeof r==='string'){if(l instanceof PArr||r instanceof PArr)throw new PseudoError('An array cannot be joined with + . Use one item such as A[1].');return show(l)+show(r)}return needNum(l,'+')+needNum(r,'+');
+        case '-':return needNum(l,'Subtraction')-needNum(r,'Subtraction');
+        case '*':return needNum(l,'Multiplication')*needNum(r,'Multiplication');
+        case '/':{needNum(l,'Division');needNum(r,'Division');if(r===0)throw new PseudoError('You cannot divide by zero.');return l/r}
+        case 'div':{needNum(l,'div');needNum(r,'div');if(r===0)throw new PseudoError('You cannot divide by zero.');return Math.trunc(l/r)}
+        case 'mod':{needNum(l,'mod');needNum(r,'mod');if(r===0)throw new PseudoError('You cannot divide by zero (mod 0).');return l%r}
+        default:{
+          const same=typeof l===typeof r&&!(l instanceof PArr)&&!(r instanceof PArr);
+          if(n.o==='='){return same?l===r:false}
+          if(n.o==='≠'){return same?l!==r:true}
+          if(!same||typeof l==='boolean')throw new PseudoError('You cannot compare '+typeName(l)+' with '+typeName(r)+' using '+n.o+'.');
+          return n.o==='<'?l<r:n.o==='>'?l>r:n.o==='≤'?l<=r:l>=r;
+        }
+      }
+    }
+  }
+  throw new PseudoError('Unknown expression.');
+}
+function checkIndex(i){
+  if(typeof i!=='number'||!Number.isInteger(i))throw new PseudoError('An array position must be a whole number, but it is '+show(i)+'.');
+  if(i<1)throw new PseudoError('Array positions start at 1, but this one is '+i+'.');
+}
+function asCond(v){
+  if(typeof v!=='boolean')throw new PseudoError('A condition must be True or False. Use a comparison such as x > 0.');
+  return v;
+}
+
+/* ---- statement parser (indentation based, Book D1 style) ---- */
+function prepare(code){
+  const raw=code.replace(/\r/g,'').split('\n');
+  const L=[];
+  raw.forEach((r,idx)=>{
+    let t=r.replace(/\t/g,'    ');
+    const noC=stripComment(t);
+    if(!noC.trim())return;
+    const ind=noC.length-noC.trimStart().length;
+    L.push({line:idx+1,indent:ind,text:normArrows(noC.trim())});
+  });
+  return L;
+}
+const END_RE=/^(end|endif|end\s+if|endwhile|end\s+while|endfor|end\s+for|enddo|end\s+do|next(\s+\w+)?|endrepeat)$/i;
+function parseProgram(code){
+  const L=prepare(code);const warns=[];
+  if(!L.length)return {stmts:[],warns};
+  let i=0;
+  function lv(text,line){
+    const m=/^([A-Za-z_]\w*)\s*(?:\[(.*)\])?$/s.exec(text.trim());
+    if(!m)throw new PseudoError('This must be a variable name, or an array item such as A[1].',line);
+    if(/^(if|else|for|while|do|repeat|until|input|output|print|display|and|or|not|true|false|mod|div)$/i.test(m[1]))throw new PseudoError('"'+m[1]+'" is a reserved word. Choose another name for the variable.',line);
+    return {n:m[1],i:m[2]!==undefined?parseExpr(m[2],line):null};
+  }
+  function block(ind,parentLine,what){
+    const out=[];
+    while(i<L.length){
+      const ln=L[i];
+      if(ln.indent<ind)break;
+      if(ln.indent>ind)throw new PseudoError('This line is indented more than the line above it. Remove the extra spaces, or put it inside an if / loop.',ln.line);
+      const s=stmt(ind);
+      if(s)out.push(s);
+    }
+    return out;
+  }
+  function body(ind,header,what){
+    if(i>=L.length||L[i].indent<=ind)throw new PseudoError('Nothing is inside this '+what+'. Indent the lines that belong to it by 4 spaces (press Tab).',header.line);
+    return block(L[i].indent,header.line,what);
+  }
+  function stripKw(text,re){return text.replace(re,'').trim()}
+  function stmt(ind){
+    const ln=L[i];const T=ln.text;const line=ln.line;
+    if(END_RE.test(T)){i++;return null}
+    let m;
+    if(/^input\b/i.test(T)){
+      i++;
+      const rest=stripKw(T,/^input\s*/i);
+      if(!rest)throw new PseudoError('Input needs a variable name, for example Input mark.',line);
+      return {t:'input',line,targets:splitTop(rest,',').map(x=>lv(x,line))};
+    }
+    if(/^(output|print|display)\b/i.test(T)){
+      i++;
+      const rest=stripKw(T,/^(output|print|display)\s*/i);
+      const parts=rest?splitTop(rest,',').map(x=>parseExpr(x,line)):[];
+      return {t:'output',line,parts};
+    }
+    if(/^(declare|array|dim)\b/i.test(T)){
+      i++;
+      const rest=stripKw(T,/^(declare|array|dim)\s*/i);
+      if(!rest)throw new PseudoError('Declare needs an array name and size, for example Declare AR[10].',line);
+      const items=splitTop(rest,',').map(x=>{
+        const mm=/^([A-Za-z_]\w*)\s*\[(.+)\]$/s.exec(x.trim());
+        if(!mm)throw new PseudoError('Write it like Declare AR[10].',line);
+        return {n:mm[1],size:parseExpr(mm[2],line)};
+      });
+      return {t:'declare',line,items};
+    }
+    if(/^else\b/i.test(T))throw new PseudoError('"else" must come straight after an if block, indented the same as the if.',line);
+    if(/^until\b/i.test(T))throw new PseudoError('"until" must close a repeat block. Start with "repeat" and indent the lines inside.',line);
+    if(/^if\b/i.test(T)){
+      const branches=[];let els=null;
+      const head=(txt)=>{
+        let c=txt;
+        if(!/\bthen\s*$/i.test(c))warns.push('Line '+line+': add "then" at the end of the if line (Book D1 style).');
+        c=c.replace(/\bthen\s*$/i,'').trim();
+        if(!c)throw new PseudoError('Write a condition after if, for example if (mark >= 50) then.',line);
+        return parseExpr(c,line);
+      };
+      let cond=head(stripKw(T,/^if\s*/i));i++;
+      branches.push({cond,body:body(ind,ln,'if')});
+      for(;;){
+        if(i<L.length&&L[i].indent===ind&&/^else\s*if\b/i.test(L[i].text)){
+          const h=L[i];const c2=(()=>{const save=line;return h})();
+          const txt=stripKw(h.text,/^else\s*if\s*/i);
+          let c=txt;
+          if(!/\bthen\s*$/i.test(c))warns.push('Line '+h.line+': add "then" at the end of the else if line.');
+          c=c.replace(/\bthen\s*$/i,'').trim();
+          if(!c)throw new PseudoError('Write a condition after else if.',h.line);
+          const cexp=parseExpr(c,h.line);i++;
+          branches.push({cond:cexp,body:body(ind,h,'else if'),line:h.line});
+          continue;
+        }
+        if(i<L.length&&L[i].indent===ind&&/^else\s*$/i.test(L[i].text)){
+          const h=L[i];i++;els=body(ind,h,'else');break;
+        }
+        break;
+      }
+      branches[0].line=line;
+      return {t:'if',line,branches,els};
+    }
+    if(/^for\b/i.test(T)){
+      m=/^for\s+([A-Za-z_]\w*)\s*(?:from|←|=)\s*(.+?)\s+(down\s*to|to)\s+(.+?)(?:\s+step\s+(.+?))?(?:\s+do)?$/i.exec(T);
+      if(!m)throw new PseudoError('Write the for line like:  for i from 1 to 10   (or  for i from 10 down to 1).',line);
+      i++;
+      return {t:'for',line,v:m[1],from:parseExpr(m[2],line),down:/down/i.test(m[3]),to:parseExpr(m[4],line),step:m[5]?parseExpr(m[5],line):null,body:body(ind,ln,'for loop')};
+    }
+    if(/^while\b/i.test(T)){
+      let c=stripKw(T,/^while\s*/i).replace(/\s*\bdo\s*$/i,'').trim();
+      if(!c)throw new PseudoError('Write a condition after while, for example while (num < 100).',line);
+      i++;
+      return {t:'while',line,cond:parseExpr(c,line),body:body(ind,ln,'while loop')};
+    }
+    if(/^do\s*$/i.test(T)){
+      i++;
+      const b=body(ind,ln,'do block');
+      if(i>=L.length||L[i].indent!==ind||!/^while\b/i.test(L[i].text))throw new PseudoError('This "do" needs a closing line  while (condition)  after the indented lines, at the same indent as "do".',line);
+      const w=L[i];i++;
+      const c=stripKw(w.text,/^while\s*/i);
+      if(!c)throw new PseudoError('Write a condition after while.',w.line);
+      return {t:'dowhile',line,endLine:w.line,cond:parseExpr(c,w.line),body:b};
+    }
+    if(/^repeat\s*$/i.test(T)){
+      i++;
+      const b=body(ind,ln,'repeat block');
+      if(i>=L.length||L[i].indent!==ind||!/^until\b/i.test(L[i].text))throw new PseudoError('This "repeat" needs a closing line  until (condition)  after the indented lines, at the same indent as "repeat".',line);
+      const w=L[i];i++;
+      const c=stripKw(w.text,/^until\s*/i);
+      if(!c)throw new PseudoError('Write a condition after until.',w.line);
+      return {t:'repeat',line,endLine:w.line,cond:parseExpr(c,w.line),body:b};
+    }
+    if((m=/^set\s+(.+?)\s+to\s+(.+)$/i.exec(T))){
+      i++;return assign(lv(m[1],line),m[2],line);
+    }
+    const ai=findTop(T,'←');
+    if(ai>=0){
+      i++;
+      return assign(lv(T.slice(0,ai),line),T.slice(ai+1),line);
+    }
+    if(findTopEq(T)>=0&&/^[A-Za-z_]\w*\s*(\[.*\])?\s*=/.test(T))
+      throw new PseudoError('To give a variable a value, use the ← arrow (press the ← key), not =.   Example:  total ← 0',line);
+    throw new PseudoError('I do not understand this line. A line should start with a variable name (then ←), Input, Output, if, for, while, do or repeat.',line);
+  }
+  function assign(target,rhs,line){
+    const r=rhs.trim();
+    if(!r)throw new PseudoError('Something is missing after ←. Write the value to store.',line);
+    let list=null;
+    const wrapped=/^[\[{]/.test(r)&&/[\]}]$/.test(r);
+    if(wrapped)list=splitTop(r.slice(1,-1),',');
+    else{const parts=splitTop(r,',');if(parts.length>1)list=parts}
+    if(list){
+      if(target.i)throw new PseudoError('A list of values can only be stored in a whole array, such as AR ← 20, 5, 3.',line);
+      return {t:'assign',line,target,list:list.filter((x,k)=>x.trim()||k<list.length-1).map(x=>parseExpr(x,line))};
+    }
+    return {t:'assign',line,target,expr:parseExpr(r,line)};
+  }
+  const base=L[0].indent;
+  const stmts=block(base,0,'program');
+  if(i<L.length)throw new PseudoError('This line starts further left than the first line of your program. Line up the lines at the same left edge.',L[i].line);
+  return {stmts,warns};
+}
+
+/* ---- execution ---- */
+function setTarget(env,t,val){
+  if(!t.i){
+    if(val instanceof PArr){const c=new PArr();c.a=val.a.slice();val=c}
+    env.set(t.n,val);return;
+  }
+  const idx=evalE(t.i,env);checkIndex(idx);
+  let arr=env.get(t.n);
+  if(arr===undefined){arr=new PArr();env.set(t.n,arr)}
+  if(!(arr instanceof PArr))throw new PseudoError('"'+t.n+'" holds '+typeName(arr)+', not an array. Choose another name for the array.');
+  if(val instanceof PArr)throw new PseudoError('An array item must be a single value.');
+  while(arr.a.length<idx)arr.a.push(undefined);
+  arr.a[idx-1]=val;
+}
+function parseInputValue(s){
+  const t=s.trim();
+  if(/^[-+]?(\d+\.?\d*|\.\d+)$/.test(t))return parseFloat(t);
+  if(/^true$/i.test(t))return true;
+  if(/^false$/i.test(t))return false;
+  return s;
+}
+function targetLabel(t){return t.n+(t.i?'[…]':'')}
+function* execBlock(stmts,env,ctx){
+  for(const s of stmts){
+    if(ctx.stop)throw new StopSignal();
+    ctx.steps++;
+    if(ctx.steps>MAX_STEPS)throw new PseudoError('Stopped after '+MAX_STEPS.toLocaleString()+' steps. This looks like an infinite loop: check that the loop condition can become false.',s.line);
+    if(ctx.steps%1500===0)yield TICK;
+    try{
+      switch(s.t){
+        case 'assign':{
+          if(s.list){const a=new PArr();a.a=s.list.map(e=>{const v=evalE(e,env);if(v instanceof PArr)throw new PseudoError('An array item must be a single value.');return v});env.set(s.target.n,a)}
+          else setTarget(env,s.target,evalE(s.expr,env));
+          break}
+        case 'input':{
+          for(const t of s.targets){
+            let label=t.n;
+            if(t.i){try{label=t.n+'['+show(evalE(t.i,env))+']'}catch(e){label=targetLabel(t)}}
+            const raw=yield {input:label};
+            setTarget(env,t,parseInputValue(raw));
+          }
+          break}
+        case 'output':ctx.print(s.parts.map(p=>show(evalE(p,env))).join(' '));break;
+        case 'declare':
+          for(const it of s.items){
+            const n=evalE(it.size,env);
+            if(typeof n!=='number'||!Number.isInteger(n)||n<0)throw new PseudoError('The array size must be a whole number (0 or more).');
+            if(n>100000)throw new PseudoError('That array is too big for this tool (maximum 100,000 items).');
+            const a=new PArr();a.a=new Array(n).fill(undefined);env.set(it.n,a);
+          }
+          break;
+        case 'if':{
+          let done=false;
+          for(const b of s.branches){
+            let c;
+            try{c=asCond(evalE(b.cond,env))}catch(e){if(e instanceof PseudoError&&e.line==null)e.line=b.line||s.line;throw e}
+            if(c){yield* execBlock(b.body,env,ctx);done=true;break}
+          }
+          if(!done&&s.els)yield* execBlock(s.els,env,ctx);
+          break}
+        case 'for':{
+          const f=evalE(s.from,env),t=evalE(s.to,env);
+          let st=s.step?evalE(s.step,env):1;
+          if(typeof f!=='number'||typeof t!=='number'||typeof st!=='number')throw new PseudoError('A for loop needs numbers for its start, end and step.');
+          if(st===0)throw new PseudoError('The step of a for loop cannot be 0.');
+          st=s.down?-Math.abs(st):st;
+          const count=Math.max(0,Math.floor((t-f)/st+1e-9)+1);
+          for(let k=0;k<count;k++){
+            env.set(s.v,f+k*st);
+            yield* execBlock(s.body,env,ctx);
+            ctx.steps++;
+            if(ctx.steps%1500===0)yield TICK;
+          }
+          break}
+        case 'while':{
+          while(asCond(evalE(s.cond,env))){
+            yield* execBlock(s.body,env,ctx);
+            ctx.steps++;
+            if(ctx.steps>MAX_STEPS)throw new PseudoError('Stopped after '+MAX_STEPS.toLocaleString()+' steps. This looks like an infinite loop: check that the loop condition can become false.',s.line);
+            if(ctx.steps%1500===0)yield TICK;
+            if(ctx.stop)throw new StopSignal();
+          }
+          break}
+        case 'dowhile':{
+          do{
+            yield* execBlock(s.body,env,ctx);
+            ctx.steps++;
+            if(ctx.steps>MAX_STEPS)throw new PseudoError('Stopped after '+MAX_STEPS.toLocaleString()+' steps. This looks like an infinite loop: check that the loop condition can become false.',s.line);
+            if(ctx.steps%1500===0)yield TICK;
+            if(ctx.stop)throw new StopSignal();
+            let c;
+            try{c=asCond(evalE(s.cond,env))}catch(e){if(e instanceof PseudoError&&e.line==null)e.line=s.endLine;throw e}
+            if(!c)break;
+          }while(true);
+          break}
+        case 'repeat':{
+          do{
+            yield* execBlock(s.body,env,ctx);
+            ctx.steps++;
+            if(ctx.steps>MAX_STEPS)throw new PseudoError('Stopped after '+MAX_STEPS.toLocaleString()+' steps. This looks like an infinite loop: the "until" condition may never become true.',s.line);
+            if(ctx.steps%1500===0)yield TICK;
+            if(ctx.stop)throw new StopSignal();
+            let c;
+            try{c=asCond(evalE(s.cond,env))}catch(e){if(e instanceof PseudoError&&e.line==null)e.line=s.endLine;throw e}
+            if(c)break;
+          }while(true);
+          break}
+      }
+    }catch(e){
+      if(e instanceof PseudoError&&e.line==null)e.line=s.line;
+      throw e;
+    }
+  }
+}
+async function runProgram(code,io){
+  const env=new Map();
+  const ctx={steps:0,stop:false,print:io.print};
+  io.ctx=ctx;io.env=env;
+  const prog=parseProgram(code);
+  prog.warns.forEach(w=>io.warn(w));
+  const gen=execBlock(prog.stmts,env,ctx);
+  let r=gen.next();
+  while(!r.done){
+    const v=r.value;
+    if(v===TICK){
+      io.vars(env);await io.tick();
+      if(ctx.stop)throw new StopSignal();
+      r=gen.next();
+    }else{
+      io.vars(env);
+      const s=await io.input(v.input);
+      if(ctx.stop)throw new StopSignal();
+      r=gen.next(s);
+    }
+  }
+  io.vars(env);
+  return ctx.steps;
+}
+/* test hook: run without UI */
+window.PseudoLab={
+  async run(code,inputs){
+    const out=[];let q=(inputs||[]).slice();
+    const io={print:t=>out.push(t),warn:w=>out.push('WARN '+w),vars(){},tick:async()=>{},input:async()=>{if(!q.length)throw new PseudoError('No input left');return q.shift()}};
+    try{await runProgram(code,io);return {out:out.join('\n')}}
+    catch(e){if(e instanceof PseudoError)return {out:out.join('\n'),error:e.message,line:e.line};throw e}
+  }
+};
+
+/* ================= UI ================= */
+const $=id=>document.getElementById(id);
+const code=$('code'),hl=$('hl'),gut=$('gut'),out=$('out'),statusEl=$('status'),runBtn=$('run'),stopBtn=$('stop');
+let errLine=null,running=false,curIO=null,pendingInput=null;
+
+const EXAMPLES=[
+ {t:'Assignment: swap two values',c:`// Assignment uses the ← arrow
+A ← 5
+B ← 8
+Temp ← A
+A ← B
+B ← Temp
+Output "A =", A
+Output "B =", B
+`},
+ {t:'Input and if … else',c:`Input mark
+if (mark >= 50) then
+    Output "Pass"
+else
+    Output "Fail"
+`,i:['65']},
+ {t:'if … else if … else (grades)',c:`Input mark
+if (mark >= 80) then
+    Output "Grade A"
+else if (mark >= 60) then
+    Output "Grade B"
+else if (mark >= 50) then
+    Output "Grade C"
+else
+    Output "Fail"
+`,i:['72']},
+ {t:'for loop: sum 1 to 10',c:`total ← 0
+for i from 1 to 10
+    total ← total + i
+    Output i, total
+Output "Sum =", total
+`},
+ {t:'for loop: count down',c:`for i from 10 down to 1
+    Output i
+Output "Go!"
+`},
+ {t:'while loop: multiples of 17',c:`num ← 17
+while (num < 100)
+    Output num
+    num ← num + 17
+`},
+ {t:'do-while loop: claw machine',c:`coins ← 0
+do
+    Output "Insert coin"
+    coins ← coins + 1
+while (coins < 5)
+Output "Start the claw"
+`},
+ {t:'repeat-until loop: guessing game',c:`secret ← 7
+repeat
+    Input guess
+    if (guess < secret) then
+        Output "Too small"
+    else if (guess > secret) then
+        Output "Too big"
+until (guess = secret)
+Output "Bingo!"
+`,i:['3','9','7']},
+ {t:'Array: load and print',c:`// Array positions start at 1
+for k from 1 to 10
+    num[k] ← k * 10
+for k from 1 to 10
+    Output num[k]
+`},
+ {t:'Array: largest and smallest',c:`AR ← 20, 5, 3, 10, 15
+largest ← AR[1]
+smallest ← AR[1]
+for i from 2 to 5
+    if (AR[i] > largest) then
+        largest ← AR[i]
+    if (AR[i] < smallest) then
+        smallest ← AR[i]
+Output "Largest:", largest
+Output "Smallest:", smallest
+`},
+ {t:'Array: delete an item',c:`age ← 18, 21, 16, 55, 80
+size ← 5
+pos ← 2
+// Move the later items one place to the left
+for i from pos to size - 1
+    age[i] ← age[i + 1]
+size ← size - 1
+for i from 1 to size
+    Output age[i]
+`}
+];
+const CHEAT=[
+ {t:'Assignment',c:`score ← 10
+score ← score + 1`,n:'Store a value with the ← key.'},
+ {t:'Input and Output',c:`Input weight, height
+Output "BMI =", bmi`,n:'Output prints values separated by spaces.'},
+ {t:'if … else',c:`if (mark >= 50) then
+    Output "Pass"
+else if (mark >= 40) then
+    Output "Retake"
+else
+    Output "Fail"`,n:'The lines inside are indented.'},
+ {t:'for loop',c:`for i from 1 to 10
+    Output i
+for i from 10 down to 1
+    Output i`,n:'Counts up, or down with "down to".'},
+ {t:'while loop',c:`while (num < 100)
+    Output num
+    num ← num + 17`,n:'Checks the condition first.'},
+ {t:'do-while loop',c:`do
+    coins ← coins + 1
+while (coins < 5)`,n:'Runs once, then checks. Repeats while true.'},
+ {t:'repeat-until loop',c:`repeat
+    Input guess
+until (guess = secret)`,n:'Runs once, then checks. Stops when true.'},
+ {t:'Array',c:`AR[1] ← 20
+AR ← 20, 5, 3, 10, 15
+Output AR[3]
+Output Length(AR)`,n:'Positions start at 1.'}
+];
+
+/* ---- highlight ---- */
+const KW_CTL=new Set(['if','then','else','for','from','to','down','step','while','do','repeat','until','declare','array','dim','set']);
+const KW_IO=new Set(['input','output','print','display']);
+const KW_LOG=new Set(['and','or','not','mod','div']);
+const KW_BOOL=new Set(['true','false']);
+const TOK=/(\/\/.*|#.*)|("[^"]*"?|'[^']*'?)|(\b\d+(?:\.\d+)?\b)|([A-Za-z_][A-Za-z_0-9]*)|(←|<-|:=)|(≠|≤|≥|<=|>=|<>|!=|[=<>+\-*\/&])|(\s+|.)/g;
+function esc(s){return s.replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;')}
+function hlLine(s){
+  let o='';TOK.lastIndex=0;let m;
+  while((m=TOK.exec(s))!==null){
+    if(m[0]==='')break;
+    if(m[1])o+='<span class="t-com">'+esc(m[1])+'</span>';
+    else if(m[2])o+='<span class="t-str">'+esc(m[2])+'</span>';
+    else if(m[3])o+='<span class="t-num">'+m[3]+'</span>';
+    else if(m[4]){
+      const w=m[4].toLowerCase();
+      if(KW_CTL.has(w))o+='<span class="t-ctl">'+esc(m[4])+'</span>';
+      else if(KW_IO.has(w))o+='<span class="t-io">'+esc(m[4])+'</span>';
+      else if(KW_LOG.has(w))o+='<span class="t-log">'+esc(m[4])+'</span>';
+      else if(KW_BOOL.has(w))o+='<span class="t-bool">'+esc(m[4])+'</span>';
+      else o+=esc(m[4]);
+    }
+    else if(m[5])o+='<span class="t-arrow">'+esc(m[5])+'</span>';
+    else if(m[6])o+='<span class="t-op">'+esc(m[6])+'</span>';
+    else o+=esc(m[7]);
+  }
+  return o;
+}
+function render(){
+  const lines=code.value.split('\n');
+  hl.innerHTML=lines.map((l,i)=>'<div class="l'+(errLine===i+1?' err':'')+'">'+hlLine(l)+'</div>').join('');
+  gut.innerHTML=lines.map((l,i)=>'<div'+(errLine===i+1?' class="err"':'')+'>'+(i+1)+'</div>').join('');
+  syncScroll();
+}
+function syncScroll(){hl.scrollTop=code.scrollTop;hl.scrollLeft=code.scrollLeft;gut.scrollTop=code.scrollTop}
+code.addEventListener('scroll',syncScroll);
+function save(){try{localStorage.setItem('pseudolab.code',code.value)}catch(e){}}
+
+/* ---- editing helpers ---- */
+function insertText(txt){
+  code.focus();
+  const s=code.selectionStart,e=code.selectionEnd;
+  if(!document.execCommand||!document.execCommand('insertText',false,txt)){
+    code.setRangeText(txt,s,e,'end');
+  }
+  onInput();
+}
+function onInput(){
+  // typing "<-" becomes the arrow
+  const p=code.selectionStart;
+  if(p>=2&&code.value.slice(p-2,p)==='<-'){
+    code.setRangeText('←',p-2,p,'end');
+  }
+  if(errLine!==null)errLine=null;
+  render();save();
+}
+code.addEventListener('input',onInput);
+function lineBounds(v,pos){const s=v.lastIndexOf('\n',pos-1)+1;let e=v.indexOf('\n',pos);if(e<0)e=v.length;return [s,e]}
+function isDoCloser(lines,idx){
+  const ind=lines[idx].length-lines[idx].trimStart().length;
+  for(let j=idx-1;j>=0;j--){
+    const t=lines[j];if(!t.trim())continue;
+    const ji=t.length-t.trimStart().length;
+    if(ji<ind)return false;
+    if(ji===ind)return /^do\s*$/i.test(t.trim());
+  }
+  return false;
+}
+code.addEventListener('keydown',e=>{
+  if((e.ctrlKey||e.metaKey)&&e.key==='Enter'){e.preventDefault();runIt();return}
+  const v=code.value,s=code.selectionStart,en=code.selectionEnd;
+  if(e.key==='Tab'){
+    e.preventDefault();
+    if(s===en&&!e.shiftKey){insertText('    ');return}
+    const [a]=lineBounds(v,s);const [,b]=lineBounds(v,Math.max(s,en-(en>s&&v[en-1]==='\n'?1:0)));
+    const block=v.slice(a,b).split('\n');
+    const nb=block.map(l=>e.shiftKey?l.replace(/^( {1,4}|\t)/,''):'    '+l).join('\n');
+    code.setSelectionRange(a,b);
+    if(!document.execCommand||!document.execCommand('insertText',false,nb))code.setRangeText(nb,a,b,'select');
+    code.setSelectionRange(a,a+nb.length);onInput();return;
+  }
+  if(e.key==='Enter'&&!e.shiftKey&&!e.ctrlKey&&!e.metaKey){
+    e.preventDefault();
+    const [a]=lineBounds(v,s);
+    const cur=v.slice(a,s);
+    const ind=cur.match(/^ */)[0];
+    const t=stripComment(cur).trim();
+    const lines=v.slice(0,s).split('\n');
+    let extra='';
+    if(/\b(then)$/i.test(t)||/^else(\s*)$/i.test(t)||/^else\s*if\b.*then$/i.test(t)||/^do$/i.test(t)||/^repeat$/i.test(t)||/^for\b/i.test(t)||(/^while\b/i.test(t)&&!isDoCloser(lines,lines.length-1)))extra='    ';
+    insertText('\n'+ind+extra);return;
+  }
+  if(e.key==='Backspace'&&s===en&&s>0){
+    const [a]=lineBounds(v,s);const before=v.slice(a,s);
+    if(before.length>0&&/^ +$/.test(before)){
+      e.preventDefault();
+      const del=before.length%4===0?4:before.length%4;
+      code.setSelectionRange(s-del,s);
+      if(!document.execCommand||!document.execCommand('delete'))code.setRangeText('',s-del,s,'end');
+      onInput();
+    }
+  }
+});
+
+/* ---- console ---- */
+let outCount=0;
+function setStatus(t,cls){statusEl.textContent=t;statusEl.className='status'+(cls?' '+cls:'')}
+function line(text,cls){
+  if(outCount===0)out.innerHTML='';
+  if(outCount>3000){if(outCount===3001){addRaw('… output cut off (more than 3,000 lines).','info')}outCount++;return}
+  addRaw(text,cls);outCount++;
+}
+function addRaw(text,cls){
+  const d=document.createElement('span');d.className='o'+(cls?' '+cls:'');d.textContent=text===''?' ':text;out.appendChild(d);
+  out.scrollTop=out.scrollHeight;
+}
+function clearOut(){out.innerHTML='<span class="empty">Output will appear here.</span>';outCount=0}
+
+/* ---- variables panel ---- */
+let lastVarsDraw=0;
+function drawVars(env,force){
+  const now=performance.now();
+  if(!force&&now-lastVarsDraw<120)return;
+  lastVarsDraw=now;
+  const box=$('vars');
+  if(!env||env.size===0){box.innerHTML='<p class="none">No variables yet.</p>';return}
+  const frag=document.createDocumentFragment();
+  for(const [k,v] of env){
+    if(v instanceof PArr){
+      const w=document.createElement('div');w.className='arr';
+      const h=document.createElement('div');h.className='var';h.innerHTML='<b></b><span class="val">array · '+v.a.length+' item'+(v.a.length===1?'':'s')+'</span>';h.firstChild.textContent=k;
+      const cells=document.createElement('div');cells.className='cells';
+      const n=Math.min(v.a.length,60);
+      for(let i=0;i<n;i++){
+        const c=document.createElement('div');c.className='cell'+(v.a[i]===undefined?' empty':'');
+        c.innerHTML='<i>'+(i+1)+'</i><span></span>';c.lastChild.textContent=v.a[i]===undefined?'–':show(v.a[i]);cells.appendChild(c);
+      }
+      if(v.a.length>n){const m=document.createElement('div');m.className='cell';m.innerHTML='<i>…</i><span>+'+(v.a.length-n)+'</span>';cells.appendChild(m)}
+      w.appendChild(h);w.appendChild(cells);frag.appendChild(w);
+    }else{
+      const d=document.createElement('div');d.className='var';
+      d.innerHTML='<b></b><span>←</span><span class="val"></span>';
+      d.children[0].textContent=k;d.children[2].textContent=typeof v==='string'?'"'+v+'"':show(v);
+      frag.appendChild(d);
+    }
+  }
+  box.innerHTML='';box.appendChild(frag);
+}
+
+/* ---- running ---- */
+const inform=$('inform'),inval=$('inval'),inlab=$('inlab');
+function askInput(label){
+  return new Promise((res,rej)=>{
+    pendingInput={res,rej,label};
+    inlab.textContent='Input '+label;inval.value='';inform.hidden=false;
+    setStatus('Waiting for input','wait');
+    if(window.innerWidth<=900)setTimeout(()=>inform.scrollIntoView({block:'nearest'}),0);
+    setTimeout(()=>inval.focus(),0);
+  });
+}
+inform.addEventListener('submit',e=>{
+  e.preventDefault();
+  if(!pendingInput)return;
+  const val=inval.value;const p=pendingInput;pendingInput=null;
+  inform.hidden=true;
+  line('› '+p.label+' = '+val,'in');
+  setStatus('Running','running');
+  p.res(val);
+});
+function jumpTo(ln){
+  const top=(ln-1)*22;
+  if(top<code.scrollTop||top>code.scrollTop+code.clientHeight-60)code.scrollTop=Math.max(0,top-80);
+  syncScroll();
+}
+async function runIt(){
+  if(running)return;
+  running=true;errLine=null;render();
+  runBtn.disabled=true;stopBtn.hidden=false;
+  clearOut();outCount=0;out.innerHTML='';
+  setStatus('Running','running');
+  if(window.innerWidth<=900)setTimeout(()=>$('out').closest('.card').scrollIntoView({behavior:'smooth',block:'nearest'}),0);
+  const t0=performance.now();
+  const io={
+    print:t=>line(t),
+    warn:t=>line(t,'warn'),
+    vars:env=>drawVars(env),
+    tick:()=>new Promise(r=>setTimeout(r,0)),
+    input:label=>askInput(label)
+  };
+  curIO=io;
+  try{
+    const steps=await runProgram(code.value,io);
+    drawVars(io.env,true);
+    if(outCount===0)line('(The program finished. It printed nothing, so add an Output line to see a result.)','info');
+    else line('— finished —','info');
+    setStatus('Finished','done');
+  }catch(e){
+    if(io.env)drawVars(io.env,true);
+    if(e instanceof StopSignal){line('— stopped —','info');setStatus('Stopped','')}
+    else if(e instanceof PseudoError){
+      errLine=e.line;render();if(e.line)jumpTo(e.line);
+      line((e.line?'Line '+e.line+': ':'')+e.message,'err');
+      setStatus('Error','error');
+    }else{
+      line('Something went wrong inside the tool: '+e.message,'err');setStatus('Error','error');
+    }
+  }finally{
+    running=false;runBtn.disabled=false;stopBtn.hidden=true;pendingInput=null;inform.hidden=true;curIO=null;
+  }
+}
+runBtn.addEventListener('click',runIt);
+stopBtn.addEventListener('click',()=>{
+  if(curIO&&curIO.ctx)curIO.ctx.stop=true;
+  if(pendingInput){const p=pendingInput;pendingInput=null;inform.hidden=true;p.res('')}
+});
+$('clr').addEventListener('click',()=>{clearOut();setStatus('Ready','');$('vars').innerHTML='<p class="none">Run a program to see its variables and arrays here.</p>'});
+document.querySelectorAll('[data-ins]').forEach(b=>b.addEventListener('click',()=>insertText(b.dataset.ins)));
+
+/* ---- examples & cheat sheet ---- */
+const sel=$('ex');
+sel.innerHTML='<option value="">Choose an example…</option>'+EXAMPLES.map((x,i)=>'<option value="'+i+'">'+esc(x.t)+'</option>').join('');
+sel.addEventListener('change',()=>{
+  if(sel.value==='')return;
+  const x=EXAMPLES[+sel.value];
+  code.value=x.c;errLine=null;render();save();clearOut();setStatus('Ready','');
+  code.scrollTop=0;code.focus();code.setSelectionRange(0,0);
+  if(x.i)line('Tip: this example asks for input. Try values like '+x.i.join(', ')+'.','info');
+  sel.value='';
+});
+$('cheatgrid').innerHTML=CHEAT.map((x,i)=>'<div class="snip"><h3>'+esc(x.t)+'<button type="button" data-snip="'+i+'">Insert</button></h3><pre>'+x.c.split('\n').map(hlLine).join('\n')+'</pre><p>'+esc(x.n)+'</p></div>').join('');
+$('cheatgrid').addEventListener('click',e=>{
+  const b=e.target.closest('[data-snip]');if(!b)return;
+  const x=CHEAT[+b.dataset.snip];
+  code.focus();
+  const s=code.selectionStart;
+  const before=code.value.slice(0,s);
+  const prefix=before&&!before.endsWith('\n')?'\n':'';
+  insertText(prefix+x.c+'\n');
+});
+
+/* ---- start ---- */
+let start='';
+try{start=localStorage.getItem('pseudolab.code')||''}catch(e){}
+code.value=start||EXAMPLES[3].c;
+clearOut();render();
+})();
+</script>
+</body>
+</html>
