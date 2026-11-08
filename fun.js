@@ -295,7 +295,7 @@
       (c.visited || []).forEach(function (k) { state.visited[k] = 1; });
       (c.badges || []).forEach(function (k) { state.badges[k] = 1; });
       if (!state.books) state.books = {};
-      Object.keys(c.books || {}).forEach(function (b) { var d = state.books[b] = state.books[b] || {}, o = c.books[b] || {}; ['mc', 'games'].forEach(function (k) { d[k] = d[k] || {}; Object.keys(o[k] || {}).forEach(function (q) { d[k][q] = 1; }); }); });
+      Object.keys(c.books || {}).forEach(function (b) { var d = state.books[b] = state.books[b] || {}, o = c.books[b] || {}; ['mc', 'games'].forEach(function (k) { d[k] = d[k] || {}; Object.keys(o[k] || {}).forEach(function (q) { d[k][q] = 1; }); }); d.stat = d.stat || {}; Object.keys(o.stat || {}).forEach(function (ch) { var x = d.stat[ch] || [0, 0], y = o.stat[ch] || [0, 0]; d.stat[ch] = [Math.max(x[0], y[0]), Math.max(x[1], y[1])]; }); });
       persist(); renderXP(false); window.dispatchEvent(new Event('ictfun:user'));
     }
   };

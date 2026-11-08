@@ -189,6 +189,7 @@
         }
         function ictHash(s) { let h = 5381; s = String(s); for (let i = 0; i < s.length; i++) h = ((h << 5) + h + s.charCodeAt(i)) | 0; return (h >>> 0).toString(36); }
         function ictPool(list) { try { const p = {}; list.forEach(q => { const t = ictTopic(q.topic); if (t) { const k = t.b + '-' + t.c; p[k] = (p[k] || 0) + 1; } }); localStorage.setItem('ictMcPool', JSON.stringify(p)); } catch (e) {} }
+        function ictAttempt(q, ok) { try { const t = ictTopic(q.topic); if (!t) return; const a = JSON.parse(localStorage.getItem('ictMcStat') || '[]'); a.push([t.b, t.c, ok ? 1 : 0]); localStorage.setItem('ictMcStat', JSON.stringify(a)); } catch (e) {} }
         function ictCorrect(q) { try { const t = ictTopic(q.topic); if (!t) return; const a = JSON.parse(localStorage.getItem('ictMcPending') || '[]'); a.push([t.b, ictHash(q.question), t.c]); localStorage.setItem('ictMcPending', JSON.stringify(a)); } catch (e) {} }
 
         async function initApp() {
@@ -439,6 +440,7 @@
             const panel = document.getElementById('feedback-panel');
             const btn = document.getElementById('action-btn');
 
+            ictAttempt(q, isCorrect);
             if (isCorrect) { sessionScore++; playSfx('success'); ictCorrect(q); }
             else { playSfx('error'); document.getElementById('q-card').classList.add('shake'); }
 

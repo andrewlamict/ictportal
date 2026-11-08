@@ -80,6 +80,8 @@
   function flush() {
     var mc = [], gm = [], changed = false, per = {};
     try { mc = JSON.parse(localStorage.getItem('ictMcPending') || '[]'); localStorage.removeItem('ictMcPending'); } catch (e) {}
+    var stt = []; try { stt = JSON.parse(localStorage.getItem('ictMcStat') || '[]'); localStorage.removeItem('ictMcStat'); } catch (e) {}
+    stt.forEach(function (r) { if (!CH[r[0] + '-' + r[1]]) return; var o = bs(r[0]); o.stat = o.stat || {}; var a = o.stat[r[1]] = o.stat[r[1]] || [0, 0]; a[0]++; a[1] += r[2] ? 1 : 0; changed = true; });
     try { gm = JSON.parse(localStorage.getItem('ictGamePending') || '[]'); localStorage.removeItem('ictGamePending'); } catch (e) {}
     function slot(cid) { return per[cid] = per[cid] || { cid: cid, before: chap(cid).pct, bc: contPct(CH[cid].cont), bcomp: cont(CH[cid].cont).complete, gain: 0 }; }
     mc.forEach(function (r) { var cid = r[0] + '-' + r[2]; if (!CH[cid]) return; var s = bs(r[0]), key = r[2] + ':' + r[1]; if (s.mc[key]) return; slot(cid); s.mc[key] = 1; per[cid].gain += XP_MC; });
@@ -114,6 +116,6 @@
   window.ICTTour = { books: BOOKS, conts: CONTS, chapters: CHL, info: info, locked: locked, chap: chap, chapInfo: chap, chapterPct: chapterPct, cont: cont, contPct: contPct, flush: flush, html: html, next: next, complete: complete, available: available, worldLit: worldLit, bookOf: bookOf, chapterOfGame: chapterOfGame, bookTitle: bookTitle, mark: function () {}, games: function (b) { return [].concat.apply([], b.chs.map(gamesOf)); }, missions: function (b) { return [].concat.apply([], b.chs.map(gamesOf)); } };
   addEventListener('ictfun:user', function () { window.dispatchEvent(new Event('ict:tour')); });
   setTimeout(flush, 500); addEventListener('pageshow', function () { setTimeout(flush, 100); });
-  addEventListener('storage', function (e) { if (/ictMcPending|ictGamePending/.test(e.key || '')) flush(); });
+  addEventListener('storage', function (e) { if (/ictMcPending|ictGamePending|ictMcStat/.test(e.key || '')) flush(); });
   addEventListener('focus', flush);
 })();

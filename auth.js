@@ -155,15 +155,38 @@
     m.querySelector('#dash-x').onclick = function () { m.remove(); };
     m.addEventListener('click', function (e) { if (e.target === m) m.remove(); });
     function fmt(ts) { try { return ts.toDate().toLocaleString('en-HK', { dateStyle: 'medium', timeStyle: 'short' }); } catch (e) { return '-'; } }
+    function chName(id) { var T = window.ICTTour, c = T && T.chapters.filter(function (x) { return x.id === id; })[0]; return c ? c.code : id; }
+    function summary(r) {
+      var mc = 0, at = 0, ok = 0, g = 0, bk = r.books || {};
+      Object.keys(bk).forEach(function (b) { mc += Object.keys(bk[b].mc || {}).length; g += Object.keys(bk[b].games || {}).length; Object.keys(bk[b].stat || {}).forEach(function (c) { at += bk[b].stat[c][0]; ok += bk[b].stat[c][1]; }); });
+      return { mc: mc, games: g, att: at, ok: ok, acc: at ? Math.round(ok * 100 / at) + '%' : '-' };
+    }
+    function detail(r) {
+      var T = window.ICTTour, P = (window.ICTNav && window.ICTNav.pages) || {}, bk = r.books || {}, sm = summary(r), body = m.querySelector('.dash-body'), h = '';
+      h += '<p><button type="button" class="dash-det" id="dash-back">← All students</button></p><h4 style="margin:.4rem 0">' + esc(r.name || r.email) + ' <small style="color:#64748b">' + esc(r.email || '') + '</small></h4>';
+      h += '<p class="dash-count">Level ' + (r.level || 1) + ' · ' + (r.xp || 0) + ' XP · ' + sm.mc + ' MC questions answered correctly · ' + sm.games + ' games done · overall accuracy <b>' + sm.acc + '</b> (' + sm.ok + ' correct of ' + sm.att + ' attempts)</p>';
+      h += '<table><thead><tr><th>Chapter</th><th>MC correct</th><th>Attempts</th><th>Accuracy</th><th>Games finished</th></tr></thead><tbody>';
+      var any = false;
+      (T ? T.chapters : []).forEach(function (c) {
+        var b = bk[c.book] || {}, pre = c.n + ':', mc = Object.keys(b.mc || {}).filter(function (k) { return k.indexOf(pre) === 0; }).length, st = (b.stat || {})[c.n] || [0, 0],
+          gm = Object.keys(b.games || {}).filter(function (id) { return T.chapterOfGame(id) === c.id; });
+        if (!mc && !st[0] && !gm.length) return; any = true;
+        h += '<tr><td><b>' + esc(c.code) + '</b></td><td>' + mc + '</td><td>' + (st[0] || '-') + '</td><td>' + (st[0] ? Math.round(st[1] * 100 / st[0]) + '%' : '-') + '</td><td style="white-space:normal">' + (gm.length ? gm.map(function (id) { return esc((P[id] && P[id].t) || id); }).join(', ') : '-') + '</td></tr>';
+      });
+      h += '</tbody></table>' + (any ? '' : '<p class="dash-count">No MC or game activity yet.</p>') + '<p class="dash-count">Accuracy counts every MC Trainer answer since the tracking update; older answers show as correct only.</p>';
+      body.innerHTML = h; body.querySelector('#dash-back').onclick = render;
+    }
+    function esc(s) { return String(s).replace(/[&<>"]/g, function (c) { return { '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;' }[c]; }); }
     function render() {
       var q = (m.querySelector('#dash-q').value || '').toLowerCase();
       var body = m.querySelector('.dash-body'); body.textContent = '';
       var t = document.createElement('table');
-      var h = t.createTHead().insertRow(); ['Name', 'Email', 'Level', 'XP', 'Pages', 'Visits', 'Last visit'].forEach(function (x) { var th = document.createElement('th'); th.textContent = x; h.appendChild(th); });
+      var h = t.createTHead().insertRow(); ['Name', 'Email', 'Level', 'XP', 'MC correct', 'Accuracy', 'Games', 'Visits', 'Last visit', ''].forEach(function (x) { var th = document.createElement('th'); th.textContent = x; h.appendChild(th); });
       var tb = t.createTBody();
       rows.filter(function (r) { return !q || (r.name + ' ' + r.email).toLowerCase().indexOf(q) >= 0; }).forEach(function (r) {
         var tr = tb.insertRow();
-        [r.name, r.email, 'Lv ' + (r.level || 1), r.xp || 0, r.pages || 0, r.visits || 0, fmt(r.lastSeen)].forEach(function (x) { tr.insertCell().textContent = x; });
+        var sm = summary(r); [r.name, r.email, 'Lv ' + (r.level || 1), r.xp || 0, sm.mc, sm.acc, sm.games, r.visits || 0, fmt(r.lastSeen)].forEach(function (x) { tr.insertCell().textContent = x; });
+        var bt = document.createElement('button'); bt.type = 'button'; bt.textContent = 'Details'; bt.className = 'dash-det'; bt.onclick = function () { detail(r); }; tr.insertCell().appendChild(bt);
       });
       body.appendChild(t);
       var cnt = document.createElement('p'); cnt.className = 'dash-count'; cnt.textContent = rows.length + ' students have signed in.'; body.appendChild(cnt);
@@ -174,7 +197,7 @@
     }).catch(function (e) { m.querySelector('.dash-body').textContent = 'Could not load: ' + (e && e.code || e) + '. Check the Firestore rules and your ICT_ADMINS email.'; });
     m.querySelector('#dash-q').addEventListener('input', render);
     m.querySelector('#dash-copy').onclick = function () {
-      var csv = 'name,email,level,xp,pages,visits\n' + rows.map(function (r) { return [r.name, r.email, r.level, r.xp, r.pages, r.visits].map(function (x) { return '"' + String(x == null ? '' : x).replace(/"/g, '""') + '"'; }).join(','); }).join('\n');
+      var csv = 'name,email,level,xp,mc_correct,accuracy,games,visits\n' + rows.map(function (r) { var sm = summary(r); return [r.name, r.email, r.level, r.xp, sm.mc, sm.acc, sm.games, r.visits].map(function (x) { return '"' + String(x == null ? '' : x).replace(/"/g, '""') + '"'; }).join(','); }).join('\n');
       navigator.clipboard.writeText(csv).then(function () { F.toast('CSV copied'); }, function () { F.toast('Copy failed'); });
     };
   }

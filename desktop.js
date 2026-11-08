@@ -20,6 +20,7 @@
     database: { t: 'Database', i: '🗄️', c: ['#4ade9c', '#059669'], sub: 'S.3 SQL & labs' },
     concepts: { t: 'ICT Concepts', i: '📚', c: ['#c9a0ff', '#7c3aed'], sub: '10 books & mind maps' },
     dse: { t: 'DSE Portal', i: '🎯', c: ['#ffb86b', '#ea580c'], sub: 'Past papers & MC' },
+    board: { t: 'Leaderboard', i: '🏆', file: true, sub: 'Top 20 in your form' },
     tour: { t: 'World Tour', i: '🌍', file: true, sub: 'Light up the map' },
     notes: { t: 'Notes', i: '📝', file: true, sub: 'Your private notes' },
     bin: { t: 'Recycle Bin', i: '🗑️', file: true, sub: 'Empty' },
@@ -51,7 +52,7 @@
   var $ = function (s) { return d.querySelector(s); };
   var iconsEl = $('#dk-icons'), winsEl = $('#dk-wins'), startEl = $('#dk-start'), widEl = $('#dk-widgets'), ctx = $('#dk-ctx'), pinnedEl = $('#dk-pinned');
 
-  var ICON_ORDER = ['tour', 'bin'].concat(ROOTS).concat(['notes']);
+  var ICON_ORDER = ['tour', 'board', 'bin'].concat(ROOTS).concat(['notes']);
   iconsEl.innerHTML = ICON_ORDER.map(function (id) { return '<button class="dk-ic" data-id="' + id + '">' + appIco(id) + '<span>' + esc(APPS[id].t) + '</span></button>'; }).join('');
   var selIcon = null;
   iconsEl.addEventListener('click', function (e) {
@@ -98,6 +99,7 @@
   }
   function open(id) {
     var rid = APPS[id] ? id : rootOf(id); if (!rid) return false;
+    if (rid === 'board') { startEl.classList.remove('on'); widEl.classList.remove('on'); window.ICTBoard && window.ICTBoard.open(); return true; }
     if (ROOTS.indexOf(rid) > -1) { startEl.classList.remove('on'); widEl.classList.remove('on'); go(function () { classic(id); }); return true; }
     show(); startEl.classList.remove('on'); widEl.classList.remove('on');
     var ex = wins.filter(function (w) { return w.id === rid; })[0];
@@ -165,7 +167,7 @@
 
   /* ---------------- start menu + search ---------------- */
   function startHtml(q) {
-    var pins = ROOTS.concat(['tour', 'notes', 'bin']).filter(function (id) { return !q || APPS[id].t.toLowerCase().indexOf(q) > -1 || (APPS[id].sub || '').toLowerCase().indexOf(q) > -1; });
+    var pins = ROOTS.concat(['tour', 'board', 'notes', 'bin']).filter(function (id) { return !q || APPS[id].t.toLowerCase().indexOf(q) > -1 || (APPS[id].sub || '').toLowerCase().indexOf(q) > -1; });
     var rec = []; try { rec = JSON.parse(store.get('ictDeskRecent', '[]')); } catch (e) {}
     var who = (document.getElementById('user-chip') || {}).textContent || '👤 Guest';
     startEl.innerHTML = '<div class="sq">🔍<input id="dk-q" placeholder="Search for a folder or app" autocomplete="off" value="' + esc(q || '') + '"></div>' +
