@@ -97,7 +97,7 @@ html.desk #quote-card, html.desk #bit { z-index: 0; pointer-events: auto; cursor
 #dk-tools #theme-btn { display: none !important; }
 #dk-tools #user-chip { max-width: 40px; overflow: hidden; white-space: nowrap; padding-left: 9px; padding-right: 9px; }
 #dk-tools #xp-chip { transform: scale(.9); transform-origin: right center; }
-#dk-tools #class-btn { max-width: 40px; overflow: hidden; white-space: nowrap; }
+#dk-tools #class-btn { white-space: nowrap; flex: none; padding: .3rem .65rem; box-shadow: 0 0 0 2px #fdba74; }
 html.desk #quote-card { transition: opacity .7s ease; }
 
 /* World Tour window */

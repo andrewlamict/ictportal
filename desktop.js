@@ -171,7 +171,7 @@
     startEl.innerHTML = '<div class="sq">🔍<input id="dk-q" placeholder="Search for a folder or app" autocomplete="off" value="' + esc(q || '') + '"></div>' +
       '<h4>' + (q ? 'Best match' : 'Pinned') + '</h4><div id="dk-pins">' + (pins.map(function (id) { return '<button class="pin" data-id="' + id + '">' + appIco(id) + '<span>' + esc(APPS[id].t) + '</span></button>'; }).join('') || '<div class="rec-none">No match</div>') + '</div>' +
       (q ? '' : '<h4>Recommended</h4><div id="dk-rec">' + (rec.length ? rec.map(function (id) { return '<button class="rec" data-id="' + id + '">' + appIco(id, 26) + '<span>' + esc(APPS[id].t) + '<small>' + esc(APPS[id].sub || '') + '</small></span></button>'; }).join('') : '<div class="rec-none">Folders you open will show up here.</div>') + '</div>') +
-      '<div class="sf"><span>' + esc(who.trim()) + '</span><span><button data-a="tour" title="World Tour">🌍</button><button data-a="pw" title="Account">⏻</button></span></div>';
+      '<div class="sf"><span>' + esc(who.trim()) + '</span><span>' + (document.getElementById('class-btn') ? '<button data-a="class" title="Class dashboard">👩‍🏫</button>' : '') + '<button data-a="tour" title="World Tour">🌍</button><button data-a="pw" title="Account">⏻</button></span></div>';
   }
   function toggleStart(force, q) {
     var on = force === undefined ? !startEl.classList.contains('on') : force; widEl.classList.remove('on');
@@ -185,6 +185,7 @@
     var b = e.target.closest('button'); if (!b) return;
     if (b.dataset.id) open(b.dataset.id);
     else if (b.dataset.a === 'tour') { toggleStart(false); open('tour'); }
+    else if (b.dataset.a === 'class') { var c = document.getElementById('class-btn'); toggleStart(false); c && c.click(); }
     else if (b.dataset.a === 'pw') { var u = document.getElementById('user-chip'); toggleStart(false); u && u.click(); }
   });
 
