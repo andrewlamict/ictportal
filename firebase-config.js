@@ -4,10 +4,10 @@
    3) Put the teacher Google account(s) in ICT_ADMINS to see the class dashboard.
    Leave apiKey empty to run in guest-only mode. */
 window.ICT_FIREBASE = {
-  apiKey: "AIzaSyAmPkYtfoTsnvKlR3zGtCv5P5UaAgsOquI",
-  authDomain: "ictportal-fc8ab.firebaseapp.com",
-  projectId: "ictportal-fc8ab",
-  appId: "1:583978796189:web:4b523df133c612f13c0074"
+  apiKey: "AIzaSyA6gtAoUwD67aypCF_YnrECDU2Ch9QyqL4",
+  authDomain: "ict-portal-28894.firebaseapp.com",
+  projectId: "ict-portal-28894",
+  appId: "1:398486470103:web:2e986c212b48019e655f92"
 };
 window.ICT_ADMINS = [
   "andrewlamict@gmail.com"
