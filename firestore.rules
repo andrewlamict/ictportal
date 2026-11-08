@@ -6,7 +6,7 @@ service cloud.firestore {
     match /users/{uid} {
       allow read: if request.auth != null && request.auth.uid == uid;
       allow create, update: if request.auth != null && request.auth.uid == uid
-        && request.resource.data.keys().hasOnly(['uid','name','email','photo','xp','level','pages','visited','badges','visits','firstSeen','lastSeen'])
+        && request.resource.data.keys().hasOnly(['uid','name','email','photo','xp','level','pages','visited','badges','books','visits','firstSeen','lastSeen'])
         && request.resource.data.xp is int && request.resource.data.xp >= 0 && request.resource.data.xp < 100000;
     }
 
@@ -14,7 +14,7 @@ service cloud.firestore {
     match /users/{uid} {
       allow read: if request.auth != null
         && request.auth.token.email_verified == true
-        && request.auth.token.email in ['teacher@example.com'];
+        && request.auth.token.email in ['andrewlamict@gmail.com'];
     }
   }
 }
