@@ -13,3 +13,6 @@ window.ICT_ADMINS = [
   "andrewlamict@gmail.com"
 ];
 
+
+/* Optional: a shared AI key so every student gets AI explanations without their own key. Anyone can read it in the page source, so use a free key with a low quota. */
+window.ICT_AI = { provider: 'gemini', key: '' };

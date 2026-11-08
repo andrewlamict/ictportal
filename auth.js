@@ -82,7 +82,7 @@
   function snapshot(u) {
     var s = F.get();
     return { uid: u.uid, name: u.displayName || '', email: u.email || '', photo: u.photoURL || '', xp: s.xp | 0, level: level(s.xp | 0),
-      pages: Object.keys(s.visited || {}).length, visited: Object.keys(s.visited || {}), badges: Object.keys(s.badges || {}), books: s.books || {}, lastSeen: fb.firestore.FieldValue.serverTimestamp() };
+      pages: Object.keys(s.visited || {}).length, visited: Object.keys(s.visited || {}), badges: Object.keys(s.badges || {}), books: s.books || {}, qlog: (F.qlog ? F.qlog() : {}), lastSeen: fb.firestore.FieldValue.serverTimestamp() };
   }
   function onSignedIn(u) {
     uid = u.uid; setGuest(false);
@@ -90,7 +90,7 @@
     var ref = db.collection('users').doc(uid);
     ref.get().then(function (d) {
       var c = d.exists ? d.data() : null;
-      if (c) F.merge({ xp: c.xp, visited: c.visited || [], badges: c.badges || [], books: c.books || {} });
+      if (c) F.merge({ xp: c.xp, visited: c.visited || [], badges: c.badges || [], books: c.books || {}, qlog: c.qlog || {} });
       var data = snapshot(u);
       data.visits = fb.firestore.FieldValue.increment(1);
       if (!c) data.firstSeen = fb.firestore.FieldValue.serverTimestamp();
@@ -174,6 +174,15 @@
         h += '<tr><td><b>' + esc(c.code) + '</b></td><td>' + mc + '</td><td>' + (st[0] || '-') + '</td><td>' + (st[0] ? Math.round(st[1] * 100 / st[0]) + '%' : '-') + '</td><td style="white-space:normal">' + (gm.length ? gm.map(function (id) { return esc((P[id] && P[id].t) || id); }).join(', ') : '-') + '</td></tr>';
       });
       h += '</tbody></table>' + (any ? '' : '<p class="dash-count">No MC or game activity yet.</p>') + '<p class="dash-count">Accuracy counts every MC Trainer answer since the tracking update; older answers show as correct only.</p>';
+      var ql = r.qlog || {}, bt = {}, ty = {};
+      Object.keys(ql).forEach(function (k) { var x = ql[k], t = x.t || '?', y = x.y || '?'; var o = bt[t] = bt[t] || { a: 0, c: 0, w: 0, fix: 0 }; o.a += x.a || 0; o.c += x.c || 0; if (x.w > 0) { o.w++; if ((x.f || 0) >= 2) o.fix++; } var p = ty[y] = ty[y] || { a: 0, c: 0 }; p.a += x.a || 0; p.c += x.c || 0; });
+      var pc = function (o) { return o.a ? Math.round(o.c * 100 / o.a) + '%' : '-'; };
+      if (Object.keys(bt).length) {
+        h += '<h4 style="margin:1rem 0 .3rem">MC Trainer by topic (weakest first)</h4><table><thead><tr><th>Topic</th><th>Answers</th><th>Accuracy</th><th>Wrong questions</th><th>Fixed</th></tr></thead><tbody>' +
+          Object.keys(bt).sort(function (p, q) { return (bt[p].a ? bt[p].c / bt[p].a : 2) - (bt[q].a ? bt[q].c / bt[q].a : 2); }).map(function (t) { var o = bt[t]; return '<tr><td><b>' + esc(t) + '</b></td><td>' + o.a + '</td><td>' + pc(o) + '</td><td>' + o.w + '</td><td>' + o.fix + '</td></tr>'; }).join('') + '</tbody></table>' +
+          '<h4 style="margin:1rem 0 .3rem">By question type</h4><table><thead><tr><th>Type</th><th>Answers</th><th>Accuracy</th></tr></thead><tbody>' +
+          Object.keys(ty).map(function (t) { return '<tr><td><b>' + esc(t) + '</b></td><td>' + ty[t].a + '</td><td>' + pc(ty[t]) + '</td></tr>'; }).join('') + '</tbody></table>';
+      }
       body.innerHTML = h; body.querySelector('#dash-back').onclick = render;
     }
     function esc(s) { return String(s).replace(/[&<>"]/g, function (c) { return { '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;' }[c]; }); }

@@ -29,6 +29,7 @@
   var KEY = 'ictFun';
   var fresh = function () { return { xp: 0, visited: {}, badges: {}, books: {} }; };
   var state = store.get(KEY, fresh());
+  try { localStorage.setItem('ictActiveKey', KEY); } catch (e) {}
   function persist() { store.set(KEY, state); try { window.dispatchEvent(new Event('ictfun:save')); } catch (e) {} }
   var chip = document.createElement('div');
   chip.id = 'xp-chip';
@@ -285,16 +286,32 @@
 
 
   /* ---------- Public API for the other fun files ---------- */
+  /* per-question log written by MC Trainer (wrong questions, notes, accuracy); merged here so it is saved to the cloud */
+  function qlog() { return store.get('ictQLog:' + KEY, {}); }
+  function mergeQ(c) {
+    if (!c) return; var m = qlog(), ch = false;
+    Object.keys(c).forEach(function (h) {
+      var o = c[h] || {}, d = m[h]; if (!d) { m[h] = o; ch = true; return; }
+      ['a', 'c', 'w', 'f', 'l', 'r'].forEach(function (k) { if ((o[k] || 0) > (d[k] || 0)) { d[k] = o[k]; ch = true; } });
+      if (o.t && !d.t) d.t = o.t; if (o.y && !d.y) d.y = o.y; if (o.s && !d.s) d.s = o.s;
+      if ((o.nt || 0) > (d.nt || 0)) { d.n = o.n; d.nt = o.nt; ch = true; }
+    });
+    if (ch) store.set('ictQLog:' + KEY, m);
+  }
+  window.addEventListener('storage', function (e) { if (e.key === 'ictQLog:' + KEY) { try { window.dispatchEvent(new Event('ictfun:save')); } catch (x) {} } });
+  window.addEventListener('pageshow', function () { try { window.dispatchEvent(new Event('ictfun:save')); } catch (x) {} });
   window.ICTFun = {
+    qlog: qlog,
     get: function () { if (!state.books) state.books = {}; return state; }, save: function () { persist(); },
     toast: toast, addXP: addXP, badge: badge, confetti: confetti, reduce: reduce,
-    setUser: function (id) { KEY = id ? 'ictFun:' + id : 'ictFun'; state = store.get(KEY, fresh()); if (!state.books) state.books = {}; renderXP(false); window.dispatchEvent(new Event('ictfun:user')); },
+    setUser: function (id) { KEY = id ? 'ictFun:' + id : 'ictFun'; try { localStorage.setItem('ictActiveKey', KEY); } catch (e) {} state = store.get(KEY, fresh()); if (!state.books) state.books = {}; renderXP(false); window.dispatchEvent(new Event('ictfun:user')); },
     merge: function (c) {
       if (!c) return;
       state.xp = Math.max(state.xp || 0, c.xp || 0);
       (c.visited || []).forEach(function (k) { state.visited[k] = 1; });
       (c.badges || []).forEach(function (k) { state.badges[k] = 1; });
       if (!state.books) state.books = {};
+      mergeQ(c.qlog);
       Object.keys(c.books || {}).forEach(function (b) { var d = state.books[b] = state.books[b] || {}, o = c.books[b] || {}; ['mc', 'games'].forEach(function (k) { d[k] = d[k] || {}; Object.keys(o[k] || {}).forEach(function (q) { d[k][q] = 1; }); }); d.stat = d.stat || {}; Object.keys(o.stat || {}).forEach(function (ch) { var x = d.stat[ch] || [0, 0], y = o.stat[ch] || [0, 0]; d.stat[ch] = [Math.max(x[0], y[0]), Math.max(x[1], y[1])]; }); });
       persist(); renderXP(false); window.dispatchEvent(new Event('ictfun:user'));
     }
