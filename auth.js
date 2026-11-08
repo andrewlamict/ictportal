@@ -98,7 +98,7 @@
       if (counted) delete data.visits;
       return ref.set(data, { merge: true });
     }).catch(function (e) { console.warn('Cloud load failed', e); }).then(function () {
-      paintChip(u); pass(); showAdmin(u);
+      paintChip(u); pass(); showAdmin(u); if (window.ICTBoard) window.ICTBoard.start(fb, db, u);
       if (F.toast) F.toast('Welcome, ' + ((u.displayName || 'student').split(' ')[0]) + '! 🎉');
     });
   }
