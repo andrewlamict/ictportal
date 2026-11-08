@@ -177,6 +177,20 @@
             } catch(e) { console.warn("Audio Context blocked"); }
         }
 
+
+        /* ICT Portal world-tour: report correct answers + question pool per book (read by the home page) */
+        const ICT_BOOK = { A1:'a1', A2:'a2', B:'b', C1:'c1', C2:'c2', D1:'d', D2:'d', D:'d', E:'e', EA:'ea', EB:'eb', EC:'ec' };
+        /* topic -> {b: book id, c: chapter number}. "D2 Ch.4/5/6" are chapters 2/3/6 of Book D; "D Programming" counts for Book D chapter 2. */
+        function ictTopic(topic) {
+            const t = String(topic || '').trim(); let m = /^(EA|EB|EC|A1|A2|B|C1|C2|D1|D2|E)\s*Ch\.?\s*(\d+)/i.exec(t);
+            if (m) { const k = m[1].toUpperCase(); let n = +m[2]; if (k === 'D2') n = ({ 4: 2, 5: 3, 6: 6 })[n] || n; return { b: ICT_BOOK[k], c: n }; }
+            if (/^D\s+Programming/i.test(t)) return { b: 'd', c: 2 };
+            return null;
+        }
+        function ictHash(s) { let h = 5381; s = String(s); for (let i = 0; i < s.length; i++) h = ((h << 5) + h + s.charCodeAt(i)) | 0; return (h >>> 0).toString(36); }
+        function ictPool(list) { try { const p = {}; list.forEach(q => { const t = ictTopic(q.topic); if (t) { const k = t.b + '-' + t.c; p[k] = (p[k] || 0) + 1; } }); localStorage.setItem('ictMcPool', JSON.stringify(p)); } catch (e) {} }
+        function ictCorrect(q) { try { const t = ictTopic(q.topic); if (!t) return; const a = JSON.parse(localStorage.getItem('ictMcPending') || '[]'); a.push([t.b, ictHash(q.question), t.c]); localStorage.setItem('ictMcPending', JSON.stringify(a)); } catch (e) {} }
+
         async function initApp() {
             try {
                 const sheetIdMatch = DEFAULT_SHEET_URL.match(/\/spreadsheets\/d\/([a-zA-Z0-9-_]+)/);
@@ -191,6 +205,7 @@
 
                 allQuestions = validateData(jsonData);
                 availableTopics = [...new Set(allQuestions.map(q => q.topic))].sort();
+                ictPool(allQuestions);
                 
                 updateStatsUI();
                 renderTopicSelection();
@@ -424,7 +439,7 @@
             const panel = document.getElementById('feedback-panel');
             const btn = document.getElementById('action-btn');
 
-            if (isCorrect) { sessionScore++; playSfx('success'); }
+            if (isCorrect) { sessionScore++; playSfx('success'); ictCorrect(q); }
             else { playSfx('error'); document.getElementById('q-card').classList.add('shake'); }
 
             userAnswers.push({ ...q, selected: selectedOption, isCorrect });
@@ -603,5 +618,6 @@
 
         window.onload = initApp;
     </script>
+<script src="nav.js"></script>
 </body>
 </html>

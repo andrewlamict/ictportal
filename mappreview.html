@@ -1,0 +1,19 @@
+<!DOCTYPE html>
+<html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+<title>World Map Preview | ICT Portal</title>
+<style>
+html{background:#0b1230}html,body{margin:0;height:100%;font-family:system-ui,-apple-system,"Segoe UI",sans-serif;color:#fff;overflow:hidden}
+#pv{position:fixed;top:10px;left:50%;transform:translateX(-50%);z-index:70;display:flex;gap:10px;align-items:center;flex-wrap:wrap;justify-content:center;padding:10px 16px;border-radius:16px;background:rgba(10,20,50,.85);border:1px solid rgba(255,215,90,.55);box-shadow:0 10px 30px rgba(0,0,0,.4);max-width:min(560px,calc(100vw - 24px))}
+#pv b{font-size:14px}#pv span{font-size:12px;opacity:.85}
+#pv a{color:#1b1400;background:linear-gradient(90deg,#fbbf24,#f97316);padding:6px 14px;border-radius:99px;font-weight:800;font-size:12px;text-decoration:none}
+</style></head><body>
+<div id="pv"><b>🌍 Preview: the fully lit world</b><span>This is what the map looks like once a student has lit all 34 tourist spots on the 7 continents.</span><a href="index.html">Back to the portal</a></div>
+<script>
+/* Fake "everything is complete" tour state, only for this preview page */
+window.ICTTour = {
+  books: [], conts: [], locked: function(){return false}, complete: function(){return 7}, worldLit: function(){return 1}, contPct: function(){return 1}, chapterPct: function(){return 1},
+  chapInfo: function(ch){ var m=/^([a-z0-9]+)-(\d+)$/.exec(ch)||[0,ch,'']; return {code:m[1].toUpperCase()+'·Ch'+m[2], pct:1, locked:false, cont:''}; }
+};
+</script>
+<script src="scenes.js"></script>
+</body></html>

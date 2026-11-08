@@ -1,0 +1,20 @@
+rules_version = '2';
+service cloud.firestore {
+  match /databases/{database}/documents {
+
+    // Each student can read and write only their own record.
+    match /users/{uid} {
+      allow read: if request.auth != null && request.auth.uid == uid;
+      allow create, update: if request.auth != null && request.auth.uid == uid
+        && request.resource.data.keys().hasOnly(['uid','name','email','photo','xp','level','pages','visited','badges','visits','firstSeen','lastSeen'])
+        && request.resource.data.xp is int && request.resource.data.xp >= 0 && request.resource.data.xp < 100000;
+    }
+
+    // The teacher can read every record. Replace the address below with your own Google account.
+    match /users/{uid} {
+      allow read: if request.auth != null
+        && request.auth.token.email_verified == true
+        && request.auth.token.email in ['teacher@example.com'];
+    }
+  }
+}
