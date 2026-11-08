@@ -9,6 +9,8 @@ window.ICT_FIREBASE = {
   projectId: "ict-portal-28894",
   appId: "1:398486470103:web:2e986c212b48019e655f92"
 };
+/* Only Google accounts ending with this domain (plus the ICT_ADMINS emails) can enter. */
+window.ICT_DOMAIN = "stcc.edu.hk";
 window.ICT_ADMINS = [
   "andrewlamict@gmail.com"
 ];

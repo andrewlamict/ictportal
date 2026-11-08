@@ -65,6 +65,8 @@
   var rel = decodeURIComponent(location.pathname.slice(rootPath.length)).replace(/^\/+/, '');
   var onIndex = rel === '' || rel === 'index.html' || !!document.getElementById('page-home') || !!document.querySelector('script[src*="scenes.js"]');
   var ROOT = src.replace(/nav\.js.*$/, '');
+  /* school-account gate: sub-pages send visitors who have not signed in on the home page back to it */
+  try { if (!/(^|\/)(index\.html)?$/.test(location.pathname) && !/[?&]embed=1/.test(location.search) && window.self === window.top && localStorage.getItem('ictAuthed') !== '1') { location.replace(ROOT + 'index.html'); return; } } catch (e) {}
   var framed = false; try { framed = window.parent !== window; } catch (e) { framed = true; }
   function href(u) { if (framed && u.indexOf('index.html') === 0) u = u.replace('index.html', 'index.html?embed=1'); return ROOT + u; }
   function esc(s) { return String(s).replace(/[&<>"]/g, function (c) { return { '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;' }[c]; }); }

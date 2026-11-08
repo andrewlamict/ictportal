@@ -1,4 +1,4 @@
-/* ICT Portal - login gate (Google via Firebase) with guest mode, XP cloud save and a teacher dashboard. */
+/* ICT Portal - login gate (Google via Firebase) school accounts only, XP cloud save and a teacher dashboard. */
 (function () {
   'use strict';
   if (window.ICT_EMBED) return; /* inside a desktop window: plain page only */
@@ -7,8 +7,11 @@
   var admins = (window.ICT_ADMINS || []).map(function (x) { return String(x).toLowerCase(); });
   var configured = !!(cfg.apiKey && cfg.projectId);
   var html = document.documentElement;
-  var guestFlag = function () { try { return localStorage.getItem('ictGuest') === '1'; } catch (e) { return false; } };
-  var setGuest = function (v) { try { v ? localStorage.setItem('ictGuest', '1') : localStorage.removeItem('ictGuest'); } catch (e) {} };
+  var DOMAIN = String(window.ICT_DOMAIN || 'stcc.edu.hk').toLowerCase();
+  var allowed = function (u) { var e = String(u && u.email || '').toLowerCase(); return !!u && u.emailVerified !== false && (e.slice(-(DOMAIN.length + 1)) === '@' + DOMAIN || admins.indexOf(e) > -1); };
+  var setAuthed = function (v) { try { v ? localStorage.setItem('ictAuthed', '1') : localStorage.removeItem('ictAuthed'); } catch (e) {} };
+  var guestFlag = function () { return false; };
+  var setGuest = function () {};
 
   var G_LOGO = '<svg width="20" height="20" viewBox="0 0 48 48" aria-hidden="true"><path fill="#EA4335" d="M24 9.5c3.5 0 6.6 1.2 9.1 3.6l6.8-6.8C35.8 2.4 30.3 0 24 0 14.6 0 6.5 5.4 2.6 13.2l7.9 6.1C12.4 13.6 17.7 9.5 24 9.5z"/><path fill="#4285F4" d="M46.5 24.5c0-1.6-.1-3.1-.4-4.5H24v9h12.7c-.6 3-2.3 5.5-4.8 7.2l7.5 5.8c4.4-4.1 7.1-10.1 7.1-17.5z"/><path fill="#FBBC05" d="M10.5 28.7A14.5 14.5 0 0 1 9.5 24c0-1.6.3-3.2.8-4.7l-7.9-6.1A24 24 0 0 0 0 24c0 3.9.9 7.5 2.6 10.8l7.9-6.1z"/><path fill="#34A853" d="M24 48c6.5 0 11.9-2.1 15.9-5.8l-7.5-5.8c-2.1 1.4-4.9 2.3-8.4 2.3-6.3 0-11.6-4.1-13.5-9.8l-7.9 6.1C6.5 42.6 14.6 48 24 48z"/></svg>';
 
@@ -23,10 +26,9 @@
     '<div class="gate-checking"><i></i> Checking sign-in…</div>' +
     '<div class="gate-actions" hidden>' +
     '<button type="button" id="gate-google" class="gate-btn gate-google">' + G_LOGO + '<span>Sign in with Google</span></button>' +
-    '<button type="button" id="gate-guest" class="gate-btn gate-guest">Continue as guest</button>' +
     '</div>' +
     '<p class="gate-note" id="gate-note"></p>' +
-    '<p class="gate-priv">Signing in saves your XP and lets your teacher see your name, email and progress. Guests keep XP on this device only.</p>' +
+    '<p class="gate-priv">Sign in with your <b>@stcc.edu.hk</b> school Google account. Your XP is saved and your teacher can see your name, email and progress.</p>' +
     '</div>';
   document.body.appendChild(gate);
   var $ = function (s) { return gate.querySelector(s); };
@@ -35,7 +37,7 @@
   function showActions() {
     var chk = $('.gate-checking'); if (chk) chk.hidden = true;
     var a = $('.gate-actions'); if (a) a.hidden = false;
-    if (!configured) note.textContent = 'Google sign-in is not switched on yet. You can continue as a guest.';
+    if (!configured) note.textContent = 'Google sign-in is not switched on yet. Please ask your teacher.';
   }
   var passed = false;
   function pass() {
@@ -59,19 +61,18 @@
       chip.title = 'Signed in as ' + (u.email || '') + '. Click to sign out.';
       chip.dataset.mode = 'user';
     } else {
-      chip.textContent = '👤 Guest · Sign in';
-      chip.title = 'Sign in with Google to save your XP';
+      chip.textContent = '🔒 Sign in';
+      chip.title = 'Sign in with your school Google account';
       chip.dataset.mode = 'guest';
     }
   }
   paintChip(null);
   chip.addEventListener('click', function () {
-    if (chip.dataset.mode === 'user' && fb) { fb.auth().signOut().then(function () { setGuest(false); location.reload(); }); }
+    if (chip.dataset.mode === 'user' && fb) { fb.auth().signOut().then(function () { setAuthed(false); location.reload(); }); }
     else { setGuest(false); location.reload(); }
   });
 
   /* ---------- Guest ---------- */
-  $('#gate-guest').addEventListener('click', function () { setGuest(true); F.setUser(null); paintChip(null); pass(); });
 
   /* ---------- Firebase ---------- */
   var fb = null, db = null, uid = null, saveT = 0;
@@ -85,6 +86,8 @@
       pages: Object.keys(s.visited || {}).length, visited: Object.keys(s.visited || {}), badges: Object.keys(s.badges || {}), books: s.books || {}, qlog: (F.qlog ? F.qlog() : {}), lastSeen: fb.firestore.FieldValue.serverTimestamp() };
   }
   function onSignedIn(u) {
+    if (!allowed(u)) { setAuthed(false); fb.auth().signOut().then(function () { html.classList.add('gate-on'); showActions(); note.textContent = 'Only @' + DOMAIN + ' school accounts can enter. ' + (u.email || 'That account') + ' is not allowed. Please choose your school account.'; }); return; }
+    setAuthed(true);
     uid = u.uid; setGuest(false);
     F.setUser(uid);
     var ref = db.collection('users').doc(uid);
@@ -116,7 +119,7 @@
     if (!configured) { F.toast('Google sign-in is not set up yet. See SETUP.md.'); return; }
     if (!fb) { F.toast('Sign-in is still loading, try again in a moment.'); return; }
     var prov = new fb.auth.GoogleAuthProvider();
-    prov.setCustomParameters({ prompt: 'select_account' });
+    prov.setCustomParameters({ prompt: 'select_account', hd: DOMAIN });
     fb.auth().signInWithPopup(prov).catch(function (e) {
       if (e && e.code === 'auth/popup-blocked') { fb.auth().signInWithRedirect(prov); return; }
       if (e && e.code === 'auth/popup-closed-by-user') return;
@@ -131,13 +134,11 @@
         fb = window.firebase; fb.initializeApp(cfg); db = fb.firestore();
         fb.auth().onAuthStateChanged(function (u) {
           if (u) onSignedIn(u);
-          else if (guestFlag()) { paintChip(null); pass(); }
-          else showActions();
+          else { setAuthed(false); html.classList.add('gate-on'); showActions(); }
         });
-      }).catch(function () { configured = false; if (guestFlag()) pass(); else { showActions(); note.textContent = 'Could not reach Google sign-in. You can continue as a guest.'; } });
+      }).catch(function () { configured = false; showActions(); note.textContent = 'Could not reach Google sign-in. Check your internet connection and reload the page.'; });
     setTimeout(function () { if (!passed && !fb) showActions(); }, 6000);
-  } else if (guestFlag()) { pass(); }
-  else { setTimeout(showActions, 450); }
+  } else { setTimeout(showActions, 450); }
 
   /* ---------- Teacher dashboard ---------- */
   function showAdmin(u) {
