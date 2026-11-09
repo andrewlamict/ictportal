@@ -23,7 +23,7 @@
     'bookb/ch2/cpugpu.html': 'CPU vs GPU', 'bookb/ch2/cpu.html': 'CPU', 'bookb/ch2/storage.html': 'Storage',
     'bookb/ch3/os.html': 'Operating System', 'bookb/ch3/utility.html': 'Utility Software', 'bookb/ch3/driver.html': 'Device Driver',
     'bookb/ch3/processingmode.html': 'Processing Modes',
-    'booke/ch1/bigdata4v.html': 'Big Data 4V Sorter'
+    'booke/ch1/bigdata4v.html': 'Big Data Lab'
   };
 
   var SITE = [ /* id, title, parent id, url (relative to site root), group */
