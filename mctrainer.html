@@ -118,6 +118,13 @@ svg.radar{width:100%;height:auto;max-width:400px;display:block;margin:0 auto}
 .good-t{color:var(--ok);font-weight:800}.bad-t{color:var(--bad);font-weight:800}
 .log{display:flex;justify-content:space-between;padding:12px 14px;border-radius:12px;background:rgba(255,255,255,.07);border:1px solid var(--line);margin-bottom:8px}
 /* modal */
+.lbrow{display:flex;align-items:center;gap:10px;padding:9px 12px;border-radius:12px;background:rgba(255,255,255,.07);border:1px solid var(--line);margin-bottom:6px}
+.lbrow.me{background:rgba(251,191,36,.18);border-color:var(--gold)}
+.lbrow .rk{width:34px;text-align:center;font-weight:800;font-size:18px}.lbrow .nm{flex:1;min-width:0;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;font-weight:700}
+.lbrow .fm{font-size:11px;padding:1px 7px;border-radius:99px;background:rgba(255,255,255,.14);margin-left:6px;color:var(--mut)}
+.lbrow .pc{font-weight:800;color:var(--ok);min-width:46px;text-align:right}.lbrow .tm{font-weight:700;color:var(--mut);min-width:48px;text-align:right}
+.lbhead{display:flex;gap:10px;padding:0 12px 6px;font-size:11px;letter-spacing:.08em;text-transform:uppercase;color:var(--mut);font-weight:800}
+.lbsel{width:100%;padding:11px;border-radius:12px;border:1.5px solid var(--line);background:rgba(0,0,0,.3);color:#fff;font:inherit;margin:8px 0 14px}
 .modal{position:fixed;inset:0;background:rgba(2,6,23,.75);backdrop-filter:blur(6px);z-index:100;display:none;align-items:center;justify-content:center;padding:16px}
 .modal.on{display:flex}
 .modal .card{max-width:470px;width:100%;padding:24px;background:#1e1b4b}
@@ -146,6 +153,7 @@ svg.radar{width:100%;height:auto;max-width:400px;display:block;margin:0 auto}
     <button class="tab on" data-tab="train">🎯 Train</button>
     <button class="tab" data-tab="wrong">❌ Wrong questions<b id="wcount" hidden>0</b></button>
     <button class="tab" data-tab="radar">📊 Strengths</button>
+    <button class="tab" data-tab="board">🏆 Leaderboard</button>
     <button class="tab" data-tab="logs">📜 Logs</button>
   </nav>
 
@@ -176,7 +184,7 @@ const lsGet = (k, d) => { try { const v = JSON.parse(localStorage.getItem(k)); r
 const lsSet = (k, v) => { try { localStorage.setItem(k, JSON.stringify(v)); } catch (e) {} };
 
 let all = [], topics = [], byHash = {}, quiz = [], qi = 0, score = 0, sel = null, revealed = false, answers = [], title = '', mode = 'topic';
-let lastPool = [], lastLabel = '', lastMode = 'topic', streak = 0, sessionXp = 0, sessionNew = new Set(), tab = 'train', pickedTopics = new Set(), wrongNew = 0;
+let t0 = Date.now(), lastPool = [], lastLabel = '', lastMode = 'topic', streak = 0, sessionXp = 0, sessionNew = new Set(), tab = 'train', pickedTopics = new Set(), wrongNew = 0;
 
 let sfxSynth = null;
 function sfx(t) { try { if (typeof Tone === 'undefined') return; sfxSynth = sfxSynth || new Tone.PolySynth(Tone.Synth).toDestination(); sfxSynth.triggerAttackRelease(t === 'ok' ? ['C5', 'E5', 'G5'] : t === 'bad' ? ['G2', 'B2'] : 'C4', t === 'click' ? '32n' : '8n'); } catch (e) {} }
@@ -278,7 +286,7 @@ async function init() {
 function badge() { const n = wrongList().filter(x => !x.fixed).length, b = $('#wcount'); b.textContent = n; b.hidden = !n; }
 function show(t) {
   tab = t; [...document.querySelectorAll('.tab')].forEach(b => b.classList.toggle('on', b.dataset.tab === t)); badge();
-  ({ train: renderTrain, wrong: renderWrong, radar: renderRadar, logs: renderLogs })[t]();
+  ({ train: renderTrain, wrong: renderWrong, radar: renderRadar, logs: renderLogs, board: () => renderBoard() })[t]();
   scrollTo({ top: 0 });
 }
 const mastery = () => lsGet('lab_mastery', {});
@@ -301,7 +309,7 @@ function multiPicker(kind) {                              /* kind: 'train' | 'wr
 function start(pool, label, md) {
   sfx('click'); title = label; mode = md || 'topic'; lastPool = pool; lastLabel = label; lastMode = mode;
   quiz = pool.slice().sort(() => Math.random() - .5).slice(0, 10); if (!quiz.length) { toast('No questions to practise yet'); return; }
-  qi = 0; score = 0; answers = []; streak = 0; sessionXp = 0; sessionNew = new Set(); wrongNew = 0; render();
+  t0 = Date.now(); qi = 0; score = 0; answers = []; streak = 0; sessionXp = 0; sessionNew = new Set(); wrongNew = 0; render();
 }
 function render() {
   sel = null; revealed = false; const q = quiz[qi];
@@ -333,11 +341,71 @@ function finish() {
   if (mode === 'topic') { const m = mastery(), k = title === 'Combined challenge' ? 'Combined' : title; if ((m[k] || 0) < stars) m[k] = stars; lsSet('lab_mastery', m); }
   const h = lsGet('lab_history', []); h.unshift({ topic: title, score, total: quiz.length, date: new Date().toISOString() }); lsSet('lab_history', h.slice(0, 30));
   if (pct >= 70 && window.confetti) confetti({ particleCount: 120, spread: 80, origin: { y: .6 } });
-  badge(); drawXp();
-  $('#app').innerHTML = `<div class="result"><div class="big">${pct}%</div><p class="sub">${score} of ${quiz.length} correct</p>
+  badge(); drawXp(); const secs = Math.max(1, Math.min(3599, Math.round((Date.now() - t0) / 1000)));
+  $('#app').innerHTML = `<div class="result"><div class="big">${pct}%</div><p class="sub">${score} of ${quiz.length} correct · ⏱️ ${fmtT(secs)}</p><div id="lbmsg" class="sub"></div>
     <p style="font-size:22px;font-weight:800;color:var(--gold);margin:6px 0">${sessionXp ? '+' + sessionXp + ' XP on your main page 🌍' : 'No new XP — you already counted these questions'}</p>
     ${wrongNew ? `<p class="sub">❌ ${wrongNew} new question${wrongNew > 1 ? 's' : ''} added to Wrong questions</p>` : ''}
-    <div class="row" style="justify-content:center;margin-top:18px"><button class="btn" data-act="retry">🔄 Try again</button>${wrongNew || answers.some(a => !a.ok) ? '<button class="btn red" data-act="tab-wrong">❌ Review mistakes</button>' : ''}<button class="btn sec" data-act="tab-train">Back</button><a class="btn sec" href="index.html" style="text-decoration:none">🏠 Main page</a></div></div>`;
+    <div class="row" style="justify-content:center;margin-top:18px"><button class="btn" data-act="retry">🔄 Try again</button>${wrongNew || answers.some(a => !a.ok) ? '<button class="btn red" data-act="tab-wrong">❌ Review mistakes</button>' : ''}${mode === 'topic' ? '<button class="btn sec" data-act="lb-topic">🏆 Leaderboard</button>' : ''}<button class="btn sec" data-act="tab-train">Back</button><a class="btn sec" href="index.html" style="text-decoration:none">🏠 Main page</a></div></div>`;
+  if (mode === 'topic') lbSubmit(title, pct, secs, quiz.length);
+}
+
+/* ============================ chapter leaderboards (Firestore: mcboard) ============================ */
+const LB = { db: null, user: null, ready: false };
+function fmtT(s) { return Math.floor(s / 60) + ':' + String(s % 60).padStart(2, '0'); }
+const lbDoc = (uid, topic) => uid + '__' + ictHash(topic);
+const lbProf = () => LB.user ? lsGet('ictBoard:' + LB.user.uid, null) : null;
+function lbLoad(src) { return new Promise((res, rej) => { const s = document.createElement('script'); s.src = src; s.onload = res; s.onerror = rej; document.head.appendChild(s); }); }
+async function lbInit() {
+  const cfg = window.ICT_FIREBASE; if (!cfg || !cfg.apiKey) return;
+  try {
+    const B = 'https://www.gstatic.com/firebasejs/10.12.2/';
+    await lbLoad(B + 'firebase-app-compat.js'); await lbLoad(B + 'firebase-auth-compat.js'); await lbLoad(B + 'firebase-firestore-compat.js');
+    const fb = window.firebase; if (!fb.apps.length) fb.initializeApp(cfg); LB.db = fb.firestore(); LB.ready = true;
+    fb.auth().onAuthStateChanged(u => { LB.user = u; if (tab === 'board' && document.getElementById('lbbody')) renderBoard(renderBoard.t); });
+  } catch (e) { console.warn('Leaderboard unavailable', e); }
+}
+function lbAskProfile(then) {
+  const cur = lbProf() || {}, def = cur.nick || ((LB.user.displayName || 'Student').split(' ')[0]);
+  const m = document.createElement('div'); m.className = 'modal on';
+  m.innerHTML = `<div class="card"><h3 style="margin:0 0 6px">🏆 Join the leaderboards</h3><p class="sub" style="margin:0">Other students can see your <b>display name</b>, <b>form</b>, <b>% correct</b> and <b>time</b>. Your email is never shown.</p>
+    <label for="lbf">My form</label><select id="lbf">${['S4', 'S5', 'S6'].map(f => `<option ${cur.form === f ? 'selected' : ''}>${f}</option>`).join('')}</select>
+    <label for="lbn">Display name</label><input id="lbn" maxlength="20" value="${esc(def)}">
+    <div class="row" style="margin-top:16px"><button class="btn sec right" id="lbskip">Not now</button><button class="btn" id="lbok">Save</button></div></div>`;
+  document.body.appendChild(m);
+  m.querySelector('#lbskip').onclick = () => m.remove();
+  m.querySelector('#lbok').onclick = () => { const p = { form: m.querySelector('#lbf').value, nick: m.querySelector('#lbn').value.trim().slice(0, 20) || 'Student', hide: false }; lsSet('ictBoard:' + LB.user.uid, p); m.remove(); then && then(); };
+}
+async function lbSubmit(topic, pct, secs, n) {
+  const box = () => document.getElementById('lbmsg'), say = t => { if (box()) box().innerHTML = t; };
+  if (!LB.ready || !LB.user || n < 5) { if (n >= 5 && LB.ready && !LB.user) say('Sign in on the main page to join the leaderboard.'); return; }
+  let p = lbProf(); if (p && p.hide) return;
+  if (!p || !p.form) { lbAskProfile(() => lbSubmit(topic, pct, secs, n)); return; }
+  try {
+    const ref = LB.db.collection('mcboard').doc(lbDoc(LB.user.uid, topic)), old = await ref.get(), o = old.exists ? old.data() : null;
+    if (o && (o.pct > pct || (o.pct === pct && o.time <= secs))) { say(`🏆 Your best on this chapter stays <b>${o.pct}%</b> in <b>${fmtT(o.time)}</b>.`); return; }
+    await ref.set({ uid: LB.user.uid, name: p.nick, form: p.form, topic: topic.slice(0, 120), pct, time: secs, n, updated: firebase.firestore.FieldValue.serverTimestamp() });
+    say(`🏆 <b>New personal best</b> sent to the leaderboard!`);
+  } catch (e) { say('Could not reach the leaderboard (' + (e && e.code || 'error') + ').'); }
+}
+async function renderBoard(topic) {
+  topic = topic || renderBoard.t || topics[0]; renderBoard.t = topic;
+  $('#app').innerHTML = `<h2>🏆 Chapter leaderboards</h2><p class="sub">Best score in each chapter: highest % correct first, then the fastest time.</p>
+    <select class="lbsel" id="lbsel">${topics.map(t => `<option value="${esc(t)}" ${t === topic ? 'selected' : ''}>${esc(t)}</option>`).join('')}</select><div id="lbbody"><div class="empty">Loading…</div></div>`;
+  $('#lbsel').onchange = e => renderBoard(e.target.value);
+  const body = $('#lbbody');
+  if (!LB.ready) { body.innerHTML = '<div class="empty">Leaderboard is not available right now.</div>'; return; }
+  if (!LB.user) { body.innerHTML = '<div class="empty">Sign in with your school Google account on the main page to see the leaderboards.</div>'; return; }
+  try {
+    const snap = await LB.db.collection('mcboard').where('topic', '==', topic.slice(0, 120)).limit(300).get(); if (renderBoard.t !== topic) return;
+    const rows = []; snap.forEach(d => { const v = d.data(); rows.push({ uid: v.uid, name: v.name || 'Student', form: v.form || '', pct: v.pct | 0, time: v.time | 0 }); });
+    rows.sort((a, b) => b.pct - a.pct || a.time - b.time);
+    const mine = rows.findIndex(r => r.uid === LB.user.uid), li = (r, i) => `<div class="lbrow ${r.uid === LB.user.uid ? 'me' : ''}"><span class="rk">${i < 3 ? ['🥇', '🥈', '🥉'][i] : i + 1}</span><span class="nm">${esc(r.name)}${r.uid === LB.user.uid ? ' (you)' : ''}<span class="fm">${esc(r.form)}</span></span><span class="pc">${r.pct}%</span><span class="tm">⏱️ ${fmtT(r.time)}</span></div>`;
+    let h = rows.length ? rows.slice(0, 20).map(li).join('') : '<div class="empty">Nobody has finished this chapter yet. Be the first! 🚀</div>';
+    if (mine >= 20) h += `<p class="sub" style="margin-top:12px">Your rank: <b>#${mine + 1}</b> of ${rows.length}</p>` + li(rows[mine], mine);
+    else if (mine < 0 && rows.length) h += '<p class="sub" style="margin-top:12px">You are not on this board yet. Finish a 10-question round of this chapter!</p>';
+    h += `<div class="row" style="margin-top:14px"><button class="btn" data-act="lb-play">🎯 Play this chapter</button></div>`;
+    body.innerHTML = h;
+  } catch (e) { body.innerHTML = '<div class="empty">Could not load the board (' + esc(e && e.code || 'error') + '). Ask your teacher to publish the latest Firestore rules.</div>'; }
 }
 
 /* ============================ AI explanation ============================ */
@@ -467,13 +535,15 @@ document.addEventListener('click', e => {
   else if (a === 'wdel') { updQ(b.dataset.h, r => { r.w = 0; r.f = 0; }); renderWrongTopic(renderWrongTopic.t); badge(); }
   else if (a === 'train-ax') start(all.filter(q => q.ax === b.dataset.v), (AXES.filter(x => x[0] === b.dataset.v)[0] || [])[1] || 'Weakest book');
   else if (a === 'train-ty') start(all.filter(q => q.ty === b.dataset.v), b.dataset.v + ' questions');
+  else if (a === 'lb-topic') { tab = 'board'; [...document.querySelectorAll('.tab')].forEach(t => t.classList.toggle('on', t.dataset.tab === 'board')); renderBoard(title); scrollTo({ top: 0 }); }
+  else if (a === 'lb-play') start(all.filter(q => q.topic === renderBoard.t), renderBoard.t);
   else if (a === 'aiset') $('#gear').click();
 });
 $('#gear').onclick = () => { const c = aiCfg(); $('#key').value = localStorage.getItem('lab_ai_key') || ''; $('#prov').value = c.prov; $('#ai-modal').classList.add('on'); };
 $('#ai-cancel').onclick = () => $('#ai-modal').classList.remove('on');
 $('#ai-save').onclick = () => { localStorage.setItem('lab_ai_key', $('#key').value.trim()); localStorage.setItem('lab_ai_provider', $('#prov').value); $('#ai-modal').classList.remove('on'); toast('AI tutor saved'); };
 addEventListener('keydown', e => { if (document.getElementById('go') && !document.querySelector('.modal.on')) { const k = e.key.toUpperCase(); if (!revealed && 'ABCD'.indexOf(k) > -1 && k.length === 1 && document.getElementById('o' + k)) document.getElementById('o' + k).click(); else if (e.key === 'Enter') document.getElementById('go').click(); } });
-addEventListener('DOMContentLoaded', init);
+addEventListener('DOMContentLoaded', () => { init(); lbInit(); });
 </script>
 <script src="nav.js"></script>
 </body>

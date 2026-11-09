@@ -30,6 +30,21 @@ service cloud.firestore {
       allow delete: if request.auth != null && request.auth.uid == uid;
     }
 
+    // MC Trainer chapter leaderboards: one best result per student per chapter.
+    match /mcboard/{id} {
+      allow read: if schoolUser();
+      allow create, update: if schoolUser() && request.auth.uid == request.resource.data.uid
+        && id.matches(request.auth.uid + '__.*')
+        && request.resource.data.keys().hasOnly(['uid','name','form','topic','pct','time','n','updated'])
+        && request.resource.data.form in ['S4','S5','S6']
+        && request.resource.data.pct is int && request.resource.data.pct >= 0 && request.resource.data.pct <= 100
+        && request.resource.data.time is int && request.resource.data.time >= 1 && request.resource.data.time <= 3600
+        && request.resource.data.n is int && request.resource.data.n >= 5 && request.resource.data.n <= 10
+        && request.resource.data.name is string && request.resource.data.name.size() <= 20
+        && request.resource.data.topic is string && request.resource.data.topic.size() <= 120;
+      allow delete: if request.auth != null && id.matches(request.auth.uid + '__.*');
+    }
+
     // The teacher can read every record. Replace the address below with your own Google account.
     match /users/{uid} {
       allow read: if request.auth != null
