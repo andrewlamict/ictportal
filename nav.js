@@ -25,7 +25,8 @@
     'bookb/ch3/processingmode.html': 'Processing Modes',
     'booke/ch1/bigdata4v.html': 'Big Data Lab',
     'booke/ch1/trainmodel.html': 'Training Your Own AI Model',
-    'booke/ch2/tenyears.html': 'Health Issue'
+    'booke/ch2/tenyears.html': 'Health Issue',
+    'booke/ch2/digitaldivide.html': 'Digital Divide'
   };
 
   var SITE = [ /* id, title, parent id, url (relative to site root), group */
