@@ -78,6 +78,17 @@ button{font:inherit;cursor:pointer;color:inherit}
 .stamp .big{font-size:40px;font-weight:900}
 @keyframes stamp{from{transform:scale(2.2) rotate(-8deg);opacity:0}to{transform:none;opacity:1}}
 textarea{width:100%;min-height:64px;margin-top:6px;padding:10px;border-radius:12px;border:2px solid var(--line);background:rgba(0,0,0,.3);color:#fff;font:inherit;font-size:14.5px}
+.cards{display:flex;flex-wrap:wrap;gap:8px;align-items:center;margin:12px 0}
+.num{min-width:54px;height:54px;border-radius:12px;border:3px solid #6366f1;background:#fff;color:#0f172a;font-weight:900;font-size:19px;padding:0 8px}
+.num.sel{border-color:#fbbf24;background:#fef3c7;transform:translateY(-6px)}.more{color:var(--mut);font-weight:700}
+.scene{background:#fff;color:#0f172a;border-radius:12px;padding:12px 14px;line-height:1.7;font-weight:600}
+.map{display:flex;justify-content:space-around;background:#d1fae5;border-radius:10px;padding:14px;margin-bottom:6px;font-weight:800}.pin{background:#fecaca;border-radius:8px;padding:2px 8px}
+.wave{font-size:26px;letter-spacing:2px;color:#6366f1}.frames{display:flex;gap:8px;margin-bottom:6px}.frames span{flex:1;background:#0f172a;color:#fff;border-radius:8px;padding:8px;text-align:center;font-size:13px}
+.board{display:flex;gap:8px;flex-wrap:wrap;min-height:40px}.pinned{background:rgba(251,191,36,.2);border:2px solid #fbbf24;border-radius:10px;padding:6px 12px;font-weight:800}
+.two{display:grid;grid-template-columns:1fr 1fr;gap:12px;margin:14px 0}.phone{border:3px solid var(--line);border-radius:18px;background:rgba(0,0,0,.28);padding:16px;text-align:center}
+.phone:hover:not(:disabled){border-color:#a5b4fc}.phone.pick{border-color:#fbbf24}.phone small{color:var(--mut)}
+.reviews{display:grid;gap:8px;margin:10px 0}.rev{text-align:left;border:2px solid var(--line);border-radius:14px;background:rgba(0,0,0,.28);padding:10px 12px;line-height:1.45}
+.rev span{margin-right:6px}.rev small{display:block;color:var(--mut);font-weight:600}.rev:hover{border-color:#a5b4fc}.rev.gone{opacity:.3;text-decoration:line-through}.rev.no{border-color:var(--bad);background:rgba(244,63,94,.2)}
 .hide{display:none!important}
 .note{margin-top:14px;padding:12px 14px;border-radius:14px;background:rgba(251,191,36,.14);border:1px solid rgba(251,191,36,.5);font-size:14.5px;line-height:1.55}
 @media(prefers-reduced-motion:reduce){*{animation:none!important}}
@@ -101,10 +112,10 @@ textarea{width:100%;min-height:64px;margin-top:6px;padding:10px;border-radius:12
     ver: { n: 'Veracity', c: 'c-ver', hex: '#c084fc', e: '🕵️', d: 'how ACCURATE the data is: uncertainty, accuracy and quality of the data.' }
   };
   var EXP = [
-    { k: 'vol', e: '📊', t: 'The growing sheet', s: 'Sort a customer list that keeps growing.' },
-    { k: 'vor', e: '📥', t: 'The mystery import', s: 'Put new data into your tidy table.' },
+    { k: 'vol', e: '📊', t: 'The growing sort', s: 'Sort numbers by hand: 5, 10, then 100,000.' },
+    { k: 'vor', e: '🕵️', t: 'The detective case', s: 'Prove where Ben was using many kinds of evidence.' },
     { k: 'vel', e: '🏭', t: 'The conveyor belt', s: 'Analyse the data as it arrives.' },
-    { k: 'ver', e: '🌡️', t: 'The weird average', s: 'Find the average temperature.' }
+    { k: 'ver', e: '📱', t: 'Which phone?', s: 'Choose a phone from online ratings. Can you trust them?' }
   ];
   var PROBLEMS = {
     vol: 'There was far too much data to store and process',
@@ -131,7 +142,7 @@ textarea{width:100%;min-height:64px;margin-top:6px;padding:10px;border-radius:12
   /* ================= menu ================= */
   function menu() {
     clearAll(); var n = count();
-    st.innerHTML = bytey(n ? (n === 4 ? 'You found all four! Ready for the final test?' : 'Nice work, analyst! ' + (4 - n) + ' experiment' + (4 - n > 1 ? 's' : '') + ' left.') : "Hi! I'm <b>Bytey</b>, your intern. Big data? Easy! We'll just use a normal spreadsheet and table. What could possibly go wrong? 😄", n ? '' : 'Run the 4 experiments. When something breaks, work out WHY. That is how you discover the 4 Vs of big data.') +
+    st.innerHTML = bytey(n ? (n === 4 ? 'You found all four! Ready for the final test?' : 'Nice work, analyst! ' + (4 - n) + ' experiment' + (4 - n > 1 ? 's' : '') + ' left.') : "Hi! I'm <b>Bytey</b>, your intern. Big data? Easy! We'll just use our normal tools. What could possibly go wrong? 😄", n ? '' : 'Run the 4 experiments. When something breaks, work out WHY. That is how you discover the 4 Vs of big data.') +
       '<div class="tiles">' + EXP.map(function (x, i) { var d = found[x.k]; return '<button class="tile ' + (d ? 'done' : '') + '" data-exp="' + i + '"><span class="st">' + (d ? '✔ ' + V[x.k].n : 'Experiment ' + (i + 1)) + '</span><div class="e">' + x.e + '</div><b>' + x.t + '</b><span>' + x.s + '</span></button>'; }).join('') + '</div>' +
       '<h3 style="margin:16px 0 8px">📓 My 4V notebook</h3><div class="nb">' + Object.keys(V).map(function (k) { var v = V[k], on = found[k]; return '<div class="nbc ' + (on ? 'on ' + v.c : '') + '">' + (on ? '<b>' + v.e + ' ' + v.n + '</b>' + esc(v.d) + (notes[k] ? '<br><i style="color:#fde68a">“' + esc(notes[k]) + '”</i>' : '') : '<b>? ? ?</b>Not discovered yet') + '</div>'; }).join('') + '</div>' +
       '<div class="row" style="margin-top:16px"><button class="btn red" id="final" ' + (n < 4 ? 'disabled' : '') + '>' + (n < 4 ? '🔒 Final test (find all 4 first)' : '🏆 Final test') + '</button></div>';
@@ -160,42 +171,72 @@ textarea{width:100%;min-height:64px;margin-top:6px;padding:10px;border-radius:12
     });
   }
 
-  /* ================= experiment 1: volume ================= */
+  /* ================= experiment 1: volume (sort by hand) ================= */
   function exp1() {
-    clearAll(); var steps = [100, 10000, 1000000, 10000000], size = ['5 KB', '500 KB', '50 MB', '5 GB'], tm = ['0.1 seconds', '2 seconds', '3 minutes', '9 hours'], si = 0, busy = false;
-    var names = ['Amy', 'Ben', 'Cathy', 'David', 'Eva', 'Frank'];
-    st.innerHTML = bytey('Experiment 1: sort our customer list A→Z with a normal spreadsheet!', 'Press “Add more data” a few times and sort after each one.') +
-      '<div class="sheetbar"><span>📗 customers.xlsx</span><span id="sz"></span></div><table class="sheet"><tr><th>ID</th><th>Name</th><th>City</th></tr>' + names.map(function (n, i) { return '<tr><td>' + (i + 1) + '</td><td>' + n + '</td><td>' + ['HK', 'KLN', 'NT'][i % 3] + '</td></tr>'; }).join('') + '<tr><td colspan="3" id="more" style="text-align:center;color:#64748b">…</td></tr></table>' +
-      '<div class="stats"><span>Rows: <b id="rw"></b></span><span>Estimated sort time: <b id="et"></b></span></div><div style="font-size:13px;color:var(--mut)">Memory in use</div><div class="meter"><i id="mem"></i></div>' +
-      '<div class="row"><button class="btn" id="add">➕ Add more data</button><button class="btn sec" id="sort">↕ Sort A→Z</button></div><div class="msg" id="m" style="background:rgba(255,255,255,.08);border-color:var(--line)">Ready.</div>';
-    function draw() { $('#rw').textContent = steps[si].toLocaleString(); $('#sz').textContent = size[si]; $('#et').textContent = tm[si]; $('#mem').style.width = [4, 22, 78, 100][si] + '%'; $('#more').textContent = '… and ' + (steps[si] - 6).toLocaleString() + ' more rows'; $('#add').disabled = si >= 3; }
-    draw();
-    $('#add').onclick = function () { if (busy || si >= 3) return; si++; draw(); $('#m').textContent = si === 3 ? 'Whoa, that is a LOT of rows. Try sorting! 😬' : 'Loaded ' + steps[si].toLocaleString() + ' rows.'; };
-    $('#sort').onclick = function () {
-      if (busy) return; busy = true; var m = $('#m');
-      if (si <= 1) { m.innerHTML = 'Sorting… ⏳'; later(function () { m.textContent = '✔ Sorted ' + steps[si].toLocaleString() + ' rows in ' + tm[si] + '. Easy!'; busy = false; }, si ? 1100 : 300); return; }
-      var p = 0; m.innerHTML = 'Sorting… <span id="pp">0</span>% ⏳ <small>(estimated ' + tm[si] + ')</small>';
-      var iv = setInterval(function () { p += si === 2 ? 1 : .4; var e = $('#pp'); if (e) e.textContent = p.toFixed(0); if (p >= (si === 2 ? 7 : 2)) { clearInterval(iv); crash($('#stage'), '💥', 'Spreadsheet has fainted', si === 2 ? 'Not enough memory. The sheet froze at 7%.' : 'Disk full! 5 GB of rows, and the laptop only has 1 GB of memory left.', function () { discover('vol'); }); } }, 120); timers.push(iv);
-    };
+    clearAll(); var rounds = [5, 10, 100000], ri = 0, results = [];
+    function shuf(n) { var a; do { a = shuffle(Array.apply(null, Array(n)).map(function (_, i) { return i + 1; })); } while (a.every(function (v, i) { return v === i + 1; })); return a; }
+    function round() {
+      var n = rounds[ri], big = n > 20, arr = big ? shuf(12).map(function (v) { return v * 8123 % 100000 + 1; }) : shuf(n), sel = -1, moves = 0, t0 = Date.now(), locked = false;
+      function sorted() { return arr.every(function (v, i) { return !i || arr[i - 1] <= v; }); }
+      function draw() {
+        $('#cards').innerHTML = arr.map(function (v, i) { return '<button class="num ' + (i === sel ? 'sel' : '') + '" data-i="' + i + '">' + v + '</button>'; }).join('') + (big ? '<span class="more">… and 99,988 more numbers</span>' : '');
+        [].forEach.call(st.querySelectorAll('.num'), function (b) { b.onclick = pick; });
+        $('#mv').textContent = moves;
+      }
+      function pick(e) {
+        if (locked) return; var i = +e.currentTarget.dataset.i;
+        if (sel < 0) { sel = i; draw(); return; } if (sel === i) { sel = -1; draw(); return; }
+        var t = arr[sel]; arr[sel] = arr[i]; arr[i] = t; sel = -1; moves++; draw();
+        if (!big && sorted()) { locked = true; var sec = Math.round((Date.now() - t0) / 1000); results.push([n, sec, moves]); later(function () { $('#msg').innerHTML = '✅ Sorted! ' + n + ' numbers took you <b>' + sec + ' seconds</b> and <b>' + moves + ' moves</b>.'; $('#nx').classList.remove('hide'); }, 100); }
+        if (big && moves >= 3) { locked = true; later(function () { $('#msg').innerHTML = '🛑 <b>STOP!</b> You made 3 moves out of millions.'; crash($('#stage'), '🛑', 'Stop! This is far too much to sort', 'There are 100,000 numbers. Even a clever method needs about <b>1.7 million</b> steps. At one step per second that is about <b>19 days non-stop</b>. Your normal way of working cannot handle this much data.', function () { discover('vol'); }); }, 500); }
+      }
+      st.innerHTML = bytey(big ? 'Round 3: now sort <b>100,000</b> numbers!' : 'Round ' + (ri + 1) + ': sort these ' + n + ' numbers from smallest to largest.', big ? 'Same job as before. Try it!' : 'Tap one card, then tap another to swap them.') +
+        '<div class="stats"><span>Numbers: <b>' + n.toLocaleString() + '</b></span><span>Moves: <b id="mv">0</b></span></div><div class="cards" id="cards"></div><div class="msg" id="msg" style="background:rgba(255,255,255,.08);border-color:var(--line)">' + (big ? 'Go ahead…' : 'Smallest on the left, largest on the right.') + '</div><button class="btn hide" id="nx">' + (ri < 1 ? 'Next round ▶' : 'Round 3 ▶') + '</button>';
+      $('#nx').onclick = function () { ri++; round(); }; draw();
+    }
+    round();
   }
 
-  /* ================= experiment 2: variety ================= */
+  /* ================= experiment 2: variety (detective) ================= */
   function exp2() {
-    clearAll(); var items = [['📷', 'a photo of a receipt'], ['🎤', 'a voice message'], ['🎬', 'a video clip'], ['📍', 'a GPS location'], ['💬', 'a social-media post with emojis']], cur = -1, tried = {};
-    var cols = [['Name', 'short text'], ['Age', 'a number'], ['City', 'short text']];
-    st.innerHTML = bytey('Experiment 2: our tidy customer table is perfect! Now import today’s new data.', 'Tap a data item, then tap the column you want to put it in.') +
-      '<div class="items">' + items.map(function (x, i) { return '<button class="item" data-i="' + i + '">' + x[0] + ' ' + x[1] + '</button>'; }).join('') + '</div>' +
-      '<div class="cols">' + cols.map(function (c, i) { return '<button class="col" data-c="' + i + '">' + c[0] + '<small>' + c[1] + ' only</small></button>'; }).join('') + '</div><div class="msg" id="m" style="background:rgba(255,255,255,.08);border-color:var(--line)">Pick an item first.</div>';
-    var jokes = ['“Nope!”, says the table. “I only eat %t.”', 'Error 400: %i is not %t. Nice try! 🙃', 'The table spat it out. It is not %t.'];
-    [].forEach.call(st.querySelectorAll('.item'), function (b) { b.onclick = function () { cur = +b.dataset.i; [].forEach.call(st.querySelectorAll('.item'), function (x) { x.classList.toggle('sel', x === b); }); $('#m').textContent = 'Now tap a column for ' + items[cur][1] + '.'; }; });
-    [].forEach.call(st.querySelectorAll('.col'), function (b) {
+    clearAll();
+    var EV = [
+      { id: 'receipt', e: '🧾', n: 'Receipt', f: 'text', shown: '<div class="scene"><b>Mall Café</b><br>14:58 · 1 × milk tea · $28</div>' },
+      { id: 'photo', e: '📷', n: 'Photo', f: 'image', shown: '<div class="scene"><div style="font-size:38px">🏬 <b style="background:#fde68a;color:#0f172a;padding:0 8px;border-radius:6px">MALL</b> ☔</div><div>🕒 clock on the wall: <b>3:01 pm</b></div><div>🧍 someone with a red umbrella</div></div>', q: 'What does the photo show?', o: ['A school gate at 8 am', 'A MALL sign and a clock showing 3:01 pm', 'A blurry picture that proves nothing'], a: 1 },
+      { id: 'gps', e: '📍', n: 'GPS log', f: 'location', shown: '<div class="scene"><div class="map"><span>🏫 School</span><span class="pin">📍 Mall</span><span>🏠 Home</span></div><div>Phone location at <b>15:00</b>: the Mall</div></div>', q: 'Where was the phone at 3 pm?', o: ['At school', 'At the Mall', 'Switched off'], a: 1 },
+      { id: 'voice', e: '🎤', n: 'Voice message', f: 'audio', shown: '<div class="scene"><div class="wave">▂▄▇▃▆▂▅▇▃▂▄▆▃▂</div><i>“…the rain is so heavy, I will wait inside the mall…”</i><div>sent at <b>15:04</b></div></div>', q: 'What does the voice message say?', o: ['He is at home doing homework', 'He is waiting inside the mall at 3:04 pm', 'He is asking about the exam'], a: 1 },
+      { id: 'video', e: '🎬', n: 'CCTV video', f: 'video', shown: '<div class="scene"><div class="frames"><span>14:58<br>🚪</span><span>14:59<br>🧍➡️</span><span>15:00<br>🏬</span></div><div>CCTV at the Mall entrance: the same person walks in at <b>14:59</b></div></div>', q: 'What does the CCTV video show?', o: ['Nobody entered the Mall', 'A person walking into the Mall at 14:59', 'An empty street'], a: 1 }
+    ];
+    var tried = {}, pinned = {};
+    st.innerHTML = bytey('Detective time! 🕵️ Case: <b>“Prove that Ben was at the Mall at 3 pm.”</b>', 'You have a normal case table that stores only text and numbers. Open each piece of evidence.') +
+      '<div class="items" id="ev">' + EV.map(function (x) { return '<button class="item" data-id="' + x.id + '">' + x.e + ' ' + x.n + '<small style="display:block;font-weight:600;color:var(--mut)">' + x.f + '</small></button>'; }).join('') + '</div><div class="msg" id="m" style="background:rgba(255,255,255,.08);border-color:var(--line)">Open the evidence to see what the table can do.</div><div id="nxt"></div>';
+    [].forEach.call(st.querySelectorAll('.item'), function (b) {
       b.onclick = function () {
-        if (cur < 0) { $('#m').textContent = 'Pick a data item first.'; return; }
-        var c = cols[+b.dataset.c], it = items[cur]; $('#m').textContent = '❌ ' + jokes[Math.floor(Math.random() * 3)].replace('%t', c[1]).replace('%i', it[1]); st.classList.add('shake'); setTimeout(function () { st.classList.remove('shake'); }, 400);
-        tried[cur] = 1; st.querySelector('[data-i="' + cur + '"]').classList.add('tried'); st.querySelector('[data-i="' + cur + '"]').classList.remove('sel'); cur = -1;
-        if (Object.keys(tried).length === items.length) later(function () { crash($('#stage'), '🚫', 'Import failed: 0 of 5 items stored', 'None of the new data fits the table. It was built for neat rows of text and numbers.', function () { discover('vor'); }); }, 900);
+        var x = EV.filter(function (e) { return e.id === b.dataset.id; })[0]; tried[x.id] = 1;
+        if (x.f === 'text') { $('#m').innerHTML = '✔ Readable: ' + x.shown + 'But one receipt only shows the café, not Ben. It proves very little.'; }
+        else { b.classList.add('tried'); $('#m').textContent = '❌ Unsupported format: the table cannot open ' + x.n.toLowerCase() + ' (' + x.f + ') files. It only stores text and numbers.'; st.classList.add('shake'); setTimeout(function () { st.classList.remove('shake'); }, 400); }
+        if (Object.keys(tried).length === EV.length) $('#nxt').innerHTML = '<p class="sub">With only one readable receipt, the case cannot be proved. Open the big-data evidence room.</p><button class="btn" id="room">🔓 Open the evidence room</button>', $('#room').onclick = room;
       };
     });
+    function room() {
+      st.innerHTML = bytey('The evidence room reads <b>every</b> kind of data. Inspect each piece, then pin the clue that supports the case.', 'You need clues from different kinds of evidence to prove Ben was at the Mall at 3 pm.') +
+        '<div class="items" id="ev">' + EV.slice(1).concat([EV[0]]).map(function (x) { return '<button class="item" data-id="' + x.id + '">' + x.e + ' ' + x.n + '</button>'; }).join('') + '</div><div id="view" class="panel" style="background:rgba(0,0,0,.25)">Pick a piece of evidence above.</div>' +
+        '<h3 style="margin:14px 0 6px">📌 Case board: <span id="cnt">0</span> / 5 clues pinned</h3><div class="board" id="board"></div><div class="row" style="margin-top:12px"><button class="btn red" id="prove" disabled>⚖️ Prove the case</button></div>';
+      [].forEach.call(st.querySelectorAll('.item'), function (b) {
+        b.onclick = function () {
+          var x = EV.filter(function (e) { return e.id === b.dataset.id; })[0], v = $('#view');
+          v.innerHTML = x.shown + (x.q ? '<p style="font-weight:800;margin:10px 0 6px">' + x.q + '</p><div class="q">' + x.o.map(function (o, i) { return '<button class="opt" data-k="' + i + '">' + o + '</button>'; }).join('') + '</div>' : '<p class="sub">Text is the one format the old table could read.</p>' + (pinned[x.id] ? '' : '<button class="btn sm" id="pinr">📌 Pin this clue</button>'));
+          function pin() { pinned[x.id] = x; var c = Object.keys(pinned).length; $('#cnt').textContent = c; $('#board').innerHTML = Object.keys(pinned).map(function (k) { return '<span class="pinned">' + pinned[k].e + ' ' + pinned[k].f + '</span>'; }).join(''); b.classList.add('tried'); b.style.textDecoration = 'none'; b.style.opacity = '1'; b.style.borderColor = 'var(--ok)'; if (c >= 4) $('#prove').disabled = false; }
+          if (!x.q) { var pr = $('#pinr'); if (pr) pr.onclick = function () { pin(); v.innerHTML = '📌 Pinned!'; }; return; }
+          [].forEach.call(v.querySelectorAll('.opt'), function (o) { o.onclick = function () { if (+o.dataset.k === x.a) { o.classList.add('good'); pin(); $('.q', v).insertAdjacentHTML('afterend', '<div class="msg" style="background:rgba(16,185,129,.18);border-color:#34d399">📌 Clue pinned to the board!</div>'); [].forEach.call(v.querySelectorAll('.opt'), function (z) { z.disabled = true; }); } else { o.classList.add('no'); st.classList.add('shake'); setTimeout(function () { st.classList.remove('shake'); }, 400); } }; });
+        };
+      });
+      $('#prove').onclick = function () {
+        var kinds = Object.keys(pinned).map(function (k) { return pinned[k].f; }).join(', ');
+        $('#view').innerHTML = '<div class="stamp" style="border-color:#34d399;background:rgba(0,0,0,.3)"><div class="big" style="color:#6ee7b7;font-size:30px">CASE CLOSED ✅</div><div style="line-height:1.5">Ben was at the Mall at 3 pm, proved with <b>' + Object.keys(pinned).length + ' kinds of evidence</b>: ' + kinds + '.</div></div><button class="btn red" id="why">🤔 What made this case hard with the old table?</button>';
+        $('#why').onclick = function () { discover('vor'); };
+      };
+    }
   }
 
   /* ================= experiment 3: velocity ================= */
@@ -217,28 +258,40 @@ textarea{width:100%;min-height:64px;margin-top:6px;padding:10px;border-radius:12
     timers.push({ stop: 1 }); var stopper = setInterval(function () { if (!document.getElementById('belt')) { alive = false; clearInterval(stopper); } }, 500); timers.push(stopper);
   }
 
-  /* ================= experiment 4: veracity ================= */
+  /* ================= experiment 4: veracity (which phone?) ================= */
   function exp4() {
-    clearAll(); var vals = [21, 22, 20, 412, 23, -999, 21, 22, 999, 22, 21, 23], bad = { 3: 1, 5: 1, 8: 1 }, gone = {}, removed = 0;
-    function avg() { var a = vals.filter(function (v, i) { return !gone[i]; }); return (a.reduce(function (s, v) { return s + v; }, 0) / a.length).toFixed(1); }
-    st.innerHTML = bytey('Experiment 4: a weather sensor sends hourly temperatures. What is the average? I trust the data 100%!', 'Check the average. If it looks weird, tap the suspicious readings to remove them.') +
-      '<div class="stats"><span>Average: <span class="avg" id="av"></span> °C</span></div><div class="rd">' + vals.map(function (v, i) { return '<button class="rdc ' + (bad[i] ? 'bad' : '') + '" data-i="' + i + '">' + v + '°C</button>'; }).join('') + '</div><div class="msg" id="m" style="background:rgba(255,255,255,.08);border-color:var(--line)">Is a Hong Kong average of ' + avg() + ' °C believable?</div><div id="next"></div>';
-    $('#av').textContent = avg();
-    [].forEach.call(st.querySelectorAll('.rdc'), function (b) {
+    clearAll();
+    st.innerHTML = bytey('Experiment 4: you run a phone shop 📱. You can stock <b>100</b> phones of ONE model. Choose using the online ratings!', 'The ratings come from 1,000 reviews each.') +
+      '<div class="two"><button class="phone" data-p="A"><div style="font-size:44px">📱</div><b>Phone A</b><div class="avg" style="color:#fbbf24">4.6 ★</div><small>1,000 reviews</small></button><button class="phone" data-p="B"><div style="font-size:44px">📱</div><b>Phone B</b><div class="avg" style="color:#fbbf24">4.2 ★</div><small>1,000 reviews</small></button></div><div id="out"></div>';
+    [].forEach.call(st.querySelectorAll('.phone'), function (b) {
       b.onclick = function () {
-        var i = +b.dataset.i; if (gone[i]) return;
-        if (!bad[i]) { b.classList.add('no'); st.classList.add('shake'); setTimeout(function () { st.classList.remove('shake'); b.classList.remove('no'); }, 400); $('#m').textContent = '❌ That reading looks fine. Keep it.'; return; }
-        gone[i] = 1; b.classList.add('gone'); removed++; $('#av').textContent = avg();
-        if (removed < 3) { $('#m').textContent = '✔ Removed a crazy reading. Average is now ' + avg() + ' °C.'; return; }
-        $('#m').innerHTML = '✅ Clean! The average is now a sensible <b>' + avg() + ' °C</b>. Phew. Now let us try the REAL data set…';
-        $('#next').innerHTML = '<button class="btn red" id="real">📡 Load 1,000,000 real readings</button>'; $('#real').onclick = real;
+        [].forEach.call(st.querySelectorAll('.phone'), function (x) { x.disabled = true; }); b.classList.add('pick');
+        $('#out').innerHTML = b.dataset.p === 'A'
+          ? '<div class="msg">📦 A month later: <b>62 of 100 phones came back</b> as returns. Customers are angry and you lose <b>$24,800</b>. 😱</div><button class="btn" id="inv">🔍 Investigate Phone A’s 4.6 ★</button>'
+          : '<div class="msg" style="background:rgba(16,185,129,.18);border-color:#34d399">💰 Phone B sells well. But why was Phone A rated so highly? Let us look at its reviews.</div><button class="btn" id="inv">🔍 Investigate Phone A’s 4.6 ★</button>';
+        $('#inv').onclick = investigate;
       };
     });
-    function real() {
-      $('#next').innerHTML = ''; var n = 0, total = 470000;
-      st.innerHTML = bytey('Same job, bigger data. Just remove the bad readings again!', 'About 47% of the real data is spam or sensor errors. Start cleaning!') +
-        '<div class="stats"><span>Average: <b class="avg" style="color:var(--bad)">83.4 °C</b></span><span>Bad rows left: <b id="left">' + total.toLocaleString() + '</b></span></div><div class="meter"><i id="cl"></i></div><button class="btn" id="clean">🧹 Clean a bad row by hand</button><div class="msg" id="m" style="background:rgba(255,255,255,.08);border-color:var(--line)">Tap as fast as you can!</div>';
-      var b = $('#clean'); b.onclick = function () { n++; $('#left').textContent = (total - n).toLocaleString(); $('#cl').style.width = Math.max(1, n / total * 100) + '%'; $('#m').textContent = n < 8 ? 'Cleaned ' + n + ' row' + (n > 1 ? 's' : '') + '…' : 'Still ' + (total - n).toLocaleString() + ' to go. At this speed it takes about ' + Math.round((total - n) / 3600 / 24 * 10) / 10 + ' days. 😱'; if (n >= 12) crash($('#stage'), '😵', 'Bytey fainted', 'You cleaned ' + n + ' rows. There are ' + (total - n).toLocaleString() + ' more bad ones, and the average is still wrong. Wrong data leads to wrong decisions.', function () { discover('ver'); }); };
+    function investigate() {
+      var R = [['⭐⭐⭐⭐⭐', 'Best phone ever!!!', 'account made today', 'posted 10:01', 'no purchase', 1], ['⭐⭐⭐', 'Battery is only ok, screen scratches easily.', 'account made 3 years ago', 'posted Tue 18:20', 'verified purchase', 0],
+        ['⭐⭐⭐⭐⭐', 'Best phone ever!!!', 'account made today', 'posted 10:01', 'no purchase', 1], ['⭐⭐', 'Stopped working after 2 weeks.', 'account made 1 year ago', 'posted Sat 09:12', 'verified purchase', 0],
+        ['⭐⭐⭐⭐⭐', 'Amazing, buy now, five stars!', 'account made today', 'posted 10:02', 'no purchase', 1], ['⭐⭐⭐⭐', 'Good camera but the phone heats up.', 'account made 2 years ago', 'posted Mon 21:45', 'verified purchase', 0],
+        ['⭐⭐⭐⭐⭐', 'Best phone ever!!!', 'account made today', 'posted 10:02', 'no purchase', 1], ['⭐⭐⭐⭐⭐', 'Perfect!! Everyone must buy!!', 'account made today', 'posted 10:03', 'no purchase', 1],
+        ['⭐⭐⭐', 'Average. Would not buy again.', 'account made 6 months ago', 'posted Thu 13:30', 'verified purchase', 0], ['⭐⭐⭐⭐⭐', 'Best phone ever!!!', 'account made today', 'posted 10:03', 'no purchase', 1]];
+      var stars = function (r) { return (r[0].length / 1); }, flagged = {}, fakes = R.filter(function (r) { return r[5]; }).length;
+      var real = R.filter(function (r) { return !r[5]; });
+      function num(r) { return (r[0].match(/⭐/g) || []).length; }
+      function avgOf(list) { return list.length ? (list.reduce(function (s, r) { return s + num(r); }, 0) / list.length).toFixed(1) : '–'; }
+      function upd() { var keep = R.filter(function (r, i) { return !flagged[i]; }); $('#av').textContent = avgOf(keep); var done = R.every(function (r, i) { return !r[5] || flagged[i]; }); if (done) { $('#nxt').innerHTML = '<div class="stamp" style="border-color:#c084fc;background:rgba(0,0,0,.3)"><div class="big" style="color:#d8b4fe;font-size:26px">🕵️ GARBAGE IN, GARBAGE OUT</div><div style="line-height:1.55">Phone A’s real rating is only <b>' + avgOf(real) + ' ★</b>. Most of its 5-star reviews were fake. If the data cannot be trusted, the decision based on it is wrong. In the real data set, <b>80%</b> of Phone A’s 1,000 reviews were fake (an example for this game).</div></div><button class="btn red" id="why">🤔 Why did I choose wrongly?</button>'; $('#why').onclick = function () { discover('ver'); }; } }
+      st.innerHTML = bytey('Be a data detective! 🕵️ Flag every review that looks <b>fake</b>.', 'Clues: account made today, many posts at the same minute, copy-pasted text, no verified purchase.') +
+        '<div class="stats"><span>Rating of the reviews you keep: <b id="av" class="avg">' + avgOf(R) + '</b> ★</span><span>Fakes found: <b id="ff">0</b> / ' + fakes + '</span></div><div class="reviews">' + R.map(function (r, i) { return '<button class="rev" data-i="' + i + '"><span>' + r[0] + '</span> <b>' + r[1] + '</b><small>' + r[2] + ' · ' + r[3] + ' · ' + r[4] + '</small></button>'; }).join('') + '</div><div id="nxt"></div>';
+      [].forEach.call(st.querySelectorAll('.rev'), function (b) {
+        b.onclick = function () {
+          var i = +b.dataset.i; if (flagged[i]) return;
+          if (!R[i][5]) { b.classList.add('no'); st.classList.add('shake'); setTimeout(function () { st.classList.remove('shake'); b.classList.remove('no'); }, 450); return; }
+          flagged[i] = 1; b.classList.add('gone'); $('#ff').textContent = Object.keys(flagged).length; upd();
+        };
+      });
     }
   }
 
