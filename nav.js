@@ -24,7 +24,8 @@
     'bookb/ch3/os.html': 'Operating System', 'bookb/ch3/utility.html': 'Utility Software', 'bookb/ch3/driver.html': 'Device Driver',
     'bookb/ch3/processingmode.html': 'Processing Modes',
     'booke/ch1/bigdata4v.html': 'Big Data Lab',
-    'booke/ch1/trainmodel.html': 'Training Your Own AI Model'
+    'booke/ch1/trainmodel.html': 'Training Your Own AI Model',
+    'booke/ch2/tenyears.html': 'Ten Years Later'
   };
 
   var SITE = [ /* id, title, parent id, url (relative to site root), group */
