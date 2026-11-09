@@ -107,7 +107,7 @@ textarea{width:100%;min-height:64px;margin-top:6px;padding:10px;border-radius:12
 .meter.big{height:22px}
 .web{background:#f8fafc;color:#0f172a;border-radius:14px;padding:12px;display:grid;gap:8px;margin:10px 0}
 .wt{padding:8px 10px;border-radius:8px;background:#e2e8f0;cursor:pointer}.wt.read{background:#bbf7d0}
-.wi{padding:14px;border-radius:10px;background:#cbd5e1;text-align:center;font-size:36px;cursor:pointer}.wi small{display:block;font-size:12px;font-weight:700;color:#334155;margin-top:4px}.wi.mute{outline:3px solid #ef4444}.wi.small{font-size:28px;cursor:default}
+.wi{padding:6px;border-radius:10px;background:#cbd5e1;text-align:center;font-size:36px;cursor:pointer}.wi small{display:block;font-size:12px;font-weight:700;color:#334155;margin-top:4px}.wi.mute{outline:3px solid #ef4444}.wi.small{font-size:28px;cursor:default}
 .reader{background:#0f172a;border:2px solid #38bdf8;border-radius:12px;padding:10px;font-weight:700;min-height:44px;margin:8px 0;line-height:1.5}
 .webbtn{border:0;border-radius:10px;padding:12px;background:#2563eb;color:#fff;font-weight:900;font-size:16px}.webbtn:disabled{background:#16a34a}
 .dsr{display:grid;grid-template-columns:130px 1fr;gap:8px;align-items:center;margin:8px 0}@media(max-width:480px){.dsr{grid-template-columns:1fr}}
@@ -162,7 +162,7 @@ input[type=text]{width:100%;font:inherit;padding:10px 12px;border-radius:12px;bo
   'use strict';
   var $ = function (s, r) { return (r || document).querySelector(s); };
   var st = $('#stage'), timers = [], raf = 0;
-  function clearAll() { timers.forEach(function (t) { clearTimeout(t); clearInterval(t); }); timers = []; cancelAnimationFrame(raf); }
+  function clearAll() { try { speechSynthesis.cancel(); } catch (e) {} timers.forEach(function (t) { clearTimeout(t); clearInterval(t); }); timers = []; cancelAnimationFrame(raf); }
   function esc(s) { return String(s).replace(/[&<>"]/g, function (c) { return { '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;' }[c]; }); }
   function bot(msg, small) { return '<div class="say"><div class="bot">🤖</div><div class="bub">' + msg + (small ? '<small>' + small + '</small>' : '') + '</div></div>'; }
   function shuffle(a) { a = a.slice(); for (var i = a.length - 1; i > 0; i--) { var j = Math.floor(Math.random() * (i + 1)), t = a[i]; a[i] = a[j]; a[j] = t; } return a; }
@@ -177,9 +177,9 @@ input[type=text]{width:100%;font:inherit;padding:10px 12px;border-radius:12px;bo
   var PEOPLE = [
     { n: 'Grandma Mei', face: '👵', cause: 'age', help: 'train', bub: '📱❓', say: 'I do not know how to use apps or mobile payment…', ok: 'Now she shops and pays online!', skin: '#fcd9b6', hair: '#d1d5db', shirt: '#a855f7', pants: '#475569', ty: 'granny' },
     { n: 'Ling', face: '👧', cause: 'inc', help: 'sub', bub: '💻❌ 📶❌', say: 'My family shares one old phone and cannot afford home Internet.', ok: 'Ling joins the school online quiz from home!', skin: '#fcd9b6', hair: '#111827', shirt: '#38bdf8', pants: '#1e3a8a', ty: 'ling' },
-    { n: 'Farmer Wong', face: '👨‍🌾', cause: 'loc', help: 'wifi', bub: '📡❌', say: 'My remote village has no good Internet signal.', ok: 'The village is online at last!', skin: '#e0a46b', hair: '#1f2937', shirt: '#84cc16', pants: '#78350f', ty: 'farmer' },
+    { n: 'Farmer Wong', face: '👨‍🌾', cause: 'loc', help: 'wifi', bub: '📡❌', say: 'I keep walking around my village, but my phone never gets a signal.', ok: 'The village is online at last!', skin: '#e0a46b', hair: '#1f2937', shirt: '#84cc16', pants: '#78350f', ty: 'farmer' },
     { n: 'Kai', face: '🧑‍🦯', cause: 'dis', help: 'assist', bub: '🖼️❓', say: 'I am blind. The website pictures say nothing to me.', ok: 'Kai’s screen reader reads the whole page!', skin: '#fcd9b6', hair: '#1f2937', shirt: '#f97316', pants: '#334155', ty: 'kai' },
-    { n: 'Maria', face: '👩🏾', cause: 'lang', help: 'multi', bub: '🔤❓', say: 'I just arrived. Every website is in a language I cannot read.', ok: 'Maria can read the website in her language!', skin: '#a16240', hair: '#1c1917', shirt: '#ec4899', pants: '#4c1d95', ty: 'maria' }
+    { n: 'Maria', face: '👩🏾', cause: 'lang', help: 'multi', bub: '🔤❓', say: 'I just arrived from Japan. I can only read Japanese.', ok: 'Maria can read the website in Japanese!', skin: '#a16240', hair: '#1c1917', shirt: '#ec4899', pants: '#4c1d95', ty: 'maria' }
   ];
 
   /* ---------- the scene ---------- */
@@ -339,18 +339,6 @@ input[type=text]{width:100%;font:inherit;padding:10px 12px;border-radius:12px;bo
     return s + (o.extra || '') + '</svg>';
   }
   var HOUSES = [[60, 90], [100, 150], [140, 100], [110, 62], [215, 180]];
-  function g3a(h, done) {
-    var probes = [], n = 0, cityDone = false;
-    h.innerHTML = '<div class="shopx">📡 <b>Signal hunt.</b> Tap on the map to check the phone signal. Probe the village 4 times.<div class="stagebox" id="mb"></div><div class="stats"><span>Village probes: <b id="vp">0</b> / 4</span></div><div class="msg" id="gm">Tap the map!</div></div>';
-    function bars(x, y) { var d = Math.hypot(x - 372, y - 70); return d < 50 ? 4 : d < 80 ? 3 : d < 115 ? 2 : d < 150 ? 1 : 0; }
-    function draw() { var ex = probes.map(function (p) { return '<g><circle cx="' + p[0] + '" cy="' + p[1] + '" r="14" fill="#0f172a" stroke="' + (p[2] ? '#34d399' : '#ef4444') + '" stroke-width="3"/><text x="' + p[0] + '" y="' + (p[1] + 5) + '" font-size="14" text-anchor="middle">' + (p[2] ? '📶' : '❌') + '</text></g>'; }).join(''); $('#mb').innerHTML = mapSvg({ houses: HOUSES.map(function (x) { return x.slice(); }), extra: ex }); $('#map').onclick = tap; }
-    function tap(e) {
-      var r = $('#map').getBoundingClientRect(), x = (e.clientX - r.left) * 420 / r.width, y = (e.clientY - r.top) * 240 / r.height, b = bars(x, y); probes.push([x, y, b]);
-      if (x < 262) { if (!(b > 0)) n++; $('#vp').textContent = Math.min(n, 4); setMsg($('#gm'), '❌ No signal here. 0 bars.', 'no'); } else setMsg($('#gm'), '📶 ' + b + ' bars. The city is fine.', 'good');
-      draw(); if (n >= 4 && !$('#cb')) contBtn(h, '🔍 What went wrong?', done), h.lastChild.id = 'cb';
-    }
-    draw();
-  }
   function g3b(h, done) {
     var spot = null, R = 64;
     h.innerHTML = '<div class="shopx">🛠️ <b>Build a free Wi-Fi hotspot.</b> Tap the map to place it so that at least 4 of the 5 houses are covered.<div class="stagebox" id="mb"></div><div class="stats"><span>Houses online: <b id="ho">0</b> / 5</span></div><div class="msg" id="gm">Tap in the village to place the hotspot.</div></div>';
@@ -365,42 +353,111 @@ input[type=text]{width:100%;font:inherit;padding:10px 12px;border-radius:12px;bo
     draw();
   }
 
-  /* 4. Kai: listen to the page, then write the descriptions */
-  var PICS = [['🏃🏅', 'SPORTS DAY · FRIDAY 3 PM · school field', 'the Sports Day poster'], ['🚌🗺️', 'Bus stop B is 2 minutes from the school gate', 'the bus map'], ['📊📅', 'Exams: Chinese 1 Dec · Maths 3 Dec', 'the exam chart']];
+  /* ===== 3. Farmer Wong: animation of no signal and the 10-day newspaper ===== */
+  function animFarmer(h, next) {
+    var c = PEOPLE[2], T = 13, ended = false;
+    h.innerHTML = '<div class="stagebox" id="sb"></div><div class="qh" id="cap"></div><div class="row" style="justify-content:center" id="ab"><button class="btn sec sm" id="skip">Skip ▶</button></div>';
+    function end() { if (ended) return; ended = true; cancelAnimationFrame(raf); $('#cap').textContent = '📰 The news arrived 10 days late!'; $('#ab').innerHTML = '<button class="btn" id="why">🔍 Why is there no signal?</button>'; $('#why').onclick = next; }
+    $('#skip').onclick = end;
+    function frame(t) {
+      var walkPhase = t < 8, day = t < 8 ? 0 : Math.min(10, Math.floor((t - 8) / 3.6 * 10) + 1), x = walkPhase ? 60 + 190 * (0.5 + 0.5 * Math.sin(t * .85 - 1.2)) : 205;
+      var s = '<svg viewBox="0 0 420 260" role="img" aria-label="Farmer Wong walks around but his phone has no signal"><rect width="420" height="260" fill="' + (day && day % 2 === 0 ? '#1e1b4b' : '#38bdf8') + '"/>';
+      s += '<polygon points="0,170 70,110 140,165 210,105 300,170 420,120 420,260 0,260" fill="#4d7c0f"/><polygon points="0,205 120,170 260,200 420,175 420,260 0,260" fill="#65a30d"/><rect y="205" width="420" height="55" fill="#a16207" opacity=".55"/>';
+      s += '<text x="' + (day && day % 2 === 0 ? 60 : 340) + '" y="40" font-size="30">' + (day && day % 2 === 0 ? '🌙' : '☀️') + '</text>';
+      /* tower far away */
+      s += '<text x="392" y="84" font-size="38" text-anchor="middle">📡</text><text x="392" y="102" font-size="9" fill="#fff" text-anchor="middle" font-weight="800">CITY TOWER</text>';
+      [30, 55, 80].forEach(function (r, i) { var ph = (t * 1.4 + i * .7) % 2.1, op = Math.max(0, .55 - ph * .28); s += '<path d="M' + (392 - r * .8) + ' ' + (68 - r * .5) + ' Q' + (392 - r * 1.1) + ' 68 ' + (392 - r * .8) + ' ' + (68 + r * .5) + '" stroke="#fff" stroke-width="3" fill="none" opacity="' + op + '"/>'; });
+      s += '<line x1="298" y1="70" x2="298" y2="205" stroke="#fde68a" stroke-dasharray="5 4"/><text x="296" y="64" font-size="10" fill="#fde68a" text-anchor="end" font-weight="800">signal stops here</text>';
+      /* village houses */
+      [[30, 190], [120, 180], [215, 188]].forEach(function (b) { s += '<text x="' + b[0] + '" y="' + b[1] + '" font-size="26" text-anchor="middle" opacity=".9">🏠</text>'; });
+      /* message bouncing */
+      if (walkPhase) { var mx = 390 - Math.abs(Math.sin(t * 1.3)) * 86; s += '<text x="' + mx + '" y="' + (140 + Math.sin(t * 9) * 3) + '" font-size="26" text-anchor="middle">✉️</text>'; if (mx < 320) s += '<text x="' + (mx - 4) + '" y="124" font-size="10" fill="#fff" text-anchor="end" font-weight="800">Mr. Lam is getting married! 💒</text>'; }
+      /* farmer */
+      s += person(c, x, 205, { walking: walkPhase, t: t, mood: t > 12 ? 0 : .08, bubble: walkPhase ? '📵' : (day === 10 ? '😲' : null) });
+      s += '<g><rect x="' + (x + 14) + '" y="146" width="13" height="22" rx="3" fill="#0f172a" stroke="#cbd5e1" stroke-width="1.5"/><text x="' + (x + 20.5) + '" y="161" font-size="11" text-anchor="middle" class="flash">❌</text></g>';
+      if (walkPhase) s += '<g transform="translate(' + (x - 12) + ',148)"><rect width="34" height="14" rx="6" fill="#0f172a" opacity=".85"/><text x="17" y="11" font-size="9" fill="#f87171" text-anchor="middle" font-weight="800">0 bars</text></g>';
+      /* calendar + newspaper */
+      if (!walkPhase) {
+        s += '<rect x="14" y="14" width="86" height="64" rx="8" fill="#fff"/><rect x="14" y="14" width="86" height="18" rx="8" fill="#dc2626"/><text x="57" y="28" font-size="11" fill="#fff" text-anchor="middle" font-weight="800">WAITING…</text><text x="57" y="64" font-size="30" fill="#0f172a" text-anchor="middle" font-weight="900">Day ' + day + '</text>';
+        var px = day >= 10 ? Math.max(262, 420 - (t - 11.6) / 1.0 * 160) : 440; s += '<text x="' + px + '" y="196" font-size="34" text-anchor="middle">🚲</text>';
+        if (day >= 10) { s += '<g transform="translate(112,10) rotate(-3)"><rect width="150" height="96" rx="6" fill="#f5f5f4" stroke="#78716c" stroke-width="2"/><text x="75" y="18" font-size="11" text-anchor="middle" font-weight="900" fill="#1c1917">THE VILLAGE NEWS</text><line x1="10" y1="24" x2="140" y2="24" stroke="#78716c"/><text x="75" y="46" font-size="12" text-anchor="middle" font-weight="900" fill="#b91c1c">Mr. Lam is getting</text><text x="75" y="62" font-size="12" text-anchor="middle" font-weight="900" fill="#b91c1c">married! 💒</text><text x="75" y="84" font-size="9" text-anchor="middle" fill="#57534e">posted 10 days ago</text></g>'; }
+      }
+      return s + '</svg>';
+    }
+    anim(T * 1000, function (tt) { var t = tt * T; $('#sb').innerHTML = frame(t); $('#cap').textContent = t < 4 ? '🚶 Farmer Wong keeps walking, but his phone never gets a signal…' : t < 8 ? '✉️ Mr. Lam’s message cannot reach him. The tower is too far away!' : '📰 He waits… and waits. News only arrives by newspaper.'; }, end);
+  }
+
+  /* ===== 4. Kai: a real screen reader ===== */
+  function speak(text) { try { if ('speechSynthesis' in window) { window.speechSynthesis.cancel(); var u = new SpeechSynthesisUtterance(text); u.lang = 'en-US'; u.rate = .95; window.speechSynthesis.speak(u); return true; } } catch (e) {} return false; }
+  var NOSOUND = ' (This browser cannot speak. Read the reader bar instead.)';
+  function picSvg(i) {
+    var s = '<svg viewBox="0 0 200 130" style="width:100%;display:block;border-radius:8px" role="img" aria-hidden="true">';
+    if (i === 0) s += '<rect width="200" height="130" fill="#fde68a"/><rect x="0" y="100" width="200" height="30" fill="#4ade80"/><text x="100" y="30" font-size="21" text-anchor="middle" font-weight="900" fill="#b91c1c">SPORTS DAY</text><circle cx="52" cy="58" r="9" fill="#92400e"/><path d="M52 67 L44 92 M52 67 L62 84 L78 80 M52 70 L36 78 M44 92 L34 108 M44 92 L58 104" stroke="#1d4ed8" stroke-width="6" stroke-linecap="round" fill="none"/><text x="140" y="60" font-size="15" text-anchor="middle" font-weight="900" fill="#0f172a">FRIDAY</text><text x="140" y="80" font-size="20" text-anchor="middle" font-weight="900" fill="#0f172a">3 PM</text><text x="140" y="97" font-size="10" text-anchor="middle" fill="#0f172a">School field</text><circle cx="170" cy="30" r="9" fill="#f59e0b"/>';
+    else if (i === 1) s += '<rect width="200" height="130" fill="#e0f2fe"/><path d="M0 30 H200 M0 70 H200 M0 110 H200 M40 0 V130 M100 0 V130 M160 0 V130" stroke="#bae6fd" stroke-width="2"/><path d="M10 105 L60 105 L60 60 L120 60 L120 25 L190 25" stroke="#dc2626" stroke-width="5" fill="none"/><circle cx="60" cy="105" r="8" fill="#fff" stroke="#dc2626" stroke-width="3"/><text x="60" y="109" font-size="10" text-anchor="middle" font-weight="900">A</text><circle cx="120" cy="60" r="9" fill="#fbbf24" stroke="#b45309" stroke-width="3"/><text x="120" y="64" font-size="11" text-anchor="middle" font-weight="900">B</text><text x="160" y="44" font-size="18" text-anchor="middle">🏫</text><text x="142" y="82" font-size="9" fill="#0f172a" font-weight="800">2 min walk</text><path d="M126 66 L150 50" stroke="#0f172a" stroke-dasharray="3 3"/><text x="100" y="125" font-size="9" fill="#0369a1" font-weight="800" text-anchor="middle">BUS ROUTE 12</text>';
+    else s += '<rect width="200" height="130" fill="#f8fafc"/><text x="100" y="18" font-size="13" text-anchor="middle" font-weight="900" fill="#0f172a">EXAM DATES</text><rect x="38" y="52" width="40" height="58" fill="#ef4444"/><rect x="118" y="32" width="40" height="78" fill="#3b82f6"/><text x="58" y="46" font-size="10" text-anchor="middle" font-weight="900" fill="#0f172a">1 Dec</text><text x="138" y="26" font-size="10" text-anchor="middle" font-weight="900" fill="#0f172a">3 Dec</text><text x="58" y="124" font-size="11" text-anchor="middle" font-weight="800" fill="#0f172a">Chinese</text><text x="138" y="124" font-size="11" text-anchor="middle" font-weight="800" fill="#0f172a">Maths</text>';
+    return s + '</svg>';
+  }
+  var PICS = [['Sports Day poster'], ['bus route map'], ['exam dates chart']];
   function g4a(h, done) {
-    var heard = {};
-    h.innerHTML = '<div class="shopx">🎧 <b>You are Kai.</b> You use a screen reader that reads the page aloud. Tap each part of the page to hear it.<div class="web"><div class="wt" data-t="School website. Welcome to St. Paul School.">🏫 <b>St. Paul School</b></div><div class="wt" data-t="Sports Day is coming soon.">Sports Day is coming soon!</div><div class="wi" data-i="0">' + PICS[0][0] + '<small>' + PICS[0][1] + '</small></div><div class="wt" data-t="Getting to school.">How to get here</div><div class="wi" data-i="1">' + PICS[1][0] + '<small>' + PICS[1][1] + '</small></div><div class="wt" data-t="Exam dates.">Exam dates</div><div class="wi" data-i="2">' + PICS[2][0] + '<small>' + PICS[2][1] + '</small></div></div><div class="reader" id="rd">🔊 Screen reader is waiting…</div><div class="stats"><span>Pictures heard: <b id="hn">0</b> / 3</span></div></div>';
-    [].forEach.call(h.querySelectorAll('.wt'), function (el) { el.onclick = function () { $('#rd').innerHTML = '🔊 “' + esc(el.dataset.t) + '”'; el.classList.add('read'); }; });
-    [].forEach.call(h.querySelectorAll('.wi'), function (el) { el.onclick = function () { $('#rd').innerHTML = '🔊 “image… image…” <b>❓</b>'; shake(); el.classList.add('mute'); heard[el.dataset.i] = 1; $('#hn').textContent = Object.keys(heard).length; if (Object.keys(heard).length === 3 && !$('#cb')) contBtn(h, '🔍 What went wrong?', done), h.lastChild.id = 'cb'; }; });
+    var heard = {}, can = 'speechSynthesis' in window;
+    h.innerHTML = '<div class="shopx">🎧 <b>You are Kai.</b> A screen reader <b>speaks the page aloud</b> (turn your sound on!). Tap each part of the page to hear it.' + (can ? '' : '<div class="msg no">' + NOSOUND + '</div>') + '<div class="web"><div class="wt" data-t="School website. Welcome to St. Paul School.">🏫 <b>St. Paul School</b></div><div class="wt" data-t="Sports Day is coming soon.">Sports Day is coming soon!</div><div class="wi" data-i="0">' + picSvg(0) + '</div><div class="wt" data-t="How to get to school.">How to get to school</div><div class="wi" data-i="1">' + picSvg(1) + '</div><div class="wt" data-t="Exam dates.">Exam dates</div><div class="wi" data-i="2">' + picSvg(2) + '</div></div><div class="reader" id="rd">🔊 Screen reader is waiting…</div><div class="stats"><span>Pictures tapped: <b id="hn">0</b> / 3</span></div></div>';
+    [].forEach.call(h.querySelectorAll('.wt'), function (el) { el.onclick = function () { $('#rd').innerHTML = '🔊 “' + esc(el.dataset.t) + '”'; speak(el.dataset.t); el.classList.add('read'); }; });
+    [].forEach.call(h.querySelectorAll('.wi'), function (el) { el.onclick = function () { $('#rd').innerHTML = '🔊 “image… image…” <b>❓ Kai learns nothing!</b>'; speak('image. image.'); shake(); el.classList.add('mute'); heard[el.dataset.i] = 1; $('#hn').textContent = Object.keys(heard).length; if (Object.keys(heard).length === 3 && !$('#cb')) contBtn(h, '🔍 What went wrong?', done), h.lastChild.id = 'cb'; }; });
   }
   function g4b(h, done) {
-    h.innerHTML = '<div class="shopx">✍️ <b>Describe each picture</b> so that Kai can “see” it. Write what the picture tells people.<div id="ds">' + PICS.map(function (p, i) { return '<div class="dsr"><div class="wi small">' + p[0] + '<small>' + p[1] + '</small></div><input type="text" maxlength="90" data-i="' + i + '" placeholder="Describe ' + p[2] + '…" aria-label="Description of ' + p[2] + '"></div>'; }).join('') + '</div><div class="err" id="er"></div><div class="row"><button class="btn" id="on">🔊 Turn on the screen reader</button></div><div class="reader" id="rd"></div></div>';
+    var CHK = [
+      { ok: function (t) { return /sport/i.test(t) && /(fri|3 ?pm|3:00|three)/i.test(t); }, hint: 'Say what the event is and when it is (day and time).', eg: 'Sports Day poster: Friday at 3 PM on the school field' },
+      { ok: function (t) { return /bus/i.test(t) && /(stop b|2 ?min|two min|gate|school)/i.test(t); }, hint: 'Say which bus stop to use and how far the school gate is.', eg: 'Bus map: get off at stop B, 2 minutes walk to the school' },
+      { ok: function (t) { return /exam/i.test(t) && /(chinese|math|dec)/i.test(t); }, hint: 'Say which exams there are and their dates.', eg: 'Exam dates: Chinese on 1 Dec and Maths on 3 Dec' }
+    ], can = 'speechSynthesis' in window, texts = [];
+    h.innerHTML = '<div class="shopx">✍️ <b>Write the picture descriptions</b> (alt text) so the screen reader can tell Kai what each picture says. Look at each picture and type the key facts.<div id="ds">' + CHK.map(function (c, i) { return '<div class="dsr"><div class="wi small">' + picSvg(i) + '</div><div><input type="text" maxlength="100" data-i="' + i + '" placeholder="e.g. ' + esc(c.eg) + '" aria-label="Description of picture ' + (i + 1) + '"><div class="err" id="e' + i + '"></div></div></div>'; }).join('') + '</div><div class="row"><button class="btn" id="on">🔊 Turn on the screen reader</button></div><div class="reader hide" id="rd"></div><div id="nxt"></div></div>';
     $('#on').onclick = function () {
-      var v = [].map.call(h.querySelectorAll('input'), function (x) { return x.value.trim(); }); if (v.some(function (t) { return t.length < 10; })) { $('#er').textContent = 'Write at least 10 letters for every picture.'; return; } $('#er').textContent = '';
-      $('#on').disabled = true; $('#rd').innerHTML = v.map(function (t) { return '🔊 “image: ' + esc(t) + '”'; }).join('<br>') + '<br>😀 <b>Kai can understand the whole page now!</b>'; lt(done, 2400);
+      var ok = true; texts = [];
+      CHK.forEach(function (c, i) { var v = h.querySelectorAll('input')[i].value.trim(); texts.push(v); var good = c.ok(v); $('#e' + i).textContent = good ? '' : '⚠️ ' + c.hint; if (!good) ok = false; });
+      if (!ok) return;
+      $('#on').disabled = true; var rd = $('#rd'); rd.classList.remove('hide'); rd.innerHTML = '<div class="msg" style="margin:0 0 6px">🔊 Screen reader on. Listen!</div>' + texts.map(function (t, i) { return '<div>🔊 “picture: ' + esc(t) + '”</div>'; }).join('') + '<div style="margin-top:6px">😀 <b>Kai can understand the whole page now!</b></div>' + (can ? '' : '<div>' + NOSOUND + '</div>');
+      var say1 = function () { speak('School website. Sports Day is coming soon. Picture: ' + texts[0] + '. How to get to school. Picture: ' + texts[1] + '. Exam dates. Picture: ' + texts[2] + '.'); };
+      say1(); $('#nxt').innerHTML = '<div class="row" style="margin-top:10px"><button class="btn sec" id="rp">🔁 Hear it again</button></div>'; $('#rp').onclick = say1; lt(function () { contBtn(h, 'Done ▶', function () { try { speechSynthesis.cancel(); } catch (e) {} done(); }); }, 2500);
     };
   }
 
-  /* 5. Maria: guess the buttons, then switch language */
-  var LANGS = { zh: ['中文', '疫苗預約', '預約', '取消預約', '刪除我的資料'], en: ['English', 'Vaccine booking', 'Book appointment', 'Cancel appointment', 'Delete my data'], fil: ['Filipino', 'Pagpapabakuna', 'Mag-book ng appointment', 'Kanselahin', 'Burahin ang data ko'], ja: ['日本語', 'ワクチン予約', '予約する', 'キャンセル', 'データを削除'], fr: ['Français', 'Réservation du vaccin', 'Réserver', 'Annuler', 'Supprimer mes données'] };
-  function g5a(h, done) {
-    var order = shuffle([2, 3, 4]), used = false, L = LANGS.zh;
-    h.innerHTML = '<div class="shopx">🗨️ <b>You are Maria.</b> “I want to <b>book a vaccine appointment</b> for my child.” Choose a button.<div class="web"><div class="wt"><b>🏥 ' + L[1] + '</b></div>' + order.map(function (k) { return '<button class="webbtn" data-k="' + k + '">' + L[k] + '</button>'; }).join('') + '</div><div class="msg" id="gm">You cannot read the buttons… tap one!</div></div>';
-    [].forEach.call(h.querySelectorAll('.webbtn'), function (b) {
-      b.onclick = function () {
-        var k = +b.dataset.k; shake(); setMsg($('#gm'), k === 2 ? '🍀 Lucky guess! It said “Book appointment”. But Maria could not have known.' : k === 3 ? '😱 Oops! That said “Cancel appointment”. Her old booking is gone!' : '😱 Oops! That said “Delete my data”. Her account is erased!', k === 2 ? 'good' : 'no');
-        if (!used) { used = true; contBtn(h, '🔍 What went wrong?', done); }
-      };
-    });
+  /* ===== 5. Maria: information in English, but she reads only Japanese ===== */
+  function animMaria(h, next) {
+    var c = PEOPLE[4], T = 12, ended = false;
+    var EN = [['🏥', 'Vaccine booking opens'], ['🚌', 'Bus route changed'], ['📶', 'Free Wi-Fi sign-up'], ['🏫', 'School newsletter'], ['💼', 'Job vacancies'], ['🌧️', 'Rainstorm warning'], ['🛒', 'Shop discounts'], ['📰', 'Local news'], ['🏦', 'Open a bank account'], ['📧', 'Tax form reminder']];
+    var CARDS = [], JA = { 5: ['🏥', 'ワクチン予約'], 12: ['🌧️', '大雨警報'] }, ei = 0;
+    for (var i = 0; i < 16; i++) { if (JA[i]) CARDS.push({ t: JA[i][1], e: JA[i][0], jp: 1 }); else { var q = EN[ei++ % EN.length]; CARDS.push({ t: q[1], e: q[0], jp: 0 }); } }
+    h.innerHTML = '<div class="stagebox" id="sb"></div><div class="qh" id="cap"></div><div class="row" style="justify-content:center" id="ab"><button class="btn sec sm" id="skip">Skip ▶</button></div>';
+    function end() { if (ended) return; ended = true; cancelAnimationFrame(raf); $('#cap').textContent = '😵 Maria understands only 2 out of 16 pieces of information!'; $('#ab').innerHTML = '<button class="btn" id="why">🔍 Why is she missing so much?</button>'; $('#why').onclick = next; }
+    $('#skip').onclick = end;
+    function frame(t) {
+      var s = '<svg viewBox="0 0 420 260" role="img" aria-label="Information cards in English pass by Maria, who reads only Japanese"><rect width="420" height="260" fill="#2a1f4a"/><rect y="205" width="420" height="55" fill="#4c3b6b"/>';
+      var got = 0, miss = 0;
+      CARDS.forEach(function (cd, k) {
+        var t0 = k * 0.62, p = (t - t0) / 3.4; if (p < 0) return; var x = 440 - p * 300, y = 40 + (k % 4) * 42;
+        if (x < 150) { if (cd.jp) got++; else miss++; if (x < 110) return; }
+        var op = x < 175 ? Math.max(0, (x - 110) / 65) : 1;
+        s += '<g opacity="' + op + '"><rect x="' + x + '" y="' + y + '" width="130" height="34" rx="9" fill="#fff"/><text x="' + (x + 16) + '" y="' + (y + 22) + '" font-size="16" text-anchor="middle">' + cd.e + '</text><text x="' + (x + 30) + '" y="' + (y + 22) + '" font-size="11" fill="#0f172a" font-weight="800">' + esc(cd.t) + '</text><rect x="' + (x + 94) + '" y="' + (y - 7) + '" width="34" height="14" rx="7" fill="' + (cd.jp ? '#16a34a' : '#2563eb') + '"/><text x="' + (x + 111) + '" y="' + (y + 3.5) + '" font-size="9" fill="#fff" text-anchor="middle" font-weight="900">' + (cd.jp ? '日本語' : 'English') + '</text></g>';
+      });
+      s += person(c, 90, 205, { mood: got ? .3 : .05, t: t });
+      s += '<rect x="68" y="150" width="13" height="22" rx="3" fill="#0f172a" stroke="#94a3b8" stroke-width="1.5"/>';
+      var emo = got && Math.floor(t * 2) % 5 === 0 ? '🇯🇵✔' : ['❓', '😵', '🔤❓', '？？？'][Math.floor(t * 1.4) % 4];
+      s += '<circle cx="104" cy="94" r="4" fill="#fff"/><circle cx="112" cy="82" r="6" fill="#fff"/><rect x="100" y="38" width="80" height="40" rx="18" fill="#fff"/><text x="140" y="66" font-size="20" text-anchor="middle">' + emo + '</text>';
+      s += '<rect x="12" y="212" width="190" height="38" rx="10" fill="#0f172a" stroke="#94a3b8"/><text x="107" y="228" font-size="11" fill="#e2e8f0" text-anchor="middle" font-weight="800">Understood: ' + got + ' / ' + (got + miss) + '</text><rect x="26" y="234" width="162" height="8" rx="4" fill="#334155"/><rect x="26" y="234" width="' + (got + miss ? 162 * got / (got + miss) : 0) + '" height="8" rx="4" fill="#22c55e"/>';
+      return s + '</svg>';
+    }
+    anim(T * 1000, function (tt) { var t = tt * T; $('#sb').innerHTML = frame(t); $('#cap').textContent = t < 3.5 ? '📚 Maria needs news, bookings and notices…' : t < 7.5 ? '🔤 But almost all of them are in English!' : '🇯🇵 She can only read Japanese, so she misses most of it!'; }, end);
   }
+  var LANGS = { zh: ['中文', '疫苗預約', '預約', '取消預約', '刪除我的資料'], en: ['English', 'Vaccine booking', 'Book appointment', 'Cancel appointment', 'Delete my data'], fil: ['Filipino', 'Pagpapabakuna', 'Mag-book ng appointment', 'Kanselahin', 'Burahin ang data ko'], ja: ['日本語', 'ワクチン予約', '予約する', 'キャンセル', 'データを削除'], fr: ['Français', 'Réservation du vaccin', 'Réserver', 'Annuler', 'Supprimer mes données'] };
   function g5b(h, done) {
     var lang = 'zh', ok = false;
-    h.innerHTML = '<div class="shopx">🌐 <b>Maria says: “I can read English or Filipino.”</b> Use the language menu.<div class="langs" id="lg">' + Object.keys(LANGS).map(function (k) { return '<button class="chp" data-l="' + k + '">' + LANGS[k][0] + '</button>'; }).join('') + '</div><div class="web" id="pg"></div><div class="msg" id="gm">Pick a language.</div></div>';
-    function page() { var L = LANGS[lang]; $('#pg').innerHTML = '<div class="wt"><b>🏥 ' + L[1] + '</b></div><button class="webbtn" id="bk">' + L[2] + '</button>'; $('#bk').onclick = function () { if (!ok) { shake(); setMsg($('#gm'), '❓ Maria cannot read this page yet.', 'no'); return; } $('#bk').disabled = true; setMsg($('#gm'), '🎉 Maria booked the appointment all by herself!', 'good'); lt(done, 1300); }; }
+    h.innerHTML = '<div class="shopx">🌐 <b>Maria says: “I can only read Japanese.”</b> Use the language menu to make the clinic page readable for her.<div class="langs" id="lg">' + shuffle(Object.keys(LANGS)).map(function (k) { return '<button class="chp" data-l="' + k + '">' + LANGS[k][0] + '</button>'; }).join('') + '</div><div class="web" id="pg"></div><div class="msg" id="gm">Pick a language.</div></div>';
+    function page() { var L = LANGS[lang]; $('#pg').innerHTML = '<div class="wt"><b>🏥 ' + L[1] + '</b></div><button class="webbtn" id="bk">' + L[2] + '</button>'; $('#bk').onclick = function () { if (!ok) { shake(); setMsg($('#gm'), '❓ Maria cannot read this page yet.', 'no'); return; } $('#bk').disabled = true; setMsg($('#gm'), '🎉 Maria booked the vaccine appointment all by herself!', 'good'); lt(done, 1300); }; }
     page();
-    [].forEach.call(h.querySelectorAll('#lg .chp'), function (b) { b.onclick = function () { lang = b.dataset.l; ok = lang === 'en' || lang === 'fil'; [].forEach.call(h.querySelectorAll('#lg .chp'), function (x) { x.classList.remove('good', 'no'); }); b.classList.add(ok ? 'good' : 'no'); page(); setMsg($('#gm'), ok ? '😊 Now Maria can read it! Tap the Book button.' : '❓ Maria cannot read this language. Try another.', ok ? 'good' : 'no'); if (!ok) shake(); }; });
+    [].forEach.call(h.querySelectorAll('#lg .chp'), function (b) { b.onclick = function () { lang = b.dataset.l; ok = lang === 'ja'; [].forEach.call(h.querySelectorAll('#lg .chp'), function (x) { x.classList.remove('good', 'no'); }); b.classList.add(ok ? 'good' : 'no'); page(); setMsg($('#gm'), ok ? '😊 Now Maria can read it! Tap the Book button.' : '❓ Maria cannot read this language. Try another.', ok ? 'good' : 'no'); if (!ok) shake(); }; });
   }
-  var GAMES = [null, null, [g3a, g3b], [g4a, g4b], [g5a, g5b]];
+
+  var GAMES = [null, null, [animFarmer, g3b], [g4a, g4b], [animMaria, g5b]];
 
   /* ===== the RPG town ===== */
   var MAP = ['TTTTTTTTTTTTTTT', 'T.............T', 'T..M...C...H..T', 'T.............T', 'T.rrrrrrrrrrr.T', 'T.r.........r.T', 'T.r..WW.....r.T', 'T.L..WW.G...K.T', 'T.............T', 'TTTTTTTTTTTTTTT'];
@@ -490,7 +547,7 @@ input[type=text]{width:100%;font:inherit;padding:10px 12px;border-radius:12px;bo
   function openNpc(i) {
     var c = PEOPLE[i], h = qOpen(); clearAll();
     h.innerHTML = who(c); var go = function () { h.innerHTML = ''; start(); };
-    contBtn(h, i === 0 ? '👀 See what Grandma is doing' : i === 1 ? '👀 See Ling’s computer' : '🛠️ Help ' + esc(c.n), go);
+    contBtn(h, i === 0 ? '👀 See what Grandma is doing' : i === 1 ? '👀 See Ling’s computer' : i === 2 ? '👀 Follow Farmer Wong' : i === 4 ? '👀 See Maria’s phone' : '🛠️ Help ' + esc(c.n), go);
     function start() {
       if (i === 0) animGrandma(h, function () { diagnoseView(c, h, function () { h.innerHTML = ''; g1b(h, function () { solve(0, h, c.ok); }); }); });
       else if (i === 1) animLing(h, function () { diagnoseView(c, h, function () { LING.stage = 1; FOL.on = true; FOL.x = P.x; FOL.y = P.y; qClose(); }); });
