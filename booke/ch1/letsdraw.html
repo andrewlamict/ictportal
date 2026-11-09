@@ -1,0 +1,203 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Train Your Draw Bot</title>
+<style>
+:root{color-scheme:dark;--bg:#0b1226;--line:rgba(255,255,255,.18);--txt:#f8fafc;--mut:#cbd5e1;--ok:#34d399;--bad:#fb7185;--a:#60a5fa;--b:#fbbf24}
+*{box-sizing:border-box}
+html{background:var(--bg)}
+body{margin:0;font-family:system-ui,-apple-system,"Segoe UI",sans-serif;color:var(--txt);background:radial-gradient(900px 500px at 12% -10%,#1e3a8a 0,transparent 60%),radial-gradient(800px 500px at 100% 0,#581c87 0,transparent 55%),var(--bg);min-height:100vh}
+.wrap{max-width:760px;margin:0 auto;padding:16px 16px 90px}
+h1{margin:6px 0 2px;font-size:28px}h2{margin:0 0 6px}
+.sub{color:var(--mut);margin:0 0 14px;line-height:1.5}
+.panel{background:rgba(255,255,255,.07);border:1px solid var(--line);border-radius:20px;padding:20px}
+button{font:inherit;cursor:pointer;color:inherit}
+.btn{border:0;border-radius:14px;padding:12px 20px;font-weight:800;font-size:16px;color:#fff;background:linear-gradient(135deg,#6366f1,#a855f7);box-shadow:0 8px 20px rgba(99,102,241,.4)}
+.btn:hover:not(:disabled){filter:brightness(1.12)}.btn:disabled{opacity:.4;cursor:not-allowed}
+.btn.sec{background:rgba(255,255,255,.14);box-shadow:none}.btn.red{background:linear-gradient(135deg,#ef4444,#f97316)}.btn.sm{padding:8px 14px;font-size:14px}
+.row{display:flex;gap:10px;flex-wrap:wrap;align-items:center}
+.say{display:flex;gap:12px;align-items:flex-start;margin-bottom:14px}
+.bot{font-size:46px;line-height:1;animation:bob 2.4s ease-in-out infinite}
+@keyframes bob{50%{transform:translateY(-5px) rotate(3deg)}}
+.bub{background:#fff;color:#0f172a;border-radius:6px 18px 18px 18px;padding:10px 14px;font-weight:700;line-height:1.45;max-width:600px}
+.bub small{display:block;color:#475569;font-weight:600;margin-top:3px}
+input[type=text]{width:100%;font:inherit;font-size:20px;font-weight:800;padding:12px 14px;border-radius:14px;border:2px solid var(--line);background:rgba(0,0,0,.3);color:var(--txt)}
+input[type=text]:focus{outline:none;border-color:#a5b4fc}
+.two{display:grid;grid-template-columns:1fr 1fr;gap:12px}
+@media(max-width:480px){.two{grid-template-columns:1fr}}
+label{font-weight:800;display:block;margin:0 0 6px}
+.err{color:#fda4af;font-weight:700;min-height:22px;margin:8px 0}
+.cv{display:block;width:100%;max-width:340px;aspect-ratio:1;margin:0 auto;background:#fff;border-radius:18px;border:4px solid #6366f1;touch-action:none;cursor:crosshair;box-shadow:0 8px 20px rgba(0,0,0,.45)}
+.dots{display:flex;gap:8px;justify-content:center;margin:10px 0}
+.dot{width:16px;height:16px;border-radius:50%;background:rgba(255,255,255,.2);border:2px solid var(--line)}
+.dot.on{background:var(--ok);border-color:var(--ok)}.dot.cur{border-color:#fbbf24;transform:scale(1.25)}
+.thumbs{display:flex;gap:6px;justify-content:center;flex-wrap:wrap;margin-top:10px}
+.thumbs img{width:54px;height:54px;border-radius:10px;background:#fff;border:2px solid var(--line)}
+.kw{font-size:30px;font-weight:900;text-align:center;margin:6px 0}
+.bars{margin:10px auto;max-width:340px}
+.bar{display:flex;align-items:center;gap:8px;margin:6px 0;font-weight:800}
+.bar span{width:110px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.bar .m{flex:1;height:18px;background:rgba(255,255,255,.14);border-radius:9px;overflow:hidden}.bar .m i{display:block;height:100%;width:0;transition:width .25s}
+.bar b{width:46px;text-align:right}
+.msg{padding:10px 12px;border-radius:12px;background:rgba(255,255,255,.08);border:1px solid var(--line);font-weight:700;margin:10px 0;line-height:1.5}
+.msg.good{background:rgba(16,185,129,.18);border-color:#34d399}.msg.no{background:rgba(251,113,133,.15);border-color:rgba(251,113,133,.5)}
+.tabs{display:flex;gap:8px;justify-content:center;margin-bottom:12px}
+.tab{border:2px solid var(--line);border-radius:99px;padding:8px 16px;background:rgba(0,0,0,.25);font-weight:800}.tab.on{border-color:#a5b4fc;background:rgba(99,102,241,.3)}
+.stats{display:flex;gap:12px;flex-wrap:wrap;justify-content:center;margin:8px 0;font-weight:800}.stats span{background:rgba(0,0,0,.3);border-radius:10px;padding:6px 12px}
+.meter{height:12px;border-radius:9px;background:rgba(255,255,255,.15);overflow:hidden;margin:6px 0}.meter i{display:block;height:100%;width:100%;background:linear-gradient(90deg,#34d399,#fbbf24,#ef4444);transform-origin:left}
+.hide{display:none!important}
+.note{margin-top:14px;padding:12px 14px;border-radius:14px;background:rgba(251,191,36,.14);border:1px solid rgba(251,191,36,.5);font-size:14.5px;line-height:1.55}
+@media(prefers-reduced-motion:reduce){*{animation:none!important}}
+</style>
+</head>
+<body>
+<div class="wrap">
+  <h1>✏️ Train Your Draw Bot</h1>
+  <p class="sub">Book E · Ch.1 Technological Innovations · 1.1 AI and data science · you be the teacher</p>
+  <div class="panel" id="stage"></div>
+</div>
+
+<script>
+(function () {
+  'use strict';
+  var $ = function (s, r) { return (r || document).querySelector(s); };
+  var st = $('#stage'), KW = ['', ''], SAMPLES = [], N = 5, W = 340, timers = [];
+  function esc(s) { return String(s).replace(/[&<>"]/g, function (c) { return { '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;' }[c]; }); }
+  function bot(msg, small) { return '<div class="say"><div class="bot">🤖</div><div class="bub">' + msg + (small ? '<small>' + small + '</small>' : '') + '</div></div>'; }
+  function later(fn, ms) { var t = setTimeout(fn, ms); timers.push(t); return t; }
+  function clearAll() { timers.forEach(function (t) { clearTimeout(t); clearInterval(t); }); timers = []; }
+  var COL = ['#60a5fa', '#fbbf24'];
+
+  /* ---------- drawing pad ---------- */
+  function Pad(cv, onChange, onEnd) {
+    var ctx = cv.getContext('2d'), strokes = [], cur = null, size = 340, dpr = Math.min(2, window.devicePixelRatio || 1);
+    cv.width = size * dpr; cv.height = size * dpr; ctx.scale(dpr, dpr);
+    function pos(e) { var r = cv.getBoundingClientRect(); return [(e.clientX - r.left) * size / r.width, (e.clientY - r.top) * size / r.height]; }
+    function paint() {
+      ctx.fillStyle = '#fff'; ctx.fillRect(0, 0, size, size); ctx.strokeStyle = '#0f172a'; ctx.lineWidth = 9; ctx.lineCap = 'round'; ctx.lineJoin = 'round';
+      strokes.forEach(function (s) { ctx.beginPath(); ctx.moveTo(s[0][0], s[0][1]); if (s.length === 1) ctx.lineTo(s[0][0] + .1, s[0][1]); s.forEach(function (p) { ctx.lineTo(p[0], p[1]); }); ctx.stroke(); });
+    }
+    cv.addEventListener('pointerdown', function (e) { e.preventDefault(); try { cv.setPointerCapture(e.pointerId); } catch (x) {} cur = [pos(e)]; strokes.push(cur); paint(); });
+    cv.addEventListener('pointermove', function (e) { if (!cur) return; cur.push(pos(e)); paint(); if (onChange) onChange(); });
+    function up() { if (!cur) return; cur = null; if (onChange) onChange(); if (onEnd) onEnd(); }
+    cv.addEventListener('pointerup', up); cv.addEventListener('pointercancel', up);
+    paint();
+    return { strokes: function () { return strokes; }, clear: function () { strokes = []; cur = null; paint(); if (onChange) onChange(); }, empty: function () { return !strokes.length; }, lock: function (v) { cv.style.pointerEvents = v ? 'none' : ''; }, img: function () { return cv.toDataURL('image/png'); } };
+  }
+
+  /* ---------- the "AI": turn a drawing into numbers, then compare with the examples ---------- */
+  var G = 28;
+  function vectorise(strokes) {
+    var pts = [].concat.apply([], strokes); if (!pts.length) return null;
+    var x0 = 1e9, y0 = 1e9, x1 = -1e9, y1 = -1e9; pts.forEach(function (p) { x0 = Math.min(x0, p[0]); y0 = Math.min(y0, p[1]); x1 = Math.max(x1, p[0]); y1 = Math.max(y1, p[1]); });
+    var sz = Math.max(x1 - x0, y1 - y0, 30), s = 20 / sz, cx = (x0 + x1) / 2, cy = (y0 + y1) / 2;
+    var c = document.createElement('canvas'); c.width = c.height = G; var x = c.getContext('2d'); x.fillStyle = '#000'; x.fillRect(0, 0, G, G); x.strokeStyle = '#fff'; x.lineWidth = 2.4; x.lineCap = 'round'; x.lineJoin = 'round';
+    strokes.forEach(function (st2) { x.beginPath(); st2.forEach(function (p, i) { var px = (p[0] - cx) * s + G / 2, py = (p[1] - cy) * s + G / 2; if (i) x.lineTo(px, py); else x.moveTo(px, py); }); if (st2.length === 1) x.lineTo((st2[0][0] - cx) * s + G / 2 + .1, (st2[0][1] - cy) * s + G / 2); x.stroke(); });
+    var d = x.getImageData(0, 0, G, G).data, a = new Float32Array(G * G), b = new Float32Array(G * G), i, j, k, l;
+    for (i = 0; i < G * G; i++) a[i] = d[i * 4] / 255;
+    for (i = 0; i < G; i++) for (j = 0; j < G; j++) { var sum = 0, n = 0; for (k = -1; k <= 1; k++) for (l = -1; l <= 1; l++) { var yy = i + k, xx = j + l; if (yy >= 0 && yy < G && xx >= 0 && xx < G) { sum += a[yy * G + xx]; n++; } } b[i * G + j] = sum / n; }
+    return b;
+  }
+  function guess(strokes) {
+    var v = vectorise(strokes); if (!v || !SAMPLES.length) return null;
+    var D = SAMPLES.map(function (s) { var d = 0; for (var i = 0; i < v.length; i++) { var t = v[i] - s.v[i]; d += t * t; } return { c: s.c, d: Math.sqrt(d) }; }).sort(function (a, b) { return a.d - b.d; });
+    var sc = [0, 0], k = Math.min(3, D.length); for (var i = 0; i < k; i++) sc[D[i].c] += 1 / (D[i].d + .3);
+    var t = sc[0] + sc[1]; return [sc[0] / t, sc[1] / t];
+  }
+
+  /* ---------- step 1: keywords ---------- */
+  function step1() {
+    clearAll(); SAMPLES = [];
+    st.innerHTML = bot('Hi! I am a baby AI. I want to learn <b>"Let\'s Draw"</b> 🎨. <b>You</b> choose two words and teach me what they look like!', 'Pick two things that are easy to draw and look different, e.g. sun and house.') +
+      '<div class="two"><div><label for="k0">Keyword 1</label><input type="text" id="k0" maxlength="16" autocomplete="off" placeholder="sun" value="' + esc(KW[0]) + '"></div><div><label for="k1">Keyword 2</label><input type="text" id="k1" maxlength="16" autocomplete="off" placeholder="house" value="' + esc(KW[1]) + '"></div></div>' +
+      '<div class="err" id="err"></div><button class="btn" id="go">✏️ Start teaching</button>';
+    $('#go').onclick = function () {
+      var a = $('#k0').value.trim(), b = $('#k1').value.trim();
+      if (!a || !b) { $('#err').textContent = 'Type a word in both boxes first.'; return; }
+      if (a.toLowerCase() === b.toLowerCase()) { $('#err').textContent = 'The two keywords must be different.'; return; }
+      KW = [a, b]; train(0, 0);
+    };
+  }
+
+  /* ---------- step 2: draw 5 pictures for each keyword ---------- */
+  function train(c, n) {
+    clearAll();
+    if (c > 1) return ready();
+    var total = c * N + n, dots = ''; for (var i = 0; i < N; i++) dots += '<span class="dot ' + (i < n ? 'on' : i === n ? 'cur' : '') + '"></span>';
+    var th = SAMPLES.filter(function (s) { return s.c === c; }).map(function (s) { return '<img alt="your drawing" src="' + s.img + '">'; }).join('');
+    st.innerHTML = bot(n === 0 ? 'Teach me the word <b style="color:#4f46e5">' + esc(KW[c]) + '</b>! Draw it ' + N + ' times. Make each picture a little different.' : 'Great! Draw <b style="color:#4f46e5">' + esc(KW[c]) + '</b> again, in a new way.', 'Training picture ' + (total + 1) + ' of ' + N * 2) +
+      '<div class="kw" style="color:' + COL[c] + '">Draw: ' + esc(KW[c]) + '</div><canvas class="cv" id="cv" aria-label="Drawing pad"></canvas><div class="dots">' + dots + '</div><div class="err" id="err"></div>' +
+      '<div class="row" style="justify-content:center"><button class="btn sec" id="clr">🧽 Clear</button><button class="btn" id="sv">✔ Save picture ' + (n + 1) + '</button></div><div class="thumbs">' + th + '</div>';
+    var pad = Pad($('#cv'));
+    $('#clr').onclick = function () { pad.clear(); $('#err').textContent = ''; };
+    $('#sv').onclick = function () {
+      var ink = 0; pad.strokes().forEach(function (s) { ink += s.length; });
+      if (pad.empty() || ink < 6) { $('#err').textContent = 'Draw something first (a longer line please).'; return; }
+      SAMPLES.push({ c: c, v: vectorise(pad.strokes()), img: pad.img() });
+      if (n + 1 >= N) { if (c === 0) { intermission(); } else train(2, 0); } else train(c, n + 1);
+    };
+  }
+  function intermission() {
+    st.innerHTML = bot('Thanks! I have learned <b>' + esc(KW[0]) + '</b> from ' + N + ' pictures. Now teach me <b>' + esc(KW[1]) + '</b>.', 'The more different examples you give, the better I get.') + '<button class="btn" id="nx">▶ Teach me ' + esc(KW[1]) + '</button>';
+    $('#nx').onclick = function () { train(1, 0); };
+  }
+
+  /* ---------- step 3: play ---------- */
+  function ready() {
+    st.innerHTML = bot('Training finished! I studied <b>' + SAMPLES.length + ' pictures</b>: ' + N + ' of <b>' + esc(KW[0]) + '</b> and ' + N + ' of <b>' + esc(KW[1]) + '</b>. Let us play!', 'Training = learning from examples. Now I am a model that can make predictions.') + '<button class="btn" id="play">🎮 Start playing</button>';
+    $('#play').onclick = function () { play('free'); };
+  }
+  function bars(p) { return '<div class="bars">' + KW.map(function (k, i) { var v = p ? Math.round(p[i] * 100) : 0; return '<div class="bar"><span style="color:' + COL[i] + '">' + esc(k) + '</span><div class="m"><i style="width:' + v + '%;background:' + COL[i] + '"></i></div><b>' + v + '%</b></div>'; }).join('') + '</div>'; }
+  function play(mode) {
+    clearAll();
+    st.innerHTML = '<div class="tabs"><button class="tab ' + (mode === 'free' ? 'on' : '') + '" id="tf">🖌️ Free draw</button><button class="tab ' + (mode === 'chal' ? 'on' : '') + '" id="tc">⏱️ Challenge</button></div><div id="game"></div>' +
+      '<div class="note"><b>How it works:</b> your drawing is shrunk into a small grid of numbers. The AI compares it with the ' + SAMPLES.length + ' examples you gave it and picks the keyword whose examples look most similar. It never understood “' + esc(KW[0]) + '” or “' + esc(KW[1]) + '”; it only matched patterns in <b>your</b> training data.</div>' +
+      '<div class="row" style="margin-top:16px;justify-content:space-between"><span class="sub" style="margin:0">Want to start again with new keywords?</span><button class="btn red" id="reset">🔄 Reset everything</button></div>';
+    $('#tf').onclick = function () { play('free'); }; $('#tc').onclick = function () { play('chal'); };
+    $('#reset').onclick = function () { KW = ['', '']; SAMPLES = []; step1(); };
+    if (mode === 'free') free(); else chal();
+  }
+  function free() {
+    $('#game').innerHTML = '<p class="sub" style="text-align:center">Draw anything. The AI guesses live whether it is a <b style="color:' + COL[0] + '">' + esc(KW[0]) + '</b> or a <b style="color:' + COL[1] + '">' + esc(KW[1]) + '</b>.</p><canvas class="cv" id="cv"></canvas><div id="bars">' + bars(null) + '</div><div class="msg" id="say">Draw something!</div><div class="row" style="justify-content:center"><button class="btn sec" id="clr">🧽 Clear</button></div>';
+    var last = 0;
+    function upd() { var p = guess(pad.strokes()); $('#bars').innerHTML = bars(p); if (!p) { $('#say').textContent = 'Draw something!'; return; } var t = p[0] >= p[1] ? 0 : 1, c = Math.round(Math.max(p[0], p[1]) * 100); $('#say').innerHTML = '🤖 I think it is a <b style="color:' + COL[t] + '">' + esc(KW[t]) + '</b>' + (c < 65 ? '… but I am not sure. 🤔' : '!'); }
+    var pad = Pad($('#cv'), function () { var n = Date.now(); if (n - last > 120) { last = n; upd(); } }, upd);
+    $('#clr').onclick = function () { pad.clear(); upd(); };
+  }
+  function chal() {
+    var R = 6, round = 0, score = 0, tgt, left, iv, done, order = [];
+    for (var i = 0; i < R; i++) order.push(i % 2); order.sort(function () { return Math.random() - .5; });
+    function next() {
+      clearAll(); if (round >= R) return sum(); tgt = order[round]; left = 20; done = false;
+      $('#game').innerHTML = '<div class="stats"><span>Round <b>' + (round + 1) + ' / ' + R + '</b></span><span>Score <b>' + score + '</b></span><span>⏱️ <b id="tm">20</b>s</span></div><div class="kw" style="color:' + COL[tgt] + '">Draw: ' + esc(KW[tgt]) + '</div><div class="meter"><i id="mt"></i></div><canvas class="cv" id="cv"></canvas><div id="bars">' + bars(null) + '</div><div class="msg" id="say">Draw it before time runs out. The AI must guess it!</div><div class="row" style="justify-content:center" id="acts"><button class="btn sec" id="clr">🧽 Clear</button></div>';
+      var last = 0;
+      function upd(final) {
+        if (done) return; var p = guess(pad.strokes()); $('#bars').innerHTML = bars(p); if (!p) return; var t = p[0] >= p[1] ? 0 : 1;
+        if (final && t === tgt && Math.max(p[0], p[1]) >= .6) win(p); else if (!final) { $('#say').innerHTML = '🤖 Hmm… is it a <b style="color:' + COL[t] + '">' + esc(KW[t]) + '</b>?'; }
+      }
+      var pad = Pad($('#cv'), function () { var n = Date.now(); if (n - last > 150) { last = n; upd(false); } }, function () { upd(true); });
+      $('#clr').onclick = function () { pad.clear(); $('#bars').innerHTML = bars(null); };
+      function win(p) { done = true; score++; clearInterval(iv); pad.lock(true); $('#say').className = 'msg good'; $('#say').innerHTML = '🎉 “It is a <b>' + esc(KW[tgt]) + '</b>!” The AI guessed right (' + Math.round(p[tgt] * 100) + '% sure). +1'; $('#acts').innerHTML = '<button class="btn" id="nx">' + (round + 1 < R ? 'Next round ▶' : 'Finish 🏁') + '</button>'; $('#nx').onclick = function () { round++; next(); }; }
+      function lose() {
+        done = true; var p = guess(pad.strokes()), t = p ? (p[0] >= p[1] ? 0 : 1) : -1; pad.lock(true); $('#say').className = 'msg no';
+        $('#say').innerHTML = '⏰ Time is up. ' + (t < 0 ? 'You did not draw anything!' : t === tgt ? 'The AI was right but not sure enough.' : '🤖 “I think it is a <b>' + esc(KW[t]) + '</b>.” Wrong!') + '<br>Teach me this picture so I do better next time?';
+        $('#acts').innerHTML = (pad.empty() ? '' : '<button class="btn sm" id="tch">🎓 Teach the AI (add this picture as “' + esc(KW[tgt]) + '”)</button>') + '<button class="btn sec" id="nx">' + (round + 1 < R ? 'Next round ▶' : 'Finish 🏁') + '</button>';
+        var tc = $('#tch'); if (tc) tc.onclick = function () { SAMPLES.push({ c: tgt, v: vectorise(pad.strokes()), img: pad.img() }); tc.disabled = true; tc.textContent = '✔ Added. I now have ' + SAMPLES.length + ' examples!'; };
+        $('#nx').onclick = function () { round++; next(); };
+      }
+      iv = setInterval(function () { if (done) return; left--; $('#tm').textContent = left; $('#mt').style.transform = 'scaleX(' + (left / 20) + ')'; if (left <= 0) { clearInterval(iv); lose(); } }, 1000); timers.push(iv);
+    }
+    function sum() {
+      $('#game').innerHTML = '<div style="text-align:center"><div style="font-size:54px">' + (score >= 4 ? '🏆' : '🤔') + '</div><h2>Your bot scored ' + score + ' / ' + R + '</h2><p class="sub">' + (score >= 4 ? 'You trained a good bot!' : 'Your bot needs better training. Add more varied examples with “Teach the AI”, then try again.') + '</p><div class="row" style="justify-content:center"><button class="btn" id="again">🔄 Play again</button><button class="btn sec" id="fr">🖌️ Free draw</button></div></div>';
+      $('#again').onclick = function () { play('chal'); }; $('#fr').onclick = function () { play('free'); };
+    }
+    next();
+  }
+  step1();
+})();
+</script>
+<script src="../../nav.js"></script>
+</body>
+</html>
