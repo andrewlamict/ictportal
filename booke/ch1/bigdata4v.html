@@ -3,155 +3,270 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Big Data 4V Sorter</title>
+<title>Big Data Lab</title>
 <style>
-:root{--bg:#0b1226;--card:#16203f;--line:rgba(255,255,255,.16);--txt:#f8fafc;--mut:#cbd5e1;--vol:#3b82f6;--vor:#10b981;--vel:#f59e0b;--ver:#a855f7}
+:root{color-scheme:dark;--bg:#0b1226;--panel:#162044;--line:rgba(255,255,255,.18);--txt:#f8fafc;--mut:#cbd5e1;--vol:#60a5fa;--vor:#34d399;--vel:#fbbf24;--ver:#c084fc;--bad:#fb7185;--ok:#34d399}
 *{box-sizing:border-box}
 html{background:var(--bg)}
-body{margin:0;font-family:system-ui,-apple-system,"Segoe UI",sans-serif;color:var(--txt);background:radial-gradient(900px 500px at 15% -10%,#1e3a8a 0,transparent 60%),radial-gradient(800px 500px at 100% 0,#581c87 0,transparent 55%),var(--bg);min-height:100vh}
-.wrap{max-width:860px;margin:0 auto;padding:16px 16px 60px}
-h1{margin:6px 0 2px;font-size:28px}
-.sub{color:var(--mut);margin:0 0 16px}
-.panel{background:rgba(255,255,255,.07);border:1px solid var(--line);border-radius:20px;padding:20px}
-button{font:inherit;cursor:pointer}
-.btn{border:0;border-radius:14px;padding:13px 22px;font-weight:800;font-size:16px;color:#fff;background:linear-gradient(135deg,#6366f1,#a855f7);box-shadow:0 8px 20px rgba(99,102,241,.4)}
-.btn.sec{background:rgba(255,255,255,.14);box-shadow:none}
-.vgrid{display:grid;grid-template-columns:repeat(auto-fit,minmax(180px,1fr));gap:12px;margin:14px 0 18px}
-.vc{border-radius:16px;padding:14px;border:2px solid;background:rgba(0,0,0,.25)}
-.vc b{font-size:20px;display:block}.vc span{font-size:13.5px;color:var(--mut);line-height:1.5}
-.vc .big{font-size:34px;font-weight:900;line-height:1}
-.c-vol{border-color:var(--vol)}.c-vol .big,.c-vol b{color:#93c5fd}
-.c-vor{border-color:var(--vor)}.c-vor .big,.c-vor b{color:#6ee7b7}
-.c-vel{border-color:var(--vel)}.c-vel .big,.c-vel b{color:#fcd34d}
-.c-ver{border-color:var(--ver)}.c-ver .big,.c-ver b{color:#d8b4fe}
-.hud{display:flex;justify-content:space-between;align-items:center;gap:10px;font-weight:800;margin-bottom:10px;flex-wrap:wrap}
-.hearts{letter-spacing:3px}
-.field{position:relative;height:300px;border-radius:18px;border:1px solid var(--line);overflow:hidden;background:linear-gradient(180deg,rgba(255,255,255,.04),rgba(99,102,241,.14))}
-.field::after{content:"";position:absolute;left:0;right:0;bottom:0;height:5px;background:#ef4444;opacity:.85}
-.drop{position:absolute;left:50%;transform:translateX(-50%);width:min(92%,520px);padding:14px 16px;border-radius:16px;background:#fff;color:#0f172a;font-weight:700;font-size:17px;line-height:1.4;text-align:center;box-shadow:0 10px 26px rgba(0,0,0,.5);border:3px solid #6366f1}
-.bins{display:grid;grid-template-columns:repeat(4,1fr);gap:8px;margin-top:12px}
-.bin{border:2px solid;border-radius:14px;padding:12px 4px;color:#fff;font-weight:800;font-size:15px;background:rgba(0,0,0,.3);transition:.12s}
-.bin small{display:block;font-weight:600;color:var(--mut);font-size:11.5px}
-.bin:hover{transform:translateY(-3px);filter:brightness(1.2)}
-.bin.c-vol{background:rgba(59,130,246,.25)}.bin.c-vor{background:rgba(16,185,129,.25)}.bin.c-vel{background:rgba(245,158,11,.25)}.bin.c-ver{background:rgba(168,85,247,.25)}
-.flash{position:absolute;inset:0;display:flex;align-items:center;justify-content:center;font-size:30px;font-weight:900;pointer-events:none;animation:pop .7s ease-out forwards}
-@keyframes pop{from{opacity:1;transform:scale(.8)}to{opacity:0;transform:scale(1.4)}}
-.explain{position:absolute;inset:0;background:rgba(8,13,35,.94);display:flex;flex-direction:column;align-items:center;justify-content:center;text-align:center;padding:18px;gap:10px}
-.explain h3{margin:0;font-size:22px}.explain p{margin:0;max-width:520px;line-height:1.55;color:#e2e8f0}
-.res{text-align:center}.res .big{font-size:60px;font-weight:900;color:#fcd34d;line-height:1}
-.bars{margin:14px auto;max-width:460px;text-align:left}
-.bar{display:flex;align-items:center;gap:10px;margin:6px 0;font-size:14px;font-weight:700}
-.bar i{flex:1;height:12px;border-radius:9px;background:rgba(255,255,255,.15);overflow:hidden}.bar i u{display:block;height:100%;border-radius:9px}
+body{margin:0;font-family:system-ui,-apple-system,"Segoe UI",sans-serif;color:var(--txt);background:radial-gradient(900px 500px at 12% -10%,#1e3a8a 0,transparent 60%),radial-gradient(800px 500px at 100% 0,#581c87 0,transparent 55%),var(--bg);min-height:100vh}
+.wrap{max-width:900px;margin:0 auto;padding:16px 16px 90px}
+h1{margin:6px 0 2px;font-size:28px}h2{margin:0 0 6px}
+.sub{color:var(--mut);margin:0 0 14px;line-height:1.5}
+.panel{position:relative;background:rgba(255,255,255,.07);border:1px solid var(--line);border-radius:20px;padding:20px;overflow:hidden}
+button{font:inherit;cursor:pointer;color:inherit}
+.btn{border:0;border-radius:14px;padding:12px 20px;font-weight:800;font-size:16px;color:#fff;background:linear-gradient(135deg,#6366f1,#a855f7);box-shadow:0 8px 20px rgba(99,102,241,.4)}
+.btn:hover:not(:disabled){filter:brightness(1.12)}.btn:disabled{opacity:.4;cursor:not-allowed}
+.btn.sec{background:rgba(255,255,255,.14);box-shadow:none}.btn.red{background:linear-gradient(135deg,#ef4444,#f97316)}
+.btn.sm{padding:8px 14px;font-size:14px}
+.row{display:flex;gap:10px;flex-wrap:wrap;align-items:center}
+/* Bytey */
+.say{display:flex;gap:12px;align-items:flex-start;margin-bottom:14px}
+.bot{font-size:46px;line-height:1;animation:bob 2.4s ease-in-out infinite}
+@keyframes bob{50%{transform:translateY(-5px) rotate(3deg)}}
+.bub{background:#fff;color:#0f172a;border-radius:6px 18px 18px 18px;padding:10px 14px;font-weight:700;line-height:1.45;max-width:640px}
+.bub small{display:block;color:#475569;font-weight:600;margin-top:3px}
+/* menu */
+.tiles{display:grid;grid-template-columns:repeat(auto-fit,minmax(190px,1fr));gap:12px;margin:14px 0}
+.tile{text-align:left;border-radius:18px;padding:16px;border:2px solid var(--line);background:rgba(0,0,0,.25);transition:.15s}
+.tile:hover{transform:translateY(-3px);border-color:#a5b4fc}
+.tile .e{font-size:34px}.tile b{display:block;font-size:17px;margin:4px 0 2px}.tile span{font-size:13px;color:var(--mut)}
+.tile.done{border-color:var(--ok);background:rgba(16,185,129,.12)}
+.tile .st{float:right;font-size:12px;font-weight:800;border-radius:99px;padding:2px 9px;background:rgba(255,255,255,.14)}
+.tile.done .st{background:var(--ok);color:#052e1d}
+.nb{display:grid;grid-template-columns:repeat(auto-fit,minmax(190px,1fr));gap:10px}
+.nbc{border-radius:14px;padding:10px 12px;border:2px dashed var(--line);font-size:13.5px;color:var(--mut);min-height:84px}
+.nbc.on{border-style:solid;color:var(--txt);background:rgba(0,0,0,.28)}
+.nbc b{display:block;font-size:16px}
+.c-vol{border-color:var(--vol)!important}.c-vol b{color:var(--vol)}
+.c-vor{border-color:var(--vor)!important}.c-vor b{color:var(--vor)}
+.c-vel{border-color:var(--vel)!important}.c-vel b{color:var(--vel)}
+.c-ver{border-color:var(--ver)!important}.c-ver b{color:var(--ver)}
+/* sheet */
+.sheet{width:100%;border-collapse:collapse;background:#f8fafc;color:#0f172a;font-size:13px;border-radius:10px;overflow:hidden}
+.sheet th{background:#16a34a;color:#fff;padding:6px 8px;text-align:left}.sheet td{padding:5px 8px;border-bottom:1px solid #e2e8f0}
+.sheetbar{display:flex;justify-content:space-between;background:#166534;color:#fff;padding:6px 10px;font-size:13px;font-weight:700;border-radius:10px 10px 0 0}
+.meter{height:14px;border-radius:9px;background:rgba(255,255,255,.15);overflow:hidden;margin:6px 0}.meter i{display:block;height:100%;width:0;background:linear-gradient(90deg,#34d399,#fbbf24,#ef4444);transition:width .3s}
+.stats{display:flex;gap:16px;flex-wrap:wrap;margin:10px 0;font-weight:800}.stats span{background:rgba(0,0,0,.3);border-radius:10px;padding:6px 12px}
+.crash{position:absolute;inset:0;background:rgba(15,5,20,.93);display:flex;flex-direction:column;align-items:center;justify-content:center;text-align:center;gap:10px;padding:20px;animation:glitch .5s;z-index:5}
+.crash .big{font-size:60px}
+@keyframes glitch{0%{transform:translateX(-8px)}20%{transform:translateX(8px)}40%{transform:translateX(-6px)}60%{transform:translateX(6px)}100%{transform:none}}
+.shake{animation:glitch .4s}
+/* import */
+.items{display:flex;gap:10px;flex-wrap:wrap;margin:10px 0}
+.item{border:2px solid var(--line);background:rgba(0,0,0,.3);border-radius:14px;padding:10px 14px;font-weight:700}
+.item.sel{border-color:#fbbf24;background:rgba(251,191,36,.2);transform:scale(1.05)}.item.tried{opacity:.5;text-decoration:line-through}
+.cols{display:grid;grid-template-columns:repeat(3,1fr);gap:8px}
+.col{border-radius:12px;border:2px solid #86efac;background:#f0fdf4;color:#14532d;padding:12px;font-weight:800;text-align:center}
+.col small{display:block;font-weight:600;color:#166534}
+.msg{min-height:44px;margin:10px 0;padding:10px 12px;border-radius:12px;background:rgba(251,113,133,.15);border:1px solid rgba(251,113,133,.5);font-weight:700}
+/* belt */
+.belt{position:relative;height:210px;border-radius:16px;background:repeating-linear-gradient(90deg,#1e293b 0 28px,#243049 28px 56px);border:2px solid #475569;overflow:hidden}
+.pk{position:absolute;top:80px;width:54px;height:54px;border-radius:12px;background:#fff;color:#0f172a;display:flex;align-items:center;justify-content:center;font-size:30px;border:3px solid #6366f1;box-shadow:0 6px 14px rgba(0,0,0,.5)}
+.pk:hover{border-color:#fbbf24}
+.pk.gone{opacity:0;transform:scale(1.6);transition:.3s}
+.tool{position:absolute;right:0;top:0;bottom:0;width:64px;background:rgba(239,68,68,.3);display:flex;align-items:center;justify-content:center;font-size:12px;font-weight:800;writing-mode:vertical-rl;letter-spacing:.1em}
+/* readings */
+.rd{display:grid;grid-template-columns:repeat(auto-fill,minmax(110px,1fr));gap:8px;margin:10px 0}
+.rdc{border-radius:12px;padding:10px;background:rgba(0,0,0,.3);border:2px solid var(--line);font-weight:800;text-align:center}
+.rdc.bad:hover{border-color:var(--bad)}.rdc.gone{opacity:.25;text-decoration:line-through}
+.avg{font-size:30px;font-weight:900}
+.q{margin:12px 0;display:grid;gap:8px}
+.opt{text-align:left;border:2px solid var(--line);border-radius:14px;padding:12px 14px;background:rgba(0,0,0,.28);font-weight:700;line-height:1.4}
+.opt:hover:not(:disabled){border-color:#a5b4fc;background:rgba(99,102,241,.2)}
+.opt.good{border-color:var(--ok);background:rgba(16,185,129,.25)}.opt.no{border-color:var(--bad);background:rgba(244,63,94,.25)}
+.stamp{margin:12px 0;padding:16px;border-radius:18px;border:3px solid;text-align:center;animation:stamp .5s}
+.stamp .big{font-size:40px;font-weight:900}
+@keyframes stamp{from{transform:scale(2.2) rotate(-8deg);opacity:0}to{transform:none;opacity:1}}
+textarea{width:100%;min-height:64px;margin-top:6px;padding:10px;border-radius:12px;border:2px solid var(--line);background:rgba(0,0,0,.3);color:#fff;font:inherit;font-size:14.5px}
 .hide{display:none!important}
 .note{margin-top:14px;padding:12px 14px;border-radius:14px;background:rgba(251,191,36,.14);border:1px solid rgba(251,191,36,.5);font-size:14.5px;line-height:1.55}
-@media(max-width:560px){.drop{font-size:15px}.bin{font-size:13px}}
+@media(prefers-reduced-motion:reduce){*{animation:none!important}}
 </style>
 </head>
 <body>
 <div class="wrap">
-  <h1>📊 Big Data 4V Sorter</h1>
+  <h1>🔬 Big Data Lab</h1>
   <p class="sub">Book E · Ch.1 Technological Innovations · 1.1 AI and data science</p>
-
-  <section class="panel" id="intro">
-    <h2 style="margin:0 0 4px">Big data has 4 Vs</h2>
-    <p class="sub" style="margin-bottom:0">Big data = huge, varied, fast and uncertain data that is hard to process with ordinary database systems. Learn the 4Vs, then sort the falling data cards.</p>
-    <div class="vgrid">
-      <div class="vc c-vol"><div class="big">V</div><b>Volume</b><span>How <b style="display:inline;font-size:inherit">much</b> data. The data keeps growing and must be stored.</span></div>
-      <div class="vc c-vor"><div class="big">V</div><b>Variety</b><span>Many <b style="display:inline;font-size:inherit">formats</b>: audio, image, video, text, location. Different sources must be integrated.</span></div>
-      <div class="vc c-vel"><div class="big">V</div><b>Velocity</b><span>How <b style="display:inline;font-size:inherit">fast</b> data is generated and must be analysed.</span></div>
-      <div class="vc c-ver"><div class="big">V</div><b>Veracity</b><span>How <b style="display:inline;font-size:inherit">accurate</b>: uncertainty, accuracy and quality of the data.</span></div>
-    </div>
-    <p style="margin:0 0 14px"><b>How to play:</b> each card falls towards the red line. Tap the V it shows (or press <b>1 2 3 4</b>). You have 5 lives. 16 cards per round.</p>
-    <button class="btn" id="start">▶ Start game</button>
-  </section>
-
-  <section class="panel hide" id="play">
-    <div class="hud"><span>Score <span id="score">0</span></span><span id="prog">Card 1 / 16</span><span class="hearts" id="hearts"></span></div>
-    <div class="field" id="field"></div>
-    <div class="bins">
-      <button class="bin c-vol" data-v="vol">1 · Volume<small>how much</small></button>
-      <button class="bin c-vor" data-v="vor">2 · Variety<small>many formats</small></button>
-      <button class="bin c-vel" data-v="vel">3 · Velocity<small>how fast</small></button>
-      <button class="bin c-ver" data-v="ver">4 · Veracity<small>how accurate</small></button>
-    </div>
-  </section>
-
-  <section class="panel res hide" id="end"></section>
+  <div class="panel" id="stage"></div>
 </div>
 
 <script>
 (function () {
   'use strict';
-  var V = { vol: ['Volume', 'how much data', '#93c5fd'], vor: ['Variety', 'many different formats and sources', '#6ee7b7'], vel: ['Velocity', 'how fast data is generated and analysed', '#fcd34d'], ver: ['Veracity', 'how accurate and trustworthy the data is', '#d8b4fe'] };
-  var POOL = [
-    ['vol', 'The growing pile of data from millions of IoT detectors must be stored', 'The big problem is how much data there is: storing the growing amount.'],
-    ['vol', 'A social network stores billions of posts every year', 'Billions of posts is a huge amount of data: volume.'],
-    ['vol', 'Human DNA data of millions of people needs a very large storage', 'It is about the sheer size of data to store: volume.'],
-    ['vol', 'Years of historical traffic patterns are kept by a map app', 'Large amounts of data kept over time: volume.'],
-    ['vol', 'Terabytes of clicks, browsing history and cookies are collected every day', 'Lots and lots of records piling up: volume.'],
-    ['vor', 'Audio, images, video, text and location data are all in one system', 'Different formats of data: variety.'],
-    ['vor', 'A company combines data from websites, sensors and mobile apps', 'Integrating many different sources is the challenge: variety.'],
-    ['vor', 'Photos, voice messages and GPS locations must be analysed together', 'Different types of data together: variety.'],
-    ['vor', 'Data comes as neat tables and also as messy videos and text', 'Structured and unstructured formats mixed: variety.'],
-    ['vor', 'A smart city gathers camera video, sound and temperature readings', 'Many kinds of data from many kinds of devices: variety.'],
-    ['vel', 'Live traffic conditions are sent by drivers every second', 'Data generated and used at high speed: velocity.'],
-    ['vel', 'Thousands of posts per second must be analysed immediately', 'The speed of generation and analysis: velocity.'],
-    ['vel', 'A spam filter must check each email the moment it arrives', 'It must be processed quickly, in real time: velocity.'],
-    ['vel', 'A recommendation system updates its suggestions as you click', 'Fast, continuous data flow: velocity.'],
-    ['vel', 'Sensor readings stream in non-stop and must be analysed at once', 'High speed of generation and analysis: velocity.'],
-    ['ver', '47% of email is spam, so a lot of the data is useless', 'The quality of the data is poor: veracity.'],
-    ['ver', 'Nobody is sure whether the collected data is accurate', 'Uncertainty about accuracy is veracity.'],
-    ['ver', 'Fake reviews are mixed with real ones in the data set', 'Can the data be trusted? That is veracity.'],
-    ['ver', 'Sensor data has errors and missing values', 'Low quality and accuracy: veracity.'],
-    ['ver', 'Rumours and fake news spread online. How much can be trusted?', 'Trustworthiness of the data: veracity.']
+  var $ = function (s, r) { return (r || document).querySelector(s); };
+  var V = {
+    vol: { n: 'Volume', c: 'c-vol', hex: '#60a5fa', e: '📦', d: 'how MUCH data: the data keeps growing and has to be stored and processed.' },
+    vor: { n: 'Variety', c: 'c-vor', hex: '#34d399', e: '🎭', d: 'how MANY KINDS of data: audio, image, video, text, location, and from many sources that must be integrated.' },
+    vel: { n: 'Velocity', c: 'c-vel', hex: '#fbbf24', e: '⚡', d: 'how FAST data is generated and has to be analysed.' },
+    ver: { n: 'Veracity', c: 'c-ver', hex: '#c084fc', e: '🕵️', d: 'how ACCURATE the data is: uncertainty, accuracy and quality of the data.' }
+  };
+  var EXP = [
+    { k: 'vol', e: '📊', t: 'The growing sheet', s: 'Sort a customer list that keeps growing.' },
+    { k: 'vor', e: '📥', t: 'The mystery import', s: 'Put new data into your tidy table.' },
+    { k: 'vel', e: '🏭', t: 'The conveyor belt', s: 'Analyse the data as it arrives.' },
+    { k: 'ver', e: '🌡️', t: 'The weird average', s: 'Find the average temperature.' }
   ];
-  var KEYS = ['vol', 'vor', 'vel', 'ver'], ROUND = 16, LIVES = 5;
-  var $ = function (s) { return document.querySelector(s); };
-  var deck, idx, score, lives, cur, y, speed, last, raf, paused, stat, correct;
-
+  var PROBLEMS = {
+    vol: 'There was far too much data to store and process',
+    vor: 'The data came in many different formats the table could not hold',
+    vel: 'The data arrived faster than it could be analysed',
+    ver: 'The data could not be trusted, so the result was wrong'
+  };
+  var TEST = [
+    ['vol', 'A social network stores billions of posts every year.'], ['vol', 'The growing pile of data from millions of IoT detectors must be stored.'],
+    ['vor', 'Audio, images, video, text and location data all sit in one system.'], ['vor', 'A company combines data from websites, sensors and mobile apps.'],
+    ['vel', 'Live traffic conditions are sent by drivers every second.'], ['vel', 'A spam filter must check each email the moment it arrives.'],
+    ['ver', '47% of email is spam, so a lot of the data is useless.'], ['ver', 'Fake reviews are mixed with real ones in the data set.']
+  ];
+  var found = {}, notes = {}, st = $('#stage');
+  try { var sv = JSON.parse(localStorage.getItem('ictBigData') || '{}'); found = sv.found || {}; notes = sv.notes || {}; } catch (e) {}
+  var save = function () { try { localStorage.setItem('ictBigData', JSON.stringify({ found: found, notes: notes })); } catch (e) {} };
+  var timers = []; function later(fn, ms) { var t = setTimeout(fn, ms); timers.push(t); return t; }
+  function clearAll() { timers.forEach(function (t) { clearTimeout(t); clearInterval(t); }); timers = []; }
+  function esc(s) { return String(s).replace(/[&<>"]/g, function (c) { return { '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;' }[c]; }); }
+  function bytey(msg, small) { return '<div class="say"><div class="bot">🤖</div><div class="bub">' + msg + (small ? '<small>' + small + '</small>' : '') + '</div></div>'; }
   function shuffle(a) { a = a.slice(); for (var i = a.length - 1; i > 0; i--) { var j = Math.floor(Math.random() * (i + 1)), t = a[i]; a[i] = a[j]; a[j] = t; } return a; }
-  function buildDeck() {                                  /* 4 cards of each V, shuffled */
-    var d = []; KEYS.forEach(function (k) { d = d.concat(shuffle(POOL.filter(function (p) { return p[0] === k; })).slice(0, ROUND / 4)); }); return shuffle(d);
+  function count() { return Object.keys(found).length; }
+
+  /* ================= menu ================= */
+  function menu() {
+    clearAll(); var n = count();
+    st.innerHTML = bytey(n ? (n === 4 ? 'You found all four! Ready for the final test?' : 'Nice work, analyst! ' + (4 - n) + ' experiment' + (4 - n > 1 ? 's' : '') + ' left.') : "Hi! I'm <b>Bytey</b>, your intern. Big data? Easy! We'll just use a normal spreadsheet and table. What could possibly go wrong? 😄", n ? '' : 'Run the 4 experiments. When something breaks, work out WHY. That is how you discover the 4 Vs of big data.') +
+      '<div class="tiles">' + EXP.map(function (x, i) { var d = found[x.k]; return '<button class="tile ' + (d ? 'done' : '') + '" data-exp="' + i + '"><span class="st">' + (d ? '✔ ' + V[x.k].n : 'Experiment ' + (i + 1)) + '</span><div class="e">' + x.e + '</div><b>' + x.t + '</b><span>' + x.s + '</span></button>'; }).join('') + '</div>' +
+      '<h3 style="margin:16px 0 8px">📓 My 4V notebook</h3><div class="nb">' + Object.keys(V).map(function (k) { var v = V[k], on = found[k]; return '<div class="nbc ' + (on ? 'on ' + v.c : '') + '">' + (on ? '<b>' + v.e + ' ' + v.n + '</b>' + esc(v.d) + (notes[k] ? '<br><i style="color:#fde68a">“' + esc(notes[k]) + '”</i>' : '') : '<b>? ? ?</b>Not discovered yet') + '</div>'; }).join('') + '</div>' +
+      '<div class="row" style="margin-top:16px"><button class="btn red" id="final" ' + (n < 4 ? 'disabled' : '') + '>' + (n < 4 ? '🔒 Final test (find all 4 first)' : '🏆 Final test') + '</button></div>';
+    $('#final').onclick = finalTest;
+    [].forEach.call(st.querySelectorAll('[data-exp]'), function (b) { b.onclick = function () { [exp1, exp2, exp3, exp4][+b.dataset.exp](); }; });
   }
-  function hearts() { var h = ''; for (var i = 0; i < LIVES; i++) h += i < lives ? '❤️' : '🖤'; $('#hearts').textContent = ''; $('#hearts').innerHTML = h; }
-  function begin() {
-    deck = buildDeck(); idx = 0; score = 0; lives = LIVES; correct = 0; stat = { vol: [0, 0], vor: [0, 0], vel: [0, 0], ver: [0, 0] };
-    $('#intro').classList.add('hide'); $('#end').classList.add('hide'); $('#play').classList.remove('hide'); $('#score').textContent = 0; hearts(); nextCard();
+
+  function crash(host, icon, title, text, cb) {
+    var c = document.createElement('div'); c.className = 'crash';
+    c.innerHTML = '<div class="big">' + icon + '</div><h2>' + title + '</h2><p style="max-width:460px;line-height:1.5;margin:0">' + text + '</p><button class="btn red" id="why">🤔 Why did that happen?</button>';
+    host.appendChild(c); $('#why', c).onclick = cb;
   }
-  function nextCard() {
-    var f = $('#field'); f.innerHTML = '';
-    if (idx >= deck.length || lives <= 0) return finish();
-    cur = deck[idx]; $('#prog').textContent = 'Card ' + (idx + 1) + ' / ' + ROUND;
-    var d = document.createElement('div'); d.className = 'drop'; d.textContent = cur[1]; f.appendChild(d); cur.el = d;
-    y = 4; speed = 34 + idx * 3.2; last = performance.now(); paused = false; cancelAnimationFrame(raf); raf = requestAnimationFrame(tick);
+  function discover(k) {                                 /* "what was the problem?" then reveal the V */
+    clearAll(); var opts = shuffle(Object.keys(PROBLEMS));
+    st.innerHTML = bytey('Hmm… that did not go as planned. 😅', 'Look at what just happened. What was the real problem?') +
+      '<div class="q">' + opts.map(function (o) { return '<button class="opt" data-o="' + o + '">' + PROBLEMS[o] + '</button>'; }).join('') + '</div><div id="rev"></div>';
+    [].forEach.call(st.querySelectorAll('.opt'), function (b) {
+      b.onclick = function () {
+        if (b.dataset.o !== k) { b.classList.add('no'); st.classList.add('shake'); setTimeout(function () { st.classList.remove('shake'); }, 400); $('#rev').innerHTML = '<p class="sub">Not quite. Think about what exactly broke in the experiment, then try again.</p>'; return; }
+        [].forEach.call(st.querySelectorAll('.opt'), function (x) { x.disabled = true; }); b.classList.add('good'); found[k] = 1; save(); var v = V[k];
+        $('#rev').innerHTML = '<div class="stamp ' + v.c + '" style="background:rgba(0,0,0,.3)"><div style="font-size:15px;color:var(--mut)">You discovered…</div><div class="big" style="color:' + v.hex + '">' + v.e + ' ' + v.n.toUpperCase() + '</div><div style="font-size:16px;line-height:1.5;margin-top:4px">' + v.n + ' = ' + esc(v.d) + '</div></div>' +
+          '<label for="mine" style="font-weight:800">✍️ Write it in your own words (for your notebook)</label><textarea id="mine" maxlength="140" placeholder="e.g. ' + v.n + ' means…"></textarea>' +
+          '<div class="row" style="margin-top:12px"><button class="btn" id="back">📓 Save to notebook</button></div>';
+        $('#back').onclick = function () { notes[k] = $('#mine').value.trim(); save(); menu(); };
+      };
+    });
   }
-  function tick(t) {
-    if (paused) return; var dt = Math.min(.05, (t - last) / 1000); last = t; if (document.hidden) dt = 0;
-    y += speed * dt; var f = $('#field'), lim = f.clientHeight - cur.el.offsetHeight - 6; cur.el.style.top = y + 'px';
-    if (y >= lim) return answer(null); raf = requestAnimationFrame(tick);
+
+  /* ================= experiment 1: volume ================= */
+  function exp1() {
+    clearAll(); var steps = [100, 10000, 1000000, 10000000], size = ['5 KB', '500 KB', '50 MB', '5 GB'], tm = ['0.1 seconds', '2 seconds', '3 minutes', '9 hours'], si = 0, busy = false;
+    var names = ['Amy', 'Ben', 'Cathy', 'David', 'Eva', 'Frank'];
+    st.innerHTML = bytey('Experiment 1: sort our customer list A→Z with a normal spreadsheet!', 'Press “Add more data” a few times and sort after each one.') +
+      '<div class="sheetbar"><span>📗 customers.xlsx</span><span id="sz"></span></div><table class="sheet"><tr><th>ID</th><th>Name</th><th>City</th></tr>' + names.map(function (n, i) { return '<tr><td>' + (i + 1) + '</td><td>' + n + '</td><td>' + ['HK', 'KLN', 'NT'][i % 3] + '</td></tr>'; }).join('') + '<tr><td colspan="3" id="more" style="text-align:center;color:#64748b">…</td></tr></table>' +
+      '<div class="stats"><span>Rows: <b id="rw"></b></span><span>Estimated sort time: <b id="et"></b></span></div><div style="font-size:13px;color:var(--mut)">Memory in use</div><div class="meter"><i id="mem"></i></div>' +
+      '<div class="row"><button class="btn" id="add">➕ Add more data</button><button class="btn sec" id="sort">↕ Sort A→Z</button></div><div class="msg" id="m" style="background:rgba(255,255,255,.08);border-color:var(--line)">Ready.</div>';
+    function draw() { $('#rw').textContent = steps[si].toLocaleString(); $('#sz').textContent = size[si]; $('#et').textContent = tm[si]; $('#mem').style.width = [4, 22, 78, 100][si] + '%'; $('#more').textContent = '… and ' + (steps[si] - 6).toLocaleString() + ' more rows'; $('#add').disabled = si >= 3; }
+    draw();
+    $('#add').onclick = function () { if (busy || si >= 3) return; si++; draw(); $('#m').textContent = si === 3 ? 'Whoa, that is a LOT of rows. Try sorting! 😬' : 'Loaded ' + steps[si].toLocaleString() + ' rows.'; };
+    $('#sort').onclick = function () {
+      if (busy) return; busy = true; var m = $('#m');
+      if (si <= 1) { m.innerHTML = 'Sorting… ⏳'; later(function () { m.textContent = '✔ Sorted ' + steps[si].toLocaleString() + ' rows in ' + tm[si] + '. Easy!'; busy = false; }, si ? 1100 : 300); return; }
+      var p = 0; m.innerHTML = 'Sorting… <span id="pp">0</span>% ⏳ <small>(estimated ' + tm[si] + ')</small>';
+      var iv = setInterval(function () { p += si === 2 ? 1 : .4; var e = $('#pp'); if (e) e.textContent = p.toFixed(0); if (p >= (si === 2 ? 7 : 2)) { clearInterval(iv); crash($('#stage'), '💥', 'Spreadsheet has fainted', si === 2 ? 'Not enough memory. The sheet froze at 7%.' : 'Disk full! 5 GB of rows, and the laptop only has 1 GB of memory left.', function () { discover('vol'); }); } }, 120); timers.push(iv);
+    };
   }
-  function flash(msg, col) { var d = document.createElement('div'); d.className = 'flash'; d.style.color = col; d.textContent = msg; $('#field').appendChild(d); setTimeout(function () { d.remove(); }, 700); }
-  function answer(k) {
-    if (paused || !cur) return; paused = true; cancelAnimationFrame(raf); var right = k === cur[0];
-    stat[cur[0]][1]++; if (right) { stat[cur[0]][0]++; correct++; score += 10 + Math.min(10, Math.floor(speed / 10)); $('#score').textContent = score; flash('✔ ' + V[k][0], V[k][2]); idx++; setTimeout(nextCard, 520); return; }
-    lives--; hearts(); var e = document.createElement('div'); e.className = 'explain';
-    e.innerHTML = '<h3>' + (k ? '❌ Not ' + V[k][0] : '⏰ Too slow!') + '</h3><p>"' + cur[1] + '"</p><p style="font-size:20px;font-weight:800;color:' + V[cur[0]][2] + '">It is ' + V[cur[0]][0] + '</p><p>' + cur[2] + '</p><button class="btn" id="ok">Got it ▶</button>';
-    $('#field').appendChild(e); $('#ok').focus(); $('#ok').onclick = function () { idx++; nextCard(); };
+
+  /* ================= experiment 2: variety ================= */
+  function exp2() {
+    clearAll(); var items = [['📷', 'a photo of a receipt'], ['🎤', 'a voice message'], ['🎬', 'a video clip'], ['📍', 'a GPS location'], ['💬', 'a social-media post with emojis']], cur = -1, tried = {};
+    var cols = [['Name', 'short text'], ['Age', 'a number'], ['City', 'short text']];
+    st.innerHTML = bytey('Experiment 2: our tidy customer table is perfect! Now import today’s new data.', 'Tap a data item, then tap the column you want to put it in.') +
+      '<div class="items">' + items.map(function (x, i) { return '<button class="item" data-i="' + i + '">' + x[0] + ' ' + x[1] + '</button>'; }).join('') + '</div>' +
+      '<div class="cols">' + cols.map(function (c, i) { return '<button class="col" data-c="' + i + '">' + c[0] + '<small>' + c[1] + ' only</small></button>'; }).join('') + '</div><div class="msg" id="m" style="background:rgba(255,255,255,.08);border-color:var(--line)">Pick an item first.</div>';
+    var jokes = ['“Nope!”, says the table. “I only eat %t.”', 'Error 400: %i is not %t. Nice try! 🙃', 'The table spat it out. It is not %t.'];
+    [].forEach.call(st.querySelectorAll('.item'), function (b) { b.onclick = function () { cur = +b.dataset.i; [].forEach.call(st.querySelectorAll('.item'), function (x) { x.classList.toggle('sel', x === b); }); $('#m').textContent = 'Now tap a column for ' + items[cur][1] + '.'; }; });
+    [].forEach.call(st.querySelectorAll('.col'), function (b) {
+      b.onclick = function () {
+        if (cur < 0) { $('#m').textContent = 'Pick a data item first.'; return; }
+        var c = cols[+b.dataset.c], it = items[cur]; $('#m').textContent = '❌ ' + jokes[Math.floor(Math.random() * 3)].replace('%t', c[1]).replace('%i', it[1]); st.classList.add('shake'); setTimeout(function () { st.classList.remove('shake'); }, 400);
+        tried[cur] = 1; st.querySelector('[data-i="' + cur + '"]').classList.add('tried'); st.querySelector('[data-i="' + cur + '"]').classList.remove('sel'); cur = -1;
+        if (Object.keys(tried).length === items.length) later(function () { crash($('#stage'), '🚫', 'Import failed: 0 of 5 items stored', 'None of the new data fits the table. It was built for neat rows of text and numbers.', function () { discover('vor'); }); }, 900);
+      };
+    });
   }
-  function finish() {
-    var pct = Math.round(correct * 100 / ROUND), stars = pct >= 94 ? 3 : pct >= 75 ? 2 : pct >= 50 ? 1 : 0, out = lives <= 0, done = !out && pct >= 60;
-    if (done && window.ICTGameDone) try { window.ICTGameDone(); } catch (e) {}
-    $('#play').classList.add('hide'); var e = $('#end'); e.classList.remove('hide');
-    e.innerHTML = '<div style="font-size:42px">' + (out ? '💔' : ['🙂', '👍', '🌟', '🏆'][stars]) + '</div><h2 style="margin:4px 0">' + (out ? 'Out of lives!' : 'Round complete!') + '</h2><div class="big">' + score + '</div><p class="sub">' + correct + ' of ' + ROUND + ' sorted correctly (' + pct + '%)</p>' +
-      '<div class="bars">' + KEYS.map(function (k) { var s = stat[k], p = s[1] ? Math.round(s[0] * 100 / s[1]) : 0; return '<div class="bar"><span style="width:84px;color:' + V[k][2] + '">' + V[k][0] + '</span><i><u style="width:' + p + '%;background:' + V[k][2] + '"></u></i><span>' + s[0] + '/' + s[1] + '</span></div>'; }).join('') + '</div>' +
-      (done ? '<p style="font-weight:800;color:#6ee7b7">🎮 Game complete! +10 XP added to Book E on your world map.</p>' : '<p class="sub">Get at least 60% and finish all cards to earn the game XP.</p>') +
-      '<div class="note"><b>Remember:</b> big data is <b>NOT</b> more accurate by nature. Its 4Vs are Volume, Variety, Velocity and Veracity, and it is hard to process with ordinary database systems.</div>' +
-      '<div style="margin-top:16px;display:flex;gap:10px;justify-content:center;flex-wrap:wrap"><button class="btn" id="again">🔄 Play again</button><a class="btn sec" style="text-decoration:none" href="mindmap.html">🧠 Ch.1 mind map</a><a class="btn sec" style="text-decoration:none" href="../../mctrainer.html">🎯 MC Trainer</a></div>';
-    $('#again').onclick = begin;
+
+  /* ================= experiment 3: velocity ================= */
+  function exp3() {
+    clearAll(); var missed = 0, done = 0, busy = false, t0 = performance.now(), alive = true, pk = [], spawnEvery = 1500, nextSpawn = 0, last = performance.now();
+    st.innerHTML = bytey('Experiment 3: data packets are arriving on the belt. Analyse each one before it reaches the end!', 'Tap a packet to analyse it. My normal analysis tool takes a moment for each one. 🐢') +
+      '<div class="stats"><span>✅ Analysed: <b id="dn">0</b></span><span>⚠️ Out of date: <b id="ms">0</b> / 6</span></div><div class="meter"><i id="bz" style="background:#fbbf24"></i></div><div class="belt" id="belt"><div class="tool">OLD DATA</div></div>';
+    var belt = $('#belt'), W = function () { return belt.clientWidth - 64; }, icons = ['📄', '📸', '📍', '💬', '🧾', '📈'];
+    function lose() { if (!alive) return; alive = false; crash($('#stage'), '🏭', 'The belt is jammed!', 'The data arrived faster than we could analyse it. By the time we finished one packet, the results were already out of date.', function () { discover('vel'); }); }
+    function frame(now) {
+      if (!alive) return; var dt = Math.min(.05, (now - last) / 1000); last = now;
+      var el = (now - t0) / 1000, speed = 60 + el * 5; spawnEvery = Math.max(380, 1500 - el * 50);
+      if (now >= nextSpawn) { nextSpawn = now + spawnEvery; var d = document.createElement('button'); d.className = 'pk'; d.textContent = icons[Math.floor(Math.random() * icons.length)]; d.style.left = '-60px'; d.style.top = (14 + Math.random() * 130) + 'px'; belt.appendChild(d); var o = { el: d, x: -60 }; pk.push(o);
+        d.onclick = function () { if (busy || !alive) return; busy = true; var bz = $('#bz'), w = 0; d.classList.add('gone'); o.dead = true; var iv = setInterval(function () { w += 10; bz.style.width = w + '%'; if (w >= 100) { clearInterval(iv); busy = false; bz.style.width = '0'; done++; $('#dn').textContent = done; } }, 90); timers.push(iv); }; }
+      pk.forEach(function (o) { if (o.dead) return; o.x += speed * dt; o.el.style.left = o.x + 'px'; if (o.x > W()) { o.dead = true; o.el.remove(); missed++; $('#ms').textContent = missed; if (missed >= 6) lose(); } });
+      pk = pk.filter(function (o) { return !o.dead; }); requestAnimationFrame(frame);
+    }
+    requestAnimationFrame(function (n) { last = n; nextSpawn = n + 600; frame(n); });
+    timers.push({ stop: 1 }); var stopper = setInterval(function () { if (!document.getElementById('belt')) { alive = false; clearInterval(stopper); } }, 500); timers.push(stopper);
   }
-  $('#start').onclick = begin;
-  [].forEach.call(document.querySelectorAll('.bin'), function (b) { b.onclick = function () { answer(b.dataset.v); }; });
-  addEventListener('keydown', function (e) { var i = '1234'.indexOf(e.key); if (i > -1 && !$('#play').classList.contains('hide') && !document.getElementById('ok')) answer(KEYS[i]); else if (e.key === 'Enter' && document.getElementById('ok')) document.getElementById('ok').click(); });
+
+  /* ================= experiment 4: veracity ================= */
+  function exp4() {
+    clearAll(); var vals = [21, 22, 20, 412, 23, -999, 21, 22, 999, 22, 21, 23], bad = { 3: 1, 5: 1, 8: 1 }, gone = {}, removed = 0;
+    function avg() { var a = vals.filter(function (v, i) { return !gone[i]; }); return (a.reduce(function (s, v) { return s + v; }, 0) / a.length).toFixed(1); }
+    st.innerHTML = bytey('Experiment 4: a weather sensor sends hourly temperatures. What is the average? I trust the data 100%!', 'Check the average. If it looks weird, tap the suspicious readings to remove them.') +
+      '<div class="stats"><span>Average: <span class="avg" id="av"></span> °C</span></div><div class="rd">' + vals.map(function (v, i) { return '<button class="rdc ' + (bad[i] ? 'bad' : '') + '" data-i="' + i + '">' + v + '°C</button>'; }).join('') + '</div><div class="msg" id="m" style="background:rgba(255,255,255,.08);border-color:var(--line)">Is a Hong Kong average of ' + avg() + ' °C believable?</div><div id="next"></div>';
+    $('#av').textContent = avg();
+    [].forEach.call(st.querySelectorAll('.rdc'), function (b) {
+      b.onclick = function () {
+        var i = +b.dataset.i; if (gone[i]) return;
+        if (!bad[i]) { b.classList.add('no'); st.classList.add('shake'); setTimeout(function () { st.classList.remove('shake'); b.classList.remove('no'); }, 400); $('#m').textContent = '❌ That reading looks fine. Keep it.'; return; }
+        gone[i] = 1; b.classList.add('gone'); removed++; $('#av').textContent = avg();
+        if (removed < 3) { $('#m').textContent = '✔ Removed a crazy reading. Average is now ' + avg() + ' °C.'; return; }
+        $('#m').innerHTML = '✅ Clean! The average is now a sensible <b>' + avg() + ' °C</b>. Phew. Now let us try the REAL data set…';
+        $('#next').innerHTML = '<button class="btn red" id="real">📡 Load 1,000,000 real readings</button>'; $('#real').onclick = real;
+      };
+    });
+    function real() {
+      $('#next').innerHTML = ''; var n = 0, total = 470000;
+      st.innerHTML = bytey('Same job, bigger data. Just remove the bad readings again!', 'About 47% of the real data is spam or sensor errors. Start cleaning!') +
+        '<div class="stats"><span>Average: <b class="avg" style="color:var(--bad)">83.4 °C</b></span><span>Bad rows left: <b id="left">' + total.toLocaleString() + '</b></span></div><div class="meter"><i id="cl"></i></div><button class="btn" id="clean">🧹 Clean a bad row by hand</button><div class="msg" id="m" style="background:rgba(255,255,255,.08);border-color:var(--line)">Tap as fast as you can!</div>';
+      var b = $('#clean'); b.onclick = function () { n++; $('#left').textContent = (total - n).toLocaleString(); $('#cl').style.width = Math.max(1, n / total * 100) + '%'; $('#m').textContent = n < 8 ? 'Cleaned ' + n + ' row' + (n > 1 ? 's' : '') + '…' : 'Still ' + (total - n).toLocaleString() + ' to go. At this speed it takes about ' + Math.round((total - n) / 3600 / 24 * 10) / 10 + ' days. 😱'; if (n >= 12) crash($('#stage'), '😵', 'Bytey fainted', 'You cleaned ' + n + ' rows. There are ' + (total - n).toLocaleString() + ' more bad ones, and the average is still wrong. Wrong data leads to wrong decisions.', function () { discover('ver'); }); };
+    }
+  }
+
+  /* ================= final test ================= */
+  function finalTest() {
+    clearAll(); var Q = shuffle(TEST).slice(0, 6), i = 0, ok = 0, stats = { vol: [0, 0], vor: [0, 0], vel: [0, 0], ver: [0, 0] };
+    function ask() {
+      if (i >= Q.length) return end(); var q = Q[i];
+      st.innerHTML = bytey('Final test ' + (i + 1) + ' / ' + Q.length + ': which V is this?') + '<div class="panel" style="background:#fff;color:#0f172a;font-weight:800;font-size:18px;line-height:1.5">' + esc(q[1]) + '</div><div class="q" style="grid-template-columns:repeat(auto-fit,minmax(170px,1fr))">' + Object.keys(V).map(function (k) { return '<button class="opt ' + V[k].c + '" data-k="' + k + '">' + V[k].e + ' ' + V[k].n + '</button>'; }).join('') + '</div><div id="fb"></div>';
+      [].forEach.call(st.querySelectorAll('.opt'), function (b) {
+        b.onclick = function () {
+          var right = b.dataset.k === q[0]; stats[q[0]][1]++; if (right) { ok++; stats[q[0]][0]++; }
+          [].forEach.call(st.querySelectorAll('.opt'), function (x) { x.disabled = true; if (x.dataset.k === q[0]) x.classList.add('good'); }); if (!right) b.classList.add('no');
+          $('#fb').innerHTML = '<div class="msg" style="' + (right ? 'background:rgba(16,185,129,.18);border-color:#34d399' : '') + '">' + (right ? '✅ Correct! ' : '❌ It is ' + V[q[0]].n + '. ') + V[q[0]].n + ' = ' + esc(V[q[0]].d) + '</div><button class="btn" id="nx">' + (i + 1 < Q.length ? 'Next ▶' : 'Finish 🏁') + '</button>'; $('#nx').onclick = function () { i++; ask(); };
+        };
+      });
+    }
+    function end() {
+      var pass = ok >= 4; if (pass && window.ICTGameDone) try { window.ICTGameDone(); } catch (e) {}
+      st.innerHTML = '<div style="text-align:center"><div style="font-size:54px">' + (pass ? '🏆' : '🤔') + '</div><h2>' + (pass ? 'Data Lab complete!' : 'Almost there!') + '</h2><p class="sub">' + ok + ' of ' + Q.length + ' correct</p>' +
+        (pass ? '<p style="font-weight:800;color:#6ee7b7">🎮 Game complete! +10 XP added to Book E on your world map.</p>' : '<p class="sub">Get at least 4 right to finish the game. Review your notebook and try again.</p>') +
+        '<div class="note" style="text-align:left"><b>Remember:</b> big data = very large, varied, fast and uncertain data that is hard to process with ordinary database systems: <b>Volume, Variety, Velocity, Veracity</b>. Big data is <b>NOT</b> more accurate by nature.</div>' +
+        '<div class="row" style="justify-content:center;margin-top:16px"><button class="btn" id="again">🔄 Try the test again</button><button class="btn sec" id="mn">📓 Back to lab</button><a class="btn sec" style="text-decoration:none" href="mindmap.html">🧠 Ch.1 mind map</a><a class="btn sec" style="text-decoration:none" href="../../mctrainer.html">🎯 MC Trainer</a></div></div>';
+      $('#again').onclick = finalTest; $('#mn').onclick = menu;
+    }
+    ask();
+  }
+  menu();
 })();
 </script>
 <script src="../../nav.js"></script>
