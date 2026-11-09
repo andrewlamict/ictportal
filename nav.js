@@ -22,7 +22,8 @@
     'bookb/ch1/printer.html': 'Printer', 'bookb/ch1/poskiosk.html': 'POS & Kiosk',
     'bookb/ch2/cpugpu.html': 'CPU vs GPU', 'bookb/ch2/cpu.html': 'CPU', 'bookb/ch2/storage.html': 'Storage',
     'bookb/ch3/os.html': 'Operating System', 'bookb/ch3/utility.html': 'Utility Software', 'bookb/ch3/driver.html': 'Device Driver',
-    'bookb/ch3/processingmode.html': 'Processing Modes'
+    'bookb/ch3/processingmode.html': 'Processing Modes',
+    'booke/ch1/bigdata4v.html': 'Big Data 4V Sorter'
   };
 
   var SITE = [ /* id, title, parent id, url (relative to site root), group */
@@ -49,7 +50,7 @@
       var u = FOLDER[b[0]] + '/ch' + n + '/mindmap.html';
       SITE.push([u, 'Ch.' + n + ' Mind Map', 'concepts-book-' + b[0], u, b[1]]);
       Object.keys(ACT).forEach(function (a) {
-        if (b[0] === 'b' && a.indexOf('/ch' + n + '/') > -1) SITE.push([a, ACT[a], 'concepts-book-b', a, b[1]]);
+        if (a.indexOf(FOLDER[b[0]] + '/ch' + n + '/') === 0) SITE.push([a, ACT[a], 'concepts-book-' + b[0], a, b[1]]);
       });
     });
   });

@@ -1,0 +1,159 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Big Data 4V Sorter</title>
+<style>
+:root{--bg:#0b1226;--card:#16203f;--line:rgba(255,255,255,.16);--txt:#f8fafc;--mut:#cbd5e1;--vol:#3b82f6;--vor:#10b981;--vel:#f59e0b;--ver:#a855f7}
+*{box-sizing:border-box}
+html{background:var(--bg)}
+body{margin:0;font-family:system-ui,-apple-system,"Segoe UI",sans-serif;color:var(--txt);background:radial-gradient(900px 500px at 15% -10%,#1e3a8a 0,transparent 60%),radial-gradient(800px 500px at 100% 0,#581c87 0,transparent 55%),var(--bg);min-height:100vh}
+.wrap{max-width:860px;margin:0 auto;padding:16px 16px 60px}
+h1{margin:6px 0 2px;font-size:28px}
+.sub{color:var(--mut);margin:0 0 16px}
+.panel{background:rgba(255,255,255,.07);border:1px solid var(--line);border-radius:20px;padding:20px}
+button{font:inherit;cursor:pointer}
+.btn{border:0;border-radius:14px;padding:13px 22px;font-weight:800;font-size:16px;color:#fff;background:linear-gradient(135deg,#6366f1,#a855f7);box-shadow:0 8px 20px rgba(99,102,241,.4)}
+.btn.sec{background:rgba(255,255,255,.14);box-shadow:none}
+.vgrid{display:grid;grid-template-columns:repeat(auto-fit,minmax(180px,1fr));gap:12px;margin:14px 0 18px}
+.vc{border-radius:16px;padding:14px;border:2px solid;background:rgba(0,0,0,.25)}
+.vc b{font-size:20px;display:block}.vc span{font-size:13.5px;color:var(--mut);line-height:1.5}
+.vc .big{font-size:34px;font-weight:900;line-height:1}
+.c-vol{border-color:var(--vol)}.c-vol .big,.c-vol b{color:#93c5fd}
+.c-vor{border-color:var(--vor)}.c-vor .big,.c-vor b{color:#6ee7b7}
+.c-vel{border-color:var(--vel)}.c-vel .big,.c-vel b{color:#fcd34d}
+.c-ver{border-color:var(--ver)}.c-ver .big,.c-ver b{color:#d8b4fe}
+.hud{display:flex;justify-content:space-between;align-items:center;gap:10px;font-weight:800;margin-bottom:10px;flex-wrap:wrap}
+.hearts{letter-spacing:3px}
+.field{position:relative;height:300px;border-radius:18px;border:1px solid var(--line);overflow:hidden;background:linear-gradient(180deg,rgba(255,255,255,.04),rgba(99,102,241,.14))}
+.field::after{content:"";position:absolute;left:0;right:0;bottom:0;height:5px;background:#ef4444;opacity:.85}
+.drop{position:absolute;left:50%;transform:translateX(-50%);width:min(92%,520px);padding:14px 16px;border-radius:16px;background:#fff;color:#0f172a;font-weight:700;font-size:17px;line-height:1.4;text-align:center;box-shadow:0 10px 26px rgba(0,0,0,.5);border:3px solid #6366f1}
+.bins{display:grid;grid-template-columns:repeat(4,1fr);gap:8px;margin-top:12px}
+.bin{border:2px solid;border-radius:14px;padding:12px 4px;color:#fff;font-weight:800;font-size:15px;background:rgba(0,0,0,.3);transition:.12s}
+.bin small{display:block;font-weight:600;color:var(--mut);font-size:11.5px}
+.bin:hover{transform:translateY(-3px);filter:brightness(1.2)}
+.bin.c-vol{background:rgba(59,130,246,.25)}.bin.c-vor{background:rgba(16,185,129,.25)}.bin.c-vel{background:rgba(245,158,11,.25)}.bin.c-ver{background:rgba(168,85,247,.25)}
+.flash{position:absolute;inset:0;display:flex;align-items:center;justify-content:center;font-size:30px;font-weight:900;pointer-events:none;animation:pop .7s ease-out forwards}
+@keyframes pop{from{opacity:1;transform:scale(.8)}to{opacity:0;transform:scale(1.4)}}
+.explain{position:absolute;inset:0;background:rgba(8,13,35,.94);display:flex;flex-direction:column;align-items:center;justify-content:center;text-align:center;padding:18px;gap:10px}
+.explain h3{margin:0;font-size:22px}.explain p{margin:0;max-width:520px;line-height:1.55;color:#e2e8f0}
+.res{text-align:center}.res .big{font-size:60px;font-weight:900;color:#fcd34d;line-height:1}
+.bars{margin:14px auto;max-width:460px;text-align:left}
+.bar{display:flex;align-items:center;gap:10px;margin:6px 0;font-size:14px;font-weight:700}
+.bar i{flex:1;height:12px;border-radius:9px;background:rgba(255,255,255,.15);overflow:hidden}.bar i u{display:block;height:100%;border-radius:9px}
+.hide{display:none!important}
+.note{margin-top:14px;padding:12px 14px;border-radius:14px;background:rgba(251,191,36,.14);border:1px solid rgba(251,191,36,.5);font-size:14.5px;line-height:1.55}
+@media(max-width:560px){.drop{font-size:15px}.bin{font-size:13px}}
+</style>
+</head>
+<body>
+<div class="wrap">
+  <h1>📊 Big Data 4V Sorter</h1>
+  <p class="sub">Book E · Ch.1 Technological Innovations · 1.1 AI and data science</p>
+
+  <section class="panel" id="intro">
+    <h2 style="margin:0 0 4px">Big data has 4 Vs</h2>
+    <p class="sub" style="margin-bottom:0">Big data = huge, varied, fast and uncertain data that is hard to process with ordinary database systems. Learn the 4Vs, then sort the falling data cards.</p>
+    <div class="vgrid">
+      <div class="vc c-vol"><div class="big">V</div><b>Volume</b><span>How <b style="display:inline;font-size:inherit">much</b> data. The data keeps growing and must be stored.</span></div>
+      <div class="vc c-vor"><div class="big">V</div><b>Variety</b><span>Many <b style="display:inline;font-size:inherit">formats</b>: audio, image, video, text, location. Different sources must be integrated.</span></div>
+      <div class="vc c-vel"><div class="big">V</div><b>Velocity</b><span>How <b style="display:inline;font-size:inherit">fast</b> data is generated and must be analysed.</span></div>
+      <div class="vc c-ver"><div class="big">V</div><b>Veracity</b><span>How <b style="display:inline;font-size:inherit">accurate</b>: uncertainty, accuracy and quality of the data.</span></div>
+    </div>
+    <p style="margin:0 0 14px"><b>How to play:</b> each card falls towards the red line. Tap the V it shows (or press <b>1 2 3 4</b>). You have 5 lives. 16 cards per round.</p>
+    <button class="btn" id="start">▶ Start game</button>
+  </section>
+
+  <section class="panel hide" id="play">
+    <div class="hud"><span>Score <span id="score">0</span></span><span id="prog">Card 1 / 16</span><span class="hearts" id="hearts"></span></div>
+    <div class="field" id="field"></div>
+    <div class="bins">
+      <button class="bin c-vol" data-v="vol">1 · Volume<small>how much</small></button>
+      <button class="bin c-vor" data-v="vor">2 · Variety<small>many formats</small></button>
+      <button class="bin c-vel" data-v="vel">3 · Velocity<small>how fast</small></button>
+      <button class="bin c-ver" data-v="ver">4 · Veracity<small>how accurate</small></button>
+    </div>
+  </section>
+
+  <section class="panel res hide" id="end"></section>
+</div>
+
+<script>
+(function () {
+  'use strict';
+  var V = { vol: ['Volume', 'how much data', '#93c5fd'], vor: ['Variety', 'many different formats and sources', '#6ee7b7'], vel: ['Velocity', 'how fast data is generated and analysed', '#fcd34d'], ver: ['Veracity', 'how accurate and trustworthy the data is', '#d8b4fe'] };
+  var POOL = [
+    ['vol', 'The growing pile of data from millions of IoT detectors must be stored', 'The big problem is how much data there is: storing the growing amount.'],
+    ['vol', 'A social network stores billions of posts every year', 'Billions of posts is a huge amount of data: volume.'],
+    ['vol', 'Human DNA data of millions of people needs a very large storage', 'It is about the sheer size of data to store: volume.'],
+    ['vol', 'Years of historical traffic patterns are kept by a map app', 'Large amounts of data kept over time: volume.'],
+    ['vol', 'Terabytes of clicks, browsing history and cookies are collected every day', 'Lots and lots of records piling up: volume.'],
+    ['vor', 'Audio, images, video, text and location data are all in one system', 'Different formats of data: variety.'],
+    ['vor', 'A company combines data from websites, sensors and mobile apps', 'Integrating many different sources is the challenge: variety.'],
+    ['vor', 'Photos, voice messages and GPS locations must be analysed together', 'Different types of data together: variety.'],
+    ['vor', 'Data comes as neat tables and also as messy videos and text', 'Structured and unstructured formats mixed: variety.'],
+    ['vor', 'A smart city gathers camera video, sound and temperature readings', 'Many kinds of data from many kinds of devices: variety.'],
+    ['vel', 'Live traffic conditions are sent by drivers every second', 'Data generated and used at high speed: velocity.'],
+    ['vel', 'Thousands of posts per second must be analysed immediately', 'The speed of generation and analysis: velocity.'],
+    ['vel', 'A spam filter must check each email the moment it arrives', 'It must be processed quickly, in real time: velocity.'],
+    ['vel', 'A recommendation system updates its suggestions as you click', 'Fast, continuous data flow: velocity.'],
+    ['vel', 'Sensor readings stream in non-stop and must be analysed at once', 'High speed of generation and analysis: velocity.'],
+    ['ver', '47% of email is spam, so a lot of the data is useless', 'The quality of the data is poor: veracity.'],
+    ['ver', 'Nobody is sure whether the collected data is accurate', 'Uncertainty about accuracy is veracity.'],
+    ['ver', 'Fake reviews are mixed with real ones in the data set', 'Can the data be trusted? That is veracity.'],
+    ['ver', 'Sensor data has errors and missing values', 'Low quality and accuracy: veracity.'],
+    ['ver', 'Rumours and fake news spread online. How much can be trusted?', 'Trustworthiness of the data: veracity.']
+  ];
+  var KEYS = ['vol', 'vor', 'vel', 'ver'], ROUND = 16, LIVES = 5;
+  var $ = function (s) { return document.querySelector(s); };
+  var deck, idx, score, lives, cur, y, speed, last, raf, paused, stat, correct;
+
+  function shuffle(a) { a = a.slice(); for (var i = a.length - 1; i > 0; i--) { var j = Math.floor(Math.random() * (i + 1)), t = a[i]; a[i] = a[j]; a[j] = t; } return a; }
+  function buildDeck() {                                  /* 4 cards of each V, shuffled */
+    var d = []; KEYS.forEach(function (k) { d = d.concat(shuffle(POOL.filter(function (p) { return p[0] === k; })).slice(0, ROUND / 4)); }); return shuffle(d);
+  }
+  function hearts() { var h = ''; for (var i = 0; i < LIVES; i++) h += i < lives ? '❤️' : '🖤'; $('#hearts').textContent = ''; $('#hearts').innerHTML = h; }
+  function begin() {
+    deck = buildDeck(); idx = 0; score = 0; lives = LIVES; correct = 0; stat = { vol: [0, 0], vor: [0, 0], vel: [0, 0], ver: [0, 0] };
+    $('#intro').classList.add('hide'); $('#end').classList.add('hide'); $('#play').classList.remove('hide'); $('#score').textContent = 0; hearts(); nextCard();
+  }
+  function nextCard() {
+    var f = $('#field'); f.innerHTML = '';
+    if (idx >= deck.length || lives <= 0) return finish();
+    cur = deck[idx]; $('#prog').textContent = 'Card ' + (idx + 1) + ' / ' + ROUND;
+    var d = document.createElement('div'); d.className = 'drop'; d.textContent = cur[1]; f.appendChild(d); cur.el = d;
+    y = 4; speed = 34 + idx * 3.2; last = performance.now(); paused = false; cancelAnimationFrame(raf); raf = requestAnimationFrame(tick);
+  }
+  function tick(t) {
+    if (paused) return; var dt = Math.min(.05, (t - last) / 1000); last = t; if (document.hidden) dt = 0;
+    y += speed * dt; var f = $('#field'), lim = f.clientHeight - cur.el.offsetHeight - 6; cur.el.style.top = y + 'px';
+    if (y >= lim) return answer(null); raf = requestAnimationFrame(tick);
+  }
+  function flash(msg, col) { var d = document.createElement('div'); d.className = 'flash'; d.style.color = col; d.textContent = msg; $('#field').appendChild(d); setTimeout(function () { d.remove(); }, 700); }
+  function answer(k) {
+    if (paused || !cur) return; paused = true; cancelAnimationFrame(raf); var right = k === cur[0];
+    stat[cur[0]][1]++; if (right) { stat[cur[0]][0]++; correct++; score += 10 + Math.min(10, Math.floor(speed / 10)); $('#score').textContent = score; flash('✔ ' + V[k][0], V[k][2]); idx++; setTimeout(nextCard, 520); return; }
+    lives--; hearts(); var e = document.createElement('div'); e.className = 'explain';
+    e.innerHTML = '<h3>' + (k ? '❌ Not ' + V[k][0] : '⏰ Too slow!') + '</h3><p>"' + cur[1] + '"</p><p style="font-size:20px;font-weight:800;color:' + V[cur[0]][2] + '">It is ' + V[cur[0]][0] + '</p><p>' + cur[2] + '</p><button class="btn" id="ok">Got it ▶</button>';
+    $('#field').appendChild(e); $('#ok').focus(); $('#ok').onclick = function () { idx++; nextCard(); };
+  }
+  function finish() {
+    var pct = Math.round(correct * 100 / ROUND), stars = pct >= 94 ? 3 : pct >= 75 ? 2 : pct >= 50 ? 1 : 0, out = lives <= 0, done = !out && pct >= 60;
+    if (done && window.ICTGameDone) try { window.ICTGameDone(); } catch (e) {}
+    $('#play').classList.add('hide'); var e = $('#end'); e.classList.remove('hide');
+    e.innerHTML = '<div style="font-size:42px">' + (out ? '💔' : ['🙂', '👍', '🌟', '🏆'][stars]) + '</div><h2 style="margin:4px 0">' + (out ? 'Out of lives!' : 'Round complete!') + '</h2><div class="big">' + score + '</div><p class="sub">' + correct + ' of ' + ROUND + ' sorted correctly (' + pct + '%)</p>' +
+      '<div class="bars">' + KEYS.map(function (k) { var s = stat[k], p = s[1] ? Math.round(s[0] * 100 / s[1]) : 0; return '<div class="bar"><span style="width:84px;color:' + V[k][2] + '">' + V[k][0] + '</span><i><u style="width:' + p + '%;background:' + V[k][2] + '"></u></i><span>' + s[0] + '/' + s[1] + '</span></div>'; }).join('') + '</div>' +
+      (done ? '<p style="font-weight:800;color:#6ee7b7">🎮 Game complete! +10 XP added to Book E on your world map.</p>' : '<p class="sub">Get at least 60% and finish all cards to earn the game XP.</p>') +
+      '<div class="note"><b>Remember:</b> big data is <b>NOT</b> more accurate by nature. Its 4Vs are Volume, Variety, Velocity and Veracity, and it is hard to process with ordinary database systems.</div>' +
+      '<div style="margin-top:16px;display:flex;gap:10px;justify-content:center;flex-wrap:wrap"><button class="btn" id="again">🔄 Play again</button><a class="btn sec" style="text-decoration:none" href="mindmap.html">🧠 Ch.1 mind map</a><a class="btn sec" style="text-decoration:none" href="../../mctrainer.html">🎯 MC Trainer</a></div>';
+    $('#again').onclick = begin;
+  }
+  $('#start').onclick = begin;
+  [].forEach.call(document.querySelectorAll('.bin'), function (b) { b.onclick = function () { answer(b.dataset.v); }; });
+  addEventListener('keydown', function (e) { var i = '1234'.indexOf(e.key); if (i > -1 && !$('#play').classList.contains('hide') && !document.getElementById('ok')) answer(KEYS[i]); else if (e.key === 'Enter' && document.getElementById('ok')) document.getElementById('ok').click(); });
+})();
+</script>
+<script src="../../nav.js"></script>
+</body>
+</html>
