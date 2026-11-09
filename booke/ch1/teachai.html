@@ -1,0 +1,390 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Teach-a-Bot Academy</title>
+<style>
+:root{color-scheme:dark;--bg:#0b1226;--panel:#162044;--line:rgba(255,255,255,.18);--txt:#f8fafc;--mut:#cbd5e1;--vol:#60a5fa;--vor:#34d399;--vel:#fbbf24;--ver:#c084fc;--bad:#fb7185;--ok:#34d399}
+*{box-sizing:border-box}
+html{background:var(--bg)}
+body{margin:0;font-family:system-ui,-apple-system,"Segoe UI",sans-serif;color:var(--txt);background:radial-gradient(900px 500px at 12% -10%,#1e3a8a 0,transparent 60%),radial-gradient(800px 500px at 100% 0,#581c87 0,transparent 55%),var(--bg);min-height:100vh}
+.wrap{max-width:900px;margin:0 auto;padding:16px 16px 90px}
+h1{margin:6px 0 2px;font-size:28px}h2{margin:0 0 6px}
+.sub{color:var(--mut);margin:0 0 14px;line-height:1.5}
+.panel{position:relative;background:rgba(255,255,255,.07);border:1px solid var(--line);border-radius:20px;padding:20px;overflow:hidden}
+button{font:inherit;cursor:pointer;color:inherit}
+.btn{border:0;border-radius:14px;padding:12px 20px;font-weight:800;font-size:16px;color:#fff;background:linear-gradient(135deg,#6366f1,#a855f7);box-shadow:0 8px 20px rgba(99,102,241,.4)}
+.btn:hover:not(:disabled){filter:brightness(1.12)}.btn:disabled{opacity:.4;cursor:not-allowed}
+.btn.sec{background:rgba(255,255,255,.14);box-shadow:none}.btn.red{background:linear-gradient(135deg,#ef4444,#f97316)}
+.btn.sm{padding:8px 14px;font-size:14px}
+.row{display:flex;gap:10px;flex-wrap:wrap;align-items:center}
+/* Bytey */
+.say{display:flex;gap:12px;align-items:flex-start;margin-bottom:14px}
+.bot{font-size:46px;line-height:1;animation:bob 2.4s ease-in-out infinite}
+@keyframes bob{50%{transform:translateY(-5px) rotate(3deg)}}
+.bub{background:#fff;color:#0f172a;border-radius:6px 18px 18px 18px;padding:10px 14px;font-weight:700;line-height:1.45;max-width:640px}
+.bub small{display:block;color:#475569;font-weight:600;margin-top:3px}
+/* menu */
+.tiles{display:grid;grid-template-columns:repeat(auto-fit,minmax(190px,1fr));gap:12px;margin:14px 0}
+.tile{text-align:left;border-radius:18px;padding:16px;border:2px solid var(--line);background:rgba(0,0,0,.25);transition:.15s}
+.tile:hover{transform:translateY(-3px);border-color:#a5b4fc}
+.tile .e{font-size:34px}.tile b{display:block;font-size:17px;margin:4px 0 2px}.tile span{font-size:13px;color:var(--mut)}
+.tile.done{border-color:var(--ok);background:rgba(16,185,129,.12)}
+.tile .st{float:right;font-size:12px;font-weight:800;border-radius:99px;padding:2px 9px;background:rgba(255,255,255,.14)}
+.tile.done .st{background:var(--ok);color:#052e1d}
+.nb{display:grid;grid-template-columns:repeat(auto-fit,minmax(190px,1fr));gap:10px}
+.nbc{border-radius:14px;padding:10px 12px;border:2px dashed var(--line);font-size:13.5px;color:var(--mut);min-height:84px}
+.nbc.on{border-style:solid;color:var(--txt);background:rgba(0,0,0,.28)}
+.nbc b{display:block;font-size:16px}
+.c-vol{border-color:var(--vol)!important}.c-vol b{color:var(--vol)}
+.c-vor{border-color:var(--vor)!important}.c-vor b{color:var(--vor)}
+.c-vel{border-color:var(--vel)!important}.c-vel b{color:var(--vel)}
+.c-ver{border-color:var(--ver)!important}.c-ver b{color:var(--ver)}
+/* sheet */
+.sheet{width:100%;border-collapse:collapse;background:#f8fafc;color:#0f172a;font-size:13px;border-radius:10px;overflow:hidden}
+.sheet th{background:#16a34a;color:#fff;padding:6px 8px;text-align:left}.sheet td{padding:5px 8px;border-bottom:1px solid #e2e8f0}
+.sheetbar{display:flex;justify-content:space-between;background:#166534;color:#fff;padding:6px 10px;font-size:13px;font-weight:700;border-radius:10px 10px 0 0}
+.meter{height:14px;border-radius:9px;background:rgba(255,255,255,.15);overflow:hidden;margin:6px 0}.meter i{display:block;height:100%;width:0;background:linear-gradient(90deg,#34d399,#fbbf24,#ef4444);transition:width .3s}
+.stats{display:flex;gap:16px;flex-wrap:wrap;margin:10px 0;font-weight:800}.stats span{background:rgba(0,0,0,.3);border-radius:10px;padding:6px 12px}
+.crash{position:absolute;inset:0;background:rgba(15,5,20,.93);display:flex;flex-direction:column;align-items:center;justify-content:center;text-align:center;gap:10px;padding:20px;animation:glitch .5s;z-index:5}
+.crash .big{font-size:60px}
+@keyframes glitch{0%{transform:translateX(-8px)}20%{transform:translateX(8px)}40%{transform:translateX(-6px)}60%{transform:translateX(6px)}100%{transform:none}}
+.shake{animation:glitch .4s}
+/* import */
+.items{display:flex;gap:10px;flex-wrap:wrap;margin:10px 0}
+.item{border:2px solid var(--line);background:rgba(0,0,0,.3);border-radius:14px;padding:10px 14px;font-weight:700}
+.item.sel{border-color:#fbbf24;background:rgba(251,191,36,.2);transform:scale(1.05)}.item.tried{opacity:.5;text-decoration:line-through}
+.cols{display:grid;grid-template-columns:repeat(3,1fr);gap:8px}
+.col{border-radius:12px;border:2px solid #86efac;background:#f0fdf4;color:#14532d;padding:12px;font-weight:800;text-align:center}
+.col small{display:block;font-weight:600;color:#166534}
+.msg{min-height:44px;margin:10px 0;padding:10px 12px;border-radius:12px;background:rgba(251,113,133,.15);border:1px solid rgba(251,113,133,.5);font-weight:700}
+/* belt */
+.belt{position:relative;height:210px;border-radius:16px;background:repeating-linear-gradient(90deg,#1e293b 0 28px,#243049 28px 56px);border:2px solid #475569;overflow:hidden}
+.pk{position:absolute;top:80px;width:54px;height:54px;border-radius:12px;background:#fff;color:#0f172a;display:flex;align-items:center;justify-content:center;font-size:30px;border:3px solid #6366f1;box-shadow:0 6px 14px rgba(0,0,0,.5)}
+.pk:hover{border-color:#fbbf24}
+.pk.gone{opacity:0;transform:scale(1.6);transition:.3s}
+.tool{position:absolute;right:0;top:0;bottom:0;width:64px;background:rgba(239,68,68,.3);display:flex;align-items:center;justify-content:center;font-size:12px;font-weight:800;writing-mode:vertical-rl;letter-spacing:.1em}
+/* readings */
+.rd{display:grid;grid-template-columns:repeat(auto-fill,minmax(110px,1fr));gap:8px;margin:10px 0}
+.rdc{border-radius:12px;padding:10px;background:rgba(0,0,0,.3);border:2px solid var(--line);font-weight:800;text-align:center}
+.rdc.bad:hover{border-color:var(--bad)}.rdc.gone{opacity:.25;text-decoration:line-through}
+.avg{font-size:30px;font-weight:900}
+.q{margin:12px 0;display:grid;gap:8px}
+.opt{text-align:left;border:2px solid var(--line);border-radius:14px;padding:12px 14px;background:rgba(0,0,0,.28);font-weight:700;line-height:1.4}
+.opt:hover:not(:disabled){border-color:#a5b4fc;background:rgba(99,102,241,.2)}
+.opt.good{border-color:var(--ok);background:rgba(16,185,129,.25)}.opt.no{border-color:var(--bad);background:rgba(244,63,94,.25)}
+.stamp{margin:12px 0;padding:16px;border-radius:18px;border:3px solid;text-align:center;animation:stamp .5s}
+.stamp .big{font-size:40px;font-weight:900}
+@keyframes stamp{from{transform:scale(2.2) rotate(-8deg);opacity:0}to{transform:none;opacity:1}}
+textarea{width:100%;min-height:64px;margin-top:6px;padding:10px;border-radius:12px;border:2px solid var(--line);background:rgba(0,0,0,.3);color:#fff;font:inherit;font-size:14.5px}
+.cards{display:flex;flex-wrap:wrap;gap:8px;align-items:center;margin:12px 0}
+.num{min-width:54px;height:54px;border-radius:12px;border:3px solid #6366f1;background:#fff;color:#0f172a;font-weight:900;font-size:19px;padding:0 8px}
+.num.sel{border-color:#fbbf24;background:#fef3c7;transform:translateY(-6px)}.more{color:var(--mut);font-weight:700}
+.scene{background:#fff;color:#0f172a;border-radius:12px;padding:12px 14px;line-height:1.7;font-weight:600}
+.map{display:flex;justify-content:space-around;background:#d1fae5;border-radius:10px;padding:14px;margin-bottom:6px;font-weight:800}.pin{background:#fecaca;border-radius:8px;padding:2px 8px}
+.wave{font-size:26px;letter-spacing:2px;color:#6366f1}.frames{display:flex;gap:8px;margin-bottom:6px}.frames span{flex:1;background:#0f172a;color:#fff;border-radius:8px;padding:8px;text-align:center;font-size:13px}
+.board{display:flex;gap:8px;flex-wrap:wrap;min-height:40px}.pinned{background:rgba(251,191,36,.2);border:2px solid #fbbf24;border-radius:10px;padding:6px 12px;font-weight:800}
+.two{display:grid;grid-template-columns:1fr 1fr;gap:12px;margin:14px 0}.phone{border:3px solid var(--line);border-radius:18px;background:rgba(0,0,0,.28);padding:16px;text-align:center}
+.phone:hover:not(:disabled){border-color:#a5b4fc}.phone.pick{border-color:#fbbf24}.phone small{color:var(--mut)}
+.reviews{display:grid;gap:8px;margin:10px 0}.rev{text-align:left;border:2px solid var(--line);border-radius:14px;background:rgba(0,0,0,.28);padding:10px 12px;line-height:1.45}
+.rev span{margin-right:6px}.rev small{display:block;color:var(--mut);font-weight:600}.rev:hover{border-color:#a5b4fc}.rev.gone{opacity:.3;text-decoration:line-through}.rev.no{border-color:var(--bad);background:rgba(244,63,94,.2)}
+.mailroom{position:relative;height:190px;border-radius:16px;background:linear-gradient(180deg,#1e293b,#334155);border:2px solid #475569;overflow:hidden;display:flex;align-items:center;justify-content:center;margin:10px 0}
+.parcel{background:#fde68a;color:#451a03;border-radius:14px;padding:12px 22px;text-align:center;font-weight:700;line-height:1.5;box-shadow:0 8px 18px rgba(0,0,0,.5)}
+.bins3{display:grid;grid-template-columns:repeat(3,1fr);gap:10px}.dbin{border:3px solid;border-radius:14px;background:rgba(0,0,0,.3);padding:16px 6px;font-weight:900;font-size:17px}
+.dbin:hover{filter:brightness(1.3);transform:translateY(-3px)}
+.fall{position:absolute;font-size:34px;top:-50px;animation:drop 1.1s ease-in forwards}
+@keyframes drop{to{top:calc(100% - 44px);transform:rotate(18deg)}}
+.mailroom.buried .parcel{opacity:.25}
+.hide{display:none!important}
+.note{margin-top:14px;padding:12px 14px;border-radius:14px;background:rgba(251,191,36,.14);border:1px solid rgba(251,191,36,.5);font-size:14.5px;line-height:1.55}
+@media(prefers-reduced-motion:reduce){*{animation:none!important}}
+</style>
+<style>
+.c-sup{border-color:#60a5fa!important}.c-sup b{color:#60a5fa}
+.c-uns{border-color:#34d399!important}.c-uns b{color:#34d399}
+.c-bias{border-color:#fbbf24!important}.c-bias b{color:#fbbf24}
+.c-ing{border-color:#c084fc!important}.c-ing b{color:#c084fc}
+.photo{width:120px;height:120px;border-radius:18px;background:#fff;color:#0f172a;display:flex;align-items:center;justify-content:center;font-size:64px;margin:0 auto;border:4px solid #6366f1;box-shadow:0 8px 18px rgba(0,0,0,.45);position:relative}
+.photo small{position:absolute;bottom:-4px;right:-4px;font-size:22px}
+.rules{display:grid;grid-template-columns:repeat(auto-fit,minmax(150px,1fr));gap:8px;margin:10px 0}
+.rl{border:2px solid var(--line);border-radius:12px;padding:10px;background:rgba(0,0,0,.28);font-weight:800;text-align:left}
+.rl.on{border-color:#fbbf24;background:rgba(251,191,36,.2)}
+.gridp{display:grid;grid-template-columns:repeat(auto-fill,minmax(112px,1fr));gap:8px;margin:10px 0}
+.gp{border-radius:14px;padding:8px;text-align:center;background:rgba(0,0,0,.3);border:2px solid var(--line);font-weight:700;font-size:12.5px;line-height:1.3}
+.gp b{display:block;font-size:34px;font-weight:400}
+.gp.ok{border-color:var(--ok)}.gp.bad{border-color:var(--bad);background:rgba(244,63,94,.18)}
+.chips{display:flex;gap:6px;flex-wrap:wrap;justify-content:center;margin:8px 0}
+.chip{font-size:12px;font-weight:800;border-radius:99px;padding:3px 10px;background:rgba(255,255,255,.14)}
+.chip.hot{background:#fbbf24;color:#422006}
+.acc{display:flex;align-items:center;gap:10px;font-weight:800;margin:8px 0}.acc .meter{flex:1;margin:0}.acc .meter i{background:linear-gradient(90deg,#fb7185,#fbbf24,#34d399)}
+.plot{width:100%;max-width:520px;display:block;margin:8px auto;background:rgba(0,0,0,.3);border-radius:16px;border:2px solid var(--line)}
+.grpc{border:2px solid var(--line);border-radius:14px;padding:10px;margin:8px 0;background:rgba(0,0,0,.25)}
+.sw{display:grid;grid-template-columns:repeat(auto-fit,minmax(150px,1fr));gap:10px;margin:12px 0}
+.swb{border:3px solid var(--line);border-radius:18px;padding:14px;background:rgba(0,0,0,.28);text-align:center;font-weight:800}
+.swb .e{font-size:38px;display:block}.swb small{display:block;color:var(--mut);font-weight:600}
+.swb.on{border-color:#34d399;background:rgba(16,185,129,.2)}
+.swb .t{display:inline-block;margin-top:6px;border-radius:99px;padding:2px 12px;background:#475569;font-size:12px}.swb.on .t{background:#34d399;color:#052e1d}
+.hide{display:none!important}
+.scenes{display:grid;grid-template-columns:repeat(auto-fill,minmax(112px,1fr));gap:8px;margin:10px 0}
+.sc{border-radius:14px;padding:8px;text-align:center;background:rgba(0,0,0,.3);border:2px solid var(--line);font-size:12.5px;font-weight:700;color:var(--txt)}
+.sc .ph{font-size:34px;display:block;line-height:1.2}
+.sc.pick{border-color:#fbbf24;background:rgba(251,191,36,.22)}.sc.sn .ph{background:linear-gradient(#dbeafe,#fff);border-radius:10px;color:#0f172a}.sc.gr .ph{background:linear-gradient(#bbf7d0,#86efac);border-radius:10px}
+.sc.tag{cursor:default}
+.net{width:100%;max-width:460px;display:block;margin:8px auto}
+@keyframes pl{0%,100%{opacity:.15}50%{opacity:1}}
+.pulse{animation:pl 1s infinite}
+</style>
+</head>
+<body>
+<div class="wrap">
+  <h1>🤖 Teach-a-Bot Academy</h1>
+  <p class="sub">Book E · Ch.1 Technological Innovations · 1.1 AI and data science</p>
+  <div class="panel" id="stage"></div>
+</div>
+
+<script>
+(function () {
+  'use strict';
+  var $ = function (s, r) { return (r || document).querySelector(s); };
+  var C = {
+    sup: { n: 'Supervised learning', c: 'c-sup', hex: '#60a5fa', e: '🏷️', d: 'the machine learns from LABELLED data (examples that come with the right answer). The data is more explicit, so training time is shorter.' },
+    uns: { n: 'Unsupervised learning', c: 'c-uns', hex: '#34d399', e: '🧩', d: 'the machine learns from UNLABELLED data and finds patterns or groups by itself. The data is less explicit, so training takes longer.' },
+    bias: { n: 'Biased training data', c: 'c-bias', hex: '#fbbf24', e: '⚖️', d: 'an AI copies the patterns in its training data, so biased or one-sided data gives wrong or unfair results.' },
+    ing: { n: 'What AI needs', c: 'c-ing', hex: '#c084fc', e: '🧠', d: 'AI is supported by big data (the examples), cloud computing (the computing power) and machine learning (the method). Deep learning uses artificial neural networks inspired by the brain (e.g. AlphaGo).' }
+  };
+  var EXP = [
+    { k: 'sup', e: '🐱', t: 'Teach Muffin-bot', s: 'Can you program a bot to spot cats? Then try teaching it.' },
+    { k: 'uns', e: '🍎', t: 'The alien market', s: 'A bot gets a pile of items with no labels.' },
+    { k: 'bias', e: '🐺', t: 'The playground alarm', s: 'A bot guards the playground. Who taught it?' },
+    { k: 'ing', e: '🏯', t: 'Build AlphaBot', s: 'Switch on ingredients and train a Go champion.' }
+  ];
+  var TEST = [
+    ['sup', 'A program learns to spot spam by studying 10,000 emails that were each marked “spam” or “not spam”.'],
+    ['sup', 'A bot learns to read handwriting from photos that are each tagged with the correct digit.'],
+    ['uns', 'A shop gives an AI purchase records with no categories. It finds groups of similar customers by itself.'],
+    ['uns', 'A program sorts thousands of news articles into groups of similar topics without being told any topic names.'],
+    ['bias', 'A face-unlock system trained mostly on one skin tone often fails for other people.'],
+    ['bias', 'A hiring AI trained only on past hires from one gender ranks other applicants lower.'],
+    ['ing', 'Training a huge model needs thousands of powerful processors rented by the hour. Which support does AI need here?'],
+    ['ing', 'A company collects big data and runs a machine learning method on cloud computing to build its AI.']
+  ];
+  var found = {}, notes = {}, st = $('#stage');
+  try { var sv = JSON.parse(localStorage.getItem('ictTeachAI') || '{}'); found = sv.found || {}; notes = sv.notes || {}; } catch (e) {}
+  var save = function () { try { localStorage.setItem('ictTeachAI', JSON.stringify({ found: found, notes: notes })); } catch (e) {} };
+  var timers = []; function later(fn, ms) { var t = setTimeout(fn, ms); timers.push(t); return t; }
+  function clearAll() { timers.forEach(function (t) { clearTimeout(t); clearInterval(t); }); timers = []; }
+  function esc(s) { return String(s).replace(/[&<>"]/g, function (c) { return { '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;' }[c]; }); }
+  function bot(msg, small) { return '<div class="say"><div class="bot">🤖</div><div class="bub">' + msg + (small ? '<small>' + small + '</small>' : '') + '</div></div>'; }
+  function shuffle(a) { a = a.slice(); for (var i = a.length - 1; i > 0; i--) { var j = Math.floor(Math.random() * (i + 1)), t = a[i]; a[i] = a[j]; a[j] = t; } return a; }
+  function shake() { st.classList.add('shake'); setTimeout(function () { st.classList.remove('shake'); }, 400); }
+  function count() { return Object.keys(found).length; }
+
+  function menu() {
+    clearAll(); var n = count();
+    st.innerHTML = bot(n ? (n === 4 ? 'You taught me everything! Ready for the final test?' : 'Nice teaching! ' + (4 - n) + ' lesson' + (4 - n > 1 ? 's' : '') + ' left.') : "Hi! I'm <b>Muffin-bot</b>. I am an AI... but right now I know <b>absolutely nothing</b>. 😅 Please teach me!", n ? '' : 'Finish four lessons, then take the final test.') +
+      '<div class="tiles">' + EXP.map(function (x, i) { var d = found[x.k]; return '<button class="tile ' + (d ? 'done' : '') + '" data-exp="' + i + '"><span class="st">' + (d ? '✔ done' : 'Lesson ' + (i + 1)) + '</span><div class="e">' + x.e + '</div><b>' + x.t + '</b><span>' + x.s + '</span></button>'; }).join('') + '</div>' +
+      '<h3 style="margin:16px 0 8px">📓 My AI notebook</h3><div class="nb">' + Object.keys(C).map(function (k) { var v = C[k], on = found[k]; return '<div class="nbc ' + (on ? 'on ' + v.c : '') + '">' + (on ? '<b>' + v.e + ' ' + v.n + '</b>' + esc(v.n) + ': ' + esc(v.d) + (notes[k] ? '<br><i style="color:#fde68a">✍️ ' + esc(notes[k]) + '</i>' : '') : '<b>❓ ???</b>Finish a lesson to unlock.') + '</div>'; }).join('') + '</div>' +
+      '<div class="row" style="margin-top:16px"><button class="btn red" id="final" ' + (n < 4 ? 'disabled' : '') + '>' + (n < 4 ? '🔒 Final test (finish all 4 lessons)' : '🏆 Final test') + '</button></div>';
+    $('#final').onclick = finalTest;
+    [].forEach.call(st.querySelectorAll('[data-exp]'), function (b) { b.onclick = function () { [l1, l2, l3, l4][+b.dataset.exp](); }; });
+  }
+
+  var DISC = {
+    sup: { q: 'Why did Muffin-bot get better after training than with the rules you wrote?', o: { sup: 'It found the rules itself from many photos that were labelled with the right answer', uns: 'It was never given any labels and worked everything out alone', bias: 'It copied a biased set of photos', ing: 'It was given a longer list of IF rules by the programmer' } },
+    uns: { q: 'Why did the AI call the groups “Group 1, 2, 3” instead of apples, lemons and grapes?', o: { sup: 'It was taught with labelled photos of apples, lemons and grapes', uns: 'The data had no labels, so it could find similar groups but did not know their names', bias: 'The fruit photos were unfair to lemons', ing: 'It did not have enough cloud computing' } },
+    bias: { q: 'Why did the bot shout “WOLF!” at a dog playing in the snow?', o: { sup: 'It was given no labels at all', uns: 'It grouped the photos itself without help', bias: 'Its training photos were one-sided (every wolf was in snow), so it learned “snow = wolf”', ing: 'It needed more cloud computing power' } },
+    ing: { q: 'Why did AlphaBot only become a champion when all three switches were on?', o: { sup: 'It only needs labelled data; the other two switches do nothing', uns: 'It only needs the machine learning method; data and power are optional', bias: 'Big data and cloud computing are enough without any learning method', ing: 'AI needs big data (examples), cloud computing (power) and machine learning (the method) together' } }
+  };
+  function discover(k) {
+    clearAll(); var D = DISC[k], opts = shuffle(Object.keys(D.o));
+    st.innerHTML = bot('Think about what just happened. 🤔', D.q) + '<div class="q">' + opts.map(function (o) { return '<button class="opt" data-o="' + o + '">' + D.o[o] + '</button>'; }).join('') + '</div><div id="rev"></div>';
+    [].forEach.call(st.querySelectorAll('.opt'), function (b) {
+      b.onclick = function () {
+        if (b.dataset.o !== k) { b.classList.add('no'); shake(); $('#rev').innerHTML = '<p class="sub">Not quite. Remember what you saw in the lesson and try again.</p>'; return; }
+        [].forEach.call(st.querySelectorAll('.opt'), function (x) { x.disabled = true; }); b.classList.add('good'); found[k] = 1; save(); var v = C[k];
+        $('#rev').innerHTML = '<div class="stamp ' + v.c + '" style="background:rgba(0,0,0,.3)"><div style="font-size:15px;color:var(--mut)">You learned…</div><div class="big" style="color:' + v.hex + ';font-size:30px">' + v.e + ' ' + v.n.toUpperCase() + '</div><div style="font-size:16px;line-height:1.5;margin-top:4px">' + esc(v.n) + ': ' + esc(v.d) + '</div></div>' +
+          '<label for="mine" style="font-weight:800">✍️ Write it in your own words (for your notebook)</label><textarea id="mine" maxlength="140" placeholder="e.g. ' + esc(v.n) + ' means…"></textarea><div class="row" style="margin-top:12px"><button class="btn" id="back">📓 Save to notebook</button></div>';
+        $('#back').onclick = function () { notes[k] = $('#mine').value.trim(); save(); menu(); };
+      };
+    });
+  }
+
+  /* ===== lesson 1: supervised learning ===== */
+  var FN = ['pointy ears', 'whiskers', 'fur', 'tail', 'round face', 'slit pupils'];
+  var TRAIN = [['🐱', 1, [1, 1, 1, 1, 1, 1]], ['🐶', 0, [1, 0, 1, 1, 0, 0]], ['🦊', 0, [1, 1, 1, 1, 0, 1]], ['😺', 1, [1, 1, 1, 1, 1, 1]], ['🧸', 0, [1, 0, 1, 0, 1, 0]], ['🐹', 0, [1, 1, 1, 0, 1, 0]], ['😻', 1, [1, 1, 1, 1, 1, 1]], ['🐰', 0, [1, 1, 1, 1, 0, 0]], ['🐭', 0, [1, 1, 1, 1, 0, 0]], ['🐸', 0, [0, 0, 0, 0, 1, 0]]];
+  var TESTP = [['🐈', 1, [1, 1, 1, 1, 1, 1], 'Cat'], ['🐺', 0, [1, 1, 1, 1, 0, 0], 'Wolf'], ['😸', 1, [1, 1, 1, 1, 1, 1], 'Cat'], ['🦝', 0, [1, 1, 1, 1, 0, 0], 'Raccoon'], ['🙀', 1, [1, 1, 1, 1, 1, 1], 'Cat'], ['🐼', 0, [1, 0, 1, 1, 1, 0], 'Panda'], ['😼', 1, [1, 1, 1, 1, 1, 1], 'Cat'], ['🐵', 0, [0, 0, 1, 1, 1, 0], 'Monkey']];
+  var FUNNY = { '🐺': '“Nice kitty!” *gets bitten* 🐺', '🦝': 'It is stealing your lunch, not purring. 🦝', '🐵': 'Too busy eating bananas to purr.', '🐼': 'Too big for the sofa.' };
+  function l1() {
+    clearAll(); var sel = [0, 0, 0, 0];
+    st.innerHTML = bot('Lesson 1: I need to spot <b>cats</b> in photos 🐱. First, <b>you program me</b>. Pick the rules, and I will say “cat” only when ALL your rules are true.', 'Tap the rules you want, then test me on 8 new photos.') +
+      '<div class="rules">' + FN.slice(0, 4).map(function (f, i) { return '<button class="rl" data-i="' + i + '">IF it has ' + f + '</button>'; }).join('') + '</div><div class="row"><button class="btn" id="tst">🧪 Test my rules</button></div><div id="res"></div>';
+    [].forEach.call(st.querySelectorAll('.rl'), function (b) { b.onclick = function () { var i = +b.dataset.i; sel[i] = sel[i] ? 0 : 1; b.classList.toggle('on', !!sel[i]); }; });
+    $('#tst').onclick = function () {
+      var ok = 0, h = '';
+      TESTP.forEach(function (p) { var say = sel.every(function (s, i) { return !s || p[2][i]; }) ? 1 : 0, right = say === p[1]; if (right) ok++; h += '<div class="gp ' + (right ? 'ok' : 'bad') + '"><b>' + p[0] + '</b>Bot: ' + (say ? '“cat”' : '“not cat”') + '<br>' + (right ? '✔ right' : '✘ wrong') + '</div>'; });
+      var bad = TESTP.filter(function (p) { return (sel.every(function (s, i) { return !s || p[2][i]; }) ? 1 : 0) !== p[1]; }).map(function (p) { return FUNNY[p[0]] || ''; }).filter(Boolean);
+      $('#res').innerHTML = '<div class="gridp">' + h + '</div><div class="acc"><span>' + Math.round(ok / 8 * 100) + '% right</span><div class="meter"><i style="width:' + Math.round(ok / 8 * 100) + '%"></i></div></div>' + (bad.length ? '<div class="msg">' + bad.slice(0, 2).join('<br>') + '</div>' : '') +
+        '<p class="sub">Every rule you think of has exceptions. Try other rules if you like. You will never reach 100%, because a wolf and a raccoon also have ears, whiskers, fur and a tail.</p><button class="btn red" id="tch">🎓 Stop writing rules. Teach the bot with examples!</button>';
+      $('#tch').onclick = teach;
+    };
+    function teach() {
+      var w = [0, 0, 0, 0, 0, 0], b = 0, seen = [], i = 0;
+      function pred(x) { var s = b; for (var k = 0; k < 6; k++) s += w[k] * x[k]; return s > 0 ? 1 : 0; }
+      function fit() { for (var e = 0; e < 40; e++) seen.forEach(function (p) { var y = p[1] ? 1 : -1, s = b; for (var k = 0; k < 6; k++) s += w[k] * p[2][k]; if (y * s <= 0) { for (var k2 = 0; k2 < 6; k2++) w[k2] += y * p[2][k2]; b += y; } }); }
+      function acc() { return TESTP.filter(function (p) { return pred(p[2]) === p[1]; }).length; }
+      function show() {
+        if (i >= TRAIN.length) return fin(); var p = TRAIN[i];
+        st.innerHTML = bot('Now <b>you are the teacher</b>. 🎓 Show me the picture and tell me the <b>label</b>. I will learn the rules myself!', 'Photo ' + (i + 1) + ' of ' + TRAIN.length) + '<div class="photo">' + p[0] + '</div>' +
+          '<div class="chips">' + FN.map(function (f, k) { return p[2][k] ? '<span class="chip">' + f + '</span>' : ''; }).join('') + '</div>' +
+          '<div class="row" style="justify-content:center"><button class="btn" id="yes">🐱 It is a CAT</button><button class="btn sec" id="no">🚫 NOT a cat</button></div><div id="fb" class="msg" style="background:rgba(255,255,255,.08);border-color:var(--line)">Label this photo for me.</div>' +
+          '<div class="acc"><span>Muffin-bot’s score on 8 new photos: <b>' + Math.round(acc() / 8 * 100) + '%</b></span><div class="meter"><i style="width:' + Math.round(acc() / 8 * 100) + '%"></i></div></div>';
+        function ans(v) { if (v !== p[1]) { shake(); $('#fb').textContent = '❌ Check the picture again. A wrong label would teach me wrong things!'; return; } seen.push(p); fit(); i++; $('#fb').textContent = '✔ Thanks! I am updating my brain…'; later(show, 350); }
+        $('#yes').onclick = function () { ans(1); }; $('#no').onclick = function () { ans(0); };
+      }
+      function fin() {
+        var a = acc(), h = '', hot = w.map(function (v, k) { return [v, k]; }).sort(function (x, y) { return y[0] - x[0]; }).slice(0, 2).filter(function (x) { return x[0] > 0; });
+        TESTP.forEach(function (p) { var say = pred(p[2]), right = say === p[1]; h += '<div class="gp ' + (right ? 'ok' : 'bad') + '"><b>' + p[0] + '</b>Bot: ' + (say ? '“cat”' : '“not cat”') + '<br>' + (right ? '✔ right' : '✘ wrong') + '</div>'; });
+        st.innerHTML = bot('I learned from ' + TRAIN.length + ' labelled photos. Test me on 8 photos I have <b>never seen</b>!', 'Training finished.') + '<div class="gridp">' + h + '</div><div class="acc"><span><b>' + Math.round(a / 8 * 100) + '%</b> right</span><div class="meter"><i style="width:' + Math.round(a / 8 * 100) + '%"></i></div></div>' +
+          '<div class="msg" style="background:rgba(16,185,129,.18);border-color:#34d399">🔎 I found my own rule: I pay most attention to <b>' + (hot.length ? hot.map(function (x) { return FN[x[1]]; }).join(' + ') : 'the shape of the cat') + '</b>. You never wrote that rule for me!</div><button class="btn red" id="why">🤔 Why did that work better?</button>';
+        $('#why').onclick = function () { discover('sup'); };
+      }
+      show();
+    }
+  }
+
+  /* ===== lesson 2: unsupervised learning ===== */
+  function l2() {
+    clearAll(); var seed = 7; function rnd() { seed = (seed * 16807) % 2147483647; return seed / 2147483647; }
+    var CEN = [[22, 28, '🍎', 'Apples'], [76, 30, '🍋', 'Lemons'], [50, 78, '🍇', 'Grapes']], P = [];
+    CEN.forEach(function (c, ci) { for (var i = 0; i < 12; i++) P.push({ x: c[0] + (rnd() - .5) * 22, y: c[1] + (rnd() - .5) * 22, t: ci, g: -1 }); });
+    var cols = ['#60a5fa', '#34d399', '#fbbf24'], cen = [[10, 60], [60, 8], [92, 85]], it = 0;
+    function plot() {
+      var s = '<svg class="plot" viewBox="0 0 100 100" role="img" aria-label="Unlabelled items on a size and sweetness chart"><text x="50" y="98" fill="#cbd5e1" font-size="4" text-anchor="middle">size →</text><text x="3" y="50" fill="#cbd5e1" font-size="4" transform="rotate(-90 3 50)" text-anchor="middle">sweetness →</text>';
+      P.forEach(function (p) { s += '<circle cx="' + (8 + p.x * .88).toFixed(1) + '" cy="' + (92 - p.y * .85).toFixed(1) + '" r="2.4" fill="' + (p.g < 0 ? '#94a3b8' : cols[p.g]) + '" style="transition:fill .5s"/>'; });
+      if (it) cen.forEach(function (c, k) { s += '<text x="' + (8 + c[0] * .88).toFixed(1) + '" y="' + (94 - c[1] * .85).toFixed(1) + '" font-size="7" text-anchor="middle" fill="' + cols[k] + '">✚</text>'; });
+      return s + '</svg>';
+    }
+    st.innerHTML = bot('Lesson 2: a pile of 36 alien-market items 👽. Each dot is one item, measured by size and sweetness. <b>Nobody labelled them</b>, so I do not know what any of them are.', 'Press the button and let me find the pattern myself.') + '<div id="pl">' + plot() + '</div><div class="row" style="justify-content:center"><button class="btn" id="go">▶ Let the AI find groups</button></div><div id="out"></div>';
+    $('#go').onclick = function () {
+      $('#go').disabled = true; var step = 0;
+      var iv = setInterval(function () {
+        P.forEach(function (p) { var bd = 1e9; cen.forEach(function (c, k) { var d = (p.x - c[0]) * (p.x - c[0]) + (p.y - c[1]) * (p.y - c[1]); if (d < bd) { bd = d; p.g = k; } }); });
+        cen = cen.map(function (c, k) { var m = P.filter(function (p) { return p.g === k; }); if (!m.length) return c; return [m.reduce(function (s, p) { return s + p.x; }, 0) / m.length, m.reduce(function (s, p) { return s + p.y; }, 0) / m.length]; });
+        it++; $('#pl').innerHTML = plot(); $('#out').innerHTML = '<div class="msg" style="background:rgba(255,255,255,.08);border-color:var(--line)">🔄 Round ' + it + ': moving the group centres (✚) and re-grouping the items…</div>';
+        if (++step >= 5) { clearInterval(iv); named(); }
+      }, 900); timers.push(iv);
+    };
+    function named() {
+      var done = {}, tp = {}; P.forEach(function (p) { tp[p.g] = tp[p.g] || {}; tp[p.g][p.t] = (tp[p.g][p.t] || 0) + 1; });
+      function top(g) { var b = -1, bk = 0; Object.keys(tp[g] || {}).forEach(function (k) { if (tp[g][k] > b) { b = tp[g][k]; bk = +k; } }); return bk; }
+      $('#out').innerHTML = '<div class="msg" style="background:rgba(16,185,129,.18);border-color:#34d399">✅ Done! I found <b>3 groups</b> of similar items, with no labels at all. But I only know them as “Group 1, 2, 3”. Can you open each group and give it a name?</div>' +
+        [0, 1, 2].map(function (g) { var tI = top(g); return '<div class="grpc" data-g="' + g + '"><b style="color:' + cols[g] + '">● Group ' + (g + 1) + '</b> ' + P.filter(function (p) { return p.g === g; }).map(function (p) { return CEN[p.t][2]; }).join('') + '<div class="row" style="margin-top:8px">' + shuffle(CEN).map(function (c) { return '<button class="btn sec sm" data-n="' + c[3] + '" data-ok="' + (CEN[tI][3] === c[3] ? 1 : 0) + '">' + c[2] + ' ' + c[3] + '</button>'; }).join('') + '</div></div>'; }).join('') + '<div id="nx"></div>';
+      [].forEach.call(st.querySelectorAll('.grpc .btn'), function (b) {
+        b.onclick = function () {
+          var box = b.closest('.grpc'), g = box.dataset.g; if (b.dataset.ok !== '1') { shake(); b.classList.add('red'); return; }
+          done[g] = 1; [].forEach.call(box.querySelectorAll('.btn'), function (x) { x.disabled = true; }); b.classList.remove('sec'); b.classList.add('btn');
+          b.style.background = '#10b981'; if (Object.keys(done).length === 3) $('#nx').innerHTML = '<div class="msg">🏷️ <b>You</b> supplied the names. I could only find the groups. (A supervised bot would have been given the names with every photo, but a human had to label them all first.)</div><button class="btn red" id="why">🤔 Why could I not name them?</button>', $('#why').onclick = function () { discover('uns'); };
+        };
+      });
+    }
+  }
+
+  /* ===== lesson 3: bias ===== */
+  function l3() {
+    clearAll();
+    var base = [['🐺', 'wolf', 'sn'], ['🐺', 'wolf', 'sn'], ['🐺', 'wolf', 'sn'], ['🐺', 'wolf', 'sn'], ['🐶', 'dog', 'gr'], ['🐶', 'dog', 'gr'], ['🐶', 'dog', 'gr'], ['🐶', 'dog', 'gr']];
+    var test = [['🐶', 'dog', 'sn', 'Dog playing in the snow'], ['🐺', 'wolf', 'gr', 'Wolf in a grassy park'], ['🐶', 'dog', 'sn', 'Puppy making a snowman'], ['🐺', 'wolf', 'gr', 'Wolf behind the swings']];
+    var pool = [['🐶', 'dog', 'sn'], ['🐺', 'wolf', 'sn'], ['🐺', 'wolf', 'gr'], ['🐶', 'dog', 'gr'], ['🐶', 'dog', 'sn'], ['🐺', 'wolf', 'gr'], ['🐺', 'wolf', 'sn'], ['🐶', 'dog', 'gr']];
+    function learn(tr) {
+      function a(f) { var m = {}; tr.forEach(function (p) { var k = p[f]; m[k] = m[k] || {}; m[k][p[1]] = (m[k][p[1]] || 0) + 1; }); var map = {}, ok = 0; Object.keys(m).forEach(function (k) { var b = Object.keys(m[k]).sort(function (x, y) { return m[k][y] - m[k][x]; })[0]; map[k] = b; ok += m[k][b]; }); return { map: map, acc: ok / tr.length }; }
+      var A = a(0), B = a(2); return B.acc >= A.acc ? { f: 2, m: B.map, acc: B.acc } : { f: 0, m: A.map, acc: A.acc };
+    }
+    function scene(p, extra) { return '<div class="sc ' + p[2] + (extra || '') + '"><span class="ph">' + p[0] + (p[2] === 'sn' ? '❄️' : '🌳') + '</span>' + (p[1] === 'wolf' ? 'wolf' : 'dog') + ' · ' + (p[2] === 'sn' ? 'snow' : 'grass') + '</div>'; }
+    function guard(model, tr, round) {
+      var h = '', right = 0; test.forEach(function (p) { var say = model.m[p[model.f]] || 'dog', ok = say === p[1]; if (ok) right++; h += '<div class="gp ' + (ok ? 'ok' : 'bad') + '"><b>' + p[0] + (p[2] === 'sn' ? '❄️' : '🌳') + '</b>' + esc(p[3]) + '<br>Bot: ' + (say === 'wolf' ? '🚨 “WOLF!”' : '“dog”') + ' ' + (ok ? '✔' : '✘') + '</div>'; });
+      return { html: h, right: right };
+    }
+    var model = learn(base);
+    st.innerHTML = bot('Lesson 3: I guard the school playground 🛝 from wolves. My teacher gave me these 8 training photos. I scored <b>100%</b> on them!', 'Look at the photos carefully.') + '<div class="scenes">' + base.map(function (p) { return scene(p); }).join('') + '</div><div class="acc"><span>Score on training photos: <b>100%</b></span><div class="meter"><i style="width:100%"></i></div></div><button class="btn" id="go">🛝 Start guarding the playground</button><div id="out"></div>';
+    $('#go').onclick = function () {
+      $('#go').classList.add('hide'); var g = guard(model, base);
+      $('#out').innerHTML = '<h3 style="margin:14px 0 6px">Today’s visitors</h3><div class="gridp">' + g.html + '</div><div class="msg">' + (g.right < 4 ? '🏃🏃 The kids are running away from a puppy! And a real wolf walked in because I said “dog”! I scored <b>' + g.right + ' / 4</b>. What went wrong?' : '') + '</div><button class="btn red" id="fix">🛠️ Fix the bot’s training photos</button>';
+      $('#fix').onclick = fixit;
+    };
+    function fixit() {
+      var chosen = {};
+      st.innerHTML = bot('Pick <b>exactly 4 extra photos</b> to add to my training set. Choose well!', 'Hint: what pattern did I accidentally learn?') + '<div class="scenes" id="pool">' + pool.map(function (p, i) { return '<button class="sc ' + p[2] + '" data-i="' + i + '"><span class="ph">' + p[0] + (p[2] === 'sn' ? '❄️' : '🌳') + '</span>' + p[1] + ' · ' + (p[2] === 'sn' ? 'snow' : 'grass') + '</button>'; }).join('') + '</div><div class="row"><button class="btn" id="re">🔁 Retrain the bot</button></div><div id="out"></div>';
+      [].forEach.call(st.querySelectorAll('#pool .sc'), function (b) {
+        b.onclick = function () { var i = b.dataset.i; if (chosen[i]) { delete chosen[i]; b.classList.remove('pick'); return; } if (Object.keys(chosen).length >= 4) return; chosen[i] = 1; b.classList.add('pick'); };
+      });
+      $('#re').onclick = function () {
+        if (Object.keys(chosen).length < 4) { $('#out').innerHTML = '<div class="msg">Choose 4 photos first.</div>'; return; }
+        var tr = base.concat(Object.keys(chosen).map(function (i) { return pool[i]; })), m = learn(tr), g = guard(m, tr);
+        $('#out').innerHTML = '<div class="gridp">' + g.html + '</div>' + (g.right === 4
+          ? '<div class="msg" style="background:rgba(16,185,129,.18);border-color:#34d399">🎉 Now I look at the <b>animal</b>, not the background. All 4 correct! You gave me balanced, varied examples.</div><button class="btn red" id="why">🤔 Why did I shout “WOLF!” at the dog before?</button>'
+          : '<div class="msg">Still fooled by the background. ' + g.right + ' / 4 right. Add photos that break the pattern: a dog in snow, a wolf on grass.</div>');
+        var w = $('#why'); if (w) w.onclick = function () { discover('bias'); };
+      };
+    }
+  }
+
+  /* ===== lesson 4: what AI needs ===== */
+  function l4() {
+    clearAll(); var on = { data: 0, cloud: 0, ml: 0 }, seen = {}, busy = false;
+    var SW = [['data', '📊', 'Big data', 'millions of game records'], ['cloud', '☁️', 'Cloud computing', 'thousands of rented computers'], ['ml', '🧠', 'Machine learning', 'learns rules from the data']];
+    var LABEL = { data: 'No data', ml: 'No method', cloud: 'No power', ok: 'Champion' };
+    st.innerHTML = bot('Lesson 4: build <b>AlphaBot</b> 🏯 to beat the world Go champion! Flip the switches, then press <b>Train</b>.', 'Try different combinations. Find out what AlphaBot really needs.') +
+      '<div class="sw">' + SW.map(function (s) { return '<button class="swb" data-s="' + s[0] + '"><span class="e">' + s[1] + '</span>' + s[2] + '<small>' + s[3] + '</small><span class="t">OFF</span></button>'; }).join('') + '</div><div class="row"><button class="btn" id="tr">🚀 Train AlphaBot</button><span id="cnt" style="font-weight:800"></span></div><div id="out"></div>';
+    function cnt() { $('#cnt').textContent = 'Outcomes found: ' + Object.keys(seen).length + ' / 4'; } cnt();
+    [].forEach.call(st.querySelectorAll('.swb'), function (b) { b.onclick = function () { var k = b.dataset.s; on[k] = on[k] ? 0 : 1; b.classList.toggle('on', !!on[k]); $('.t', b).textContent = on[k] ? 'ON' : 'OFF'; }; });
+    function net(active) {
+      var L = [[40, 110, 40], [150, 40, 90, 140, 190], [270, 40, 90, 140, 190], [380, 110]], s = '<svg class="net" viewBox="0 0 420 230" role="img" aria-label="A neural network with an input layer, two hidden layers and an output">';
+      var layers = [[[40, 70], [40, 120], [40, 170]], [[150, 40], [150, 90], [150, 140], [150, 190]], [[270, 40], [270, 90], [270, 140], [270, 190]], [[380, 120]]];
+      for (var l = 0; l < 3; l++) layers[l].forEach(function (a) { layers[l + 1].forEach(function (b) { s += '<line x1="' + a[0] + '" y1="' + a[1] + '" x2="' + b[0] + '" y2="' + b[1] + '" stroke="#a5b4fc" stroke-width="1.4" class="' + (active ? 'pulse' : '') + '" style="animation-delay:' + (Math.random() * 1.2).toFixed(2) + 's;opacity:' + (active ? .2 : .5) + '"/>'; }); });
+      layers.forEach(function (ly) { ly.forEach(function (n) { s += '<circle cx="' + n[0] + '" cy="' + n[1] + '" r="9" fill="#fbbf24" stroke="#fff"/>'; }); });
+      return s + '<text x="40" y="215" fill="#cbd5e1" font-size="11" text-anchor="middle">input</text><text x="210" y="215" fill="#cbd5e1" font-size="11" text-anchor="middle">hidden layers</text><text x="380" y="215" fill="#cbd5e1" font-size="11" text-anchor="middle">output</text></svg>';
+    }
+    $('#tr').onclick = function () {
+      if (busy) return; var r = !on.data ? 'data' : !on.ml ? 'ml' : !on.cloud ? 'cloud' : 'ok', o = $('#out');
+      if (r === 'data') { seen.data = 1; cnt(); o.innerHTML = '<div class="msg">🎲 <b>No examples to learn from!</b> AlphaBot plays completely random moves and loses to a toddler. A learning machine with no data learns nothing.</div>'; shake(); }
+      else if (r === 'ml') { seen.ml = 1; cnt(); o.innerHTML = '<div class="msg">📝 <b>No learning method.</b> The programmers now have to type every rule by hand. Go has more possible positions than atoms in the universe, so AlphaBot only knows 3 moves and loses to a toddler.</div>'; shake(); }
+      else if (r === 'cloud') { busy = true; seen.cloud = 1; cnt(); var p = 0; o.innerHTML = '<div class="msg">🐢 <b>No computing power.</b> Training on one small computer…</div><div class="meter"><i id="pb" style="width:0;background:#fbbf24"></i></div><div id="eta" style="font-weight:800">Estimated time left: 312 years</div>';
+        var iv = setInterval(function () { p += 0.4; $('#pb').style.width = p + '%'; $('#eta').textContent = 'Estimated time left: ' + (312 - Math.round(p * 3)) + ' years'; if (p >= 6) { clearInterval(iv); busy = false; $('#eta').textContent = 'Estimated time left: 294 years… nobody is waiting that long. ⏳'; } }, 70); timers.push(iv); }
+      else { busy = true; seen.ok = 1; cnt(); o.innerHTML = '<div class="msg" style="background:rgba(16,185,129,.18);border-color:#34d399">☁️ Thousands of cloud computers train AlphaBot on millions of game records, tuning the connections in its neural network…</div>' + net(true) + '<div id="fin"></div>';
+        later(function () { busy = false; $('#fin').innerHTML = '<div class="stamp" style="border-color:#c084fc;background:rgba(0,0,0,.3)"><div class="big" style="color:#d8b4fe;font-size:30px">🏆 AlphaBot beats the champion!</div><div style="line-height:1.5">Like AlphaGo, it uses <b>deep learning</b>: an artificial neural network inspired by the brain.</div></div>'; maybe(); }, 3200); }
+      maybe();
+    };
+    function maybe() { if (Object.keys(seen).length === 4 && !$('#why')) { later(function () { if ($('#why')) return; $('#out').insertAdjacentHTML('beforeend', '<div class="row" style="margin-top:12px"><button class="btn red" id="why">🤔 What did AlphaBot need?</button></div>'); $('#why').onclick = function () { discover('ing'); }; }, busy ? 3600 : 400); } }
+  }
+
+  /* ===== final test ===== */
+  function finalTest() {
+    clearAll(); var Q = shuffle(TEST).slice(0, 6), i = 0, ok = 0;
+    function ask() {
+      if (i >= Q.length) return end(); var q = Q[i];
+      st.innerHTML = bot('Final test ' + (i + 1) + ' / ' + Q.length + ': which idea is this?') + '<div class="panel" style="background:#fff;color:#0f172a;font-weight:800;font-size:18px;line-height:1.5">' + esc(q[1]) + '</div><div class="q" style="grid-template-columns:repeat(auto-fit,minmax(200px,1fr))">' + Object.keys(C).map(function (k) { return '<button class="opt ' + C[k].c + '" data-k="' + k + '">' + C[k].e + ' ' + C[k].n + '</button>'; }).join('') + '</div><div id="fb"></div>';
+      [].forEach.call(st.querySelectorAll('.opt'), function (b) {
+        b.onclick = function () {
+          var right = b.dataset.k === q[0]; if (right) ok++;
+          [].forEach.call(st.querySelectorAll('.opt'), function (x) { x.disabled = true; if (x.dataset.k === q[0]) x.classList.add('good'); }); if (!right) b.classList.add('no');
+          $('#fb').innerHTML = '<div class="msg" style="' + (right ? 'background:rgba(16,185,129,.18);border-color:#34d399' : '') + '">' + (right ? '✅ Correct! ' : '❌ It is ' + C[q[0]].n + '. ') + esc(C[q[0]].n) + ': ' + esc(C[q[0]].d) + '</div><button class="btn" id="nx">' + (i + 1 < Q.length ? 'Next ▶' : 'Finish 🏁') + '</button>'; $('#nx').onclick = function () { i++; ask(); };
+        };
+      });
+    }
+    function end() {
+      var pass = ok >= 4; if (pass && window.ICTGameDone) try { window.ICTGameDone(); } catch (e) {}
+      st.innerHTML = '<div style="text-align:center"><div style="font-size:54px">' + (pass ? '🏆' : '🤔') + '</div><h2>' + (pass ? 'Academy complete!' : 'Almost there!') + '</h2><p class="sub">' + ok + ' of ' + Q.length + ' correct</p>' +
+        (pass ? '<p style="font-weight:800;color:#6ee7b7">🎮 Game complete! +10 XP added to Book E on your world map.</p>' : '<p class="sub">Get at least 4 right to finish the game. Review your notebook and try again.</p>') +
+        '<div class="note" style="text-align:left"><b>Remember:</b> in machine learning the machine trains itself on sample data, finds patterns and builds a model. <b>Supervised</b> = labelled data. <b>Unsupervised</b> = unlabelled data, finds patterns itself. <b>Deep learning</b> = artificial neural networks (e.g. AlphaGo). AI is supported by <b>big data, cloud computing and machine learning</b>. Biased training data gives biased results.</div>' +
+        '<div class="row" style="justify-content:center;margin-top:16px"><button class="btn" id="again">🔄 Try the test again</button><button class="btn sec" id="mn">📓 Back to academy</button><a class="btn sec" style="text-decoration:none" href="mindmap.html">🧠 Ch.1 mind map</a><a class="btn sec" style="text-decoration:none" href="../../mctrainer.html">🎯 MC Trainer</a></div></div>';
+      $('#again').onclick = finalTest; $('#mn').onclick = menu;
+    }
+    ask();
+  }
+  menu();
+})();
+</script>
+<script src="../../nav.js"></script>
+</body>
+</html>
