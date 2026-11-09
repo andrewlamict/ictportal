@@ -119,6 +119,16 @@ input[type=text]{width:100%;font:inherit;padding:10px 12px;border-radius:12px;bo
 .tc{border-radius:14px;padding:10px;text-align:center;font-weight:800;border:2px solid var(--line);background:rgba(0,0,0,.3);animation:pop .5s both;line-height:1.3}
 .tc .e{font-size:30px;display:block}.tc b{display:block;font-size:24px}.tc.bad{border-color:var(--bad);background:rgba(244,63,94,.22)}.tc.bad b{color:#fb7185}.tc.okc{border-color:var(--ok)}.tc.okc b{color:#34d399}
 @keyframes pop{from{transform:scale(.4);opacity:0}to{transform:none;opacity:1}}
+.rpgc{width:100%;display:block;border-radius:14px;border:3px solid #475569;touch-action:none;background:#2d5a27;outline:none}
+.ctl{display:flex;gap:12px;align-items:center;justify-content:space-between;margin-top:10px;flex-wrap:wrap}
+.dpad{display:grid;grid-template-columns:repeat(3,52px);grid-template-rows:repeat(2,46px);gap:6px;grid-template-areas:". u ." "l d r"}
+.dpad button{border:2px solid var(--line);border-radius:12px;background:rgba(255,255,255,.12);font-size:18px;font-weight:900;touch-action:none;user-select:none}.dpad button:active{background:#6366f1}
+.dpad [data-d=u]{grid-area:u}.dpad [data-d=l]{grid-area:l}.dpad [data-d=d]{grid-area:d}.dpad [data-d=r]{grid-area:r}
+.dotsr .obj{flex-basis:100%;text-align:center;font-size:14px;font-weight:800;filter:none;color:#fde68a;line-height:1.4}
+.mood{display:flex;align-items:center;gap:8px;font-size:24px;margin:6px 0}.mood .meter{flex:1;margin:0}
+.tk{display:flex;gap:8px;align-items:center;padding:8px 10px;background:#e2e8f0;border-radius:8px;font-weight:700;cursor:pointer}.tk input{width:20px;height:20px}
+.stampx{display:inline-block;border:3px solid #dc2626;color:#dc2626;font-weight:900;padding:2px 10px;border-radius:6px;transform:rotate(-8deg);animation:stampin .4s}
+@keyframes stampin{from{transform:scale(2.5) rotate(-8deg);opacity:0}to{transform:rotate(-8deg);opacity:1}}
 .hide{display:none!important}
 .note{margin-top:14px;padding:12px 14px;border-radius:14px;background:rgba(251,191,36,.14);border:1px solid rgba(251,191,36,.5);font-size:14.5px;line-height:1.55}
 @media(prefers-reduced-motion:reduce){*{animation:none!important}}
@@ -126,7 +136,7 @@ input[type=text]{width:100%;font:inherit;padding:10px 12px;border-radius:12px;bo
 <style>
 .stagebox{position:relative;border-radius:20px;overflow:hidden;border:2px solid var(--line);background:#0f1733;margin:8px 0}
 .stagebox svg{display:block;width:100%;height:auto}
-.dotsr{display:flex;gap:10px;justify-content:center;margin:6px 0 10px;font-size:26px}
+.dotsr{display:flex;flex-wrap:wrap;gap:10px;justify-content:center;margin:6px 0 10px;font-size:26px}
 .dotsr span{filter:grayscale(1) opacity(.45);transition:.3s}.dotsr span.on{filter:none;transform:scale(1.15)}.dotsr span.cur{filter:none;outline:3px solid #fbbf24;outline-offset:3px;border-radius:50%}
 .opts{display:grid;grid-template-columns:repeat(auto-fit,minmax(170px,1fr));gap:10px;margin:10px 0}
 .oc{border:2px solid var(--line);border-radius:16px;padding:12px 10px;background:rgba(0,0,0,.3);font-weight:800;text-align:center;line-height:1.3}
@@ -174,7 +184,7 @@ input[type=text]{width:100%;font:inherit;padding:10px 12px;border-radius:12px;bo
 
   /* ---------- the scene ---------- */
   function person(c, x, y, o) {
-    var sw = o.walking ? Math.sin(o.t * 16) * 7 : 0, s = '', sad = !o.happy, hx = x, hy = y - 70;
+    var sw = o.walking ? Math.sin(o.t * 16) * 7 : 0, s = '', mood = o.mood != null ? o.mood : (o.happy ? 1 : 0), sad = mood < .25, hx = x, hy = y - 70;
     s += '<g' + (o.walking || o.happy ? '' : ' class="idle"') + '>';
     s += '<line x1="' + (x - 5) + '" y1="' + (y - 22) + '" x2="' + (x - 5 + sw) + '" y2="' + y + '" stroke="' + c.pants + '" stroke-width="7" stroke-linecap="round"/><line x1="' + (x + 5) + '" y1="' + (y - 22) + '" x2="' + (x + 5 - sw) + '" y2="' + y + '" stroke="' + c.pants + '" stroke-width="7" stroke-linecap="round"/>';
     if (c.ty === 'granny') s += '<line x1="' + (x + 17) + '" y1="' + (y - 34) + '" x2="' + (x + 21 + sw / 2) + '" y2="' + y + '" stroke="#92400e" stroke-width="3.5" stroke-linecap="round"/>';
@@ -192,37 +202,12 @@ input[type=text]{width:100%;font:inherit;padding:10px 12px;border-radius:12px;bo
     if (c.ty === 'maria') s += [-12, -6, 0, 6, 12].map(function (d) { return '<circle cx="' + (hx + d) + '" cy="' + (hy - 10 + Math.abs(d) * .35) + '" r="6" fill="' + c.hair + '"/>'; }).join('');
     if (c.ty === 'kai') s += '<rect x="' + (hx - 11) + '" y="' + (hy - 2) + '" width="22" height="6" rx="3" fill="#0f172a"/>';
     else s += '<circle cx="' + (hx - 5) + '" cy="' + (hy + 1) + '" r="1.8" fill="#0f172a"/><circle cx="' + (hx + 5) + '" cy="' + (hy + 1) + '" r="1.8" fill="#0f172a"/>';
-    s += '<path d="M' + (hx - 5) + ' ' + (hy + 8) + ' Q' + hx + ' ' + (hy + (sad ? 4 : 13)) + ' ' + (hx + 5) + ' ' + (hy + 8) + '" stroke="#7f1d1d" stroke-width="2" fill="none" stroke-linecap="round"/>';
+    s += '<path d="M' + (hx - 5) + ' ' + (hy + 8) + ' Q' + hx + ' ' + (hy + 4 + 9 * mood) + ' ' + (hx + 5) + ' ' + (hy + 8) + '" stroke="#7f1d1d" stroke-width="2" fill="none" stroke-linecap="round"/>';
     if (sad && !o.walking) s += '<ellipse cx="' + (hx + 9) + '" cy="' + (hy + 8) + '" rx="1.6" ry="3" fill="#60a5fa"/>';
+    if (mood > .6) s += '<circle cx="' + (hx - 9) + '" cy="' + (hy + 6) + '" r="3" fill="#fb7185" opacity=".55"/><circle cx="' + (hx + 9) + '" cy="' + (hy + 6) + '" r="3" fill="#fb7185" opacity=".55"/>';
     s += '</g>';
     if (o.bubble) s += '<g><rect x="' + (x - 44) + '" y="' + (y - 128) + '" width="88" height="34" rx="12" fill="#fff"/><path d="M' + (x - 6) + ' ' + (y - 94) + ' l6 10 l6 -10z" fill="#fff"/><text x="' + x + '" y="' + (y - 105) + '" font-size="17" text-anchor="middle" fill="#0f172a" font-weight="800">' + o.bubble + '</text></g>';
     return s;
-  }
-  function scene(c, q) {
-    /* q: {bridge 0..1, walk 0..1, conn 0..1, t, bubble, happy, help} */
-    var s = '<svg viewBox="0 0 420 270" role="img" aria-label="' + esc(c.n) + ' on one side of a gap, the digital world on the other">';
-    s += '<rect width="420" height="270" fill="#14204a"/>';
-    for (var i = 0; i < 14; i++) s += '<circle cx="' + ((i * 97) % 420) + '" cy="' + (8 + (i * 53) % 90) + '" r="1.3" fill="#fff" opacity=".6"/>';
-    /* chasm */
-    s += '<rect x="130" y="238" width="160" height="32" fill="#0c4a6e"/><path d="M130 246 q10 -6 20 0 t20 0 t20 0 t20 0 t20 0 t20 0 t20 0 t20 0" stroke="#38bdf8" stroke-width="2" fill="none" opacity=".7"/>';
-    s += '<polygon points="130,200 130,270 118,270 118,215" fill="#3f3f46"/><polygon points="290,200 290,270 302,270 302,215" fill="#3f3f46"/>';
-    /* cliffs */
-    s += '<rect x="0" y="200" width="130" height="70" fill="#52525b"/><rect x="0" y="200" width="130" height="8" fill="#16a34a"/><rect x="290" y="200" width="130" height="70" fill="#52525b"/><rect x="290" y="200" width="130" height="8" fill="#22d3ee" opacity="' + (.35 + .65 * q.conn) + '"/>';
-    /* digital city */
-    var lit = q.conn;
-    [[300, 150, 26, 50], [330, 118, 30, 82], [364, 140, 26, 60], [394, 108, 24, 92]].forEach(function (b) { s += '<rect x="' + b[0] + '" y="' + b[1] + '" width="' + b[2] + '" height="' + b[3] + '" fill="#1e293b"/>'; for (var yy = b[1] + 8; yy < 196; yy += 14) for (var xx = b[0] + 5; xx < b[0] + b[2] - 6; xx += 10) s += '<rect x="' + xx + '" y="' + yy + '" width="5" height="7" fill="' + (lit > .5 ? '#fde047' : '#334155') + '"/>'; });
-    [['🏦', 306, 100], ['🛒', 336, 76], ['🏫', 366, 98], ['💼', 396, 70], ['📶', 350, 40]].forEach(function (ic) { s += '<text x="' + ic[1] + '" y="' + ic[2] + '" font-size="22" text-anchor="middle" opacity="' + (.18 + .82 * lit) + '">' + ic[0] + '</text>'; });
-    if (lit < .5) s += '<text x="350" y="130" font-size="30" text-anchor="middle" class="x">🚫</text>';
-    /* bridge */
-    var n = 6, shown = q.bridge * n;
-    for (var k = 0; k < n; k++) { var a = Math.max(0, Math.min(1, shown - k)); if (a > 0) s += '<rect x="' + (130 + k * 26.7 + 1) + '" y="' + (200 - 10 * (1 - a)) + '" width="24" height="7" rx="2" fill="#b45309" stroke="#78350f" opacity="' + a + '"/>'; }
-    if (q.bridge >= 1) s += '<path d="M130 172 Q210 196 290 172" stroke="#fde68a" stroke-width="3" fill="none"/><line x1="130" y1="172" x2="130" y2="200" stroke="#fde68a" stroke-width="3"/><line x1="290" y1="172" x2="290" y2="200" stroke="#fde68a" stroke-width="3"/>';
-    if (q.help && q.bridge < 1 && q.bridge > 0) s += '<text x="' + (130 + q.bridge * 160) + '" y="' + (176 + Math.sin(q.t * 12) * 6) + '" font-size="30" text-anchor="middle">' + q.help + '</text>';
-    if (q.bridge === 0) s += '<text x="210" y="190" font-size="26" text-anchor="middle">🚧</text>';
-    /* person */
-    var px = 70 + q.walk * 290, walking = q.walk > 0 && q.walk < 1;
-    s += person(c, px, 200 - (q.walk > 0.15 && q.walk < .85 ? 0 : 0), { walking: walking, t: q.t, bubble: q.bubble, happy: q.happy });
-    return s + '</svg>';
   }
   function anim(ms, fn, done) { var t0 = performance.now(); function f(now) { if (!document.body.contains(st)) return; var t = Math.min(1, (now - t0) / ms); fn(t, now / 1000); if (t < 1) raf = requestAnimationFrame(f); else if (done) done(); } raf = requestAnimationFrame(f); }
   function conf(box) { var h = ''; for (var i = 0; i < 24; i++) h += '<span class="conf" style="left:' + (Math.random() * 94 + 3) + '%;animation-delay:' + (Math.random() * 1.2).toFixed(2) + 's">' + ['🎉', '✨', '🌟', '💙'][i % 4] + '</span>'; box.insertAdjacentHTML('beforeend', h); }
@@ -237,52 +222,112 @@ input[type=text]{width:100%;font:inherit;padding:10px 12px;border-radius:12px;bo
   function contBtn(h, label, fn) { var d = document.createElement('div'); d.className = 'row'; d.style.cssText = 'justify-content:center;margin-top:12px'; d.innerHTML = '<button class="btn">' + label + '</button>'; h.appendChild(d); d.firstChild.onclick = fn; }
   function setMsg(el, html, cls) { el.className = 'msg' + (cls ? ' ' + cls : ''); el.innerHTML = html; }
 
-  /* 1. Grandma: checkout (fail) then training class (teach the steps) */
-  function g1a(h, done) {
-    var wrong = 0, step = 1, over = false, pat = 100, S1 = shuffle(['QR', 'NFC', 'SSO', 'VPN', 'FPS', 'OTP', 'API', 'SIM', 'URL']), S2 = shuffle(['Tokenise', 'Scan', 'Authenticate', 'Sync']);
-    h.innerHTML = '<div class="shopx">🏪 <b>You are Grandma Mei.</b> Pay $58 with the phone before the queue loses patience!<div class="queue">🧑😤😤😤😤</div><div class="meter"><i id="pat" style="width:100%;background:#fbbf24"></i></div><div class="phone"><div class="scr" id="scr"></div></div><div class="msg" id="gm">Tap the right app…</div></div>';
-    function render() { $('#scr').innerHTML = (step === 1 ? S1 : S2).map(function (t) { return '<button class="ico" data-t="' + t + '">' + t + '</button>'; }).join(''); [].forEach.call($('#scr').querySelectorAll('.ico'), function (b) { b.onclick = function () { tap(b); }; }); }
-    function end(ok) { over = true; clearInterval(iv); $('#scr').innerHTML = '<div style="padding:30px 6px;font-size:40px">' + (ok ? '🍀' : '😞') + '</div>'; setMsg($('#gm'), ok ? 'Lucky guess! But Grandma had no idea what any of the words meant.' : 'Grandma gives up and pays cash. The queue sighs. 😮‍💨', ok ? 'good' : 'no'); contBtn(h, '🔍 What went wrong?', done); }
-    function tap(b) {
-      if (over) return; var ok = step === 1 ? b.dataset.t === 'FPS' : b.dataset.t === 'Scan';
-      if (ok) { if (step === 1) { step = 2; setMsg($('#gm'), 'Hmm… the next screen has more strange words.'); render(); } else end(true); return; }
-      wrong++; pat -= 18; b.classList.add('wrongb'); shake(); setMsg($('#gm'), '😵 What does “' + b.dataset.t + '” mean?!', 'no'); if (wrong >= 3 || pat <= 0) end(false);
+  /* ===== 1. Grandma: animation of her struggling, then teach her step by step ===== */
+  function animGrandma(h, next) {
+    var c = PEOPLE[0], T = 10, ended = false, ICONS = ['📞', '💬', '📷', '🎵', '📧', '🛒', '⚙️', '🗺️', '🌐'], SEQ = [4, 1, 7, 2, 6, 0, 8, 3, 5, 2, 7, 1, 4, 8], POP = ['❌ Error', '🔒 Locked', 'OTP?', '⚠️ Wrong app'];
+    h.innerHTML = '<div class="stagebox" id="sb"></div><div class="qh" id="cap"></div><div class="row" style="justify-content:center" id="ab"><button class="btn sec sm" id="skip">Skip ▶</button></div>';
+    function end() { if (ended) return; ended = true; cancelAnimationFrame(raf); $('#cap').textContent = '😵 Grandma cannot work out how to pay!'; $('#ab').innerHTML = '<button class="btn" id="why">🔍 Why can she not do it?</button>'; $('#why').onclick = next; }
+    $('#skip').onclick = end;
+    function frame(t) {
+      var s = '<svg viewBox="0 0 420 260" role="img" aria-label="Grandma struggling to pay with her phone"><rect width="420" height="260" fill="#2b2140"/><rect y="205" width="420" height="55" fill="#5b4a3a"/>';
+      s += '<rect x="150" y="30" width="250" height="14" fill="#6b21a8"/><text x="275" y="42" font-size="11" fill="#fde68a" text-anchor="middle" font-weight="800">SUPERMARKET</text>';
+      s += '<rect x="250" y="150" width="170" height="58" fill="#92400e"/><rect x="300" y="116" width="36" height="36" rx="4" fill="#fff"/><text x="318" y="142" font-size="26" text-anchor="middle">🔳</text><text x="318" y="108" font-size="10" fill="#fde68a" text-anchor="middle" font-weight="800">SCAN TO PAY</text>';
+      s += '<text x="378" y="136" font-size="40" text-anchor="middle">' + (t > 6.6 ? '🤷' : '🧑‍🍳') + '</text>';
+      [[40, 206], [84, 206]].forEach(function (q, i) { s += '<text x="' + (q[0] + Math.sin(t * 9 + i) * 2) + '" y="' + q[1] + '" font-size="34" text-anchor="middle">😤</text>'; });
+      if (t > 4.5) s += '<text x="40" y="150" font-size="22" text-anchor="middle" class="flash">⏰</text><text x="84" y="150" font-size="22" text-anchor="middle" class="flash">💢</text>';
+      s += person(c, 205, 205, { mood: .05, t: t });
+      s += '<rect x="214" y="150" width="13" height="22" rx="3" fill="#0f172a" stroke="#94a3b8" stroke-width="1.5"/>';
+      var emo = ['🤔', '❓', '😵', '📱❓'][Math.floor(t * 1.3) % 4];
+      s += '<circle cx="190" cy="94" r="4" fill="#fff"/><circle cx="182" cy="82" r="6" fill="#fff"/><rect x="146" y="40" width="74" height="40" rx="18" fill="#fff"/><text x="183" y="68" font-size="22" text-anchor="middle">' + emo + '</text>';
+      /* zoomed phone */
+      var si = Math.floor(t / .75) % SEQ.length, sj = (si + 1) % SEQ.length, ph = (t / .75) % 1, k = Math.min(1, ph / .5);
+      function ip(idx) { return [28 + (idx % 3) * 34, 44 + Math.floor(idx / 3) * 34]; }
+      var a = ip(SEQ[si]), b = ip(SEQ[sj]), fx = a[0] + (b[0] - a[0]) * ease(k), fy = a[1] + (b[1] - a[1]) * ease(k);
+      s += '<rect x="10" y="8" width="126" height="148" rx="16" fill="#0f172a" stroke="#94a3b8" stroke-width="5"/><text x="73" y="26" font-size="10" fill="#94a3b8" text-anchor="middle">Grandma’s phone</text>';
+      ICONS.forEach(function (e, idx) { var p = ip(idx); s += '<rect x="' + (p[0] - 14) + '" y="' + (p[1] - 18) + '" width="30" height="30" rx="8" fill="#1e293b"/><text x="' + (p[0] + 1) + '" y="' + (p[1] + 4) + '" font-size="19" text-anchor="middle">' + e + '</text>'; });
+      if (k >= 1 && ph > .55 && ph < .98) { s += '<rect x="22" y="66" width="102" height="34" rx="8" fill="#dc2626"/><text x="73" y="88" font-size="13" fill="#fff" text-anchor="middle" font-weight="800">' + POP[si % 4] + '</text>'; }
+      s += '<text x="' + (fx + 2) + '" y="' + (fy + 22) + '" font-size="26">👆</text><line x1="136" y1="86" x2="212" y2="156" stroke="#94a3b8" stroke-dasharray="4 4"/>';
+      return s + '</svg>';
     }
-    var iv = setInterval(function () { if (over) return; pat -= 1; $('#pat').style.width = Math.max(0, pat) + '%'; if (pat <= 0) end(false); }, 200); timers.push(iv);
-    render();
+    anim(T * 1000, function (tt) { var t = tt * T; $('#sb').innerHTML = frame(t); $('#cap').textContent = t < 3.3 ? '👵 Grandma wants to pay by phone…' : t < 6.6 ? '🤔 She taps and taps, but nothing works…' : '🧑‍🍳 Even the shopkeeper does not know how to help!'; }, end);
   }
   function g1b(h, done) {
-    var steps = ['Open the pay app', 'Tap “Scan”', 'Point the camera at the shop’s QR code', 'Check the amount and tap Confirm'], SC = ['📱 Home screen', '📷 Scan', '🔳 QR code found', '💳 Paid $58!'], next = 0;
-    h.innerHTML = '<div class="shopx">🎓 <b>Training class.</b> You are the teacher. Tell Grandma the steps in the right order!<div class="phone"><div class="scr" id="scr"><div class="big2" id="big">📱</div><div id="cap">Ready</div></div></div><div class="cardsx" id="cards">' + shuffle(steps).map(function (s) { return '<button class="chp" data-s="' + esc(s) + '">' + esc(s) + '</button>'; }).join('') + '</div><div class="msg" id="gm">👩‍🏫 What should Grandma do first?</div></div>';
+    var c = PEOPLE[0], steps = ['Open the pay app', 'Tap “Scan”', 'Point the camera at the shop’s QR code', 'Check the amount and tap Confirm'], SC = [['📱', 'Pay app is open'], ['📷', 'Scan mode'], ['🔳', 'QR code found'], ['💳', 'Paid $58!']], SAY = ['“Oh! That is the app I open.”', '“I see, I tap Scan.”', '“The camera sees the code!”', '“Then I just confirm. So easy!”'], FACE = ['😟', '🙂', '😊', '😄', '🥰'], next = 0;
+    h.innerHTML = '<div class="shopx">🎓 <b>Training class.</b> Teach Grandma step by step. She gets happier after every step!<div class="stagebox" id="gp"></div><div class="mood"><span id="mf">😟</span><div class="meter big"><i id="mm" style="width:6%;background:#f472b6"></i></div><span>🥰</span></div><div class="cardsx" id="cards">' + shuffle(steps).map(function (s) { return '<button class="chp" data-s="' + esc(s) + '">' + esc(s) + '</button>'; }).join('') + '</div><div class="msg" id="gm">👩‍🏫 What should Grandma do first?</div></div>';
+    function draw() {
+      var m = next / 4, sc = next ? SC[next - 1] : ['📱', 'Home screen'], s = '<svg viewBox="0 0 360 220"><rect width="360" height="220" fill="#14204a"/><g transform="translate(14,0) scale(1.7)">' + person(c, 52, 125, { mood: m, t: 0 }) + '</g>';
+      for (var k = 0; k < next; k++) s += '<text x="' + (40 + k * 30) + '" y="' + (46 - (k % 2) * 8) + '" font-size="24">❤️</text>';
+      s += '<rect x="215" y="26" width="116" height="176" rx="18" fill="#0f172a" stroke="#94a3b8" stroke-width="5"/><text x="273" y="110" font-size="56" text-anchor="middle">' + sc[0] + '</text><text x="273" y="150" font-size="12" fill="#e2e8f0" text-anchor="middle" font-weight="800">' + sc[1] + '</text></svg>';
+      $('#gp').innerHTML = s; $('#mm').style.width = (6 + m * 94) + '%'; $('#mf').textContent = FACE[next];
+    }
+    draw();
     [].forEach.call(h.querySelectorAll('.chp'), function (b) {
       b.onclick = function () {
-        if (b.disabled) return; if (b.dataset.s !== steps[next]) { shake(); b.classList.add('no'); setTimeout(function () { b.classList.remove('no'); }, 500); setMsg($('#gm'), '👩‍🏫 Not yet! Think about what must come first.', 'no'); return; }
-        b.disabled = true; b.classList.add('good'); $('#big').textContent = SC[next].split(' ')[0]; $('#cap').textContent = SC[next].split(' ').slice(1).join(' '); next++;
-        if (next < 4) setMsg($('#gm'), '👵 “I see! And then?”', 'good'); else { setMsg($('#gm'), '🎉 Grandma paid in 8 seconds and got her discount!', 'good'); lt(done, 1400); }
+        if (b.disabled) return; if (b.dataset.s !== steps[next]) { shake(); b.classList.add('no'); setTimeout(function () { b.classList.remove('no'); }, 500); setMsg($('#gm'), '👩‍🏫 Not yet! What must come first?', 'no'); return; }
+        b.disabled = true; b.classList.add('good'); next++; draw();
+        if (next < 4) setMsg($('#gm'), '👵 ' + SAY[next - 1] + ' <b>Next step?</b>', 'good'); else { setMsg($('#gm'), '🥰 ' + SAY[3] + ' Grandma paid $58 in 8 seconds!', 'good'); conf($('#gp')); lt(done, 2200); }
       };
     });
   }
 
-  /* 2. Ling: family budget, then match the supports */
-  function g2a(h, done) {
-    var rem = 12000, paid = 0, bills = 0, ITEMS = [['🏠 Rent', 6500], ['🍚 Food', 4000], ['🚌 Transport', 800], ['💡 Water and electricity', 500], ['💊 Medicine', 200]];
-    h.innerHTML = '<div class="shopx">💼 <b>Ling’s family budget.</b> Their income is <b>' + money(12000) + '</b> a month. Pay the family’s needs first.<div class="meter big"><i id="bud" style="width:100%;background:#34d399"></i></div><div class="stats"><span>Left: <b id="rem">' + money(12000) + '</b></span></div><div class="cardsx" id="its">' + ITEMS.map(function (it, i) { return '<button class="chp" data-i="' + i + '">' + it[0] + ' ' + money(it[1]) + '</button>'; }).join('') + '</div><div id="bl" class="cardsx"></div><div class="msg" id="gm">Tap each bill to pay it.</div></div>';
-    function bar(v, bad) { $('#bud').style.width = Math.max(4, v / 120) + '%'; $('#bud').style.background = bad ? '#ef4444' : '#34d399'; $('#rem').textContent = bad ? '−' + money(Math.abs(v)) : money(v); }
-    [].forEach.call(h.querySelectorAll('#its .chp'), function (b) {
-      b.onclick = function () { var it = ITEMS[+b.dataset.i]; rem -= it[1]; b.disabled = true; b.classList.add('good'); paid++; bar(rem); if (paid === 5) { setMsg($('#gm'), '😟 Nothing is left. But Ling needs Internet and a computer for school…'); $('#bl').innerHTML = '<button class="chp" data-b="net">📶 Home Internet $250</button><button class="chp" data-b="lap">💻 Laptop $4,000</button>'; [].forEach.call($('#bl').querySelectorAll('.chp'), function (x) { x.onclick = function () { if (x.disabled) return; x.disabled = true; x.classList.add('no'); shake(); var c = x.dataset.b === 'net' ? 250 : 4000; bar(rem - c, true); setMsg($('#gm'), '❌ Not enough money! The family is ' + money(c) + ' short.', 'no'); if (++bills === 2) contBtn(h, '🔍 What went wrong?', done); }; }); } };
-    });
+  /* ===== 2. Ling: 30-year-old computer animation, then the shopping trip ===== */
+  function animLing(h, next) {
+    var c = PEOPLE[1], T = 11, ended = false, rng = 7;
+    function rnd() { rng = (rng * 16807) % 2147483647; return rng / 2147483647; }
+    var PIX = []; for (var i = 0; i < 12; i++) { var row = []; for (var j = 0; j < 14; j++) row.push(['#16a34a', '#15803d', '#38bdf8', '#0ea5e9', '#facc15'][Math.floor(rnd() * 5)]); PIX.push(row); }
+    h.innerHTML = '<div class="stagebox" id="sb"></div><div class="qh" id="cap"></div><div class="row" style="justify-content:center" id="ab"><button class="btn sec sm" id="skip">Skip ▶</button></div>';
+    function end() { if (ended) return; ended = true; cancelAnimationFrame(raf); $('#cap').textContent = '⏰ The online quiz started… and Ling cannot join!'; $('#ab').innerHTML = '<button class="btn" id="why">🔍 What is missing?</button>'; $('#why').onclick = next; }
+    $('#skip').onclick = end;
+    function frame(t) {
+      var pct = (t / T * 3), left = Math.max(0, 10 - Math.floor(t / T * 10.5)), s = '<svg viewBox="0 0 420 260" role="img" aria-label="An old computer loading very slowly with no Internet"><rect width="420" height="260" fill="#1f2937"/><rect y="205" width="420" height="55" fill="#374151"/>';
+      s += '<rect x="30" y="30" width="230" height="165" rx="16" fill="#d6cfc2" stroke="#a8a093" stroke-width="4"/><rect x="50" y="48" width="190" height="122" rx="10" fill="#06120a" opacity="' + (.93 + .07 * Math.sin(t * 40)) + '"/>';
+      s += '<rect x="95" y="195" width="100" height="14" fill="#c4bcae"/><rect x="60" y="176" width="60" height="8" rx="3" fill="#a8a093"/><circle cx="222" cy="180" r="4" fill="#22c55e" class="flash"/>';
+      s += '<g font-family="monospace" font-size="10" fill="#4ade80"><text x="58" y="64">C:\\&gt; DIAL-UP CONNECT' + (Math.floor(t * 2) % 2 ? '_' : '') + '</text>' + (t > 1.5 ? '<text x="58" y="78" fill="#f87171">NO INTERNET ACCESS</text>' : '') + (t > 2.5 ? '<text x="58" y="92">Loading quiz.htm …</text>' : '') + '</g>';
+      s += '<rect x="58" y="99" width="150" height="9" fill="none" stroke="#4ade80"/><rect x="58" y="99" width="' + (150 * pct / 100) + '" height="9" fill="#4ade80"/><text x="214" y="107" font-family="monospace" font-size="9" fill="#4ade80">' + pct.toFixed(1) + '%</text>';
+      var rows = Math.min(12, Math.floor(t * 0.9));
+      for (var r = 0; r < 12; r++) for (var q = 0; q < 14; q++) s += '<rect x="' + (58 + q * 6) + '" y="' + (114 + r * 4.4) + '" width="6" height="4.4" fill="' + (r < rows ? PIX[r][q] : '#0b1f12') + '"/>';
+      s += '<text x="170" y="150" font-size="26" class="flash">⏳</text>';
+      for (var y = 50; y < 170; y += 4) s += '<line x1="50" y1="' + y + '" x2="240" y2="' + y + '" stroke="#000" opacity=".18"/>';
+      s += '<text x="145" y="22" font-size="13" fill="#fde68a" text-anchor="middle" font-weight="800">💾 A computer from 30 years ago</text>';
+      s += person(c, 340, 205, { mood: .05, t: t });
+      s += '<circle cx="322" cy="96" r="4" fill="#fff"/><circle cx="314" cy="84" r="6" fill="#fff"/><rect x="290" y="44" width="76" height="36" rx="16" fill="#fff"/><text x="328" y="70" font-size="20" text-anchor="middle">📶❌</text>';
+      s += '<rect x="284" y="214" width="124" height="34" rx="8" fill="' + (left > 0 ? '#0f172a' : '#7f1d1d') + '" stroke="#94a3b8"/><text x="346" y="236" font-size="13" font-weight="800" fill="#fde68a" text-anchor="middle">' + (left > 0 ? 'Quiz in 0:' + (left < 10 ? '0' : '') + left : '⏰ Quiz started!') + '</text>';
+      return s + '</svg>';
+    }
+    anim(T * 1000, function (tt) { var t = tt * T; $('#sb').innerHTML = frame(t); $('#cap').textContent = t < 3.7 ? '💾 Ling’s computer is like one from 30 years ago…' : t < 7.4 ? '📵 No home Internet. Everything loads sooo slowly…' : '⏰ The online quiz is about to start!'; }, end);
   }
-  function g2b(h, done) {
-    var sel = null, got = {}, B = { net: ['📶 Home Internet', '$250 / month'], lap: ['💻 Laptop', '$4,000'] }, SUP = { net: ['💸', 'Subsidy for home Internet'], lap: ['🖥️', 'Computers for students in need'], cls: ['🎓', 'Free IT class'] };
-    h.innerHTML = '<div class="shopx">🤝 <b>Match each bill with the right support.</b> Tap a bill, then tap its support.<div class="cardsx" id="b">' + Object.keys(B).map(function (k) { return '<button class="chp bill" data-k="' + k + '">' + B[k][0] + '<br><small>' + B[k][1] + '</small></button>'; }).join('') + '</div><div class="cardsx" id="s">' + shuffle(Object.keys(SUP)).map(function (k) { return '<button class="chp sup" data-k="' + k + '">' + SUP[k][0] + ' ' + SUP[k][1] + '</button>'; }).join('') + '</div><div class="msg" id="gm">Pick a bill first.</div></div>';
-    [].forEach.call(h.querySelectorAll('.bill'), function (b) { b.onclick = function () { if (got[b.dataset.k]) return; sel = b; [].forEach.call(h.querySelectorAll('.bill'), function (x) { x.classList.remove('pick'); }); b.classList.add('pick'); setMsg($('#gm'), 'Which support pays for “' + B[b.dataset.k][0].slice(3) + '”?'); }; });
-    [].forEach.call(h.querySelectorAll('.sup'), function (s) {
-      s.onclick = function () {
-        if (!sel) { setMsg($('#gm'), 'Pick a bill first.', 'no'); return; } if (s.disabled) return;
-        if (s.dataset.k === sel.dataset.k) { got[sel.dataset.k] = 1; sel.classList.remove('pick'); sel.classList.add('good'); sel.disabled = true; s.disabled = true; s.classList.add('good'); sel = null; setMsg($('#gm'), '✅ Paid by the support! The family budget is safe.', 'good'); if (Object.keys(got).length === 2) lt(done, 1100); }
-        else { shake(); s.classList.add('no'); setTimeout(function () { s.classList.remove('no'); }, 500); setMsg($('#gm'), s.dataset.k === 'cls' ? '🎓 Ling already knows how to use computers. A class does not pay the bill!' : '❌ That support does not match this bill.', 'no'); }
+  function animFast(h, next) {
+    var c = PEOPLE[1], T = 5;
+    h.innerHTML = '<div class="stagebox" id="sb"></div><div class="qh" id="cap">🚀 New computer + home Internet…</div>';
+    function frame(t) {
+      var p = Math.min(1, t / 1.6), s = '<svg viewBox="0 0 420 260"><rect width="420" height="260" fill="#1e3a8a"/><rect y="205" width="420" height="55" fill="#1e40af"/>';
+      s += '<rect x="40" y="36" width="220" height="140" rx="8" fill="#e5e7eb" stroke="#9ca3af" stroke-width="3"/><rect x="48" y="44" width="204" height="124" rx="4" fill="#1d4ed8"/><rect x="120" y="176" width="60" height="22" fill="#9ca3af"/><rect x="95" y="196" width="110" height="8" rx="4" fill="#9ca3af"/>';
+      if (t < 1.8) s += '<rect x="68" y="100" width="164" height="12" rx="6" fill="#1e3a8a"/><rect x="68" y="100" width="' + (164 * ease(p)) + '" height="12" rx="6" fill="#22d3ee"/><text x="150" y="132" font-size="12" fill="#fff" text-anchor="middle" font-weight="800">' + Math.round(ease(p) * 100) + '%</text>';
+      else s += '<rect x="56" y="52" width="188" height="16" fill="#fff"/><text x="150" y="64" font-size="11" fill="#1e3a8a" text-anchor="middle" font-weight="800">School online quiz</text><rect x="64" y="80" width="170" height="8" fill="#93c5fd"/><rect x="64" y="96" width="140" height="8" fill="#93c5fd"/><rect x="64" y="112" width="160" height="8" fill="#93c5fd"/><text x="150" y="152" font-size="16" text-anchor="middle" fill="#fff" font-weight="900">✔ Joined!</text>';
+      s += '<text x="285" y="60" font-size="30" class="flash">📶</text>' + person(c, 340, 205, { mood: t > 1.8 ? 1 : .6, t: t });
+      if (t > 1.8) s += '<text x="320" y="96" font-size="26">🎉</text>';
+      return s + '</svg>';
+    }
+    anim(T * 1000, function (tt) { $('#sb').innerHTML = frame(tt * T); }, function () { $('#cap').textContent = '😄 Ling joined the quiz in seconds!'; conf($('#sb')); lt(next, 1800); });
+  }
+  function shopGame(h, done) {
+    var items = [['💻', 'School laptop', 3800, 'Keyboard, runs the school quiz app'], ['🎮', 'Gaming laptop', 12000, 'Very fast and very expensive'], ['📱', 'Mini tablet', 1500, 'No keyboard. Cannot run the quiz app']];
+    h.innerHTML = '<div class="shopx">🏬 <b>Computer shop.</b> Ling has a <b>student computer voucher</b> worth <b>' + money(4000) + '</b>. Pick her new computer.<div class="cardsx">' + items.map(function (it, i) { return '<button class="chp" data-i="' + i + '" style="flex:1 1 150px">' + it[0] + ' <b>' + it[1] + '</b><br>' + money(it[2]) + '<br><small>' + it[3] + '</small></button>'; }).join('') + '</div><div class="msg" id="gm">Tap a computer.</div></div>';
+    [].forEach.call(h.querySelectorAll('.chp'), function (b) {
+      b.onclick = function () {
+        var it = items[+b.dataset.i]; if (it[2] > 4000) { shake(); b.classList.add('no'); setMsg($('#gm'), '❌ ' + money(it[2] - 4000) + ' over the voucher!', 'no'); return; } if (it[1] === 'Mini tablet') { shake(); b.classList.add('no'); setMsg($('#gm'), '❌ Ling needs a keyboard and the quiz app. Try another.', 'no'); return; }
+        [].forEach.call(h.querySelectorAll('.chp'), function (x) { x.disabled = true; }); b.classList.add('good'); setMsg($('#gm'), '🎉 Paid with the voucher! Ling has a new computer.', 'good'); lt(done, 1400);
       };
     });
+  }
+  function officeGame(h, done) {
+    var C = [['I am a student', 1], ['My family has a low income', 1], ['We have no Internet at home', 1], ['We own a swimming pool', 0], ['I already have fast home Internet', 0]], sel = {};
+    h.innerHTML = '<div class="shopx">🏛️ <b>Office: home Internet subsidy.</b> Tick the boxes that are true for Ling, then stamp the form.<div class="web">' + C.map(function (c, i) { return '<label class="tk"><input type="checkbox" data-i="' + i + '"> ' + c[0] + '</label>'; }).join('') + '</div><div class="row"><button class="btn red" id="st">🟥 Stamp the form</button></div><div class="msg" id="gm">Which boxes are true?</div></div>';
+    $('#st').onclick = function () {
+      var ok = C.every(function (c, i) { return !!h.querySelectorAll('input')[i].checked === !!c[1]; });
+      if (!ok) { shake(); setMsg($('#gm'), '❌ Some boxes are wrong. Read the form again.', 'no'); return; }
+      $('#st').disabled = true; setMsg($('#gm'), '<span class="stampx">APPROVED ✔</span> The Internet subsidy pays for Ling’s home Internet!', 'good'); lt(done, 1800);
+    };
   }
 
   /* 3. Farmer Wong: signal hunt, then place the hotspot */
@@ -355,53 +400,126 @@ input[type=text]{width:100%;font:inherit;padding:10px 12px;border-radius:12px;bo
     page();
     [].forEach.call(h.querySelectorAll('#lg .chp'), function (b) { b.onclick = function () { lang = b.dataset.l; ok = lang === 'en' || lang === 'fil'; [].forEach.call(h.querySelectorAll('#lg .chp'), function (x) { x.classList.remove('good', 'no'); }); b.classList.add(ok ? 'good' : 'no'); page(); setMsg($('#gm'), ok ? '😊 Now Maria can read it! Tap the Book button.' : '❓ Maria cannot read this language. Try another.', ok ? 'good' : 'no'); if (!ok) shake(); }; });
   }
-  var GAMES = [[g1a, g1b], [g2a, g2b], [g3a, g3b], [g4a, g4b], [g5a, g5b]];
+  var GAMES = [null, null, [g3a, g3b], [g4a, g4b], [g5a, g5b]];
 
-  /* ---------- game flow ---------- */
-  var done = {};
-  function dots(cur) { return '<div class="dotsr">' + PEOPLE.map(function (p, i) { return '<span class="' + (done[i] ? 'on' : '') + (i === cur ? ' cur' : '') + '">' + p.face + '</span>'; }).join('') + '</div>'; }
-  function intro() {
-    clearAll(); done = {};
-    st.innerHTML = bot('There is a <b>gap</b> between these people and the digital world. 🌉', 'Find out what blocks each person, then help them one by one!') + '<div class="stagebox" id="sb"></div><div class="row" style="justify-content:center"><button class="btn" id="go">▶ Meet the first person</button></div>';
-    $('#sb').innerHTML = scene(PEOPLE[0], { bridge: 0, walk: 0, conn: 0, t: 0, bubble: PEOPLE[0].bub });
-    $('#go').onclick = function () { round(0); };
+  /* ===== the RPG town ===== */
+  var MAP = ['TTTTTTTTTTTTTTT', 'T.............T', 'T..M...C...H..T', 'T.............T', 'T.rrrrrrrrrrr.T', 'T.r.........r.T', 'T.r..WW.....r.T', 'T.L..WW.G...K.T', 'T.............T', 'TTTTTTTTTTTTTTT'];
+  var TS = 32, COLS = 15, ROWS = 10, BLD = { M: ['🏪', 'Market'], C: ['🏬', 'Computer shop'], H: ['🏠', 'Ling’s home'], L: ['🏫', 'School'], G: ['🏛️', 'Office'], K: ['🏥', 'Clinic'] };
+  var NPC = [{ i: 0, x: 3, y: 3 }, { i: 1, x: 11, y: 3 }, { i: 2, x: 13, y: 5 }, { i: 3, x: 3, y: 7 }, { i: 4, x: 11, y: 7 }];
+  var SOLVED = {}, LING = { stage: 0, shop: 0, office: 0 }, P, FOL, keys, pad, target, near, rpgOn = false, loopRaf = 0, lastT = 0, cv, cx, wired = false;
+  function tileAt(px, py) { var tx = Math.floor(px / TS), ty = Math.floor(py / TS); if (tx < 0 || ty < 0 || tx >= COLS || ty >= ROWS) return 'T'; return MAP[ty][tx]; }
+  function blocked(x, y) { var r = 7; return [[-r, -r], [r, -r], [-r, r], [r, r]].some(function (d) { return 'TWMCHLGK'.indexOf(tileAt(x + d[0], y + d[1])) >= 0; }); }
+  function npcPos(n) { return [n.x * TS + 16, n.y * TS + 16]; }
+  function objective() {
+    var left = 5 - Object.keys(SOLVED).length;
+    if (LING.stage === 1) return !LING.shop && !LING.office ? '👧 Ling is following you. Take her to the 🏬 computer shop and the 🏛️ office.' : LING.shop && LING.office ? '🏠 Both done! Take Ling home to try her new computer.' : LING.shop ? '🏛️ New computer bought. Now go to the office for the Internet subsidy.' : '🏬 Internet subsidy done. Now go to the computer shop.';
+    return left ? '❗ Walk around and help the ' + left + ' people who need you. (Arrow keys, WASD, the buttons or tap the map)' : '🎉 Everyone is helped!';
   }
-  function round(i) {
-    clearAll(); var c = PEOPLE[i];
-    st.innerHTML = dots(i) + '<div class="who"><span class="wf">' + c.face + '</span><div class="wq"><b>' + esc(c.n) + '</b><br>“' + esc(c.say) + '”</div></div><div id="game"></div>';
-    var h = $('#game');
-    h.innerHTML = '<div class="stagebox" id="sb"></div>'; $('#sb').innerHTML = scene(c, { bridge: 0, walk: 0, conn: 0, t: 0, bubble: c.bub });
-    contBtn(h, '🔍 Find out the problem', function () { h.innerHTML = ''; GAMES[i][0](h, diagnose); });
-    function diagnose() {
-      h.innerHTML = '<div class="diag"><div class="qh">Problem found!</div><div class="tri">' + TRI.map(function (t, k) { var bad = c.miss.indexOf(t[0]) >= 0; return '<div class="tc ' + (bad ? 'bad' : 'okc') + '" style="animation-delay:' + (k * 0.25) + 's"><span class="e">' + t[1] + '</span>' + t[2] + '<b>' + (bad ? '✘' : '✔') + '</b></div>'; }).join('') + '</div><div style="text-align:center"><span class="tag">' + CAUSE[c.cause][0] + ' ' + esc(c.why) + '</span></div></div>';
-      contBtn(h, '🛠️ Help ' + esc(c.n), function () { h.innerHTML = ''; GAMES[i][1](h, reward); });
+  function hud() {
+    $('#hud').innerHTML = PEOPLE.map(function (p, i) { return '<span class="' + (SOLVED[i] ? 'on' : '') + '">' + p.face + '</span>'; }).join('') + '<div class="obj">' + objective() + '</div>';
+  }
+  function setupRPG() {
+    st.innerHTML = '<div id="rpg"><div class="dotsr" id="hud"></div><canvas id="cv" class="rpgc" width="960" height="640" tabindex="0" aria-label="Town map. Walk with arrow keys or tap."></canvas><div class="ctl"><div class="dpad"><button data-d="u" aria-label="Up">▲</button><button data-d="l" aria-label="Left">◀</button><button data-d="d" aria-label="Down">▼</button><button data-d="r" aria-label="Right">▶</button></div><button class="btn hide" id="talk">💬 Talk</button></div></div><div id="quest" class="hide"></div>';
+    cv = $('#cv'); cx = cv.getContext('2d'); keys = {}; pad = {}; target = null; near = null;
+    P = { x: 7 * TS + 16, y: 5 * TS + 16 }; FOL = { x: P.x, y: P.y, on: false };
+    [].forEach.call(st.querySelectorAll('.dpad button'), function (b) { var d = b.dataset.d; b.onpointerdown = function (e) { e.preventDefault(); pad[d] = true; target = null; }; ['onpointerup', 'onpointerleave', 'onpointercancel'].forEach(function (ev) { b[ev] = function () { pad[d] = false; }; }); });
+    cv.onpointerdown = function (e) { var r = cv.getBoundingClientRect(); target = { x: (e.clientX - r.left) * 480 / r.width, y: (e.clientY - r.top) * 320 / r.height }; };
+    $('#talk').onclick = act;
+    if (!wired) {
+      wired = true;
+      window.addEventListener('keydown', function (e) { if (!rpgOn) return; var k = e.key.toLowerCase(); if (['arrowup', 'arrowdown', 'arrowleft', 'arrowright', 'w', 'a', 's', 'd'].indexOf(k) >= 0) { e.preventDefault(); keys[k] = true; target = null; } else if ((k === ' ' || k === 'e' || k === 'enter') && !/BUTTON|INPUT|TEXTAREA/.test((e.target || {}).tagName || '')) { e.preventDefault(); act(); } });
+      window.addEventListener('keyup', function (e) { keys[e.key.toLowerCase()] = false; });
     }
-    function reward() {
-      h.innerHTML = '<div class="stagebox" id="sb"></div><div class="qh" id="say">🔨 Building the bridge…</div>';
-      function draw(q) { $('#sb').innerHTML = scene(c, q); }
-      anim(1800, function (t, now) { draw({ bridge: ease(t), walk: 0, conn: 0, t: now, bubble: c.bub, happy: false, help: HELP[c.help][0] }); }, function () {
-        $('#say').textContent = '🚶 Crossing…';
-        anim(2400, function (t, now) { draw({ bridge: 1, walk: ease(t), conn: t > .85 ? 1 : 0, t: now, bubble: t > .85 ? '😊' : null, happy: t > .85 }); }, function () {
-          done[i] = 1; draw({ bridge: 1, walk: 1, conn: 1, t: 0, bubble: '😊', happy: true }); conf($('#sb')); $('#say').textContent = '🎉 ' + c.ok;
-          contBtn(h, i < 4 ? 'Next person ▶' : 'See everyone ▶', function () { i < 4 ? round(i + 1) : finale(); });
-        });
-      });
+    hud(); rpgOn = true; lastT = performance.now(); loopRaf = requestAnimationFrame(loop);
+  }
+  function loop(now) {
+    if (!rpgOn || !document.body.contains(cv)) return; var dt = Math.min(.05, (now - lastT) / 1000); lastT = now; update(dt); draw(now / 1000); loopRaf = requestAnimationFrame(loop);
+  }
+  function update(dt) {
+    var dx = (keys.arrowright || keys.d || pad.r ? 1 : 0) - (keys.arrowleft || keys.a || pad.l ? 1 : 0), dy = (keys.arrowdown || keys.s || pad.d ? 1 : 0) - (keys.arrowup || keys.w || pad.u ? 1 : 0);
+    if (!dx && !dy && target) { var vx = target.x - P.x, vy = target.y - P.y, d = Math.hypot(vx, vy); if (d < 4) target = null; else { dx = vx / d; dy = vy / d; } }
+    if (dx || dy) { var m = Math.hypot(dx, dy), sp = 112 * dt, nx = P.x + dx / m * sp, ny = P.y + dy / m * sp; var moved = false; if (!blocked(nx, P.y)) { P.x = nx; moved = true; } if (!blocked(P.x, ny)) { P.y = ny; moved = true; } if (!moved && target) target = null; }
+    P.x = Math.max(12, Math.min(468, P.x)); P.y = Math.max(12, Math.min(308, P.y));
+    if (FOL.on) { var fx = P.x - FOL.x, fy = P.y - FOL.y, fd = Math.hypot(fx, fy); if (fd > 26) { var fs = Math.min(fd - 26, 118 * dt); FOL.x += fx / fd * fs; FOL.y += fy / fd * fs; } }
+    near = null; var best = 46;
+    NPC.forEach(function (n) { if (n.i === 1 && LING.stage === 1) return; var p = npcPos(n), d = Math.hypot(p[0] - P.x, p[1] - P.y); if (!SOLVED[n.i] && d < best) { best = d; near = { t: 'npc', i: n.i, label: '💬 Talk to ' + PEOPLE[n.i].n }; } });
+    if (LING.stage === 1) {
+      [['C', 7, 2, 'shop', '🏬 Enter the computer shop'], ['G', 8, 7, 'office', '🏛️ Enter the office']].forEach(function (b) { var d = Math.hypot(b[1] * TS + 16 - P.x, b[2] * TS + 16 - P.y); if (!LING[b[3]] && d < 50 && d < best) { best = d; near = { t: 'bld', k: b[3], label: b[4] }; } });
+      if (LING.shop && LING.office) { var dh = Math.hypot(11 * TS + 16 - P.x, 2 * TS + 16 - P.y); if (dh < 56) near = { t: 'home', label: '🏠 Go inside Ling’s home' }; }
+    }
+    var tb = $('#talk'); if (tb) { if (near) { tb.classList.remove('hide'); tb.textContent = near.label; } else tb.classList.add('hide'); }
+  }
+  function draw(t) {
+    var c = cx; c.setTransform(2, 0, 0, 2, 0, 0); c.clearRect(0, 0, 480, 320); c.textAlign = 'center'; c.textBaseline = 'middle';
+    for (var y = 0; y < ROWS; y++) for (var x = 0; x < COLS; x++) {
+      var ch = MAP[y][x], px = x * TS, py = y * TS;
+      c.fillStyle = ch === 'r' ? '#cdb07a' : ch === 'W' ? '#2f6fb3' : (x + y) % 2 ? '#4a8b3f' : '#4f9444'; c.fillRect(px, py, TS, TS);
+      if (ch === 'W') { c.strokeStyle = 'rgba(255,255,255,.45)'; c.beginPath(); c.moveTo(px + 4, py + 12 + Math.sin(t * 2 + x) * 2); c.quadraticCurveTo(px + 12, py + 6, px + 20, py + 12 + Math.sin(t * 2 + x) * 2); c.stroke(); }
+    }
+    var items = [];
+    for (y = 0; y < ROWS; y++) for (x = 0; x < COLS; x++) { var k = MAP[y][x]; if (k === 'T') items.push({ y: y * TS + 20, f: function (cc, X, Y) { cc.font = '30px serif'; cc.fillText('🌳', X, Y); }, x: x * TS + 16, yy: y * TS + 16 }); else if (BLD[k]) items.push({ y: y * TS + 20, x: x * TS + 16, yy: y * TS + 15, b: BLD[k] }); }
+    NPC.forEach(function (n) { if (n.i === 1 && LING.stage === 1) return; var p = npcPos(n); items.push({ y: p[1] + 8, x: p[0], yy: p[1], n: n }); });
+    if (FOL.on) items.push({ y: FOL.y + 8, x: FOL.x, yy: FOL.y, fol: 1 });
+    items.push({ y: P.y + 8, x: P.x, yy: P.y, me: 1 });
+    items.sort(function (a, b) { return a.y - b.y; });
+    items.forEach(function (it) {
+      if (it.f) { it.f(c, it.x, it.yy); return; }
+      if (it.b) { c.font = '32px serif'; c.fillText(it.b[0], it.x, it.yy); c.font = '800 8px system-ui'; c.lineWidth = 3; c.strokeStyle = 'rgba(0,0,0,.75)'; c.strokeText(it.b[1], it.x, it.yy + 18); c.fillStyle = '#fff'; c.fillText(it.b[1], it.x, it.yy + 18); return; }
+      c.fillStyle = 'rgba(0,0,0,.25)'; c.beginPath(); c.ellipse(it.x, it.yy + 11, 10, 4, 0, 0, 7); c.fill(); c.fillStyle = '#fff'; c.font = '30px serif';
+      if (it.n) { var bob = Math.sin(t * 3 + it.n.i) * 1.5, done = SOLVED[it.n.i]; c.fillText(done ? '😊' : PEOPLE[it.n.i].face, it.x, it.yy + bob); c.font = '18px serif'; c.fillText(done ? '✔️' : '❗', it.x, it.yy - 24 + (done ? 0 : Math.sin(t * 5) * 3)); if (near && near.i === it.n.i) { c.font = '800 9px system-ui'; c.lineWidth = 3; c.strokeStyle = '#000'; c.strokeText(PEOPLE[it.n.i].n, it.x, it.yy + 20); c.fillStyle = '#fde68a'; c.fillText(PEOPLE[it.n.i].n, it.x, it.yy + 20); } }
+      else if (it.fol) { c.fillText('👧', it.x, it.yy); }
+      else { c.fillText('🦸', it.x, it.yy); }
+    });
+    if (LING.stage === 1 && LING.shop && LING.office) { c.font = '16px serif'; c.fillText('⭐', 11 * TS + 16, 2 * TS - 4 + Math.sin(t * 5) * 3); }
+    if (LING.stage === 1 && !LING.shop) { c.font = '16px serif'; c.fillText('⭐', 7 * TS + 16, 2 * TS - 4 + Math.sin(t * 5) * 3); }
+    if (LING.stage === 1 && !LING.office) { c.font = '16px serif'; c.fillText('⭐', 8 * TS + 16, 7 * TS - 4 + Math.sin(t * 5) * 3); }
+  }
+
+  /* ===== quests ===== */
+  function qOpen() { rpgOn = false; cancelAnimationFrame(loopRaf); keys = {}; pad = {}; target = null; $('#rpg').classList.add('hide'); var q = $('#quest'); q.classList.remove('hide'); q.innerHTML = ''; q.scrollIntoView && q.scrollIntoView({ block: 'start' }); return q; }
+  function qClose() { clearAll(); var q = $('#quest'); q.classList.add('hide'); q.innerHTML = ''; $('#rpg').classList.remove('hide'); hud(); rpgOn = true; lastT = performance.now(); loopRaf = requestAnimationFrame(loop); if (Object.keys(SOLVED).length === 5) finale(); }
+  function who(c, say) { return '<div class="who"><span class="wf">' + c.face + '</span><div class="wq"><b>' + esc(c.n) + '</b><br>“' + esc(say || c.say) + '”</div></div>'; }
+  function diagnoseView(c, h, next) {
+    h.innerHTML = '<div class="diag"><div class="qh">Problem found!</div><div class="tri">' + TRI.map(function (t, k) { var bad = c.miss.indexOf(t[0]) >= 0; return '<div class="tc ' + (bad ? 'bad' : 'okc') + '" style="animation-delay:' + (k * 0.25) + 's"><span class="e">' + t[1] + '</span>' + t[2] + '<b>' + (bad ? '✘' : '✔') + '</b></div>'; }).join('') + '</div><div style="text-align:center"><span class="tag">' + CAUSE[c.cause][0] + ' ' + esc(c.why) + '</span></div></div>';
+    contBtn(h, c.cause === 'inc' ? '🛍️ Take Ling to get help' : '🛠️ Help ' + esc(c.n), next);
+  }
+  function solve(i, h, msg) {
+    SOLVED[i] = 1; h.innerHTML = who(PEOPLE[i], msg) + '<div class="stagebox" id="sb" style="min-height:90px;text-align:center;font-size:64px;padding:18px">😊</div>'; conf($('#sb'));
+    contBtn(h, Object.keys(SOLVED).length === 5 ? '🎉 See everyone ▶' : '🗺️ Back to town', qClose);
+  }
+  function openNpc(i) {
+    var c = PEOPLE[i], h = qOpen(); clearAll();
+    h.innerHTML = who(c); var go = function () { h.innerHTML = ''; start(); };
+    contBtn(h, i === 0 ? '👀 See what Grandma is doing' : i === 1 ? '👀 See Ling’s computer' : '🛠️ Help ' + esc(c.n), go);
+    function start() {
+      if (i === 0) animGrandma(h, function () { diagnoseView(c, h, function () { h.innerHTML = ''; g1b(h, function () { solve(0, h, c.ok); }); }); });
+      else if (i === 1) animLing(h, function () { diagnoseView(c, h, function () { LING.stage = 1; FOL.on = true; FOL.x = P.x; FOL.y = P.y; qClose(); }); });
+      else GAMES[i][0](h, function () { diagnoseView(c, h, function () { h.innerHTML = ''; GAMES[i][1](h, function () { solve(i, h, c.ok); }); }); });
     }
   }
+  function openBld(k) {
+    var h = qOpen(); clearAll();
+    (k === 'shop' ? shopGame : officeGame)(h, function () { LING[k] = 1; var c = PEOPLE[1]; h.innerHTML = who(c, k === 'shop' ? 'I have a new computer!' : 'The Internet subsidy is approved!'); contBtn(h, '🗺️ Back to town', qClose); });
+  }
+  function openHome() {
+    var h = qOpen(); clearAll(); animFast(h, function () { LING.stage = 2; FOL.on = false; solve(1, h, PEOPLE[1].ok); });
+  }
+  function act() { if (!near || !rpgOn) return; if (near.t === 'npc') openNpc(near.i); else if (near.t === 'bld') openBld(near.k); else if (near.t === 'home') openHome(); }
+
   function finale() {
-    clearAll(); if (window.ICTGameDone) try { window.ICTGameDone(); } catch (e) {}
-    var s = '<svg viewBox="0 0 420 270" role="img" aria-label="Everyone has crossed the bridge"><rect width="420" height="270" fill="#14204a"/><rect x="0" y="200" width="420" height="70" fill="#52525b"/><rect x="0" y="200" width="420" height="8" fill="#22d3ee"/>';
+    clearAll(); rpgOn = false; if (window.ICTGameDone) try { window.ICTGameDone(); } catch (e) {}
+    var s = '<svg viewBox="0 0 420 270" role="img" aria-label="Everyone is connected"><rect width="420" height="270" fill="#14204a"/><rect x="0" y="200" width="420" height="70" fill="#52525b"/><rect x="0" y="200" width="420" height="8" fill="#22d3ee"/>';
     [[10, 150, 26, 50], [60, 118, 30, 82], [330, 140, 26, 60], [380, 108, 24, 92]].forEach(function (b) { s += '<rect x="' + b[0] + '" y="' + b[1] + '" width="' + b[2] + '" height="' + b[3] + '" fill="#1e293b"/>'; for (var yy = b[1] + 8; yy < 196; yy += 14) s += '<rect x="' + (b[0] + 6) + '" y="' + yy + '" width="5" height="7" fill="#fde047"/>'; });
     ['🏦', '🛒', '🏫', '💼', '📰', '🏥'].forEach(function (e, i) { s += '<text x="' + (40 + i * 68) + '" y="' + (50 + (i % 2) * 24) + '" font-size="26" text-anchor="middle">' + e + '</text>'; });
-    PEOPLE.forEach(function (c, i) { s += person(c, 60 + i * 75, 200, { happy: true, t: 0, bubble: i % 2 ? '😊' : '📶' }); });
+    PEOPLE.forEach(function (c, i) { s += person(c, 60 + i * 75, 200, { mood: 1, t: 0, bubble: i % 2 ? '😊' : '📶' }); });
     s += '</svg>';
     st.innerHTML = bot('Everyone is connected! 🎉', 'This is what <b>digital equity</b> looks like.') + '<div class="stagebox" id="sb">' + s + '</div><p style="text-align:center;font-weight:800;color:#6ee7b7">🎮 Game complete! +10 XP added to Book E on your world map.</p>' +
       '<div class="note"><b>Digital divide</b> = the gap between people in access to <b>ICT hardware</b>, <b>Internet access</b> and <b>ICT knowledge</b>. <b>Digital equity</b> = everyone has fair access to technology so they can take part in society. Ignoring the divide isolates people from daily services and makes them less competitive in the job market.</div>' +
       '<div class="note" style="background:rgba(99,102,241,.14);border-color:rgba(129,140,248,.5)"><b>You helped with:</b> training courses (age), subsidies and computers for students in need (income), free Wi-Fi and network upgrades (location), assistive technology and image descriptions (disability), and websites in many languages (race and language).</div>' +
-      '<div class="row" style="justify-content:center;margin-top:14px"><button class="btn sec" id="rw">🌉 Play again</button><a class="btn sec" style="text-decoration:none" href="mindmap.html">🧠 Ch.2 mind map</a><a class="btn sec" style="text-decoration:none" href="../../mctrainer.html">🎯 MC Trainer</a></div>';
-    conf($('#sb')); $('#rw').onclick = intro;
+      '<div class="row" style="justify-content:center;margin-top:14px"><button class="btn sec" id="rw">🌍 Play again</button><a class="btn sec" style="text-decoration:none" href="mindmap.html">🧠 Ch.2 mind map</a><a class="btn sec" style="text-decoration:none" href="../../mctrainer.html">🎯 MC Trainer</a></div>';
+    conf($('#sb')); $('#rw').onclick = function () { SOLVED = {}; LING = { stage: 0, shop: 0, office: 0 }; setupRPG(); };
   }
-  intro();
+  setupRPG();
 })();
 </script>
 <script src="../../nav.js"></script>
