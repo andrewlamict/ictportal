@@ -89,6 +89,13 @@ textarea{width:100%;min-height:64px;margin-top:6px;padding:10px;border-radius:12
 .phone:hover:not(:disabled){border-color:#a5b4fc}.phone.pick{border-color:#fbbf24}.phone small{color:var(--mut)}
 .reviews{display:grid;gap:8px;margin:10px 0}.rev{text-align:left;border:2px solid var(--line);border-radius:14px;background:rgba(0,0,0,.28);padding:10px 12px;line-height:1.45}
 .rev span{margin-right:6px}.rev small{display:block;color:var(--mut);font-weight:600}.rev:hover{border-color:#a5b4fc}.rev.gone{opacity:.3;text-decoration:line-through}.rev.no{border-color:var(--bad);background:rgba(244,63,94,.2)}
+.mailroom{position:relative;height:190px;border-radius:16px;background:linear-gradient(180deg,#1e293b,#334155);border:2px solid #475569;overflow:hidden;display:flex;align-items:center;justify-content:center;margin:10px 0}
+.parcel{background:#fde68a;color:#451a03;border-radius:14px;padding:12px 22px;text-align:center;font-weight:700;line-height:1.5;box-shadow:0 8px 18px rgba(0,0,0,.5)}
+.bins3{display:grid;grid-template-columns:repeat(3,1fr);gap:10px}.dbin{border:3px solid;border-radius:14px;background:rgba(0,0,0,.3);padding:16px 6px;font-weight:900;font-size:17px}
+.dbin:hover{filter:brightness(1.3);transform:translateY(-3px)}
+.fall{position:absolute;font-size:34px;top:-50px;animation:drop 1.1s ease-in forwards}
+@keyframes drop{to{top:calc(100% - 44px);transform:rotate(18deg)}}
+.mailroom.buried .parcel{opacity:.25}
 .hide{display:none!important}
 .note{margin-top:14px;padding:12px 14px;border-radius:14px;background:rgba(251,191,36,.14);border:1px solid rgba(251,191,36,.5);font-size:14.5px;line-height:1.55}
 @media(prefers-reduced-motion:reduce){*{animation:none!important}}
@@ -112,7 +119,7 @@ textarea{width:100%;min-height:64px;margin-top:6px;padding:10px;border-radius:12
     ver: { n: 'Veracity', c: 'c-ver', hex: '#c084fc', e: '🕵️', d: 'how ACCURATE the data is: uncertainty, accuracy and quality of the data.' }
   };
   var EXP = [
-    { k: 'vol', e: '📊', t: 'The growing sort', s: 'Sort numbers by hand: 5, 10, then 100,000.' },
+    { k: 'vol', e: '📮', t: 'The mail room', s: 'Sort parcels into district bins: 5, 10, then 100,000.' },
     { k: 'vor', e: '🕵️', t: 'The detective case', s: 'Prove where Ben was using many kinds of evidence.' },
     { k: 'vel', e: '🏭', t: 'The conveyor belt', s: 'Analyse the data as it arrives.' },
     { k: 'ver', e: '📱', t: 'Which phone?', s: 'Choose a phone from online ratings. Can you trust them?' }
@@ -155,13 +162,19 @@ textarea{width:100%;min-height:64px;margin-top:6px;padding:10px;border-radius:12
     c.innerHTML = '<div class="big">' + icon + '</div><h2>' + title + '</h2><p style="max-width:460px;line-height:1.5;margin:0">' + text + '</p><button class="btn red" id="why">🤔 Why did that happen?</button>';
     host.appendChild(c); $('#why', c).onclick = cb;
   }
-  function discover(k) {                                 /* "what was the problem?" then reveal the V */
-    clearAll(); var opts = shuffle(Object.keys(PROBLEMS));
-    st.innerHTML = bytey('Hmm… that did not go as planned. 😅', 'Look at what just happened. What was the real problem?') +
-      '<div class="q">' + opts.map(function (o) { return '<button class="opt" data-o="' + o + '">' + PROBLEMS[o] + '</button>'; }).join('') + '</div><div id="rev"></div>';
+  var DISC = {
+    vol: { q: 'Why could you not finish sorting the 100,000 parcels?', o: { vol: 'There were far too many parcels (too much data) to handle one by one', vor: 'The parcels were all different types and shapes', vel: 'The parcels were sent out too slowly', ver: 'The addresses on the parcels were wrong' } },
+    vor: { q: 'Why could the old case table not prove the case?', o: { vol: 'There was too much evidence to store', vor: 'The evidence came in many different formats (photo, audio, video, location) that the table could not hold', vel: 'The evidence arrived too quickly', ver: 'All of the evidence was fake' } },
+    vel: { q: 'Why did the conveyor belt jam?', o: { vol: 'There were too many packets in total to store', vor: 'The packets were in different formats', vel: 'The packets arrived faster than we could analyse them', ver: 'The packets contained wrong information' } },
+    ver: { q: 'Why did Phone A look so much better than it really was?', o: { vol: 'There were too many reviews to read', vor: 'The reviews came in different formats', vel: 'The ratings changed every second', ver: 'Many reviews were fake, so the data could not be trusted' } }
+  };
+  function discover(k) {                                 /* activity-specific question, then reveal the V */
+    clearAll(); var D = DISC[k], opts = shuffle(Object.keys(D.o));
+    st.innerHTML = bytey('Think about what just happened. 🤔', D.q) +
+      '<div class="q">' + opts.map(function (o) { return '<button class="opt" data-o="' + o + '">' + D.o[o] + '</button>'; }).join('') + '</div><div id="rev"></div>';
     [].forEach.call(st.querySelectorAll('.opt'), function (b) {
       b.onclick = function () {
-        if (b.dataset.o !== k) { b.classList.add('no'); st.classList.add('shake'); setTimeout(function () { st.classList.remove('shake'); }, 400); $('#rev').innerHTML = '<p class="sub">Not quite. Think about what exactly broke in the experiment, then try again.</p>'; return; }
+        if (b.dataset.o !== k) { b.classList.add('no'); st.classList.add('shake'); setTimeout(function () { st.classList.remove('shake'); }, 400); $('#rev').innerHTML = '<p class="sub">Not quite. Remember what you saw in the activity and try again.</p>'; return; }
         [].forEach.call(st.querySelectorAll('.opt'), function (x) { x.disabled = true; }); b.classList.add('good'); found[k] = 1; save(); var v = V[k];
         $('#rev').innerHTML = '<div class="stamp ' + v.c + '" style="background:rgba(0,0,0,.3)"><div style="font-size:15px;color:var(--mut)">You discovered…</div><div class="big" style="color:' + v.hex + '">' + v.e + ' ' + v.n.toUpperCase() + '</div><div style="font-size:16px;line-height:1.5;margin-top:4px">' + v.n + ' = ' + esc(v.d) + '</div></div>' +
           '<label for="mine" style="font-weight:800">✍️ Write it in your own words (for your notebook)</label><textarea id="mine" maxlength="140" placeholder="e.g. ' + v.n + ' means…"></textarea>' +
@@ -171,28 +184,32 @@ textarea{width:100%;min-height:64px;margin-top:6px;padding:10px;border-radius:12
     });
   }
 
-  /* ================= experiment 1: volume (sort by hand) ================= */
+  /* ================= experiment 1: volume (mail room) ================= */
   function exp1() {
-    clearAll(); var rounds = [5, 10, 100000], ri = 0, results = [];
-    function shuf(n) { var a; do { a = shuffle(Array.apply(null, Array(n)).map(function (_, i) { return i + 1; })); } while (a.every(function (v, i) { return v === i + 1; })); return a; }
+    clearAll(); var rounds = [5, 10, 100000], ri = 0, DIST = [['N', 'North', '#60a5fa'], ['S', 'South', '#34d399'], ['E', 'East', '#fbbf24']], names = ['Amy', 'Ben', 'Cathy', 'David', 'Eva', 'Frank', 'Gigi', 'Hugo', 'Ivy', 'Jack', 'Kai', 'Lily'];
     function round() {
-      var n = rounds[ri], big = n > 20, arr = big ? shuf(12).map(function (v) { return v * 8123 % 100000 + 1; }) : shuf(n), sel = -1, moves = 0, t0 = Date.now(), locked = false;
-      function sorted() { return arr.every(function (v, i) { return !i || arr[i - 1] <= v; }); }
-      function draw() {
-        $('#cards').innerHTML = arr.map(function (v, i) { return '<button class="num ' + (i === sel ? 'sel' : '') + '" data-i="' + i + '">' + v + '</button>'; }).join('') + (big ? '<span class="more">… and 99,988 more numbers</span>' : '');
-        [].forEach.call(st.querySelectorAll('.num'), function (b) { b.onclick = pick; });
-        $('#mv').textContent = moves;
+      var n = rounds[ri], big = n > 20, total = n, left = n, t0 = Date.now(), cur = null, sorted = 0, over = false;
+      function newP() { var d = DIST[Math.floor(Math.random() * 3)]; cur = { d: d, to: names[Math.floor(Math.random() * names.length)] }; $('#parcel').innerHTML = '<div style="font-size:46px">📦</div><b>To: ' + cur.to + '</b><br>District: <b style="color:#0f172a">' + d[1] + '</b>'; }
+      function avalanche() {
+        over = true; var f = $('#field'); f.classList.add('buried'); var h = '';
+        for (var i = 0; i < 90; i++) h += '<span class="fall" style="left:' + Math.random() * 96 + '%;animation-delay:' + (Math.random() * 1.6).toFixed(2) + 's;bottom:' + (Math.random() * 70).toFixed(0) + 'px">📦</span>';
+        f.insertAdjacentHTML('beforeend', h); $('#left').textContent = '99,997'; $('#bins').classList.add('hide');
+        later(function () { crash($('#stage'), '📦', 'The pile is taking over the room!', 'There are 99,997 parcels left. At one parcel per second that is over <b>27 hours non-stop</b>, and that is just one delivery. A person with a normal way of working cannot handle this much data.', function () { discover('vol'); }); }, 2600);
       }
-      function pick(e) {
-        if (locked) return; var i = +e.currentTarget.dataset.i;
-        if (sel < 0) { sel = i; draw(); return; } if (sel === i) { sel = -1; draw(); return; }
-        var t = arr[sel]; arr[sel] = arr[i]; arr[i] = t; sel = -1; moves++; draw();
-        if (!big && sorted()) { locked = true; var sec = Math.round((Date.now() - t0) / 1000); results.push([n, sec, moves]); later(function () { $('#msg').innerHTML = '✅ Sorted! ' + n + ' numbers took you <b>' + sec + ' seconds</b> and <b>' + moves + ' moves</b>.'; $('#nx').classList.remove('hide'); }, 100); }
-        if (big && moves >= 3) { locked = true; later(function () { $('#msg').innerHTML = '🛑 <b>STOP!</b> You made 3 moves out of millions.'; crash($('#stage'), '🛑', 'Stop! This is far too much to sort', 'There are 100,000 numbers. Even a clever method needs about <b>1.7 million</b> steps. At one step per second that is about <b>19 days non-stop</b>. Your normal way of working cannot handle this much data.', function () { discover('vol'); }); }, 500); }
-      }
-      st.innerHTML = bytey(big ? 'Round 3: now sort <b>100,000</b> numbers!' : 'Round ' + (ri + 1) + ': sort these ' + n + ' numbers from smallest to largest.', big ? 'Same job as before. Try it!' : 'Tap one card, then tap another to swap them.') +
-        '<div class="stats"><span>Numbers: <b>' + n.toLocaleString() + '</b></span><span>Moves: <b id="mv">0</b></span></div><div class="cards" id="cards"></div><div class="msg" id="msg" style="background:rgba(255,255,255,.08);border-color:var(--line)">' + (big ? 'Go ahead…' : 'Smallest on the left, largest on the right.') + '</div><button class="btn hide" id="nx">' + (ri < 1 ? 'Next round ▶' : 'Round 3 ▶') + '</button>';
-      $('#nx').onclick = function () { ri++; round(); }; draw();
+      st.innerHTML = bytey(big ? 'Round 3: 🚚 <b>BIG DELIVERY!</b> 100,000 parcels just arrived. Get sorting!' : 'Round ' + (ri + 1) + ': you work in the mail room 📮. Sort ' + n + ' parcels into the right district bin.', big ? 'Same job as before. You can do it, right?' : 'Read the district on the parcel, then tap that bin.') +
+        '<div class="stats"><span>Parcels left: <b id="left">' + n.toLocaleString() + '</b></span><span>Sorted: <b id="srt">0</b></span></div><div class="mailroom" id="field"><div class="parcel" id="parcel"></div></div><div class="bins3" id="bins">' + DIST.map(function (d) { return '<button class="dbin" data-d="' + d[0] + '" style="border-color:' + d[2] + ';color:' + d[2] + '">📮 ' + d[1] + '</button>'; }).join('') + '</div><div class="msg" id="msg" style="background:rgba(255,255,255,.08);border-color:var(--line)">Go!</div><button class="btn hide" id="nx">Next round ▶</button>';
+      newP();
+      [].forEach.call(st.querySelectorAll('.dbin'), function (b) {
+        b.onclick = function () {
+          if (over) return;
+          if (b.dataset.d !== cur.d[0]) { st.classList.add('shake'); setTimeout(function () { st.classList.remove('shake'); }, 400); $('#msg').textContent = '❌ Wrong bin! That parcel is for the ' + cur.d[1] + ' district.'; return; }
+          left--; sorted++; $('#left').textContent = left.toLocaleString(); $('#srt').textContent = sorted; $('#msg').textContent = '✔ Sorted!';
+          if (big) { if (sorted >= 3) { avalanche(); return; } newP(); return; }
+          if (left === 0) { over = true; $('#parcel').innerHTML = '<div style="font-size:46px">🎉</div><b>All done!</b>'; $('#bins').classList.add('hide'); var sec = Math.round((Date.now() - t0) / 1000); $('#msg').innerHTML = '✅ ' + n + ' parcels sorted in <b>' + sec + ' seconds</b>. Easy!'; $('#nx').classList.remove('hide'); return; }
+          newP();
+        };
+      });
+      $('#nx').onclick = function () { ri++; round(); };
     }
     round();
   }
