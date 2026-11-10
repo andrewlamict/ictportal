@@ -1,0 +1,513 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Copyright Police</title>
+<style>
+:root{color-scheme:dark;--bg:#0b1226;--panel:#162044;--line:rgba(255,255,255,.18);--txt:#f8fafc;--mut:#cbd5e1;--vol:#60a5fa;--vor:#34d399;--vel:#fbbf24;--ver:#c084fc;--bad:#fb7185;--ok:#34d399}
+*{box-sizing:border-box}
+html{background:var(--bg)}
+body{margin:0;font-family:system-ui,-apple-system,"Segoe UI",sans-serif;color:var(--txt);background:radial-gradient(900px 500px at 12% -10%,#1e3a8a 0,transparent 60%),radial-gradient(800px 500px at 100% 0,#581c87 0,transparent 55%),var(--bg);min-height:100vh}
+.wrap{max-width:900px;margin:0 auto;padding:16px 16px 90px}
+h1{margin:6px 0 2px;font-size:28px}h2{margin:0 0 6px}
+.sub{color:var(--mut);margin:0 0 14px;line-height:1.5}
+.panel{position:relative;background:rgba(255,255,255,.07);border:1px solid var(--line);border-radius:20px;padding:20px;overflow:hidden}
+button{font:inherit;cursor:pointer;color:inherit}
+.btn{border:0;border-radius:14px;padding:12px 20px;font-weight:800;font-size:16px;color:#fff;background:linear-gradient(135deg,#6366f1,#a855f7);box-shadow:0 8px 20px rgba(99,102,241,.4)}
+.btn:hover:not(:disabled){filter:brightness(1.12)}.btn:disabled{opacity:.4;cursor:not-allowed}
+.btn.sec{background:rgba(255,255,255,.14);box-shadow:none}.btn.red{background:linear-gradient(135deg,#ef4444,#f97316)}
+.btn.sm{padding:8px 14px;font-size:14px}
+.row{display:flex;gap:10px;flex-wrap:wrap;align-items:center}
+/* Bytey */
+.say{display:flex;gap:12px;align-items:flex-start;margin-bottom:14px}
+.bot{font-size:46px;line-height:1;animation:bob 2.4s ease-in-out infinite}
+@keyframes bob{50%{transform:translateY(-5px) rotate(3deg)}}
+.bub{background:#fff;color:#0f172a;border-radius:6px 18px 18px 18px;padding:10px 14px;font-weight:700;line-height:1.45;max-width:640px}
+.bub small{display:block;color:#475569;font-weight:600;margin-top:3px}
+/* menu */
+.tiles{display:grid;grid-template-columns:repeat(auto-fit,minmax(190px,1fr));gap:12px;margin:14px 0}
+.tile{text-align:left;border-radius:18px;padding:16px;border:2px solid var(--line);background:rgba(0,0,0,.25);transition:.15s}
+.tile:hover{transform:translateY(-3px);border-color:#a5b4fc}
+.tile .e{font-size:34px}.tile b{display:block;font-size:17px;margin:4px 0 2px}.tile span{font-size:13px;color:var(--mut)}
+.tile.done{border-color:var(--ok);background:rgba(16,185,129,.12)}
+.tile .st{float:right;font-size:12px;font-weight:800;border-radius:99px;padding:2px 9px;background:rgba(255,255,255,.14)}
+.tile.done .st{background:var(--ok);color:#052e1d}
+.nb{display:grid;grid-template-columns:repeat(auto-fit,minmax(190px,1fr));gap:10px}
+.nbc{border-radius:14px;padding:10px 12px;border:2px dashed var(--line);font-size:13.5px;color:var(--mut);min-height:84px}
+.nbc.on{border-style:solid;color:var(--txt);background:rgba(0,0,0,.28)}
+.nbc b{display:block;font-size:16px}
+.c-vol{border-color:var(--vol)!important}.c-vol b{color:var(--vol)}
+.c-vor{border-color:var(--vor)!important}.c-vor b{color:var(--vor)}
+.c-vel{border-color:var(--vel)!important}.c-vel b{color:var(--vel)}
+.c-ver{border-color:var(--ver)!important}.c-ver b{color:var(--ver)}
+/* sheet */
+.sheet{width:100%;border-collapse:collapse;background:#f8fafc;color:#0f172a;font-size:13px;border-radius:10px;overflow:hidden}
+.sheet th{background:#16a34a;color:#fff;padding:6px 8px;text-align:left}.sheet td{padding:5px 8px;border-bottom:1px solid #e2e8f0}
+.sheetbar{display:flex;justify-content:space-between;background:#166534;color:#fff;padding:6px 10px;font-size:13px;font-weight:700;border-radius:10px 10px 0 0}
+.meter{height:14px;border-radius:9px;background:rgba(255,255,255,.15);overflow:hidden;margin:6px 0}.meter i{display:block;height:100%;width:0;background:linear-gradient(90deg,#34d399,#fbbf24,#ef4444);transition:width .3s}
+.stats{display:flex;gap:16px;flex-wrap:wrap;margin:10px 0;font-weight:800}.stats span{background:rgba(0,0,0,.3);border-radius:10px;padding:6px 12px}
+.crash{position:absolute;inset:0;background:rgba(15,5,20,.93);display:flex;flex-direction:column;align-items:center;justify-content:center;text-align:center;gap:10px;padding:20px;animation:glitch .5s;z-index:5}
+.crash .big{font-size:60px}
+@keyframes glitch{0%{transform:translateX(-8px)}20%{transform:translateX(8px)}40%{transform:translateX(-6px)}60%{transform:translateX(6px)}100%{transform:none}}
+.shake{animation:glitch .4s}
+/* import */
+.items{display:flex;gap:10px;flex-wrap:wrap;margin:10px 0}
+.item{border:2px solid var(--line);background:rgba(0,0,0,.3);border-radius:14px;padding:10px 14px;font-weight:700}
+.item.sel{border-color:#fbbf24;background:rgba(251,191,36,.2);transform:scale(1.05)}.item.tried{opacity:.5;text-decoration:line-through}
+.cols{display:grid;grid-template-columns:repeat(3,1fr);gap:8px}
+.col{border-radius:12px;border:2px solid #86efac;background:#f0fdf4;color:#14532d;padding:12px;font-weight:800;text-align:center}
+.col small{display:block;font-weight:600;color:#166534}
+.msg{min-height:44px;margin:10px 0;padding:10px 12px;border-radius:12px;background:rgba(251,113,133,.15);border:1px solid rgba(251,113,133,.5);font-weight:700}
+/* belt */
+.belt{position:relative;height:210px;border-radius:16px;background:repeating-linear-gradient(90deg,#1e293b 0 28px,#243049 28px 56px);border:2px solid #475569;overflow:hidden}
+.pk{position:absolute;top:80px;width:54px;height:54px;border-radius:12px;background:#fff;color:#0f172a;display:flex;align-items:center;justify-content:center;font-size:30px;border:3px solid #6366f1;box-shadow:0 6px 14px rgba(0,0,0,.5)}
+.pk:hover{border-color:#fbbf24}
+.pk.gone{opacity:0;transform:scale(1.6);transition:.3s}
+.tool{position:absolute;right:0;top:0;bottom:0;width:64px;background:rgba(239,68,68,.3);display:flex;align-items:center;justify-content:center;font-size:12px;font-weight:800;writing-mode:vertical-rl;letter-spacing:.1em}
+/* readings */
+.rd{display:grid;grid-template-columns:repeat(auto-fill,minmax(110px,1fr));gap:8px;margin:10px 0}
+.rdc{border-radius:12px;padding:10px;background:rgba(0,0,0,.3);border:2px solid var(--line);font-weight:800;text-align:center}
+.rdc.bad:hover{border-color:var(--bad)}.rdc.gone{opacity:.25;text-decoration:line-through}
+.avg{font-size:30px;font-weight:900}
+.q{margin:12px 0;display:grid;gap:8px}
+.opt{text-align:left;border:2px solid var(--line);border-radius:14px;padding:12px 14px;background:rgba(0,0,0,.28);font-weight:700;line-height:1.4}
+.opt:hover:not(:disabled){border-color:#a5b4fc;background:rgba(99,102,241,.2)}
+.opt.good{border-color:var(--ok);background:rgba(16,185,129,.25)}.opt.no{border-color:var(--bad);background:rgba(244,63,94,.25)}
+.stamp{margin:12px 0;padding:16px;border-radius:18px;border:3px solid;text-align:center;animation:stamp .5s}
+.stamp .big{font-size:40px;font-weight:900}
+@keyframes stamp{from{transform:scale(2.2) rotate(-8deg);opacity:0}to{transform:none;opacity:1}}
+textarea{width:100%;min-height:64px;margin-top:6px;padding:10px;border-radius:12px;border:2px solid var(--line);background:rgba(0,0,0,.3);color:#fff;font:inherit;font-size:14.5px}
+.cards{display:flex;flex-wrap:wrap;gap:8px;align-items:center;margin:12px 0}
+.num{min-width:54px;height:54px;border-radius:12px;border:3px solid #6366f1;background:#fff;color:#0f172a;font-weight:900;font-size:19px;padding:0 8px}
+.num.sel{border-color:#fbbf24;background:#fef3c7;transform:translateY(-6px)}.more{color:var(--mut);font-weight:700}
+.scene{background:#fff;color:#0f172a;border-radius:12px;padding:12px 14px;line-height:1.7;font-weight:600}
+.map{display:flex;justify-content:space-around;background:#d1fae5;border-radius:10px;padding:14px;margin-bottom:6px;font-weight:800}.pin{background:#fecaca;border-radius:8px;padding:2px 8px}
+.wave{font-size:26px;letter-spacing:2px;color:#6366f1}.frames{display:flex;gap:8px;margin-bottom:6px}.frames span{flex:1;background:#0f172a;color:#fff;border-radius:8px;padding:8px;text-align:center;font-size:13px}
+.board{display:flex;gap:8px;flex-wrap:wrap;min-height:40px}.pinned{background:rgba(251,191,36,.2);border:2px solid #fbbf24;border-radius:10px;padding:6px 12px;font-weight:800}
+.two{display:grid;grid-template-columns:1fr 1fr;gap:12px;margin:14px 0}.phone{border:3px solid var(--line);border-radius:18px;background:rgba(0,0,0,.28);padding:16px;text-align:center}
+.phone:hover:not(:disabled){border-color:#a5b4fc}.phone.pick{border-color:#fbbf24}.phone small{color:var(--mut)}
+.reviews{display:grid;gap:8px;margin:10px 0}.rev{text-align:left;border:2px solid var(--line);border-radius:14px;background:rgba(0,0,0,.28);padding:10px 12px;line-height:1.45}
+.rev span{margin-right:6px}.rev small{display:block;color:var(--mut);font-weight:600}.rev:hover{border-color:#a5b4fc}.rev.gone{opacity:.3;text-decoration:line-through}.rev.no{border-color:var(--bad);background:rgba(244,63,94,.2)}
+.mailroom{position:relative;height:190px;border-radius:16px;background:linear-gradient(180deg,#1e293b,#334155);border:2px solid #475569;overflow:hidden;display:flex;align-items:center;justify-content:center;margin:10px 0}
+.parcel{background:#fde68a;color:#451a03;border-radius:14px;padding:12px 22px;text-align:center;font-weight:700;line-height:1.5;box-shadow:0 8px 18px rgba(0,0,0,.5)}
+.bins3{display:grid;grid-template-columns:repeat(3,1fr);gap:10px}.dbin{border:3px solid;border-radius:14px;background:rgba(0,0,0,.3);padding:16px 6px;font-weight:900;font-size:17px}
+.dbin:hover{filter:brightness(1.3);transform:translateY(-3px)}
+.fall{position:absolute;font-size:34px;top:-50px;animation:drop 1.1s ease-in forwards}
+@keyframes drop{to{top:calc(100% - 44px);transform:rotate(18deg)}}
+.mailroom.buried .parcel{opacity:.25}
+.who{display:flex;gap:12px;align-items:center;margin:4px 0 8px}.wf{font-size:48px}.wq{background:#fff;color:#0f172a;border-radius:6px 18px 18px 18px;padding:10px 14px;font-weight:700;line-height:1.4}
+.shopx{line-height:1.5}.queue{font-size:26px;margin:6px 0}
+.phone{width:230px;max-width:100%;margin:8px auto;border:5px solid #94a3b8;border-radius:26px;background:#0f172a;padding:10px;min-height:170px}
+.scr{display:grid;grid-template-columns:repeat(3,1fr);gap:6px;text-align:center}.scr .big2{font-size:54px}
+.ico{border:0;border-radius:12px;padding:12px 2px;background:#334155;font-weight:800;font-size:12px}.ico:hover{background:#4f46e5}.ico.wrongb{background:#7f1d1d}
+.cardsx{display:flex;gap:8px;flex-wrap:wrap;margin:10px 0}
+.chp{border:2px solid var(--line);border-radius:12px;padding:10px 14px;background:rgba(0,0,0,.3);font-weight:800;font-size:14px;text-align:left}
+.chp:hover:not(:disabled){border-color:#a5b4fc}.chp.good{border-color:var(--ok);background:rgba(16,185,129,.28)}.chp.no{border-color:var(--bad);background:rgba(244,63,94,.25)}.chp.pick{border-color:#fbbf24;background:rgba(251,191,36,.22)}.chp:disabled{opacity:.7}
+.meter.big{height:22px}
+.web{background:#f8fafc;color:#0f172a;border-radius:14px;padding:12px;display:grid;gap:8px;margin:10px 0}
+.wt{padding:8px 10px;border-radius:8px;background:#e2e8f0;cursor:pointer}.wt.read{background:#bbf7d0}
+.wi{padding:6px;border-radius:10px;background:#cbd5e1;text-align:center;font-size:36px;cursor:pointer}.wi small{display:block;font-size:12px;font-weight:700;color:#334155;margin-top:4px}.wi.mute{outline:3px solid #ef4444}.wi.small{font-size:28px;cursor:default}
+.reader{background:#0f172a;border:2px solid #38bdf8;border-radius:12px;padding:10px;font-weight:700;min-height:44px;margin:8px 0;line-height:1.5}
+.webbtn{border:0;border-radius:10px;padding:12px;background:#2563eb;color:#fff;font-weight:900;font-size:16px}.webbtn:disabled{background:#16a34a}
+.dsr{display:grid;grid-template-columns:130px 1fr;gap:8px;align-items:center;margin:8px 0}@media(max-width:480px){.dsr{grid-template-columns:1fr}}
+input[type=text]{width:100%;font:inherit;padding:10px 12px;border-radius:12px;border:2px solid var(--line);background:rgba(0,0,0,.3);color:var(--txt)}
+.err{color:#fda4af;font-weight:700;min-height:20px}
+.langs{display:flex;gap:8px;flex-wrap:wrap;margin:10px 0}
+.stats{display:flex;gap:12px;flex-wrap:wrap;margin:8px 0;font-weight:800}.stats span{background:rgba(0,0,0,.3);border-radius:10px;padding:6px 12px}
+.tri{display:grid;grid-template-columns:repeat(auto-fit,minmax(120px,1fr));gap:8px;margin:10px 0}
+.tc{border-radius:14px;padding:10px;text-align:center;font-weight:800;border:2px solid var(--line);background:rgba(0,0,0,.3);animation:pop .5s both;line-height:1.3}
+.tc .e{font-size:30px;display:block}.tc b{display:block;font-size:24px}.tc.bad{border-color:var(--bad);background:rgba(244,63,94,.22)}.tc.bad b{color:#fb7185}.tc.okc{border-color:var(--ok)}.tc.okc b{color:#34d399}
+@keyframes pop{from{transform:scale(.4);opacity:0}to{transform:none;opacity:1}}
+.rpgc{width:100%;display:block;border-radius:14px;border:3px solid #475569;touch-action:none;background:#2d5a27;outline:none}
+.ctl{display:flex;gap:12px;align-items:center;justify-content:space-between;margin-top:10px;flex-wrap:wrap}
+.dpad{display:grid;grid-template-columns:repeat(3,52px);grid-template-rows:repeat(2,46px);gap:6px;grid-template-areas:". u ." "l d r"}
+.dpad button{border:2px solid var(--line);border-radius:12px;background:rgba(255,255,255,.12);font-size:18px;font-weight:900;touch-action:none;user-select:none}.dpad button:active{background:#6366f1}
+.dpad [data-d=u]{grid-area:u}.dpad [data-d=l]{grid-area:l}.dpad [data-d=d]{grid-area:d}.dpad [data-d=r]{grid-area:r}
+.dotsr .obj{flex-basis:100%;text-align:center;font-size:14px;font-weight:800;filter:none;color:#fde68a;line-height:1.4}
+.mood{display:flex;align-items:center;gap:8px;font-size:24px;margin:6px 0}.mood .meter{flex:1;margin:0}
+.tk{display:flex;gap:8px;align-items:center;padding:8px 10px;background:#e2e8f0;border-radius:8px;font-weight:700;cursor:pointer}.tk input{width:20px;height:20px}
+.stampx{display:inline-block;border:3px solid #dc2626;color:#dc2626;font-weight:900;padding:2px 10px;border-radius:6px;transform:rotate(-8deg);animation:stampin .4s}
+@keyframes stampin{from{transform:scale(2.5) rotate(-8deg);opacity:0}to{transform:rotate(-8deg);opacity:1}}
+.hide{display:none!important}
+.note{margin-top:14px;padding:12px 14px;border-radius:14px;background:rgba(251,191,36,.14);border:1px solid rgba(251,191,36,.5);font-size:14.5px;line-height:1.55}
+@media(prefers-reduced-motion:reduce){*{animation:none!important}}
+</style>
+<style>
+.stagebox{position:relative;border-radius:20px;overflow:hidden;border:2px solid var(--line);background:#0f1733;margin:8px 0}
+.stagebox svg{display:block;width:100%;height:auto}
+.dotsr{display:flex;flex-wrap:wrap;gap:10px;justify-content:center;margin:6px 0 10px;font-size:26px}
+.dotsr span{filter:grayscale(1) opacity(.45);transition:.3s}.dotsr span.on{filter:none;transform:scale(1.15)}.dotsr span.cur{filter:none;outline:3px solid #fbbf24;outline-offset:3px;border-radius:50%}
+.opts{display:grid;grid-template-columns:repeat(auto-fit,minmax(170px,1fr));gap:10px;margin:10px 0}
+.oc{border:2px solid var(--line);border-radius:16px;padding:12px 10px;background:rgba(0,0,0,.3);font-weight:800;text-align:center;line-height:1.3}
+.oc .e{font-size:34px;display:block}.oc:hover:not(:disabled){border-color:#a5b4fc;background:rgba(99,102,241,.2)}
+.oc.good{border-color:var(--ok);background:rgba(16,185,129,.28)}.oc.no{border-color:var(--bad);background:rgba(244,63,94,.25)}
+.tag{display:inline-block;margin:6px 0;border-radius:99px;padding:5px 14px;font-weight:900;background:rgba(251,191,36,.2);border:2px solid #fbbf24}
+.qh{font-weight:900;font-size:18px;text-align:center;margin:8px 0}
+.conf{position:absolute;top:-20px;font-size:26px;animation:cf 2.6s linear forwards}
+@keyframes cf{to{transform:translateY(460px) rotate(360deg);opacity:.9}}
+.hide{display:none!important}
+.idle{animation:bobi 1.6s ease-in-out infinite}@keyframes bobi{50%{transform:translateY(-3px)}}
+</style>
+<style>
+.hud{display:flex;gap:10px;justify-content:space-between;align-items:center;flex-wrap:wrap;font-weight:900;margin-bottom:8px}
+.hud span{background:rgba(0,0,0,.3);border:2px solid var(--line);border-radius:99px;padding:4px 14px}
+.report{display:flex;gap:10px;align-items:center;background:#fff;color:#0f172a;border-radius:6px 18px 18px 18px;padding:10px 14px;font-weight:800;line-height:1.4;margin:6px 0}
+.report i{font-style:normal;font-size:26px;animation:sirf .5s steps(2) infinite}
+@keyframes sirf{50%{filter:hue-rotate(200deg)}}
+.clues{display:grid;gap:6px;margin:8px 0}
+.clue{border:2px dashed var(--line);border-radius:12px;padding:8px 12px;font-weight:700;color:var(--mut);min-height:42px;display:flex;align-items:center;gap:8px}
+.clue.on{border-style:solid;border-color:#34d399;background:rgba(16,185,129,.18);color:#fff;animation:pop .35s}
+@keyframes pop{from{transform:scale(.92);opacity:.3}to{transform:none;opacity:1}}
+.verd{display:grid;grid-template-columns:repeat(3,1fr);gap:10px;margin:10px 0}
+.vb{border:3px solid var(--line);border-radius:16px;padding:12px 6px;background:rgba(0,0,0,.3);font-weight:900;font-size:15px;line-height:1.25}
+.vb b{display:block;font-size:32px}.vb small{display:block;font-weight:700;color:var(--mut);font-size:11px}
+.vb:disabled{opacity:.35;cursor:not-allowed}
+.vb.a:not(:disabled):hover{border-color:#ef4444;background:rgba(239,68,68,.22)}.vb.w:not(:disabled):hover{border-color:#fbbf24;background:rgba(251,191,36,.2)}.vb.o:not(:disabled):hover{border-color:#34d399;background:rgba(16,185,129,.22)}
+.stampov{position:absolute;left:50%;top:38%;transform:translate(-50%,-50%) rotate(-8deg);font-size:22px;font-weight:900;padding:6px 14px;border:4px solid;border-radius:14px;background:rgba(2,6,23,.55);animation:stampin .45s both;white-space:nowrap;z-index:3}
+.stampov.good{color:#4ade80;border-color:#4ade80}.stampov.bad{color:#fb7185;border-color:#fb7185}.stampov.mid{color:#fbbf24;border-color:#fbbf24}
+.expl{border-radius:16px;padding:12px 14px;margin:10px 0;background:rgba(255,255,255,.08);border:2px solid var(--line);line-height:1.5;font-weight:600}
+.expl h3{margin:0 0 4px;font-size:20px}.expl .lw{display:inline-block;background:rgba(99,102,241,.3);border:2px solid #818cf8;border-radius:99px;padding:2px 12px;font-weight:900;font-size:13px;margin-bottom:6px}
+.expl .fx{color:#86efac}
+.sheet{display:grid;gap:8px;margin:12px 0}.sheet div{display:flex;gap:10px;align-items:flex-start;background:rgba(0,0,0,.28);border:2px solid var(--line);border-radius:14px;padding:9px 12px;line-height:1.45;font-weight:600}.sheet b.e{font-size:26px;line-height:1}
+.rankbig{font-size:26px;font-weight:900;text-align:center;margin:6px 0}
+/* svg animation */
+.lg{transform-box:fill-box;transform-origin:50% 0}
+.walk .l1{animation:sw .38s ease-in-out infinite alternate}.walk .l2{animation:sw .38s ease-in-out infinite alternate-reverse}
+@keyframes sw{from{transform:rotate(-24deg)}to{transform:rotate(24deg)}}
+.walk{animation:wb .38s ease-in-out infinite alternate}@keyframes wb{to{transform:translateY(-2px)}}
+.wave{transform-box:fill-box;transform-origin:50% 0;animation:wv .5s ease-in-out infinite alternate}@keyframes wv{from{transform:rotate(-155deg)}to{transform:rotate(-115deg)}}
+.type{transform-box:fill-box;transform-origin:50% 0;animation:ty .25s ease-in-out infinite alternate}@keyframes ty{from{transform:rotate(-62deg)}to{transform:rotate(-80deg)}}
+.moveW{transition:transform 1.4s ease-out,opacity .8s}.moveF{transition:transform .8s ease-in-out,opacity .6s}.runA{transition:transform .9s ease-in}
+.hs{opacity:0;pointer-events:none;cursor:pointer;transition:opacity .5s}
+.ready .hs{opacity:1;pointer-events:auto}.hs.found{opacity:0;transition:opacity .9s .5s}
+.hring{transform-box:fill-box;transform-origin:center;animation:pr 1.2s ease-out infinite}
+@keyframes pr{from{transform:scale(.6);opacity:.95}to{transform:scale(1.7);opacity:0}}
+.hs.found .hring{animation:none;opacity:0}
+.blink{animation:bl .8s steps(2) infinite}@keyframes bl{50%{opacity:.15}}
+.prog{transform-box:fill-box;transform-origin:0 50%;animation:pg 3s linear infinite}@keyframes pg{from{transform:scaleX(.04)}to{transform:scaleX(1)}}
+.bobb{animation:bobi 1.3s ease-in-out infinite}.bobb2{animation:bobi 1.7s ease-in-out infinite reverse}
+.nudge{animation:nd .8s ease-in-out infinite alternate}@keyframes nd{to{transform:translateX(8px)}}
+.cloud{animation:cl 38s linear infinite}@keyframes cl{from{transform:translateX(-80px)}to{transform:translateX(560px)}}
+.lane{animation:ln 1.6s linear infinite}@keyframes ln{to{transform:translateX(-60px)}}
+.sir{animation:sirc .5s steps(2) infinite}@keyframes sirc{0%{fill:#ef4444}100%{fill:#3b82f6}}
+.flashbox{animation:fb .5s steps(2) infinite}@keyframes fb{0%{box-shadow:0 0 0 4px #ef4444 inset}100%{box-shadow:0 0 0 4px #3b82f6 inset}}
+.popin{transform-box:fill-box;transform-origin:center;animation:pi .45s cubic-bezier(.3,1.6,.5,1) both}@keyframes pi{from{transform:scale(0)}to{transform:scale(1)}}
+.floatup{animation:fu 1.4s ease-out both}@keyframes fu{from{transform:translateY(8px);opacity:0}30%{opacity:1}to{transform:translateY(-18px);opacity:1}}
+.sheetfly{animation:sf 1.1s ease-in-out both}@keyframes sf{from{transform:translateX(0)}to{transform:translateX(var(--dx,150px))}}
+@media(max-width:560px){.vb{font-size:12.5px}.vb b{font-size:26px}.stampov{font-size:18px}}
+</style>
+</head>
+<body>
+<div class="wrap">
+  <h1>🚓 Copyright Police</h1>
+  <p class="sub">Book E · Ch.3 Intellectual Property · 3.2–3.6 copyright, fair dealing and licences</p>
+  <div class="panel" id="stage"></div>
+</div>
+
+<script>
+(function () {
+  'use strict';
+  var $ = function (s, r) { return (r || document).querySelector(s); };
+  var st = $('#stage'), timers = [];
+  function lt(fn, ms) { var t = setTimeout(fn, ms); timers.push(t); return t; }
+  function clearAll() { timers.forEach(clearTimeout); timers = []; }
+  function esc(s) { return String(s).replace(/[&<>"]/g, function (c) { return { '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;' }[c]; }); }
+  function shuffle(a) { a = a.slice(); for (var i = a.length - 1; i > 0; i--) { var j = Math.floor(Math.random() * (i + 1)), t = a[i]; a[i] = a[j]; a[j] = t; } return a; }
+  function T(x, y, s, sz, fill, anc, w, ex) { return '<text x="' + x + '" y="' + y + '" font-size="' + sz + '" fill="' + (fill || '#0f172a') + '" text-anchor="' + (anc || 'middle') + '" font-weight="' + (w || 800) + '" ' + (ex || '') + '>' + s + '</text>'; }
+  function R(x, y, w, h, fill, rx, ex) { return '<rect x="' + x + '" y="' + y + '" width="' + w + '" height="' + h + '" rx="' + (rx || 0) + '" fill="' + fill + '" ' + (ex || '') + '/>'; }
+  function star(x, y, r, fill) { var p = []; for (var i = 0; i < 10; i++) { var a = -Math.PI / 2 + i * Math.PI / 5, rr = i % 2 ? r * .45 : r; p.push((x + Math.cos(a) * rr).toFixed(1) + ',' + (y + Math.sin(a) * rr).toFixed(1)); } return '<polygon points="' + p.join(' ') + '" fill="' + fill + '"/>'; }
+  function conf(box, n) { var h = ''; for (var i = 0; i < (n || 24); i++) h += '<span class="conf" style="left:' + (Math.random() * 94 + 3) + '%;animation-delay:' + (Math.random() * 1.2).toFixed(2) + 's">' + ['🎉', '✨', '🌟', '©️'][i % 4] + '</span>'; box.insertAdjacentHTML('beforeend', h); }
+
+  /* ---------- characters (local coords, feet at 0,0, facing right) ---------- */
+  function fig(o) {
+    var s = o.s || 1, fl = o.flip ? -1 : 1, sk = o.skin || '#f2c9a0', hr = o.hair || '#2a1a12', sh = o.shirt || '#60a5fa', pn = o.pants || '#334155', m = o.mouth || 'smile', arm = o.arm || 'down', g = '';
+    g += '<g transform="translate(' + o.x + ',' + o.y + ') scale(' + (s * fl) + ',' + s + ')"><g class="' + (o.walk ? 'walk' : '') + '">';
+    g += '<g class="lg l1">' + R(-11, -32, 9, 32, pn, 4) + '<ellipse cx="-6" cy="0" rx="8" ry="3.4" fill="#0f172a"/></g><g class="lg l2">' + R(2, -32, 9, 32, pn, 4) + '<ellipse cx="7" cy="0" rx="8" ry="3.4" fill="#0f172a"/></g>';
+    g += R(-16, -74, 32, 46, sh, 11);
+    if (o.cop) g += R(-16, -37, 32, 5, '#111827') + R(-3, -38, 6, 7, '#fbbf24', 1) + '<path d="M-7 -74 L0 -64 L7 -74Z" fill="#fff"/><path d="M-2 -66 L0 -64 L2 -66 L3 -50 L0 -47 L-3 -50Z" fill="#0f172a"/>' + star(-8, -58, 6, '#fbbf24');
+    /* arms */
+    var la = { down: 0, up: 160, hold: 40 }[arm] || 0, ra = { down: 0, point: -88, up: -165, hold: -45, salute: -150, type: -70 }[arm];
+    if (ra == null) ra = 0;
+    g += '<g transform="rotate(' + la + ' -16 -68)">' + R(-25, -68, 9, 30, sh, 4.5) + '<circle cx="-20.5" cy="-37" r="5" fill="' + sk + '"/></g>';
+    g += '<g class="' + (arm === 'wave' ? 'wave' : arm === 'type' ? 'type' : '') + '" transform="' + (arm === 'wave' || arm === 'type' ? '' : 'rotate(' + ra + ' 16 -68)') + '">' + R(16, -68, 9, 30, sh, 4.5) + '<circle cx="20.5" cy="-37" r="5" fill="' + sk + '"/></g>';
+    /* head */
+    g += '<circle cx="0" cy="-92" r="18" fill="' + sk + '"/>';
+    var hs = o.hs || 'short';
+    if (hs === 'curly') g += '<ellipse cx="0" cy="-100" rx="18" ry="11" fill="' + hr + '"/>' + [[-16, -98, 7], [-12, -107, 8], [-4, -112, 8], [5, -112, 8], [13, -107, 8], [18, -97, 7], [-19, -89, 5], [19, -89, 5], [-8, -101, 6], [2, -104, 6], [10, -101, 5.5]].map(function (c) { return '<circle cx="' + c[0] + '" cy="' + c[1] + '" r="' + c[2] + '" fill="' + hr + '"/>'; }).join('');
+    else if (hs === 'short') g += '<path d="M-18 -92 A18 18 0 0 1 18 -92 Q10 -103 0 -102 Q-10 -103 -18 -92Z" fill="' + hr + '"/>';
+    else if (hs === 'bun') g += '<path d="M-18 -92 A18 18 0 0 1 18 -92 Q10 -103 0 -102 Q-10 -103 -18 -92Z" fill="' + hr + '"/><circle cx="0" cy="-114" r="8" fill="' + hr + '"/>';
+    else if (hs === 'long') g += R(-20, -108, 40, 46, hr, 14) + '<circle cx="0" cy="-92" r="17" fill="' + sk + '"/><path d="M-18 -94 A18 18 0 0 1 18 -94 Q8 -106 0 -104 Q-8 -106 -18 -94Z" fill="' + hr + '"/>';
+    else if (hs === 'spike') g += '<path d="M-18 -92 A18 18 0 0 1 18 -92 L14 -112 L8 -102 L2 -116 L-4 -102 L-10 -113 L-14 -100Z" fill="' + hr + '"/>';
+    else if (hs === 'grey') g += '<path d="M-18 -92 A18 18 0 0 1 18 -92 Q10 -101 0 -100 Q-10 -101 -18 -92Z" fill="#d1d5db"/>';
+    if (o.cop) g += R(-20, -107, 40, 5, '#0f172a') + '<path d="M-19 -105 Q-18 -128 0 -128 Q18 -128 19 -105Z" fill="#1e3a8a"/>' + R(-20, -107, 40, 5, '#0f172a') + '<path d="M-2 -103 H24 q4 0 4 3 H-2z" fill="#0f172a"/>' + '<circle cx="3" cy="-116" r="4.6" fill="#fbbf24"/>' + star(3, -116, 3.4, '#f59e0b');
+    if (o.hat === 'cap') g += '<path d="M-18 -97 A18 18 0 0 1 18 -97Z" fill="' + (o.hatc || '#dc2626') + '"/>' + R(-20, -99, 40, 4, o.hatc || '#dc2626', 2);
+    if (o.phones) g += '<path d="M-19 -92 A19 19 0 0 1 19 -92" stroke="#0f172a" stroke-width="4" fill="none"/><circle cx="-19" cy="-90" r="5" fill="#0f172a"/><circle cx="19" cy="-90" r="5" fill="#0f172a"/>';
+    /* face */
+    var gl = o.gl, ey = -92;
+    if (gl) g += '<circle cx="-7" cy="' + ey + '" r="6.3" fill="rgba(255,255,255,.18)" stroke="#1f2937" stroke-width="1.5"/><circle cx="7" cy="' + ey + '" r="6.3" fill="rgba(255,255,255,.18)" stroke="#1f2937" stroke-width="1.5"/><path d="M-0.8 ' + ey + ' H0.8" stroke="#1f2937" stroke-width="1.5"/>';
+    if (m === 'big' || o.happyEyes) g += '<path d="M-10 -91 Q-7 -96 -4 -91" stroke="#1f2937" stroke-width="1.8" fill="none" stroke-linecap="round"/><path d="M4 -91 Q7 -96 10 -91" stroke="#1f2937" stroke-width="1.8" fill="none" stroke-linecap="round"/>';
+    else g += '<circle cx="-7" cy="' + ey + '" r="1.9" fill="#0f172a"/><circle cx="7" cy="' + ey + '" r="1.9" fill="#0f172a"/>';
+    if (m === 'big') g += '<path d="M-10 -83 Q0 -68 10 -83Z" fill="#7f1d1d"/><path d="M-9 -83 Q0 -75 9 -83Z" fill="#fff"/>';
+    else if (m === 'smile') g += '<path d="M-6 -81 Q0 -75 6 -81" stroke="#7f1d1d" stroke-width="2" fill="none" stroke-linecap="round"/>';
+    else if (m === 'smirk') g += '<path d="M-6 -80 Q2 -77 7 -83" stroke="#7f1d1d" stroke-width="2" fill="none" stroke-linecap="round"/>';
+    else if (m === 'o') g += '<ellipse cx="0" cy="-79" rx="3.6" ry="4.6" fill="#7f1d1d"/>';
+    else if (m === 'sad') g += '<path d="M-6 -77 Q0 -83 6 -77" stroke="#7f1d1d" stroke-width="2" fill="none" stroke-linecap="round"/>';
+    else if (m === 'flat') g += '<path d="M-5 -79 H5" stroke="#7f1d1d" stroke-width="2" stroke-linecap="round"/>';
+    if (o.blush) g += '<circle cx="-12" cy="-84" r="3.2" fill="#fb7185" opacity=".5"/><circle cx="12" cy="-84" r="3.2" fill="#fb7185" opacity=".5"/>';
+    if (o.sweat) g += '<path d="M17 -104 q4 6 0 9 q-4 -3 0 -9z" fill="#60a5fa"/>';
+    if (o.tear) g += '<ellipse cx="11" cy="-84" rx="2" ry="4" fill="#60a5fa"/><ellipse cx="-11" cy="-84" rx="2" ry="4" fill="#60a5fa"/>';
+    if (o.ex) g += o.ex;
+    return g + '</g></g>';
+  }
+  var LAM = { skin: '#f2c9a0', hair: '#2a1a12', hs: 'curly', gl: true, cop: true, shirt: '#1e40af', pants: '#0f172a', mouth: 'big' };
+  function lam(x, y, extra) { var o = {}; for (var k in LAM) o[k] = LAM[k]; o.x = x; o.y = y; for (k in (extra || {})) o[k] = extra[k]; return fig(o); }
+
+  /* ---------- backgrounds and props ---------- */
+  function bgStreet() {
+    var s = '<rect width="480" height="270" fill="#7dd3fc"/><rect y="120" width="480" height="108" fill="#bae6fd"/><circle cx="420" cy="48" r="22" fill="#fde047"/>';
+    s += '<g class="cloud"><ellipse cx="60" cy="40" rx="30" ry="11" fill="#fff" opacity=".9"/><ellipse cx="82" cy="34" rx="20" ry="10" fill="#fff" opacity=".9"/></g>';
+    [[0, 96, 50, 132], [52, 70, 44, 158], [98, 104, 52, 124], [152, 82, 40, 146], [194, 110, 48, 118]].forEach(function (b) { s += R(b[0], b[1], b[2], b[3], '#64748b') + [0, 1, 2, 3].map(function (r) { return [0, 1].map(function (c) { return R(b[0] + 8 + c * 20, b[1] + 10 + r * 24, 10, 12, '#fde68a', 1); }).join(''); }).join(''); });
+    s += R(0, 228, 480, 42, '#475569') + R(0, 226, 480, 6, '#94a3b8') + '<g class="lane">' + [0, 1, 2, 3, 4, 5, 6, 7, 8, 9].map(function (i) { return R(i * 60 + 10, 252, 30, 4, '#fde047'); }).join('') + '</g>';
+    return s;
+  }
+  function bgRoom(wall, floor) { return R(0, 0, 480, 270, wall) + R(0, 222, 480, 48, floor) + R(0, 218, 480, 6, 'rgba(255,255,255,.18)') + R(0, 0, 480, 6, 'rgba(0,0,0,.25)'); }
+  function disc(x, y, r) { return '<circle cx="' + x + '" cy="' + y + '" r="' + r + '" fill="#e2e8f0" stroke="#94a3b8"/><circle cx="' + x + '" cy="' + y + '" r="' + (r * .26) + '" fill="#0f172a"/><path d="M' + (x - r * .7) + ' ' + y + ' A' + (r * .7) + ' ' + (r * .7) + ' 0 0 1 ' + x + ' ' + (y - r * .7) + '" stroke="#60a5fa" stroke-width="2" fill="none"/>'; }
+  function desk(x, w) { return R(x, 176, w, 10, '#a16207', 3) + R(x + 6, 186, 8, 40, '#854d0e') + R(x + w - 14, 186, 8, 40, '#854d0e'); }
+  function lines(x, y, w, n, gap, fill, ex) { var s = ''; for (var i = 0; i < n; i++) s += R(x, y + i * gap, w - (i % 3 === 2 ? w * .3 : 0), 4, fill || '#cbd5e1', 2, ex || ''); return s; }
+  function kids(cols) { var s = ''; cols.forEach(function (c, i) { var x = 240 + i * 52; s += R(x - 16, 252, 32, 24, '#475569', 9) + '<circle cx="' + x + '" cy="244" r="11" fill="#f2c9a0"/><path d="M' + (x - 11) + ' 244 A11 11 0 0 1 ' + (x + 11) + ' 244Z" fill="' + c + '"/>'; }); return s; }
+
+  /* ---------- the ten cases ---------- */
+  var CASES = [
+    { // 1 pirate DVD stall
+      rep: 'A stall on the street is selling brand-new movie DVDs for $10!', bg: bgStreet(), sx: 340,
+      sus: { skin: '#e0a46b', hair: '#111827', hs: 'short', shirt: '#f97316', pants: '#334155', mouth: 'smirk', arm: 'wave' },
+      back: R(262, 128, 6, 100, '#78716c') + R(412, 128, 6, 100, '#78716c') + R(270, 70, 140, 24, '#7f1d1d', 6) + T(340, 87, 'NEW MOVIES — $10!', 13, '#fde047') +
+        [0, 1, 2, 3, 4, 5].map(function (i) { var t0 = 250 + i * 30, b0 = 240 + i * 33.3; return '<path d="M' + t0 + ' 98 H' + (t0 + 30) + ' L' + (b0 + 33.3) + ' 130 H' + b0 + 'Z" fill="' + (i % 2 ? '#fff' : '#ef4444') + '"/>'; }).join(''),
+      front: R(252, 176, 176, 10, '#a16207', 3) + R(256, 186, 168, 34, '#b45309') + T(340, 208, '© ? ? ?', 10, '#fde68a') + disc(285, 168, 12) + disc(312, 170, 12) + disc(299, 160, 12) +
+        R(366, 148, 40, 28, '#64748b', 4) + R(372, 160, 22, 4, '#0f172a') + '<circle cx="399" cy="154" r="3" fill="#22c55e" class="blink"/>' + R(414, 146, 30, 22, '#fff', 3, 'stroke="#94a3b8"') + T(429, 162, '$10', 13, '#dc2626'),
+      hot: [[299, 150], [429, 138], [340, 114]],
+      clues: ['📀 New films burned onto discs at home', '💰 Sold for $10 each: selling for profit', '🧾 He cannot show any permission from the film company'],
+      ans: 'arrest', law: '3.3 Copyright infringement · piracy',
+      why: 'Copying films and selling the discs without permission is piracy. Selling infringing copies is a crime: up to $50,000 per copy and 4 years in prison.', fix: 'Get permission from the owner (and pay royalties), or sell legal discs.',
+      cry: 'Not me!', ok: 'Hehe… caught!' },
+    { // 2 P2P uploader
+      rep: 'Someone is sharing the newest film online so everybody can download it free!', bg: bgRoom('#1e3a5f', '#0f172a'), sx: 215,
+      sus: { skin: '#fcd9b6', hair: '#111827', hs: 'short', shirt: '#6d28d9', pants: '#1f2937', mouth: 'smirk', arm: 'type', phones: true },
+      back: R(410, 56, 62, 88, '#7f1d1d', 6) + T(441, 74, 'NOW SHOWING', 8, '#fde047') + T(441, 108, '🎬', 28) + T(441, 128, 'in cinemas', 8, '#fff') +
+        R(268, 50, 134, 92, '#0b1226', 6, 'stroke="#94a3b8" stroke-width="3"') + T(335, 70, 'BLOCKBUSTER.mkv', 11, '#7dd3fc') + T(335, 83, '(new film, not his)', 8.5, '#fca5a5', 'middle', 700) +
+        R(284, 96, 102, 10, '#334155', 5) + R(284, 96, 102, 10, '#22c55e', 5, 'class="prog"') + T(335, 124, '⬆ UPLOADING · 1,024 peers', 9, '#86efac') + R(327, 142, 16, 18, '#64748b') + R(310, 158, 50, 6, '#64748b', 3),
+      front: desk(160, 270), hot: [[335, 70], [335, 124], [441, 100]],
+      clues: ['🎬 He is uploading a new film he does not own', '👥 1,024 strangers are downloading it for free', '🎟️ The film company loses cinema and DVD sales'],
+      ans: 'arrest', law: '3.3 Internet piracy',
+      why: 'Sharing a film through P2P file sharing is Internet piracy. Even when it is free, distributing in a way that harms the owner is a crime, and the owner can sue for compensation.', fix: 'Watch legal copies. Only share your own work, or work that comes with a licence.',
+      cry: 'It was free!', ok: 'Oops…' },
+    { // 3 cracked software
+      rep: 'A student downloaded “free” design software from a strange website!', bg: bgRoom('#312e81', '#1e1b4b'), sx: 215,
+      sus: { skin: '#e0a46b', hair: '#3b2a1a', hs: 'bun', shirt: '#16a34a', pants: '#1f2937', mouth: 'big', arm: 'type' },
+      back: R(268, 50, 134, 92, '#0b1226', 6, 'stroke="#94a3b8" stroke-width="3"') + R(282, 62, 106, 70, '#e2e8f0', 4) + R(282, 62, 106, 14, '#475569', 4) + T(335, 73, 'KEYGEN.exe', 9, '#fff') + R(300, 96, 70, 20, '#ef4444', 6) + T(335, 110, 'Generate key', 10, '#fff') + T(335, 90, 'Pro Design 2026', 8, '#0f172a') +
+        '<g class="bobb">' + R(406, 62, 66, 38, '#fff', 4, 'stroke="#ef4444" stroke-width="2"') + T(439, 78, '🦠', 16) + T(439, 94, 'VIRUS!', 9, '#dc2626') + '</g>' +
+        '<g class="bobb2">' + R(226, 28, 56, 30, '#fef08a', 4, 'stroke="#ca8a04" stroke-width="2"') + T(254, 42, '⚠️ 1 file', 9, '#92400e') + T(254, 53, 'infected', 8, '#92400e') + '</g>' +
+        R(394, 128, 40, 26, '#fde047', 2, 'transform="rotate(-6 414 141)"') + T(414, 139, 'Support:', 7.5, '#78350f', 'middle', 800, 'transform="rotate(-6 414 141)"') + T(414, 149, 'none ✗', 8, '#dc2626', 'middle', 800, 'transform="rotate(-6 414 141)"') + R(327, 142, 16, 18, '#64748b') + R(310, 158, 50, 6, '#64748b', 3),
+      front: desk(160, 270), hot: [[335, 100], [439, 80], [416, 142]],
+      clues: ['🔓 A crack/keygen to skip paying for the licence key', '🦠 Pirated software often carries malware', '🛠️ No updates and no technical support'],
+      ans: 'arrest', law: '3.3 + 3.6 Pirated software',
+      why: 'A crack gets around the licence key, so the software is pirated. It may bring malware, and there is no technical support.', fix: 'Buy a licence, or use freeware or open-source software.',
+      cry: 'It was free!', ok: 'It said free…' },
+    { // 4 plagiarism
+      rep: 'A teacher says this homework looks copied from the Internet!', bg: bgRoom('#334155', '#1f2937'), sx: 235,
+      sus: { skin: '#fcd9b6', hair: '#4b2e1e', hs: 'long', shirt: '#38bdf8', pants: '#1e3a8a', mouth: 'smile', arm: 'down', blush: true },
+      back: R(282, 46, 82, 86, '#fff', 4, 'stroke="#94a3b8" stroke-width="2"') + R(282, 46, 82, 14, '#2563eb', 4) + T(323, 56, 'The History of Robots', 7, '#fff') + lines(290, 70, 66, 3, 10, '#fde047', 'class="blink"') + lines(290, 102, 66, 3, 9) +
+        '<g class="nudge">' + T(374, 94, '➜', 22, '#fbbf24') + '</g>' +
+        R(388, 46, 84, 86, '#fff', 4, 'stroke="#94a3b8" stroke-width="2"') + T(430, 60, 'My Homework', 8, '#0f172a') + lines(396, 70, 68, 3, 10, '#fde047', 'class="blink"') + lines(396, 102, 68, 3, 9) +
+        R(388, 140, 84, 26, '#fff', 4, 'stroke="#f87171" stroke-width="2" stroke-dasharray="4 3"') + T(430, 156, 'References: (empty)', 7.5, '#dc2626'),
+      front: '', hot: [[430, 80], [430, 112], [430, 154]],
+      clues: ['✂️ The same sentences as the website, word for word', '🔖 No in-text citation like (Lee, 2020)', '📚 The reference list is empty'],
+      ans: 'warn', law: '3.5 Plagiarism',
+      why: 'Using someone’s work without acknowledging them is plagiarism: unethical, but not always the same as breaking copyright law. A warning and a lesson fit best here.', fix: 'Put the source in the text, e.g. (Lee, 2020), and add a reference list.',
+      cry: 'I was only copying!', ok: 'Sorry! I will cite!' },
+    { // 5 CC BY blogger
+      rep: 'A blogger posted somebody else’s photo on a website!', bg: bgRoom('#44403c', '#292524'), sx: 215,
+      sus: { skin: '#e0a46b', hair: '#3b1f0e', hs: 'long', shirt: '#ec4899', pants: '#4c1d95', mouth: 'big', arm: 'down', blush: true },
+      back: '<defs><linearGradient id="sunset" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#fb923c"/><stop offset=".6" stop-color="#f472b6"/><stop offset="1" stop-color="#6d28d9"/></linearGradient></defs>' +
+        R(252, 34, 212, 138, '#fff', 8, 'stroke="#94a3b8" stroke-width="3"') + R(252, 34, 212, 18, '#2563eb', 8) + T(300, 47, 'My Travel Blog', 9, '#fff') +
+        R(262, 58, 100, 70, 'url(#sunset)', 4) + '<circle cx="312" cy="98" r="14" fill="#fde047"/><path d="M262 128 L292 100 L320 122 L340 108 L362 128Z" fill="#1e1b4b"/>' +
+        R(262, 134, 200, 28, '#f1f5f9', 4) + T(362, 147, 'Photo: “Sunset” by Amy Chan', 9, '#0f172a') + T(362, 158, 'Licence: CC BY 4.0', 9, '#166534') +
+        lines(374, 100, 80, 4, 8) + '<circle cx="426" cy="72" r="15" fill="#16a34a" stroke="#fff" stroke-width="2"/>' + T(426, 71, 'cc', 11, '#fff') + T(426, 82, 'BY', 7.5, '#fff'),
+      front: '', hot: [[312, 92], [362, 150], [426, 72]],
+      clues: ['📸 It is somebody else’s photo', '✍️ Credit is given: title, creator and licence', '🅭 The photographer allows reuse with credit (CC BY)'],
+      ans: 'ok', law: '3.2 Creative Commons',
+      why: 'A CC BY licence lets anyone reuse the photo if they give credit: the title, the creator and the licence. The blogger did all three, so it is legal.', fix: 'Always read the licence: BY = credit, SA = share alike, NC = no commercial use, ND = no changes.',
+      cry: 'Hmm?', ok: 'Thank you!' },
+    { // 6 quote with citation
+      rep: 'A student used words from a book in a school project!', bg: bgRoom('#365314', '#1a2e05'), sx: 215,
+      sus: { skin: '#fcd9b6', hair: '#111827', hs: 'short', shirt: '#38bdf8', pants: '#1e3a8a', mouth: 'big', arm: 'hold', ex: '<text x="26" y="-30" font-size="18">📖</text>' },
+      back: R(252, 30, 214, 146, '#fef9c3', 6, 'stroke="#a16207" stroke-width="4"') + T(359, 48, 'ROBOTS PROJECT', 12, '#7c2d12') +
+        R(262, 58, 194, 40, '#fff', 4) + R(262, 58, 5, 40, '#2563eb') + T(362, 76, '“Robots will change many jobs.”', 9.5, '#0f172a', 'middle', 700) + T(424, 90, '(Lee, 2020, p. 12)', 8.5, '#2563eb') +
+        lines(262, 106, 194, 3, 9) + R(262, 140, 194, 28, '#fff', 4) + T(290, 151, 'References', 8, '#0f172a', 'middle') + T(362, 162, 'Lee, K. (2020). Robots and Us. Hong Kong: Books.', 7.5, '#475569', 'middle', 600),
+      front: '', hot: [[286, 78], [440, 88], [360, 156]],
+      clues: ['✂️ Only one short sentence is quoted', '🔖 The source is credited in the text', '📚 A full reference list is at the end'],
+      ans: 'ok', law: '3.4 Fair dealing',
+      why: 'Using a small part for study, research, criticism or review is allowed without permission (fair dealing), especially when the source is acknowledged.', fix: 'Keep it small, not for profit, and always cite the source.',
+      cry: 'Huh?', ok: 'Phew, thank you!' },
+    { // 7 teacher shows clip
+      rep: 'A teacher is playing a film in class! Is that allowed?', bg: bgRoom('#4c1d95', '#2e1065'), sx: 190,
+      sus: { skin: '#e0a46b', hair: '#6b7280', hs: 'grey', shirt: '#a78bfa', pants: '#312e81', mouth: 'big', arm: 'point', gl: true },
+      back: R(232, 30, 232, 130, '#0b1226', 8, 'stroke="#94a3b8" stroke-width="4"') + R(240, 38, 216, 90, '#0e7490', 4) + '<path d="M240 100 Q270 88 300 100 T360 100 T420 100 T456 100 V128 H240Z" fill="#0891b2"/>' + T(348, 70, '🌊 DOCUMENTARY: Oceans', 13, '#fff') + T(348, 88, 'short clip for today’s lesson', 8.5, '#cffafe', 'middle', 600) +
+        T(436, 54, '🔒', 12) + R(244, 138, 208, 8, '#334155', 4) + R(244, 138, 7, 8, '#22d3ee', 4) + T(348, 156, '3:00 played of 90:00', 9, '#7dd3fc'),
+      front: kids(['#111827', '#92400e', '#1f2937', '#78350f', '#0f172a']), hot: [[348, 70], [348, 130], [436, 56]],
+      clues: ['🏫 It is used to teach the class (instruction)', '⏱️ Only a 3-minute clip of a 90-minute film', '🔒 Shown in class only: not uploaded or sold'],
+      ans: 'ok', law: '3.4 Copyright in education',
+      why: 'Showing a few minutes of a documentary to teach is fair dealing for instruction: a small portion, used in class only.', fix: 'Not allowed: copying the whole film or sharing it online.',
+      cry: 'Huh?', ok: 'Thank you, officer!' },
+    { // 8 whole e-textbook
+      rep: 'A teacher sent a whole e-textbook to hundreds of people!', bg: bgRoom('#134e4a', '#042f2e'), sx: 215,
+      sus: { skin: '#fcd9b6', hair: '#6b7280', hs: 'grey', shirt: '#0ea5e9', pants: '#1f2937', mouth: 'smirk', arm: 'type', gl: true },
+      back: R(262, 44, 148, 104, '#0b1226', 6, 'stroke="#94a3b8" stroke-width="3"') + R(274, 54, 46, 80, '#fff', 3) + R(274, 54, 46, 20, '#dc2626', 3) + T(297, 66, '© All rights', 6, '#fff') + T(297, 72, 'reserved', 6, '#fff') + T(297, 100, 'Book E', 10, '#0f172a') + T(297, 112, 'e-textbook', 7, '#475569', 'middle', 600) +
+        T(362, 70, 'Sending PDF…', 9.5, '#fff') + R(330, 78, 68, 9, '#334155', 4) + R(330, 78, 68, 9, '#22c55e', 4, 'class="prog"') + T(362, 108, '320 / 320 pages', 10, '#fde047') + T(362, 126, 'To: 500 people 📤', 9, '#7dd3fc') + R(327, 148, 16, 14, '#64748b'),
+      front: desk(160, 270), hot: [[362, 104], [362, 130], [297, 90]],
+      clues: ['📚 The WHOLE book: 320 of 320 pages', '📤 Sent to hundreds of people outside the class', '© “All rights reserved”: the publisher never gave permission'],
+      ans: 'arrest', law: '3.4 Not covered by fair dealing',
+      why: 'Copying a whole e-textbook and sending it to hundreds of people is not fair dealing. It is too large a portion, and it harms the publisher.', fix: 'Share only a small part for teaching, or buy a licence for the class.',
+      cry: 'It is for teaching!', ok: 'Oh no…' },
+    { // 9 single-user licence on 30 PCs
+      rep: 'A company bought ONE software licence and put it on all its computers!', bg: bgRoom('#1e293b', '#0f172a'), sx: 190,
+      sus: { skin: '#fcd9b6', hair: '#111827', hs: 'short', shirt: '#475569', pants: '#0f172a', mouth: 'smirk', arm: 'hold' },
+      back: R(250, 34, 90, 70, '#fff', 4) + T(295, 50, '📜 LICENCE', 10, '#0f172a') + T(295, 68, 'Single-user', 12, '#1d4ed8') + T(295, 84, '1 computer only', 9, '#475569', 'middle', 700) +
+        R(356, 34, 108, 70, '#0f172a', 6, 'stroke="#94a3b8" stroke-width="2"') + T(410, 54, 'Installed on', 9, '#fff') + T(410, 86, '30 PCs', 24, '#f87171') +
+        [0, 1, 2, 3].map(function (i) { var x = 258 + i * 52; return R(x, 124, 44, 34, '#0b1226', 3, 'stroke="#94a3b8" stroke-width="2"') + T(x + 22, 138, 'KEY:', 7, '#fde047') + T(x + 22, 150, 'A1B2-C3', 8, '#fde047') + R(x + 18, 158, 8, 14, '#64748b'); }).join(''),
+      front: desk(236, 232), hot: [[295, 68], [350, 142], [410, 70]],
+      clues: ['📜 The licence is single-user: 1 computer only', '🔑 The same key is typed on every PC', '💻 It is installed on 30 computers'],
+      ans: 'arrest', law: '3.6 Software licences',
+      why: 'A single-user licence covers one user or computer. Installing it on 30 PCs breaks the licence, which is copyright infringement.', fix: 'Buy a multi-user licence or a site licence.',
+      cry: 'We paid for it!', ok: 'We only paid once…' },
+    { // 10 open source
+      rep: 'A student changed a program and shared the new version online!', bg: bgRoom('#064e3b', '#022c22'), sx: 215,
+      sus: { skin: '#e0a46b', hair: '#111827', hs: 'spike', shirt: '#22c55e', pants: '#1f2937', mouth: 'big', arm: 'type', gl: true },
+      back: R(262, 44, 148, 104, '#0b1226', 6, 'stroke="#94a3b8" stroke-width="3"') + T(336, 58, 'my-game/  (open source)', 8.5, '#86efac') +
+        R(274, 66, 40, 4, '#f472b6', 2) + R(280, 76, 64, 4, '#60a5fa', 2) + R(280, 86, 48, 4, '#fbbf24', 2) + R(274, 96, 56, 4, '#f472b6', 2) + R(280, 106, 30, 4, '#60a5fa', 2) +
+        R(274, 118, 124, 22, '#052e16', 4, 'stroke="#22c55e"') + T(336, 132, 'LICENCE: modify & share ✔', 8.5, '#86efac') +
+        '<g class="bobb">' + R(418, 56, 54, 40, '#fde047', 3) + T(445, 72, '🙌 Credit:', 8, '#78350f') + T(445, 86, 'original devs', 8, '#78350f') + '</g>' + R(327, 148, 16, 14, '#64748b'),
+      front: desk(160, 270), hot: [[300, 82], [336, 130], [445, 62]],
+      clues: ['📂 The source code is public: anyone can read it', '📜 The licence allows modifying and sharing', '🙌 He credits the original developers'],
+      ans: 'ok', law: '3.6 Open-source software',
+      why: 'Open-source software can be read, modified and redistributed as long as the licence is followed. He did, so it is legal.', fix: 'Check the licence: some require changes to be shared under the same licence.',
+      cry: 'Huh?', ok: 'Thank you!' }
+  ];
+  var HOTR = 13;
+
+  /* ---------- game state ---------- */
+  var order = [], idx = 0, good = 0, bad = 0, found = 0, locked = false;
+
+  function intro() {
+    clearAll();
+    var s = '<svg viewBox="0 0 480 270" role="img" aria-label="Officer Lam, the copyright police">' + bgStreet() +
+      R(130, 18, 220, 34, '#1e3a8a', 10, 'stroke="#fbbf24" stroke-width="3"') + T(240, 41, 'COPYRIGHT POLICE', 20, '#fde047') +
+      '<circle cx="104" cy="36" r="12" class="sir"/><circle cx="376" cy="36" r="12" class="sir" style="animation-delay:.25s"/>' +
+      lam(240, 262, { s: 1.65, arm: 'salute' }) + star(60, 150, 18, '#fbbf24') + star(420, 150, 18, '#fbbf24') +
+      '<text x="108" y="210" font-size="34" class="bobb">©️</text><text x="352" y="210" font-size="34" class="bobb2">🚓</text></svg>';
+    st.innerHTML = '<div class="stagebox">' + s + '</div>' +
+      '<div class="report"><i>🚨</i><span>Officer Lam needs your help! 10 reports are waiting. Tap the 🔍 clues in each scene, then decide what to do.</span></div>' +
+      '<div class="verd" style="margin-top:8px"><div class="vb a" style="cursor:default"><b>🚓</b>Arrest<small>It breaks the law</small></div><div class="vb w" style="cursor:default"><b>📝</b>Warn<small>Wrong, but not a crime</small></div><div class="vb o" style="cursor:default"><b>✅</b>Let go<small>It is allowed</small></div></div>' +
+      '<div class="row" style="justify-content:center;margin-top:10px"><button class="btn" id="go">🚨 Start patrol</button></div>';
+    $('#go').onclick = function () { order = shuffle(CASES); idx = 0; good = 0; bad = 0; caseStart(); };
+  }
+
+  function sceneSVG(c) {
+    var sus = {}; for (var k in c.sus) sus[k] = c.sus[k]; sus.x = c.sx; sus.y = 228;
+    c.susO = sus;
+    var hs = c.hot.map(function (p, i) { return '<g class="hs" data-i="' + i + '" transform="translate(' + p[0] + ',' + p[1] + ')"><circle class="hring" r="' + HOTR + '" fill="none" stroke="#fbbf24" stroke-width="3"/><circle r="10" fill="#fbbf24" stroke="#fff" stroke-width="2"/><text y="5" font-size="12" text-anchor="middle">🔍</text></g>'; }).join('');
+    return '<svg id="sv" viewBox="0 0 480 270" role="img" aria-label="Crime scene">' + c.bg + c.back +
+      '<g id="susW" class="moveF">' + fig(sus) + '</g>' + c.front + '<g id="carW"></g>' +
+      '<g id="lamW" class="moveW" style="transform:translateX(-140px)">' + lam(70, 228, { walk: true }) + '</g>' +
+      '<g id="fx"></g>' + hs + '</svg>';
+  }
+  function hud() { return '<div class="hud"><span>🚨 Case <b>' + (idx + 1) + '</b> / ' + order.length + '</span><span>✅ ' + good + '</span><span>❌ ' + bad + '</span></div>'; }
+
+  function caseStart() {
+    clearAll(); var c = order[idx]; found = 0; locked = false;
+    st.innerHTML = hud() + '<div class="report"><i>📞</i><span>' + esc(c.rep) + '</span></div><div class="stagebox" id="sb" style="position:relative">' + sceneSVG(c) + '</div>' +
+      '<div class="clues" id="cl">' + c.clues.map(function () { return '<div class="clue">🔍 <span>Tap the 🔍 in the picture to find a clue</span></div>'; }).join('') + '</div>' +
+      '<div class="verd" id="vd"><button class="vb a" data-v="arrest" disabled><b>🚓</b>Arrest<small>It breaks the law</small></button><button class="vb w" data-v="warn" disabled><b>📝</b>Warn<small>Wrong, not a crime</small></button><button class="vb o" data-v="ok" disabled><b>✅</b>Let go<small>It is allowed</small></button></div><div id="exp"></div>';
+    var sv = $('#sv'), lamW = $('#lamW');
+    lt(function () { lamW.style.transform = 'translateX(0)'; }, 60);
+    lt(function () { $('#lamW').innerHTML = lam(70, 228, {}); sv.classList.add('ready'); }, 1550);
+    [].forEach.call(sv.querySelectorAll('.hs'), function (g) {
+      g.onclick = function () {
+        if (g.classList.contains('found') || locked) return; var i = +g.dataset.i; g.classList.add('found'); g.querySelector('text').textContent = '✔'; g.querySelector('circle:nth-child(2)').setAttribute('fill', '#34d399'); found++;
+        var cl = $('#cl').children[found - 1]; cl.className = 'clue on'; cl.innerHTML = '<span>' + esc(c.clues[i]) + '</span>';
+        if (found === c.hot.length) { [].forEach.call(document.querySelectorAll('.vb'), function (b) { b.disabled = false; }); $('#vd').scrollIntoView({ block: 'nearest', behavior: 'smooth' }); }
+      };
+    });
+    [].forEach.call(document.querySelectorAll('#vd .vb'), function (b) { b.onclick = function () { if (locked || b.disabled) return; verdict(b.dataset.v); }; });
+  }
+
+  function bubble(x, y, txt, ok) { return '<g class="popin"><rect x="' + (x - 60) + '" y="' + (y - 24) + '" width="120" height="26" rx="10" fill="#fff" stroke="' + (ok ? '#16a34a' : '#ef4444') + '" stroke-width="2"/><path d="M' + (x - 5) + ' ' + (y + 2) + ' l5 8 l5 -8z" fill="#fff"/>' + T(x, y - 7, esc(txt), 10.5, '#0f172a') + '</g>'; }
+  function setLam(o) { var e = {}; for (var k in o) e[k] = o[k]; $('#lamW').innerHTML = lam(70, 228, e); }
+  function setSus(o) { var c = order[idx], e = {}; for (var k in c.susO) e[k] = c.susO[k]; for (k in o) e[k] = o[k]; $('#susW').innerHTML = fig(e); }
+  function stamp(txt, cls) { $('#sb').insertAdjacentHTML('beforeend', '<div class="stampov ' + cls + '">' + txt + '</div>'); }
+
+  function verdict(v) {
+    locked = true; var c = order[idx], ok = v === c.ans, fx = $('#fx'), sx = c.sx, dist = sx - 118, lamW = $('#lamW'), susW = $('#susW');
+    [].forEach.call(document.querySelectorAll('.vb'), function (b) { b.disabled = true; if (b.dataset.v === v) b.style.borderColor = ok ? '#34d399' : '#fb7185'; });
+    lamW.style.transform = 'translateX(' + Math.max(40, dist) + 'px)'; setLam({ walk: true, arm: v === 'arrest' ? 'point' : 'down' });
+    lt(function () { setLam({ arm: v === 'arrest' ? 'point' : v === 'warn' ? 'hold' : 'salute' }); }, 1450);
+    var t = 1500;
+    if (ok && v === 'arrest') {
+      lt(function () { fx.insertAdjacentHTML('beforeend', '<text x="' + sx + '" y="170" font-size="30" text-anchor="middle" class="popin">🔗</text>'); setSus({ mouth: 'o', sweat: true, arm: 'up' }); $('#sb').classList.add('flashbox'); }, t);
+      lt(function () { $('#carW').innerHTML = '<text x="' + (sx + 70) + '" y="232" font-size="64" text-anchor="middle" class="moveF" id="car" style="transform:translateX(260px)">🚓</text>'; lt(function () { $('#car').style.transform = 'translateX(0)'; }, 50); }, t + 500);
+      lt(function () { susW.style.transform = 'translateX(70px)'; susW.style.opacity = 0; fx.innerHTML = ''; setLam({ arm: 'salute' }); }, t + 1900);
+      lt(function () { $('#car').style.transition = 'transform 1.2s ease-in'; $('#car').style.transform = 'translateX(-620px)'; stamp('CASE CLOSED ✔', 'good'); $('#sb').classList.remove('flashbox'); }, t + 2700);
+      lt(function () { done(true); }, t + 3600);
+    } else if (ok && v === 'warn') {
+      lt(function () { fx.insertAdjacentHTML('beforeend', '<text x="' + (Math.max(40, dist) + 100) + '" y="150" font-size="26" class="sheetfly" style="--dx:' + (sx - Math.max(40, dist) - 120) + 'px">📝</text>'); }, t);
+      lt(function () { setSus({ mouth: 'smile', blush: true, arm: 'down' }); fx.innerHTML = bubble(sx, 118, c.ok, true); stamp('WARNING GIVEN 📝', 'mid'); }, t + 1200);
+      lt(function () { done(true); }, t + 2400);
+    } else if (ok) {
+      lt(function () { fx.insertAdjacentHTML('beforeend', '<text x="' + (Math.max(40, dist) + 70) + '" y="96" font-size="30" class="floatup">👍</text>'); setSus({ mouth: 'big', happyEyes: true, arm: 'wave' }); fx.insertAdjacentHTML('beforeend', bubble(sx, 118, c.ok, true)); stamp('ALL CLEAR ✔', 'good'); conf($('#sb'), 14); }, t);
+      lt(function () { done(true); }, t + 1500);
+    } else if (v === 'arrest') { /* innocent or only plagiarism */
+      lt(function () { fx.insertAdjacentHTML('beforeend', '<text x="' + sx + '" y="170" font-size="30" text-anchor="middle" class="popin">🔗</text>'); setSus({ mouth: 'sad', tear: true, arm: 'up' }); fx.insertAdjacentHTML('beforeend', bubble(sx, 112, c.cry, false)); setLam({ mouth: 'o', sweat: true, arm: 'down' }); stamp('WRONG ARREST ✖', 'bad'); $('#st').classList.add('shake'); }, t);
+      lt(function () { done(false); }, t + 1600);
+    } else if (v === 'ok') { /* let a culprit go */
+      lt(function () { setLam({ mouth: 'o', sweat: true }); setSus({ mouth: 'smirk', arm: 'up' }); fx.insertAdjacentHTML('beforeend', bubble(sx, 112, c.ans === 'warn' ? 'Hehe, nobody noticed!' : 'Bye bye, officer!', false)); }, t);
+      lt(function () { susW.style.transition = 'transform .9s ease-in'; susW.style.transform = 'translateX(330px)'; fx.innerHTML = '<text x="' + (sx + 20) + '" y="214" font-size="26" class="floatup">💨</text>'; stamp(c.ans === 'warn' ? 'LET OFF ✖' : 'CULPRIT ESCAPED ✖', 'bad'); }, t + 900);
+      lt(function () { done(false); }, t + 2300);
+    } else { /* warn */
+      lt(function () { fx.insertAdjacentHTML('beforeend', '<text x="' + (Math.max(40, dist) + 100) + '" y="150" font-size="26" class="sheetfly" style="--dx:' + (sx - Math.max(40, dist) - 120) + 'px">📝</text>'); }, t);
+      lt(function () { setSus({ mouth: c.ans === 'ok' ? 'o' : 'smirk', arm: c.ans === 'ok' ? 'down' : 'up' }); fx.innerHTML = bubble(sx, 118, c.ans === 'ok' ? 'But I did nothing wrong!' : 'Hehe… just a warning?', false); setLam({ sweat: true, mouth: 'o' }); stamp(c.ans === 'ok' ? 'NOT NEEDED ✖' : 'TOO SOFT ✖', 'bad'); }, t + 1200);
+      lt(function () { done(false); }, t + 2600);
+    }
+  }
+
+  function done(ok) {
+    if (ok) good++; else bad++;
+    var c = order[idx], last = idx === order.length - 1, head = ok ? '✅ Correct!' : '❌ Not quite. ' + ({ arrest: 'This one needs an arrest.', warn: 'A warning is the best answer here.', ok: 'This one is allowed.' })[c.ans];
+    $('#exp').innerHTML = '<div class="expl" style="border-color:' + (ok ? '#34d399' : '#fb7185') + '"><h3>' + head + '</h3><span class="lw">' + esc(c.law) + '</span><div>' + esc(c.why) + '</div><div class="fx">💡 ' + esc(c.fix) + '</div></div><div class="row" style="justify-content:center"><button class="btn" id="nx">' + (last ? '🏁 Finish the shift' : 'Next case ▶') + '</button></div>';
+    var h = $('.hud'); if (h) h.outerHTML = hud().replace('Case <b>' + (idx + 1) + '</b>', 'Case <b>' + (idx + 1) + '</b>');
+    $('#nx').onclick = function () { if (last) finish(); else { idx++; caseStart(); scrollTo({ top: 0 }); } };
+    $('#nx').scrollIntoView({ block: 'nearest', behavior: 'smooth' });
+  }
+
+  function finish() {
+    clearAll(); var n = order.length, pass = good >= 7, rank = good === n ? '🏅 Chief Inspector Lam’s favourite!' : good >= 9 ? '⭐ Senior Inspector' : good >= 7 ? '🚓 Copyright Officer' : '🎓 Trainee. Let’s patrol again!';
+    var s = '<svg viewBox="0 0 480 270" role="img" aria-label="Officer Lam celebrates">' + bgStreet() + '<circle cx="104" cy="36" r="12" class="sir"/><circle cx="376" cy="36" r="12" class="sir" style="animation-delay:.25s"/>' + lam(240, 262, { s: 1.65, arm: 'wave', happyEyes: pass }) +
+      '<text x="90" y="200" font-size="40" class="bobb">' + (pass ? '🎉' : '📚') + '</text><text x="360" y="200" font-size="40" class="bobb2">' + (pass ? '🏆' : '📚') + '</text></svg>';
+    st.innerHTML = '<div class="stagebox" style="position:relative">' + s + '</div><div class="rankbig">' + good + ' / ' + n + ' correct<br>' + rank + '</div>' +
+      '<div class="msg" style="' + (pass ? 'background:rgba(16,185,129,.18);border-color:#34d399' : '') + '">' + (pass ? '🎉 Shift complete! Here is what every copyright officer must remember:' : 'You need 7 correct answers to finish the shift. Read the reminders, then patrol again!') + '</div>' +
+      '<div class="sheet"><div><b class="e">©️</b><span><b>Copyright is automatic.</b> No registration or © sign needed. In Hong Kong it lasts until 50 years after the author’s death.</span></div>' +
+      '<div><b class="e">🚓</b><span><b>Piracy is a crime.</b> Commercial distribution: up to $50,000 per copy and 4 years in prison. Owners can also sue.</span></div>' +
+      '<div><b class="e">✅</b><span><b>Fair dealing:</b> a small part for study, research, criticism, review, news or teaching. Not the whole book or film.</span></div>' +
+      '<div><b class="e">🅭</b><span><b>Creative Commons</b> (BY, SA, NC, ND) and <b>citations</b> let you reuse work legally. Always credit the creator.</span></div>' +
+      '<div><b class="e">🔑</b><span><b>Licences and protection:</b> single-user vs multi-user licence, licence keys, watermarks and digital signatures.</span></div></div>' +
+      '<div class="row" style="justify-content:center"><button class="btn" id="again">🔄 Patrol again</button></div>';
+    $('#again').onclick = function () { order = shuffle(CASES); idx = 0; good = 0; bad = 0; caseStart(); scrollTo({ top: 0 }); };
+    if (pass) { conf($('.stagebox'), 30); if (window.ICTGameDone) window.ICTGameDone(); }
+  }
+
+  intro();
+})();
+</script>
+<script src="../../nav.js"></script>
+</body>
+</html>
