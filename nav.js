@@ -27,7 +27,8 @@
     'booke/ch1/trainmodel.html': 'Training Your Own AI Model',
     'booke/ch2/tenyears.html': 'Health Issue',
     'booke/ch2/digitaldivide.html': 'Digital Divide',
-    'booke/ch3/copyrightpolice.html': 'Copyright Police'
+    'booke/ch3/copyrightpolice.html': 'Copyright Police',
+    'booke/ch3/softwarelicence.html': 'Software Licences'
   };
 
   var SITE = [ /* id, title, parent id, url (relative to site root), group */

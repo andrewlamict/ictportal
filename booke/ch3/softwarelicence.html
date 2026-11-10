@@ -1,0 +1,537 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Software Licences</title>
+<style>
+:root{color-scheme:dark;--bg:#0b1226;--panel:#162044;--line:rgba(255,255,255,.18);--txt:#f8fafc;--mut:#cbd5e1;--vol:#60a5fa;--vor:#34d399;--vel:#fbbf24;--ver:#c084fc;--bad:#fb7185;--ok:#34d399}
+*{box-sizing:border-box}
+html{background:var(--bg)}
+body{margin:0;font-family:system-ui,-apple-system,"Segoe UI",sans-serif;color:var(--txt);background:radial-gradient(900px 500px at 12% -10%,#1e3a8a 0,transparent 60%),radial-gradient(800px 500px at 100% 0,#581c87 0,transparent 55%),var(--bg);min-height:100vh}
+.wrap{max-width:900px;margin:0 auto;padding:16px 16px 90px}
+h1{margin:6px 0 2px;font-size:28px}h2{margin:0 0 6px}
+.sub{color:var(--mut);margin:0 0 14px;line-height:1.5}
+.panel{position:relative;background:rgba(255,255,255,.07);border:1px solid var(--line);border-radius:20px;padding:20px;overflow:hidden}
+button{font:inherit;cursor:pointer;color:inherit}
+.btn{border:0;border-radius:14px;padding:12px 20px;font-weight:800;font-size:16px;color:#fff;background:linear-gradient(135deg,#6366f1,#a855f7);box-shadow:0 8px 20px rgba(99,102,241,.4)}
+.btn:hover:not(:disabled){filter:brightness(1.12)}.btn:disabled{opacity:.4;cursor:not-allowed}
+.btn.sec{background:rgba(255,255,255,.14);box-shadow:none}.btn.red{background:linear-gradient(135deg,#ef4444,#f97316)}
+.btn.sm{padding:8px 14px;font-size:14px}
+.row{display:flex;gap:10px;flex-wrap:wrap;align-items:center}
+/* Bytey */
+.say{display:flex;gap:12px;align-items:flex-start;margin-bottom:14px}
+.bot{font-size:46px;line-height:1;animation:bob 2.4s ease-in-out infinite}
+@keyframes bob{50%{transform:translateY(-5px) rotate(3deg)}}
+.bub{background:#fff;color:#0f172a;border-radius:6px 18px 18px 18px;padding:10px 14px;font-weight:700;line-height:1.45;max-width:640px}
+.bub small{display:block;color:#475569;font-weight:600;margin-top:3px}
+/* menu */
+.tiles{display:grid;grid-template-columns:repeat(auto-fit,minmax(190px,1fr));gap:12px;margin:14px 0}
+.tile{text-align:left;border-radius:18px;padding:16px;border:2px solid var(--line);background:rgba(0,0,0,.25);transition:.15s}
+.tile:hover{transform:translateY(-3px);border-color:#a5b4fc}
+.tile .e{font-size:34px}.tile b{display:block;font-size:17px;margin:4px 0 2px}.tile span{font-size:13px;color:var(--mut)}
+.tile.done{border-color:var(--ok);background:rgba(16,185,129,.12)}
+.tile .st{float:right;font-size:12px;font-weight:800;border-radius:99px;padding:2px 9px;background:rgba(255,255,255,.14)}
+.tile.done .st{background:var(--ok);color:#052e1d}
+.nb{display:grid;grid-template-columns:repeat(auto-fit,minmax(190px,1fr));gap:10px}
+.nbc{border-radius:14px;padding:10px 12px;border:2px dashed var(--line);font-size:13.5px;color:var(--mut);min-height:84px}
+.nbc.on{border-style:solid;color:var(--txt);background:rgba(0,0,0,.28)}
+.nbc b{display:block;font-size:16px}
+.c-vol{border-color:var(--vol)!important}.c-vol b{color:var(--vol)}
+.c-vor{border-color:var(--vor)!important}.c-vor b{color:var(--vor)}
+.c-vel{border-color:var(--vel)!important}.c-vel b{color:var(--vel)}
+.c-ver{border-color:var(--ver)!important}.c-ver b{color:var(--ver)}
+/* sheet */
+.sheet{width:100%;border-collapse:collapse;background:#f8fafc;color:#0f172a;font-size:13px;border-radius:10px;overflow:hidden}
+.sheet th{background:#16a34a;color:#fff;padding:6px 8px;text-align:left}.sheet td{padding:5px 8px;border-bottom:1px solid #e2e8f0}
+.sheetbar{display:flex;justify-content:space-between;background:#166534;color:#fff;padding:6px 10px;font-size:13px;font-weight:700;border-radius:10px 10px 0 0}
+.meter{height:14px;border-radius:9px;background:rgba(255,255,255,.15);overflow:hidden;margin:6px 0}.meter i{display:block;height:100%;width:0;background:linear-gradient(90deg,#34d399,#fbbf24,#ef4444);transition:width .3s}
+.stats{display:flex;gap:16px;flex-wrap:wrap;margin:10px 0;font-weight:800}.stats span{background:rgba(0,0,0,.3);border-radius:10px;padding:6px 12px}
+.crash{position:absolute;inset:0;background:rgba(15,5,20,.93);display:flex;flex-direction:column;align-items:center;justify-content:center;text-align:center;gap:10px;padding:20px;animation:glitch .5s;z-index:5}
+.crash .big{font-size:60px}
+@keyframes glitch{0%{transform:translateX(-8px)}20%{transform:translateX(8px)}40%{transform:translateX(-6px)}60%{transform:translateX(6px)}100%{transform:none}}
+.shake{animation:glitch .4s}
+/* import */
+.items{display:flex;gap:10px;flex-wrap:wrap;margin:10px 0}
+.item{border:2px solid var(--line);background:rgba(0,0,0,.3);border-radius:14px;padding:10px 14px;font-weight:700}
+.item.sel{border-color:#fbbf24;background:rgba(251,191,36,.2);transform:scale(1.05)}.item.tried{opacity:.5;text-decoration:line-through}
+.cols{display:grid;grid-template-columns:repeat(3,1fr);gap:8px}
+.col{border-radius:12px;border:2px solid #86efac;background:#f0fdf4;color:#14532d;padding:12px;font-weight:800;text-align:center}
+.col small{display:block;font-weight:600;color:#166534}
+.msg{min-height:44px;margin:10px 0;padding:10px 12px;border-radius:12px;background:rgba(251,113,133,.15);border:1px solid rgba(251,113,133,.5);font-weight:700}
+/* belt */
+.belt{position:relative;height:210px;border-radius:16px;background:repeating-linear-gradient(90deg,#1e293b 0 28px,#243049 28px 56px);border:2px solid #475569;overflow:hidden}
+.pk{position:absolute;top:80px;width:54px;height:54px;border-radius:12px;background:#fff;color:#0f172a;display:flex;align-items:center;justify-content:center;font-size:30px;border:3px solid #6366f1;box-shadow:0 6px 14px rgba(0,0,0,.5)}
+.pk:hover{border-color:#fbbf24}
+.pk.gone{opacity:0;transform:scale(1.6);transition:.3s}
+.tool{position:absolute;right:0;top:0;bottom:0;width:64px;background:rgba(239,68,68,.3);display:flex;align-items:center;justify-content:center;font-size:12px;font-weight:800;writing-mode:vertical-rl;letter-spacing:.1em}
+/* readings */
+.rd{display:grid;grid-template-columns:repeat(auto-fill,minmax(110px,1fr));gap:8px;margin:10px 0}
+.rdc{border-radius:12px;padding:10px;background:rgba(0,0,0,.3);border:2px solid var(--line);font-weight:800;text-align:center}
+.rdc.bad:hover{border-color:var(--bad)}.rdc.gone{opacity:.25;text-decoration:line-through}
+.avg{font-size:30px;font-weight:900}
+.q{margin:12px 0;display:grid;gap:8px}
+.opt{text-align:left;border:2px solid var(--line);border-radius:14px;padding:12px 14px;background:rgba(0,0,0,.28);font-weight:700;line-height:1.4}
+.opt:hover:not(:disabled){border-color:#a5b4fc;background:rgba(99,102,241,.2)}
+.opt.good{border-color:var(--ok);background:rgba(16,185,129,.25)}.opt.no{border-color:var(--bad);background:rgba(244,63,94,.25)}
+.stamp{margin:12px 0;padding:16px;border-radius:18px;border:3px solid;text-align:center;animation:stamp .5s}
+.stamp .big{font-size:40px;font-weight:900}
+@keyframes stamp{from{transform:scale(2.2) rotate(-8deg);opacity:0}to{transform:none;opacity:1}}
+textarea{width:100%;min-height:64px;margin-top:6px;padding:10px;border-radius:12px;border:2px solid var(--line);background:rgba(0,0,0,.3);color:#fff;font:inherit;font-size:14.5px}
+.cards{display:flex;flex-wrap:wrap;gap:8px;align-items:center;margin:12px 0}
+.num{min-width:54px;height:54px;border-radius:12px;border:3px solid #6366f1;background:#fff;color:#0f172a;font-weight:900;font-size:19px;padding:0 8px}
+.num.sel{border-color:#fbbf24;background:#fef3c7;transform:translateY(-6px)}.more{color:var(--mut);font-weight:700}
+.scene{background:#fff;color:#0f172a;border-radius:12px;padding:12px 14px;line-height:1.7;font-weight:600}
+.map{display:flex;justify-content:space-around;background:#d1fae5;border-radius:10px;padding:14px;margin-bottom:6px;font-weight:800}.pin{background:#fecaca;border-radius:8px;padding:2px 8px}
+.wave{font-size:26px;letter-spacing:2px;color:#6366f1}.frames{display:flex;gap:8px;margin-bottom:6px}.frames span{flex:1;background:#0f172a;color:#fff;border-radius:8px;padding:8px;text-align:center;font-size:13px}
+.board{display:flex;gap:8px;flex-wrap:wrap;min-height:40px}.pinned{background:rgba(251,191,36,.2);border:2px solid #fbbf24;border-radius:10px;padding:6px 12px;font-weight:800}
+.two{display:grid;grid-template-columns:1fr 1fr;gap:12px;margin:14px 0}.phone{border:3px solid var(--line);border-radius:18px;background:rgba(0,0,0,.28);padding:16px;text-align:center}
+.phone:hover:not(:disabled){border-color:#a5b4fc}.phone.pick{border-color:#fbbf24}.phone small{color:var(--mut)}
+.reviews{display:grid;gap:8px;margin:10px 0}.rev{text-align:left;border:2px solid var(--line);border-radius:14px;background:rgba(0,0,0,.28);padding:10px 12px;line-height:1.45}
+.rev span{margin-right:6px}.rev small{display:block;color:var(--mut);font-weight:600}.rev:hover{border-color:#a5b4fc}.rev.gone{opacity:.3;text-decoration:line-through}.rev.no{border-color:var(--bad);background:rgba(244,63,94,.2)}
+.mailroom{position:relative;height:190px;border-radius:16px;background:linear-gradient(180deg,#1e293b,#334155);border:2px solid #475569;overflow:hidden;display:flex;align-items:center;justify-content:center;margin:10px 0}
+.parcel{background:#fde68a;color:#451a03;border-radius:14px;padding:12px 22px;text-align:center;font-weight:700;line-height:1.5;box-shadow:0 8px 18px rgba(0,0,0,.5)}
+.bins3{display:grid;grid-template-columns:repeat(3,1fr);gap:10px}.dbin{border:3px solid;border-radius:14px;background:rgba(0,0,0,.3);padding:16px 6px;font-weight:900;font-size:17px}
+.dbin:hover{filter:brightness(1.3);transform:translateY(-3px)}
+.fall{position:absolute;font-size:34px;top:-50px;animation:drop 1.1s ease-in forwards}
+@keyframes drop{to{top:calc(100% - 44px);transform:rotate(18deg)}}
+.mailroom.buried .parcel{opacity:.25}
+.who{display:flex;gap:12px;align-items:center;margin:4px 0 8px}.wf{font-size:48px}.wq{background:#fff;color:#0f172a;border-radius:6px 18px 18px 18px;padding:10px 14px;font-weight:700;line-height:1.4}
+.shopx{line-height:1.5}.queue{font-size:26px;margin:6px 0}
+.phone{width:230px;max-width:100%;margin:8px auto;border:5px solid #94a3b8;border-radius:26px;background:#0f172a;padding:10px;min-height:170px}
+.scr{display:grid;grid-template-columns:repeat(3,1fr);gap:6px;text-align:center}.scr .big2{font-size:54px}
+.ico{border:0;border-radius:12px;padding:12px 2px;background:#334155;font-weight:800;font-size:12px}.ico:hover{background:#4f46e5}.ico.wrongb{background:#7f1d1d}
+.cardsx{display:flex;gap:8px;flex-wrap:wrap;margin:10px 0}
+.chp{border:2px solid var(--line);border-radius:12px;padding:10px 14px;background:rgba(0,0,0,.3);font-weight:800;font-size:14px;text-align:left}
+.chp:hover:not(:disabled){border-color:#a5b4fc}.chp.good{border-color:var(--ok);background:rgba(16,185,129,.28)}.chp.no{border-color:var(--bad);background:rgba(244,63,94,.25)}.chp.pick{border-color:#fbbf24;background:rgba(251,191,36,.22)}.chp:disabled{opacity:.7}
+.meter.big{height:22px}
+.web{background:#f8fafc;color:#0f172a;border-radius:14px;padding:12px;display:grid;gap:8px;margin:10px 0}
+.wt{padding:8px 10px;border-radius:8px;background:#e2e8f0;cursor:pointer}.wt.read{background:#bbf7d0}
+.wi{padding:6px;border-radius:10px;background:#cbd5e1;text-align:center;font-size:36px;cursor:pointer}.wi small{display:block;font-size:12px;font-weight:700;color:#334155;margin-top:4px}.wi.mute{outline:3px solid #ef4444}.wi.small{font-size:28px;cursor:default}
+.reader{background:#0f172a;border:2px solid #38bdf8;border-radius:12px;padding:10px;font-weight:700;min-height:44px;margin:8px 0;line-height:1.5}
+.webbtn{border:0;border-radius:10px;padding:12px;background:#2563eb;color:#fff;font-weight:900;font-size:16px}.webbtn:disabled{background:#16a34a}
+.dsr{display:grid;grid-template-columns:130px 1fr;gap:8px;align-items:center;margin:8px 0}@media(max-width:480px){.dsr{grid-template-columns:1fr}}
+input[type=text]{width:100%;font:inherit;padding:10px 12px;border-radius:12px;border:2px solid var(--line);background:rgba(0,0,0,.3);color:var(--txt)}
+.err{color:#fda4af;font-weight:700;min-height:20px}
+.langs{display:flex;gap:8px;flex-wrap:wrap;margin:10px 0}
+.stats{display:flex;gap:12px;flex-wrap:wrap;margin:8px 0;font-weight:800}.stats span{background:rgba(0,0,0,.3);border-radius:10px;padding:6px 12px}
+.tri{display:grid;grid-template-columns:repeat(auto-fit,minmax(120px,1fr));gap:8px;margin:10px 0}
+.tc{border-radius:14px;padding:10px;text-align:center;font-weight:800;border:2px solid var(--line);background:rgba(0,0,0,.3);animation:pop .5s both;line-height:1.3}
+.tc .e{font-size:30px;display:block}.tc b{display:block;font-size:24px}.tc.bad{border-color:var(--bad);background:rgba(244,63,94,.22)}.tc.bad b{color:#fb7185}.tc.okc{border-color:var(--ok)}.tc.okc b{color:#34d399}
+@keyframes pop{from{transform:scale(.4);opacity:0}to{transform:none;opacity:1}}
+.rpgc{width:100%;display:block;border-radius:14px;border:3px solid #475569;touch-action:none;background:#2d5a27;outline:none}
+.ctl{display:flex;gap:12px;align-items:center;justify-content:space-between;margin-top:10px;flex-wrap:wrap}
+.dpad{display:grid;grid-template-columns:repeat(3,52px);grid-template-rows:repeat(2,46px);gap:6px;grid-template-areas:". u ." "l d r"}
+.dpad button{border:2px solid var(--line);border-radius:12px;background:rgba(255,255,255,.12);font-size:18px;font-weight:900;touch-action:none;user-select:none}.dpad button:active{background:#6366f1}
+.dpad [data-d=u]{grid-area:u}.dpad [data-d=l]{grid-area:l}.dpad [data-d=d]{grid-area:d}.dpad [data-d=r]{grid-area:r}
+.dotsr .obj{flex-basis:100%;text-align:center;font-size:14px;font-weight:800;filter:none;color:#fde68a;line-height:1.4}
+.mood{display:flex;align-items:center;gap:8px;font-size:24px;margin:6px 0}.mood .meter{flex:1;margin:0}
+.tk{display:flex;gap:8px;align-items:center;padding:8px 10px;background:#e2e8f0;border-radius:8px;font-weight:700;cursor:pointer}.tk input{width:20px;height:20px}
+.stampx{display:inline-block;border:3px solid #dc2626;color:#dc2626;font-weight:900;padding:2px 10px;border-radius:6px;transform:rotate(-8deg);animation:stampin .4s}
+@keyframes stampin{from{transform:scale(2.5) rotate(-8deg);opacity:0}to{transform:rotate(-8deg);opacity:1}}
+.hide{display:none!important}
+.note{margin-top:14px;padding:12px 14px;border-radius:14px;background:rgba(251,191,36,.14);border:1px solid rgba(251,191,36,.5);font-size:14.5px;line-height:1.55}
+@media(prefers-reduced-motion:reduce){*{animation:none!important}}
+</style>
+<style>
+.stagebox{position:relative;border-radius:20px;overflow:hidden;border:2px solid var(--line);background:#0f1733;margin:8px 0}
+.stagebox svg{display:block;width:100%;height:auto}
+.dotsr{display:flex;flex-wrap:wrap;gap:10px;justify-content:center;margin:6px 0 10px;font-size:26px}
+.dotsr span{filter:grayscale(1) opacity(.45);transition:.3s}.dotsr span.on{filter:none;transform:scale(1.15)}.dotsr span.cur{filter:none;outline:3px solid #fbbf24;outline-offset:3px;border-radius:50%}
+.opts{display:grid;grid-template-columns:repeat(auto-fit,minmax(170px,1fr));gap:10px;margin:10px 0}
+.oc{border:2px solid var(--line);border-radius:16px;padding:12px 10px;background:rgba(0,0,0,.3);font-weight:800;text-align:center;line-height:1.3}
+.oc .e{font-size:34px;display:block}.oc:hover:not(:disabled){border-color:#a5b4fc;background:rgba(99,102,241,.2)}
+.oc.good{border-color:var(--ok);background:rgba(16,185,129,.28)}.oc.no{border-color:var(--bad);background:rgba(244,63,94,.25)}
+.tag{display:inline-block;margin:6px 0;border-radius:99px;padding:5px 14px;font-weight:900;background:rgba(251,191,36,.2);border:2px solid #fbbf24}
+.qh{font-weight:900;font-size:18px;text-align:center;margin:8px 0}
+.conf{position:absolute;top:-20px;font-size:26px;animation:cf 2.6s linear forwards}
+@keyframes cf{to{transform:translateY(460px) rotate(360deg);opacity:.9}}
+.hide{display:none!important}
+.idle{animation:bobi 1.6s ease-in-out infinite}@keyframes bobi{50%{transform:translateY(-3px)}}
+</style>
+<style>
+.dsk{display:grid;grid-template-columns:repeat(2,1fr);gap:14px;margin:14px 0}
+.app{position:relative;border:3px solid var(--line);border-radius:22px;padding:18px 10px;background:rgba(0,0,0,.28);text-align:center;transition:.15s;color:var(--txt)}
+.app:hover{transform:translateY(-4px);border-color:var(--c)}
+.app .ico{display:flex;width:84px;height:84px;margin:0 auto 8px;border-radius:22px;background:var(--c);align-items:center;justify-content:center;font-size:46px;box-shadow:0 10px 24px rgba(0,0,0,.4);animation:bobi 2.4s ease-in-out infinite}
+.app b{display:block;font-size:17px}.app small{display:block;color:var(--mut);font-weight:700;margin-top:2px}
+.app .ok{position:absolute;top:10px;right:12px;font-size:22px}
+.app.done{border-color:var(--ok)}
+.win{border:2px solid var(--line);border-radius:18px;background:rgba(0,0,0,.25);overflow:hidden;animation:winin .35s cubic-bezier(.3,1.4,.5,1)}
+@keyframes winin{from{transform:scale(.85);opacity:0}}
+.wbar{display:flex;align-items:center;gap:10px;padding:8px 12px;background:rgba(255,255,255,.1);font-weight:800}
+.wbar .dots i{display:inline-block;width:11px;height:11px;border-radius:50%;margin-right:5px;background:#f87171}.wbar .dots i:nth-child(2){background:#fbbf24}.wbar .dots i:nth-child(3){background:#4ade80}
+.wbar b{flex:1}.wbar .x{border:0;background:rgba(255,255,255,.15);border-radius:8px;padding:2px 10px}
+.stp{display:flex;gap:6px;padding:10px 12px 0;flex-wrap:wrap}.stp span{flex:1;min-width:70px;text-align:center;border-radius:99px;padding:4px 6px;font-size:12px;font-weight:800;background:rgba(255,255,255,.08);color:var(--mut)}.stp span.on{background:#6366f1;color:#fff}.stp span.dn{background:rgba(16,185,129,.3);color:#fff}
+.wbody{padding:12px}
+.stt{font-weight:900;font-size:18px;margin:0 0 8px}
+.small{color:var(--mut);font-size:13px;margin:6px 0;font-weight:600}
+.info{margin:10px 0;padding:8px 12px;border-radius:12px;background:rgba(99,102,241,.18);border:1px solid rgba(129,140,248,.5);font-weight:700;line-height:1.45}
+.dl{height:14px;border-radius:7px;background:rgba(255,255,255,.14);overflow:hidden;margin:4px 0 8px}.dl i{display:block;height:100%;width:0;background:linear-gradient(90deg,#22c55e,#a3e635)}
+.dlt{font-weight:800;font-size:14px}
+.prod{display:flex;gap:14px;align-items:center;background:#fff;color:#0f172a;border-radius:16px;padding:12px;flex-wrap:wrap}
+.prod .pi{width:64px;height:64px;border-radius:16px;display:flex;align-items:center;justify-content:center;font-size:36px}
+.prod .price{font-size:26px;font-weight:900;color:#dc2626}.prod small{color:#475569;font-weight:700}.prod .grow{flex:1;min-width:130px}
+.key{margin:8px 0;padding:10px;border:3px dashed #fbbf24;border-radius:12px;text-align:center;font-weight:900;font-size:20px;letter-spacing:.06em;background:rgba(251,191,36,.12);animation:stampin .5s both}
+.chips{display:flex;gap:8px;flex-wrap:wrap;margin:8px 0}
+.chp{border:2px solid var(--line);border-radius:99px;padding:6px 14px;background:rgba(255,255,255,.1);font-weight:800;font-size:14px}.chp:hover:not(:disabled){border-color:#a5b4fc}.chp:disabled{opacity:.4}
+.chp.sel{border-color:#fbbf24;background:rgba(251,191,36,.25)}
+.chat{background:rgba(255,255,255,.06);border:1px solid var(--line);border-radius:14px;padding:8px 10px}
+.chh{font-weight:900;padding-bottom:6px;border-bottom:1px solid var(--line);margin-bottom:6px}.chh small{color:#4ade80;margin-left:6px}
+.msgs{display:flex;flex-direction:column;gap:6px;min-height:90px;max-height:240px;overflow:auto}
+.bub2{max-width:82%;padding:7px 11px;border-radius:14px;font-weight:700;line-height:1.35;animation:pop .25s}
+.bub2 small{display:block;font-size:11px;opacity:.7}
+.bub2.me{align-self:flex-end;background:#6366f1;color:#fff}.bub2.you{align-self:flex-start;background:#fff;color:#0f172a}
+.stats2{display:flex;gap:8px;flex-wrap:wrap;align-items:center;margin-bottom:8px;font-weight:800}.stats2 span{background:rgba(0,0,0,.3);border-radius:99px;padding:3px 12px;border:1px solid var(--line)}
+.gbox{position:relative;border-radius:14px;overflow:hidden;border:2px solid var(--line);background:#0f172a;cursor:pointer;user-select:none}
+.gbox canvas{display:block;width:100%;height:auto}
+.ov{position:absolute;inset:0;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:8px;background:rgba(2,6,23,.82);text-align:center;padding:12px;font-weight:900;animation:pop .25s;z-index:2}
+.ov .big{font-size:20px}
+.nag{background:#fff;color:#0f172a;border:4px solid #f59e0b;border-radius:16px;padding:12px;max-width:310px}
+.nag b{font-size:18px}
+.phone2{position:relative;width:310px;max-width:100%;margin:4px auto;border:5px solid #94a3b8;border-radius:26px;background:#0b1226;padding:8px;overflow:hidden}
+.ph-h{font-weight:900;padding:4px 6px 8px}.ph-h small{color:#4ade80;margin-left:6px}
+.adb{margin-top:8px;border-radius:10px;background:#fef9c3;color:#78350f;padding:6px 10px;font-weight:800;font-size:13px;display:flex;gap:8px;align-items:center}.adb small{margin-left:auto;background:#f59e0b;color:#fff;border-radius:6px;padding:0 6px;font-size:10px}
+.two2{display:grid;grid-template-columns:1fr 1fr;gap:10px}
+@media(max-width:560px){.two2{grid-template-columns:1fr}}
+.code{width:100%;min-height:150px;border-radius:12px;border:2px solid #22c55e;background:#021a0e;color:#86efac;font:700 15px/1.6 ui-monospace,Menlo,Consolas,monospace;padding:10px;resize:vertical}
+.pv{border-radius:12px;overflow:hidden;border:2px solid var(--line);background:#0f172a}.pv canvas{display:block;width:100%;height:auto}
+.ck{display:flex;gap:6px;flex-wrap:wrap;margin:8px 0;font-weight:800}.ck span{background:rgba(0,0,0,.3);border-radius:99px;padding:2px 12px;border:1px solid var(--line)}.ck span.on{background:rgba(16,185,129,.3);border-color:#34d399}
+.tree{font:700 14px/1.6 ui-monospace,Menlo,Consolas,monospace;background:#021a0e;color:#86efac;border-radius:12px;padding:10px;margin:8px 0;animation:pop .3s}
+.comm{display:grid;gap:6px;margin:8px 0}.comm div{background:rgba(255,255,255,.08);border-radius:10px;padding:6px 10px;font-weight:700;animation:pop .3s}
+.studio{margin-top:10px;text-align:center}
+.studio canvas,.studio video{max-width:100%;border-radius:12px;border:2px solid var(--line);background:#000}
+.studio video{transform:scaleX(-1);width:260px}
+.thumb{display:flex;gap:10px;align-items:center;justify-content:center;flex-wrap:wrap}
+.thumb canvas{width:110px!important;height:110px!important}
+.lcard{border-radius:18px;background:#fff;color:#0f172a;padding:14px;margin:8px 0}
+.lcard h3{margin:0 0 8px;display:flex;align-items:center;gap:10px;font-size:22px}.lcard h3 .ico2{width:46px;height:46px;border-radius:12px;display:flex;align-items:center;justify-content:center;font-size:26px}
+.lrow{display:flex;gap:10px;padding:7px 0;border-top:1px solid #e2e8f0;line-height:1.4;animation:pop .35s both}
+.lrow b{min-width:128px}.lrow span.e{font-size:20px}
+@media(max-width:560px){.lrow{flex-wrap:wrap}.lrow b{min-width:0}}
+.bins{display:grid;grid-template-columns:repeat(2,1fr);gap:10px;margin:10px 0}
+.bin{border:3px dashed var(--line);border-radius:16px;padding:10px;background:rgba(0,0,0,.25);text-align:left;min-height:84px}
+.bin:hover{border-color:var(--c)}.bin .bh{display:flex;gap:8px;align-items:center;font-weight:900}.bin .bh i{font-style:normal;font-size:26px}
+.bin .got{font-size:12px;color:var(--mut);font-weight:700;margin-top:4px}.bin.bump{animation:bump .4s}
+@keyframes bump{40%{transform:scale(1.07);border-color:#34d399}}
+.cards2{display:grid;grid-template-columns:repeat(auto-fit,minmax(190px,1fr));gap:8px;margin:10px 0}
+.cc{border:2px solid var(--line);border-radius:14px;padding:10px 12px;background:#fef9c3;color:#422006;font-weight:800;line-height:1.35;text-align:left}
+.cc.sel{border-color:#6366f1;background:#e0e7ff;transform:translateY(-4px) rotate(-1.5deg);box-shadow:0 8px 18px rgba(0,0,0,.4)}
+.cc.gone{animation:gone .45s forwards}@keyframes gone{to{opacity:0;transform:scale(.3) translateY(60px)}}
+table.pp{width:100%;border-collapse:collapse;font-size:13px;margin:10px 0}.pp th,.pp td{border:1px solid var(--line);padding:6px 8px;text-align:left;vertical-align:top;line-height:1.35}.pp th{background:rgba(255,255,255,.1)}
+.pw{overflow-x:auto}
+</style>
+</head>
+<body>
+<div class="wrap">
+  <h1>💽 Software Licences</h1>
+  <p class="sub">Book E · Ch.3 Intellectual Property · 3.6 commercial, shareware, freeware and open-source software</p>
+  <div class="panel" id="stage"></div>
+</div>
+
+<script>
+(function () {
+  'use strict';
+  var $ = function (s, r) { return (r || document).querySelector(s); };
+  var st = $('#stage'), timers = [], raf = 0, stream = null;
+  function stopCam() { if (stream) { try { stream.getTracks().forEach(function (t) { t.stop(); }); } catch (e) {} stream = null; } }
+  function clearAll() { timers.forEach(function (t) { clearTimeout(t); clearInterval(t); }); timers = []; cancelAnimationFrame(raf); stopCam(); }
+  function lt(fn, ms) { var t = setTimeout(fn, ms); timers.push(t); return t; }
+  function iv(fn, ms) { var t = setInterval(fn, ms); timers.push(t); return t; }
+  function esc(s) { return String(s).replace(/[&<>"]/g, function (c) { return { '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;' }[c]; }); }
+  function shuffle(a) { a = a.slice(); for (var i = a.length - 1; i > 0; i--) { var j = Math.floor(Math.random() * (i + 1)), t = a[i]; a[i] = a[j]; a[j] = t; } return a; }
+  function shake(el) { el = el || st; el.classList.add('shake'); setTimeout(function () { el.classList.remove('shake'); }, 400); }
+  function conf(box, n) { var h = ''; for (var i = 0; i < (n || 24); i++) h += '<span class="conf" style="left:' + (Math.random() * 94 + 3) + '%;animation-delay:' + (Math.random() * 1.2).toFixed(2) + 's">' + ['🎉', '✨', '🌟', '💽'][i % 4] + '</span>'; box.insertAdjacentHTML('beforeend', h); }
+  function bot(msg) { return '<div class="say"><div class="bot">🤖</div><div class="bub">' + msg + '</div></div>'; }
+  function dl(h, label, ms, cb) {
+    var d = document.createElement('div'); d.innerHTML = '<div class="dlt">' + label + ' <b>0%</b></div><div class="dl"><i></i></div>'; h.appendChild(d);
+    var i = d.querySelector('i'), b = d.querySelector('b'), t0 = performance.now();
+    var t = setInterval(function () { var u = Math.min(1, (performance.now() - t0) / ms); i.style.width = (u * 100) + '%'; b.textContent = Math.round(u * 100) + '%'; if (u >= 1) { clearInterval(t); if (cb) cb(); } }, 40); timers.push(t);
+  }
+  function chat(h, o) {
+    h.insertAdjacentHTML('beforeend', '<div class="chat"><div class="chh">' + o.head + '</div><div class="msgs"></div></div><div class="chips"></div>');
+    var msgs = h.querySelectorAll('.msgs'), ms = msgs[msgs.length - 1], cps = h.querySelectorAll('.chips'), cp = cps[cps.length - 1], asked = 0;
+    function add(cls, who, txt) { var d = document.createElement('div'); d.className = 'bub2 ' + cls; d.innerHTML = '<small>' + esc(who) + '</small><span>' + esc(txt) + '</span>'; ms.appendChild(d); ms.scrollTop = 99999; return d; }
+    o.chips.forEach(function (c) {
+      var b = document.createElement('button'); b.className = 'chp'; b.textContent = c[0];
+      b.onclick = function () {
+        if (b.disabled) return; b.disabled = true; asked++; add('me', 'You', c[0]); var T = 600;
+        c[1].forEach(function (r) { var tp; lt(function () { tp = add('you', r.w, '…'); }, T); T += r.d || 900; lt(function () { tp.lastChild.textContent = r.t; ms.scrollTop = 99999; }, T); T += 250; });
+        lt(function () { if (o.onAsk) o.onAsk(asked, c, add); }, T);
+      }; cp.appendChild(b);
+    });
+    return { add: add, chips: cp };
+  }
+
+  /* ---------- the four apps ---------- */
+  var APPS = {
+    com: { name: 'PixelPro Studio', icon: '🎨', col: '#6366f1', lic: 'Commercial software', sum: 'Commercial: you pay first, then get all features and official support.',
+      card: [['💰', 'Price', 'Pay a licence fee (buy once, or subscribe)'], ['🔐', 'Source code', 'Secret: only the company can change it'], ['📦', 'Distribution', 'Sold by the company in shops and online, with a licence key'], ['🛟', 'Technical support', 'Yes: official support and updates'], ['⚠️', 'Rules', 'Use it only as the licence allows: no copying or sharing'], ['🧩', 'Examples', 'Microsoft Office, Adobe Photoshop']] },
+    sha: { name: 'Dino Dash', icon: '🦖', col: '#f59e0b', lic: 'Shareware', sum: 'Shareware: free trial first, with limited time or features. Pay to get the full version.',
+      card: [['💰', 'Price', 'Free to try, then pay to keep using it'], ['🔐', 'Source code', 'Not given'], ['📦', 'Distribution', 'Free trial copy to download. Pay to register for the full version'], ['🛟', 'Technical support', 'Limited for trial users. Full support after paying'], ['⚠️', 'Limits', 'Limited time or features, with “buy now” pop-ups'], ['🧩', 'Examples', 'WinRAR, trial versions of PC games']] },
+    fre: { name: 'ChatChat', icon: '💬', col: '#22c55e', lic: 'Freeware', sum: 'Freeware: free of charge, may show ads, and the source code is not given.',
+      card: [['💰', 'Price', 'Free of charge ($0)'], ['🔐', 'Source code', 'Not given: you cannot change it'], ['📦', 'Distribution', 'Free download from a website or app store'], ['🛟', 'Technical support', 'Usually limited: help centre and FAQ'], ['⚠️', 'Limits', 'May show ads. You may use it, but not modify it'], ['🧩', 'Examples', 'WhatsApp, Skype, Adobe Acrobat Reader']] },
+    ope: { name: 'CodePet', icon: '🐱', col: '#0ea5e9', lic: 'Open-source software', sum: 'Open source: you can read, change and share the source code.',
+      card: [['💰', 'Price', 'Usually free'], ['🔐', 'Source code', 'Public: anyone can read, modify and redistribute it'], ['📦', 'Distribution', 'Download the program together with its source code'], ['🛟', 'Technical support', 'Usually no official support: help from the community'], ['⚠️', 'Rules', 'Follow the licence, e.g. credit the developers'], ['🧩', 'Examples', 'Linux, Firefox, LibreOffice, VLC, Python']] }
+  };
+  var ORDER = ['com', 'sha', 'fre', 'ope'], DONE = {};
+
+  function home() {
+    clearAll(); var n = Object.keys(DONE).length;
+    st.innerHTML = bot(n === 4 ? '🎉 You opened all four! One last challenge is waiting…' : 'Four apps, four licences. Open each app, use it, and find out how it is licensed!') +
+      '<div class="dsk">' + ORDER.map(function (k) { var A = APPS[k]; return '<button class="app' + (DONE[k] ? ' done' : '') + '" data-k="' + k + '" style="--c:' + A.col + '">' + (DONE[k] ? '<span class="ok">✅</span>' : '') + '<span class="ico">' + A.icon + '</span><b>' + A.name + '</b><small>' + (DONE[k] ? A.lic : 'Licence: ???') + '</small></button>'; }).join('') + '</div>' +
+      '<div class="small" style="text-align:center">Apps explored: <b>' + n + ' / 4</b></div>' + (n === 4 ? '<div class="row" style="justify-content:center;margin-top:8px"><button class="btn" id="fin">🧩 Final challenge: match the clues</button></div>' : '');
+    [].forEach.call(st.querySelectorAll('.app'), function (b) { b.onclick = function () { openApp(b.dataset.k); }; });
+    if (n === 4) $('#fin').onclick = finale;
+  }
+
+  function openApp(k) {
+    clearAll(); var A = APPS[k], step = 0, STEPS = ['1 Get it', '2 Use it', '3 Get help', '4 Licence'], FN = { com: [getCom, useCom, helpCom], sha: [getSha, useSha, helpSha], fre: [getFre, useFre, helpFre], ope: [getOpe, useOpe, helpOpe] }[k];
+    st.innerHTML = '<div class="win"><div class="wbar"><span class="dots"><i></i><i></i><i></i></span><b>' + A.icon + ' ' + A.name + '</b><button class="x" id="cl" aria-label="Close">✕</button></div><div class="stp" id="stp"></div><div class="wbody" id="wb"></div><div class="row" style="justify-content:flex-end;padding:0 12px 12px"><button class="btn" id="nx" disabled>Next ▶</button></div></div>';
+    $('#cl').onclick = home;
+    function unlock() { $('#nx').disabled = false; var n = $('#nx'); n.classList.add('idle'); }
+    function show() {
+      clearAll(); var wb = $('#wb'); wb.innerHTML = ''; $('#nx').disabled = true; $('#nx').classList.remove('idle'); $('#nx').textContent = step === 3 ? '✔ Done' : 'Next ▶';
+      $('#stp').innerHTML = STEPS.map(function (s, i) { return '<span class="' + (i === step ? 'on' : i < step ? 'dn' : '') + '">' + s + '</span>'; }).join('');
+      if (step < 3) FN[step](wb, unlock); else { card(wb, k); lt(unlock, 900); }
+      st.scrollIntoView({ block: 'start', behavior: 'smooth' });
+    }
+    $('#nx').onclick = function () { if (step < 3) { step++; show(); } else { DONE[k] = 1; home(); } };
+    show();
+  }
+
+  function card(h, k) {
+    var A = APPS[k];
+    h.innerHTML = '<div class="stt">🪪 Licence card</div><div class="lcard"><h3><span class="ico2" style="background:' + A.col + '">' + A.icon + '</span><span>' + A.lic + '</span></h3>' +
+      A.card.map(function (r, i) { return '<div class="lrow" style="animation-delay:' + (i * .15) + 's"><span class="e">' + r[0] + '</span><b>' + r[1] + '</b><span>' + esc(r[2]) + '</span></div>'; }).join('') + '</div>';
+  }
+
+  /* ======================= COMMERCIAL: PixelPro Studio ======================= */
+  function getCom(h, unlock) {
+    h.innerHTML = '<div class="stt">🛒 Buy it in the shop</div><div class="prod"><div class="pi" style="background:#6366f1">🎨</div><div class="grow"><b>PixelPro Studio</b><br><small>Photo editor · 1-user licence</small></div><div class="price">$199</div><button class="btn" id="buy">🛒 Buy</button></div><div class="info">📦 <b>Distribution:</b> sold by the company in shops and online. You pay a licence fee and get a licence key.</div><div id="flow"></div>';
+    $('#buy').onclick = function () {
+      this.disabled = true; var f = $('#flow'); f.innerHTML = '<div class="dlt">💳 Paying $199…</div>';
+      lt(function () { f.innerHTML = '<div class="dlt">✅ Paid!</div><div class="key">🔑 PIXL-8F2A-91CC</div><div class="small">Your licence key</div>'; dl(f, '⬇ Installing', 1600, function () { f.insertAdjacentHTML('beforeend', '<div class="msg" style="background:rgba(16,185,129,.2);border-color:#34d399">✔ Installed and activated with your key. All features are unlocked!</div>'); unlock(); }); }, 1100);
+    };
+  }
+  var PH = null;
+  function setPhoto(src) {
+    var w = src.naturalWidth || src.videoWidth || src.width, hh = src.naturalHeight || src.videoHeight || src.height, s = Math.min(w, hh), c = document.createElement('canvas'); c.width = c.height = 240;
+    c.getContext('2d').drawImage(src, (w - s) / 2, (hh - s) / 2, s, s, 0, 0, 240, 240); PH = c; studioUI();
+  }
+  function rnd(seed) { var s = seed; return function () { s = (s * 16807) % 2147483647; return s / 2147483647; }; }
+  function drawBG(x, th) {
+    var r = rnd(7), g, i;
+    if (th === 'beach') {
+      g = x.createLinearGradient(0, 0, 0, 160); g.addColorStop(0, '#38bdf8'); g.addColorStop(1, '#e0f2fe'); x.fillStyle = g; x.fillRect(0, 0, 360, 270);
+      x.fillStyle = '#fde047'; x.beginPath(); x.arc(290, 56, 30, 0, 7); x.fill();
+      x.fillStyle = '#0ea5e9'; x.fillRect(0, 150, 360, 60); x.strokeStyle = '#bae6fd'; x.lineWidth = 3; for (i = 0; i < 8; i++) { x.beginPath(); x.moveTo(i * 50, 170 + (i % 3) * 12); x.quadraticCurveTo(i * 50 + 12, 160 + (i % 3) * 12, i * 50 + 25, 170 + (i % 3) * 12); x.stroke(); }
+      x.fillStyle = '#fde68a'; x.fillRect(0, 205, 360, 70); x.strokeStyle = '#92400e'; x.lineWidth = 7; x.beginPath(); x.moveTo(40, 215); x.quadraticCurveTo(50, 150, 60, 100); x.stroke(); x.fillStyle = '#16a34a';
+      [[-40, 8], [-15, -14], [15, -14], [40, 8], [0, -26]].forEach(function (p) { x.beginPath(); x.ellipse(60 + p[0], 100 + p[1], 26, 8, p[0] / 60, 0, 7); x.fill(); });
+    } else if (th === 'space') {
+      g = x.createLinearGradient(0, 0, 360, 270); g.addColorStop(0, '#0b1226'); g.addColorStop(1, '#4c1d95'); x.fillStyle = g; x.fillRect(0, 0, 360, 270);
+      x.fillStyle = '#fff'; for (i = 0; i < 90; i++) { x.globalAlpha = .4 + r() * .6; x.fillRect(r() * 360, r() * 270, 1 + r() * 2, 1 + r() * 2); } x.globalAlpha = 1;
+      x.fillStyle = '#fb923c'; x.beginPath(); x.arc(280, 80, 38, 0, 7); x.fill(); x.strokeStyle = '#fde68a'; x.lineWidth = 5; x.beginPath(); x.ellipse(280, 84, 64, 14, -.3, 0, 7); x.stroke();
+      x.fillStyle = '#e2e8f0'; x.beginPath(); x.arc(60, 200, 22, 0, 7); x.fill(); x.fillStyle = '#94a3b8'; x.beginPath(); x.arc(52, 196, 5, 0, 7); x.arc(68, 208, 4, 0, 7); x.fill();
+    } else if (th === 'city') {
+      g = x.createLinearGradient(0, 0, 0, 200); g.addColorStop(0, '#6d28d9'); g.addColorStop(.7, '#fb923c'); g.addColorStop(1, '#fde68a'); x.fillStyle = g; x.fillRect(0, 0, 360, 270);
+      for (i = 0; i < 12; i++) { var bw = 22 + r() * 22, bh = 50 + r() * 110, bx = i * 30 - 10; x.fillStyle = i % 2 ? '#1e293b' : '#334155'; x.fillRect(bx, 210 - bh, bw, bh); x.fillStyle = '#fde68a'; for (var wy = 214 - bh; wy < 200; wy += 12) for (var wx = bx + 4; wx < bx + bw - 5; wx += 8) if (r() > .4) x.fillRect(wx, wy, 4, 6); }
+      x.fillStyle = '#1e3a8a'; x.fillRect(0, 210, 360, 60); x.fillStyle = 'rgba(253,230,138,.5)'; for (i = 0; i < 14; i++) x.fillRect(r() * 360, 214 + r() * 50, 14 + r() * 20, 2);
+    } else {
+      x.fillStyle = '#fef3c7'; x.fillRect(0, 0, 360, 270); x.fillStyle = '#92400e'; x.fillRect(0, 200, 360, 70); x.fillStyle = '#7c2d12'; x.fillRect(30, 30, 300, 120); x.fillStyle = '#14532d'; x.fillRect(38, 38, 284, 104);
+      x.fillStyle = '#fff'; x.font = '900 40px system-ui'; x.textAlign = 'center'; x.fillText('ICT rocks!', 180, 98); x.strokeStyle = '#fff'; x.lineWidth = 3; x.beginPath(); x.moveTo(100, 115); x.lineTo(260, 115); x.stroke();
+      x.fillStyle = '#a16207'; x.fillRect(20, 190, 90, 10); x.fillRect(250, 190, 90, 10); x.fillStyle = '#ef4444'; x.beginPath(); x.arc(300, 182, 8, 0, 7); x.fill();
+    }
+  }
+  function compose(th) {
+    var c = document.createElement('canvas'); c.width = 360; c.height = 270; var x = c.getContext('2d'); drawBG(x, th);
+    var p = document.createElement('canvas'); p.width = 170; p.height = 210; var px = p.getContext('2d'); px.drawImage(PH, 22, 0, 195, 240, 0, 0, 170, 210);
+    px.globalCompositeOperation = 'destination-in'; px.save(); px.translate(85, 108); px.scale(1, 1.2); var g = px.createRadialGradient(0, 0, 48, 0, 0, 86); g.addColorStop(0, 'rgba(0,0,0,1)'); g.addColorStop(.72, 'rgba(0,0,0,1)'); g.addColorStop(1, 'rgba(0,0,0,0)'); px.fillStyle = g; px.fillRect(-100, -100, 200, 200); px.restore();
+    x.save(); x.shadowColor = 'rgba(255,255,255,.9)'; x.shadowBlur = 16; x.drawImage(p, 95, 60); x.restore(); return c;
+  }
+  var THEMES = [['beach', '🏖️ Beach'], ['space', '🚀 Space'], ['city', '🌆 Hong Kong skyline'], ['class', '🏫 Classroom']];
+  function useCom(h, unlock) {
+    PH = null;
+    h.innerHTML = '<div class="stt">📷 Make a poster photo</div><div class="row"><button class="btn sm" id="cam">📷 Camera</button><label class="btn sm sec" style="cursor:pointer">🖼️ Take / choose a photo<input type="file" accept="image/*" capture="user" id="fl" hidden></label><button class="btn sm sec" id="smp">🙂 Use a sample</button></div><div class="small">🔒 Your photo stays on your device. It is never uploaded.</div><div class="studio" id="studio"></div>';
+    h._unlock = unlock;
+    $('#cam').onclick = function () {
+      var s = $('#studio'); s.innerHTML = '';
+      if (!navigator.mediaDevices || !navigator.mediaDevices.getUserMedia) { s.innerHTML = '<div class="msg">Camera is not available here. Choose a photo or use the sample.</div>'; return; }
+      navigator.mediaDevices.getUserMedia({ video: { facingMode: 'user' }, audio: false }).then(function (m) {
+        stream = m; s.innerHTML = '<video id="vid" autoplay playsinline muted></video><div class="row" style="justify-content:center;margin-top:8px"><button class="btn" id="snap">📸 Snap!</button></div>'; var v = $('#vid'); v.srcObject = m;
+        $('#snap').onclick = function () { var c = document.createElement('canvas'); c.width = v.videoWidth || 320; c.height = v.videoHeight || 240; c.getContext('2d').drawImage(v, 0, 0); stopCam(); setPhoto(c); };
+      }).catch(function () { s.innerHTML = '<div class="msg">Camera is blocked. Choose a photo or use the sample.</div>'; });
+    };
+    $('#fl').onchange = function (e) { var f = e.target.files && e.target.files[0]; if (!f) return; var r = new FileReader(); r.onload = function () { var im = new Image(); im.onload = function () { setPhoto(im); }; im.src = r.result; }; r.readAsDataURL(f); };
+    $('#smp').onclick = function () { var c = document.createElement('canvas'); c.width = c.height = 240; var x = c.getContext('2d'), g = x.createLinearGradient(0, 0, 0, 240); g.addColorStop(0, '#fde68a'); g.addColorStop(1, '#fb923c'); x.fillStyle = g; x.fillRect(0, 0, 240, 240); x.font = '170px serif'; x.textAlign = 'center'; x.textBaseline = 'middle'; x.fillText('🙂', 120, 130); setPhoto(c); };
+    h._studio = function () { studioUI(); };
+    useCom.unlock = unlock;
+  }
+  function studioUI() {
+    var s = $('#studio'), th = 'beach', saved = false; stopCam();
+    s.innerHTML = '<div class="thumb"><div><div class="small">Your photo</div></div></div><div class="chips" id="th" style="justify-content:center"></div><div class="row" style="justify-content:center"><button class="btn" id="gen">✨ Generate background</button></div><div id="res" style="margin-top:10px"></div>';
+    var tb = s.querySelector('.thumb div'); tb.appendChild(PH); PH.style.cssText = 'width:110px;height:110px;border-radius:12px;border:2px solid #fff';
+    var thEl = $('#th'); THEMES.forEach(function (t) { var b = document.createElement('button'); b.className = 'chp' + (t[0] === th ? ' sel' : ''); b.textContent = t[1]; b.onclick = function () { th = t[0]; [].forEach.call(thEl.children, function (x) { x.classList.remove('sel'); }); b.classList.add('sel'); }; thEl.appendChild(b); });
+    $('#gen').onclick = function () {
+      var out = compose(th), res = $('#res'); res.innerHTML = '<div class="dlt">✨ Generating background… <b>0%</b></div><div class="dl"><i></i></div><canvas id="rc" width="360" height="270"></canvas>';
+      var rc = $('#rc'), rx = rc.getContext('2d'), t0 = performance.now(), bar = res.querySelector('i'), pc = res.querySelector('b'); rx.fillStyle = '#0f172a'; rx.fillRect(0, 0, 360, 270); $('#gen').disabled = true;
+      var t = setInterval(function () {
+        var u = Math.min(1, (performance.now() - t0) / 2000); bar.style.width = (u * 100) + '%'; pc.textContent = Math.round(u * 100) + '%';
+        rx.fillStyle = '#0f172a'; rx.fillRect(0, 0, 360, 270); rx.save(); rx.beginPath(); rx.rect(0, 0, 360, 270 * u); rx.clip(); rx.drawImage(out, 0, 0); rx.restore(); rx.fillStyle = 'rgba(255,255,255,.8)'; rx.fillRect(0, 270 * u - 2, 360, 3);
+        if (u >= 1) { clearInterval(t); $('#gen').disabled = false; $('#gen').textContent = '🔄 Try another background'; res.insertAdjacentHTML('beforeend', '<div class="row" style="justify-content:center;margin-top:8px"><button class="btn sm" id="sv">💾 Save in HD (no watermark)</button></div><div class="small" id="sm"></div>'); $('#sv').onclick = function () { $('#sm').textContent = '✔ Saved in HD. Every premium feature works because you paid for the licence!'; try { var a = document.createElement('a'); a.href = out.toDataURL('image/png'); a.download = 'pixelpro-poster.png'; a.click(); } catch (e) {} if (!saved) { saved = true; useCom.unlock(); } }; }
+      }, 40); timers.push(t);
+    };
+  }
+  function helpCom(h, unlock) {
+    h.innerHTML = '<div class="stt">☎️ Something goes wrong. Ask for help!</div><div class="info">🛟 Paying customers get <b>official technical support</b> and updates.</div>';
+    var done = 0; chat(h, { head: '🎧 PixelPro Support <small>● online 24/7</small>', chips: [['The app crashed! 😱', [{ w: 'Agent Amy', t: 'So sorry! Please update to version 5.2 and restart. I have also sent you a fix by email.', d: 1000 }]], ['How do I remove a background?', [{ w: 'Agent Amy', t: 'Easy! Choose “Generate background”, then pick a theme. Here is a video guide.', d: 1000 }]], ['I lost my licence key!', [{ w: 'Agent Amy', t: 'No problem, we found it from your order. Check your inbox!', d: 1000 }]]], onAsk: function (n, c, add) { add('you', 'System', '✅ Ticket solved in 2 minutes · Free updates included'); unlock(); } });
+  }
+
+  /* ======================= SHAREWARE: Dino Dash ======================= */
+  function getSha(h, unlock) {
+    h.innerHTML = '<div class="stt">⬇ Download the free trial</div><div class="prod"><div class="pi" style="background:#f59e0b">🦖</div><div class="grow"><b>Dino Dash</b><br><small>Run and jump game</small><br><span class="price" style="font-size:18px;color:#16a34a">FREE TRIAL · 30 days · 3 levels</span></div><button class="btn" id="get">⬇ Download</button></div><div class="info">📦 <b>Distribution:</b> the trial is free to download from a website or a CD. You pay later to get the full version.</div><div id="flow"></div>';
+    $('#get').onclick = function () { this.disabled = true; var f = $('#flow'); dl(f, '⬇ Downloading trial', 1500, function () { f.insertAdjacentHTML('beforeend', '<div class="msg" style="background:rgba(251,191,36,.2);border-color:#fbbf24">✔ Installed. Trial period: 30 days. Some features are locked.</div>'); unlock(); }); };
+  }
+  function useSha(h, unlock) {
+    var full = false, day = 1, dayT = 0, score = 0, lv = 1, run = true, nagShown = false, lockSeen = false, dino = { y: 0, vy: 0 }, cx = 540, jump = false, last = performance.now(), play = 0, nagAt = 5, flash = 0, ov = null;
+    h.innerHTML = '<div class="stt">🎮 Play the trial!</div><div class="stats2"><span>📅 Day <b id="dy">1</b> / 30</span><span>🎚️ Level <b id="lv">1</b> / 3 🔒</span><span>⭐ <b id="sc">0</b></span><button class="btn sec sm" id="skp">⏩ Skip 10 days</button></div><div class="gbox" id="gb"><canvas id="gc" width="480" height="190"></canvas></div><div class="small">Tap the game (or press Space) to jump over the cactus 🌵.</div><div class="msg" id="gm" style="min-height:0;background:rgba(255,255,255,.06);border-color:var(--line)">Keep playing and see what the trial version does…</div>';
+    var gb = $('#gb'), cv = $('#gc'), x = cv.getContext('2d');
+    function check() { if (nagShown && (lockSeen || full) && !check.d) { check.d = 1; unlock(); } }
+    function overlay(html) { if (ov) ov.remove(); ov = document.createElement('div'); ov.className = 'ov'; ov.innerHTML = html; gb.appendChild(ov); run = false; return ov; }
+    function close() { if (ov) { ov.remove(); ov = null; } run = true; last = performance.now(); }
+    function buy() {
+      overlay('<div class="big">💳 Paying $29…</div>'); lt(function () { full = true; lv = 1; close(); $('#gm').innerHTML = '✔ <b>Registered!</b> The full version has no time limit, no pop-ups and all 20 levels.'; $('#lv').parentNode.innerHTML = '🎚️ Level <b id="lv">' + lv + '</b> / 20'; check(); unlock(); }, 1100);
+    }
+    function nag() {
+      nagShown = true; var o = overlay('<div class="nag"><b>🛒 Love this game?</b><br>Buy the FULL version today!<br><span style="color:#dc2626;font-weight:900">−20% · $29</span><div class="row" style="justify-content:center;margin-top:8px"><button class="btn sm" id="nb">Buy now</button><button class="btn sec sm" id="nl" disabled style="color:#0f172a">Later (3)</button></div></div>'), n = 3;
+      o.querySelector('#nb').onclick = buy; var t = setInterval(function () { n--; var b = o.querySelector('#nl'); if (!b) { clearInterval(t); return; } if (n <= 0) { b.disabled = false; b.textContent = 'Later ✖'; clearInterval(t); b.onclick = function () { close(); check(); }; } else b.textContent = 'Later (' + n + ')'; }, 1000); timers.push(t);
+    }
+    function lock() { lockSeen = true; overlay('<div class="big">🔒 Level 4 is in the FULL version</div><div>The trial only has 3 levels.</div><button class="btn" id="b1">🛒 Buy full version $29</button>').querySelector('#b1').onclick = buy; $('#gm').textContent = '🔒 Features are limited in a trial. Pay to unlock more!'; check(); }
+    function expire() { lockSeen = true; overlay('<div class="big">⌛ Trial expired!</div><div>30 days are over. Pay to keep playing.</div><button class="btn" id="b1">🛒 Buy full version $29</button>').querySelector('#b1').onclick = buy; check(); }
+    $('#skp').onclick = function () { if (full || !run && !ov) return; day = Math.min(30, day + 10); $('#dy').textContent = day; if (day >= 30) expire(); };
+    function tap() { if (ov) return; jump = true; }
+    gb.addEventListener('pointerdown', tap); var key = function (e) { if (e.code === 'Space') { e.preventDefault(); tap(); } }; document.addEventListener('keydown', key); timers.push({ _k: 1 });
+    function loop(now) {
+      if (!document.body.contains(gb)) { document.removeEventListener('keydown', key); return; }
+      var dt = Math.min(.05, (now - last) / 1000); last = now;
+      if (run) {
+        play += dt; if (!full) { dayT += dt; if (dayT > 4) { dayT = 0; day++; $('#dy').textContent = day; if (day >= 30) expire(); } }
+        if (jump && dino.y <= 0) { dino.vy = 360; jump = false; } jump = false; dino.y += dino.vy * dt; dino.vy -= 980 * dt; if (dino.y <= 0) { dino.y = 0; dino.vy = 0; }
+        cx -= (180 + lv * 38) * dt;
+        if (cx < -30) { cx = 500 + Math.random() * 180; score++; $('#sc').textContent = score; if (score % 3 === 0) { lv++; if (!full && lv > 3) { lv = 3; lock(); } else $('#lv').textContent = lv; } }
+        if (cx < 96 && cx > 48 && dino.y < 24) { score = Math.max(0, score - 1); $('#sc').textContent = score; cx = 540; flash = .4; }
+        if (!full && !nagShown && play > nagAt) nag(); else if (!full && nagShown && play > nagAt + 14) { nagAt = play; if (run) nag(); }
+      }
+      flash = Math.max(0, flash - dt);
+      var g = x.createLinearGradient(0, 0, 0, 190); g.addColorStop(0, lv === 1 ? '#7dd3fc' : lv === 2 ? '#fdba74' : '#a78bfa'); g.addColorStop(1, '#e0f2fe'); x.fillStyle = g; x.fillRect(0, 0, 480, 190);
+      x.fillStyle = '#a16207'; x.fillRect(0, 150, 480, 40); x.fillStyle = '#fde68a'; x.fillRect(0, 150, 480, 4);
+      x.font = '44px serif'; x.textBaseline = 'alphabetic'; x.fillText('🦖', 56, 152 - dino.y); x.font = '38px serif'; x.fillText('🌵', cx, 152);
+      if (flash > 0) { x.fillStyle = 'rgba(239,68,68,.35)'; x.fillRect(0, 0, 480, 190); }
+      raf = requestAnimationFrame(loop);
+    }
+    raf = requestAnimationFrame(loop);
+  }
+  function helpSha(h, unlock) {
+    h.innerHTML = '<div class="stt">🆘 You are stuck in level 2…</div><div class="info">🛟 Support for <b>trial users</b> is limited. Registered (paying) users get full support.</div>';
+    var reg = false, c = chat(h, { head: '📄 Dino Dash Help <small style="color:#fbbf24">● trial user</small>', chips: [['The game crashed on level 2 😱', [{ w: 'Auto-reply', t: 'Trial version: please read our FAQ page 📄. Email support is for registered users only.', d: 900 }]], ['Can I talk to someone?', [{ w: 'Auto-reply', t: 'Register the full version to get email support. 💳', d: 900 }]]], onAsk: function (n, cc, add) { if (reg) return; if (!h.querySelector('#rg')) { h.insertAdjacentHTML('beforeend', '<div class="row" style="justify-content:center;margin-top:8px"><button class="btn" id="rg">💳 Register the full version ($29)</button></div>'); $('#rg').onclick = function () { this.disabled = true; reg = true; c.add('you', 'Dino Dash Team', '🎉 Thanks for registering! A support specialist will email you within 24 hours.'); unlock(); }; } } });
+  }
+
+  /* ======================= FREEWARE: ChatChat ======================= */
+  function getFre(h, unlock) {
+    h.innerHTML = '<div class="stt">⬇ Install it from the app store</div><div class="prod"><div class="pi" style="background:#22c55e">💬</div><div class="grow"><b>ChatChat</b><br><small>Messages and calls</small></div><div class="price" style="color:#16a34a">FREE</div><button class="btn" id="get">⬇ Install</button></div><div class="info">📦 <b>Distribution:</b> free to download from a website or app store. No licence fee for users.</div><div id="flow"></div>';
+    $('#get').onclick = function () { this.disabled = true; var f = $('#flow'); dl(f, '⬇ Installing', 1300, function () { f.insertAdjacentHTML('beforeend', '<div class="msg" style="background:rgba(16,185,129,.2);border-color:#34d399">✔ Installed for $0! No payment, no key.</div>'); unlock(); }); };
+  }
+  function useFre(h, unlock) {
+    var sent = 0, tried = false, round = 0, ads = [['🍔', 'Super Burger: 50% off today!'], ['👟', 'Run Fast shoes: buy 1 get 1'], ['🎮', 'Play GameZone free!']], ai = 0;
+    var Q = [['Hi Mia! 👋', 'What’s up?', 'Good morning ☀️'], ['Sure! 🎉', 'Sorry, I am busy', 'What time?'], ['See you there 👍', 'OK!', 'Can’t wait']], A = ['Hi! Want to go to the park? 🌳', 'Great! At 4 pm! ⏰', 'Yay! See you! 😄'];
+    h.innerHTML = '<div class="stt">💬 Chat with a friend</div><div class="phone2"><div class="ph-h">🐱 Mia <small>● online</small></div><div class="msgs" id="ms"></div><div class="chips" id="cp"></div><div class="adb" id="ad"></div></div><div class="row" style="justify-content:center;margin-top:10px"><button class="btn sec sm" id="vs">👀 View source code</button><button class="btn sec sm" id="md">🛠️ Change the app</button></div><div class="msg" id="fm" style="min-height:0;background:rgba(255,255,255,.06);border-color:var(--line)">Send 3 messages, then try to look inside the app.</div>';
+    var ms = $('#ms'), cp = $('#cp');
+    function add(cls, w, t) { var d = document.createElement('div'); d.className = 'bub2 ' + cls; d.innerHTML = '<small>' + w + '</small><span>' + esc(t) + '</span>'; ms.appendChild(d); ms.scrollTop = 99999; return d; }
+    function ad() { var a = ads[ai++ % ads.length]; $('#ad').innerHTML = '<span style="font-size:22px">' + a[0] + '</span><span>' + a[1] + '</span><small>Ad</small>'; } ad(); iv(ad, 3000);
+    function chips() { cp.innerHTML = ''; if (round >= 3) return; Q[round].forEach(function (q) { var b = document.createElement('button'); b.className = 'chp'; b.textContent = q; b.onclick = function () { send(q); }; cp.appendChild(b); }); }
+    function chk() { if (sent >= 3 && tried) unlock(); }
+    function send(q) {
+      cp.innerHTML = ''; add('me', 'You', q); sent++; var r = round++; var tp = add('you', 'Mia', '…');
+      lt(function () { tp.lastChild.textContent = A[r]; chips(); chk(); if (sent === 2) interstitial(); }, 800);
+    }
+    function interstitial() {
+      var o = document.createElement('div'); o.className = 'ov'; o.style.borderRadius = '20px'; o.innerHTML = '<div style="background:#fef9c3;color:#78350f;border-radius:16px;padding:14px;max-width:240px"><small style="background:#f59e0b;color:#fff;border-radius:6px;padding:0 6px">Ad</small><div style="font-size:44px">🍔</div><b>Super Burger</b><br>50% off today!<br><button class="btn sm" id="cx" disabled style="margin-top:8px">Skip ad (3)</button></div>'; $('.phone2').appendChild(o);
+      var n = 3, t = setInterval(function () { n--; var b = o.querySelector('#cx'); if (n <= 0) { clearInterval(t); b.disabled = false; b.textContent = 'Close ✖'; b.onclick = function () { o.remove(); }; } else b.textContent = 'Skip ad (' + n + ')'; }, 1000); timers.push(t);
+    }
+    $('#vs').onclick = function () { tried = true; shake($('#stage')); $('#fm').innerHTML = '🔒 <b>Source code: not given.</b> You can use ChatChat, but you cannot see how it is made.'; chk(); };
+    $('#md').onclick = function () { tried = true; shake($('#stage')); $('#fm').innerHTML = '🚫 <b>You cannot modify it.</b> Freeware is free of charge, but you may not change the program.'; chk(); };
+    add('you', 'Mia', 'Hey! 🙂'); chips();
+  }
+  function helpFre(h, unlock) {
+    var open = {}, contact = false;
+    h.innerHTML = '<div class="stt">❓ Need help? Visit the help centre</div><div class="info">🛟 Freeware usually has <b>limited support</b>: a help centre and FAQ, not a personal helpdesk.</div><div class="comm" id="fq"></div><div class="row"><button class="btn sec" id="ct">✉️ Contact us</button></div><div id="rp"></div>';
+    var F = [['How do I change my profile photo?', 'Go to Settings ➜ Profile ➜ tap the photo.'], ['Why do I see ads?', 'Ads help pay for the free app. That is how freeware can be free of charge.'], ['Can I see the source code?', 'Sorry, the source code is not available.']];
+    var fq = $('#fq'); F.forEach(function (f, i) { var d = document.createElement('div'); d.style.cursor = 'pointer'; d.innerHTML = '❓ ' + esc(f[0]); d.onclick = function () { open[i] = 1; d.innerHTML = '❓ <b>' + esc(f[0]) + '</b><br>💡 ' + esc(f[1]); chk(); }; fq.appendChild(d); });
+    function chk() { if (Object.keys(open).length && contact) unlock(); }
+    $('#ct').onclick = function () { this.disabled = true; var r = $('#rp'); r.innerHTML = '<div class="bub2 you" style="max-width:100%"><small>Auto-reply</small><span>Thank you! We read all messages but cannot reply to everyone. Please check the help centre. 🙏</span></div>'; contact = true; chk(); };
+  }
+
+  /* ======================= OPEN SOURCE: CodePet ======================= */
+  function getOpe(h, unlock) {
+    h.innerHTML = '<div class="stt">⬇ Download from the project website</div><div class="prod"><div class="pi" style="background:#0ea5e9">🐱</div><div class="grow"><b>CodePet</b><br><small>A virtual pet · open source</small></div><div class="price" style="color:#16a34a">FREE</div></div><div class="row" style="margin-top:10px"><button class="btn" id="b1">⬇ Download the program</button><button class="btn sec" id="b2">⬇ Download the SOURCE CODE</button></div><div class="info">📦 <b>Distribution:</b> free to download, together with the source code. Anyone can pass it on.</div><div id="flow"></div>';
+    var got = 0; function fin() { if (got) unlock(); }
+    $('#b1').onclick = function () { this.disabled = true; dl($('#flow'), '⬇ codepet-app.zip', 1000, function () {}); };
+    $('#b2').onclick = function () { this.disabled = true; got = 1; dl($('#flow'), '⬇ codepet-source.zip', 1300, function () { $('#flow').insertAdjacentHTML('beforeend', '<div class="tree">📁 codepet/<br>&nbsp;&nbsp;📄 pet.code &nbsp;← the source code!<br>&nbsp;&nbsp;📄 README<br>&nbsp;&nbsp;📄 LICENSE</div>'); fin(); }); };
+  }
+  function useOpe(h, unlock) {
+    var DEF = ['pet = 🐱', 'colour = orange', 'size = 64', 'speed = 3', 'message = Hello!'], shared = false;
+    h.innerHTML = '<div class="stt">✏️ Open pet.code and change it!</div><div class="two2"><textarea id="cd" class="code" rows="6" spellcheck="false" aria-label="Source code">' + DEF.join('\n') + '</textarea><div class="pv"><canvas id="pc" width="260" height="170"></canvas></div></div><div class="small">Change the words after “=”. The pet changes live. Try 🐶 or red or 100.</div><div class="ck" id="ck"></div><div class="row"><button class="btn" id="sh" disabled>📤 Share my version</button></div><div id="cm"></div>';
+    var cd = $('#cd'), cv = $('#pc'), x = cv.getContext('2d'), P = { pet: '🐱', colour: 'orange', size: 64, speed: 3, message: 'Hello!' }, pos = { x: 60, y: 60, vx: 1, vy: 1 };
+    function okColor(v) { var s = new Option().style; s.color = v; return s.color !== ''; }
+    function parse() {
+      var o = { pet: '🐱', colour: 'orange', size: 64, speed: 3, message: 'Hello!' }, lines = cd.value.split('\n');
+      lines.forEach(function (l) { var m = /^\s*(\w+)\s*=\s*(.*?)\s*$/.exec(l); if (!m) return; var k = m[1], v = m[2]; if (k === 'pet' && v) o.pet = Array.from(v).slice(0, 2).join(''); else if (k === 'colour' && okColor(v)) o.colour = v; else if (k === 'size' && !isNaN(+v)) o.size = Math.max(20, Math.min(130, +v)); else if (k === 'speed' && !isNaN(+v)) o.speed = Math.max(0, Math.min(14, +v)); else if (k === 'message') o.message = v.slice(0, 18); });
+      P = o; var ch = [DEF[0] !== lines[0], DEF[1] !== lines[1], DEF[2] !== lines[2], DEF[3] !== lines[3], DEF[4] !== lines[4]], n = ch.filter(Boolean).length;
+      $('#ck').innerHTML = '<span class="' + (n >= 1 ? 'on' : '') + '">' + (n >= 1 ? '☑' : '☐') + ' change 1 line</span><span class="' + (n >= 2 ? 'on' : '') + '">' + (n >= 2 ? '☑' : '☐') + ' change 2 lines</span>'; $('#sh').disabled = n < 2 || shared;
+    }
+    cd.oninput = parse; parse();
+    function loop() {
+      if (!document.body.contains(cv)) return;
+      x.fillStyle = P.colour; x.fillRect(0, 0, 260, 170); x.fillStyle = 'rgba(255,255,255,.25)'; x.fillRect(0, 140, 260, 30);
+      pos.x += pos.vx * P.speed; pos.y += pos.vy * P.speed; var s = P.size, mx = 260 - s * .6, my = 168;
+      if (pos.x < s * .5 || pos.x > mx) { pos.vx *= -1; pos.x = Math.max(s * .5, Math.min(mx, pos.x)); } if (pos.y < s || pos.y > my) { pos.vy *= -1; pos.y = Math.max(s, Math.min(my, pos.y)); }
+      x.font = s + 'px serif'; x.textAlign = 'center'; x.textBaseline = 'alphabetic'; x.fillText(P.pet, pos.x, pos.y);
+      x.font = '800 13px system-ui'; var w = x.measureText(P.message).width + 14; x.fillStyle = '#fff'; x.fillRect(pos.x - w / 2, pos.y - s - 24, w, 20); x.fillStyle = '#0f172a'; x.fillText(P.message, pos.x, pos.y - s - 9);
+      raf = requestAnimationFrame(loop);
+    }
+    raf = requestAnimationFrame(loop);
+    $('#sh').onclick = function () {
+      shared = true; this.disabled = true; $('#cm').innerHTML = '<div class="comm"><div>🌍 <b>CodePet 1.0</b> by the original team · ⭐ 5,120</div><div id="mine" style="background:rgba(16,185,129,.25);border:2px solid #34d399">✨ <b>Your version (CodePet 1.1)</b> · shared with the world!</div><div>🙌 Others can now download, change and share your version too (as the licence allows).</div></div>'; unlock();
+    };
+  }
+  function helpOpe(h, unlock) {
+    h.innerHTML = '<div class="stt">🙋 Something is wrong. Where is the helpdesk?</div><div class="info">🛟 Open source usually has <b>no official support</b>. Volunteers in the <b>community</b> help for free, and you can even fix the code yourself.</div>';
+    chat(h, { head: '🌍 CodePet community forum <small>● 128 members online</small>', chips: [['My pet disappears! 😱', [{ w: '🧑‍💻 Sam (volunteer)', t: 'Check line 3: size must be a number, e.g. size = 64.', d: 1100 }, { w: '👩‍🔬 Priya (developer)', t: 'Also fixed in the next release! Or send us your own fix.', d: 1500 }]], ['How can I add a new pet?', [{ w: '🧑‍💻 Sam (volunteer)', t: 'Just copy the source code and add it. That is allowed!', d: 1000 }, { w: '👨‍🎨 Leo (user)', t: 'I made 🐲 yesterday. Download my version!', d: 1400 }]]], onAsk: function (n, c, add) { add('you', 'Forum', '🙌 Free help from the community (no support desk)'); unlock(); } });
+  }
+
+  /* ======================= FINALE ======================= */
+  function finale() {
+    clearAll();
+    var CL = shuffle([['Pay first, then get a licence key', 'com'], ['Free for 30 days, then you must pay', 'sha'], ['Free forever, but it may show ads', 'fre'], ['Anyone can read, change and share the code', 'ope'], ['An official support desk helps paying customers', 'com'], ['Some levels are locked until you pay', 'sha'], ['Help comes from a volunteer community', 'ope'], ['Install for $0, but the source code stays secret', 'fre']]), sel = null, left = CL.length;
+    st.innerHTML = bot('Last challenge! Tap a clue card, then tap the licence it belongs to.') + '<div class="bins">' + ORDER.map(function (k) { var A = APPS[k]; return '<button class="bin" data-k="' + k + '" style="--c:' + A.col + '"><div class="bh"><i>' + A.icon + '</i><span>' + A.lic + '</span></div><div class="got" id="g_' + k + '"></div></button>'; }).join('') + '</div><div class="cards2" id="cs">' + CL.map(function (c, i) { return '<button class="cc" data-i="' + i + '">' + esc(c[0]) + '</button>'; }).join('') + '</div><div class="msg" id="fm" style="background:rgba(255,255,255,.06);border-color:var(--line)">Pick a card.</div><div id="end"></div>';
+    [].forEach.call(st.querySelectorAll('.cc'), function (b) { b.onclick = function () { if (b.classList.contains('gone')) return; [].forEach.call(st.querySelectorAll('.cc'), function (x) { x.classList.remove('sel'); }); b.classList.add('sel'); sel = b; $('#fm').textContent = 'Now tap the licence it belongs to.'; }; });
+    [].forEach.call(st.querySelectorAll('.bin'), function (bn) {
+      bn.onclick = function () {
+        if (!sel) { $('#fm').textContent = '👆 Tap a clue card first.'; return; } var c = CL[+sel.dataset.i], k = bn.dataset.k, A = APPS[k];
+        if (c[1] === k) { sel.classList.add('gone'); sel.classList.remove('sel'); sel = null; bn.classList.add('bump'); setTimeout(function () { bn.classList.remove('bump'); }, 450); var g = $('#g_' + k); g.innerHTML += '✔ ' + esc(c[0]) + '<br>'; $('#fm').innerHTML = '✅ Correct!'; left--; if (!left) end(); }
+        else { shake(st); $('#fm').innerHTML = '❌ Not <b>' + A.lic + '</b>. Remember: ' + esc(A.sum); }
+      };
+    });
+    function end() {
+      $('#fm').innerHTML = '🎉 All clues matched!';
+      $('#end').innerHTML = '<div class="msg" style="background:rgba(16,185,129,.2);border-color:#34d399">🏆 You are a software licence expert! Here is your passport:</div><div class="pw"><table class="pp"><tr><th></th>' + ORDER.map(function (k) { return '<th>' + APPS[k].icon + ' ' + APPS[k].lic + '</th>'; }).join('') + '</tr>' + [0, 1, 2, 3].map(function (i) { return '<tr><th>' + APPS.com.card[i][0] + ' ' + APPS.com.card[i][1] + '</th>' + ORDER.map(function (k) { return '<td>' + esc(APPS[k].card[i][2]) + '</td>'; }).join('') + '</tr>'; }).join('') + '</table></div><div class="row" style="justify-content:center"><button class="btn sec" id="hm">🏠 Back to the desktop</button></div>';
+      $('#hm').onclick = home; conf(st, 30); if (window.ICTGameDone) window.ICTGameDone();
+    }
+  }
+
+  home();
+})();
+</script>
+<script src="../../nav.js"></script>
+</body>
+</html>
