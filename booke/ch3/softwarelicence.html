@@ -220,6 +220,14 @@ input[type=text]{width:100%;font:inherit;padding:10px 12px;border-radius:12px;bo
 .cc.gone{animation:gone .45s forwards}@keyframes gone{to{opacity:0;transform:scale(.3) translateY(60px)}}
 table.pp{width:100%;border-collapse:collapse;font-size:13px;margin:10px 0}.pp th,.pp td{border:1px solid var(--line);padding:6px 8px;text-align:left;vertical-align:top;line-height:1.35}.pp th{background:rgba(255,255,255,.1)}
 .pw{overflow-x:auto}
+.wa{position:relative;width:340px;max-width:100%;margin:4px auto;border:5px solid #94a3b8;border-radius:26px;background:#0b141a;overflow:hidden}
+.wa-h{display:flex;align-items:center;gap:10px;background:#202c33;padding:8px 10px;color:#e9edef}.wa-h div{flex:1;line-height:1.2}.wa-h small{display:block;color:#8696a0;font-size:12px}.wa-av{width:36px;height:36px;border-radius:50%;background:#25d366;display:flex;align-items:center;justify-content:center;font-size:22px}.wa-ic{color:#aebac1;letter-spacing:4px}
+.wa-b{height:290px;overflow:auto;padding:10px;display:flex;flex-direction:column;gap:5px;background:#0b141a radial-gradient(rgba(255,255,255,.04) 1px,transparent 1px) 0 0/16px 16px}
+.wa-day{align-self:center;background:#182229;color:#8696a0;font-size:11px;font-weight:800;border-radius:8px;padding:2px 10px}
+.wa-m{max-width:80%;padding:6px 9px 3px;border-radius:10px;font-weight:600;line-height:1.35;color:#e9edef;animation:pop .2s;overflow-wrap:anywhere}.wa-m i{display:block;text-align:right;font-style:normal;font-size:10px;color:#8696a0;margin-top:1px}.wa-m u{text-decoration:none;color:#8696a0}
+.wa-m.me{align-self:flex-end;background:#005c4b;border-top-right-radius:2px}.wa-m.you{align-self:flex-start;background:#202c33;border-top-left-radius:2px}
+.wa-f{display:flex;gap:6px;align-items:center;background:#202c33;padding:6px}.wa-f input{flex:1;min-width:0;border:0;border-radius:99px;background:#2a3942;color:#e9edef;padding:9px 14px;font:600 15px system-ui}.wa-e{border:0;background:none;font-size:24px}.wa-s{width:40px;height:40px;border:0;border-radius:50%;background:#00a884;color:#fff;font-size:18px}
+.wa .adb{margin:0;border-radius:0}
 </style>
 </head>
 <body>
@@ -352,15 +360,16 @@ table.pp{width:100%;border-collapse:collapse;font-size:13px;margin:10px 0}.pp th
   var THEMES = [['beach', '🏖️ Beach'], ['space', '🚀 Space'], ['city', '🌆 Hong Kong skyline'], ['class', '🏫 Classroom']];
   function useCom(h, unlock) {
     PH = null;
-    h.innerHTML = '<div class="stt">📷 Make a poster photo</div><div class="row"><button class="btn sm" id="cam">📷 Camera</button><label class="btn sm sec" style="cursor:pointer">🖼️ Take / choose a photo<input type="file" accept="image/*" capture="user" id="fl" hidden></label><button class="btn sm sec" id="smp">🙂 Use a sample</button></div><div class="small">🔒 Your photo stays on your device. It is never uploaded.</div><div class="studio" id="studio"></div>';
+    h.innerHTML = '<div class="stt">📷 Make a poster photo</div><div class="row"><button class="btn sm" id="cam">📷 Camera</button><label class="btn sm sec" style="cursor:pointer">📱 Take / choose a photo<input type="file" accept="image/*" capture="user" id="fl" hidden></label><button class="btn sm sec" id="smp">🙂 Use a sample</button></div><div class="small">🔒 Your photo stays on your device. It is never uploaded.</div><div class="studio" id="studio"></div>';
     h._unlock = unlock;
     $('#cam').onclick = function () {
       var s = $('#studio'); s.innerHTML = '';
-      if (!navigator.mediaDevices || !navigator.mediaDevices.getUserMedia) { s.innerHTML = '<div class="msg">Camera is not available here. Choose a photo or use the sample.</div>'; return; }
-      navigator.mediaDevices.getUserMedia({ video: { facingMode: 'user' }, audio: false }).then(function (m) {
-        stream = m; s.innerHTML = '<video id="vid" autoplay playsinline muted></video><div class="row" style="justify-content:center;margin-top:8px"><button class="btn" id="snap">📸 Snap!</button></div>'; var v = $('#vid'); v.srcObject = m;
-        $('#snap').onclick = function () { var c = document.createElement('canvas'); c.width = v.videoWidth || 320; c.height = v.videoHeight || 240; c.getContext('2d').drawImage(v, 0, 0); stopCam(); setPhoto(c); };
-      }).catch(function () { s.innerHTML = '<div class="msg">Camera is blocked. Choose a photo or use the sample.</div>'; });
+      function fail(e) { var n = e && e.name || 'Error', why = n === 'NotAllowedError' || n === 'SecurityError' ? 'The browser blocked the camera. Tap the 🔒/camera icon in the address bar and choose Allow. (Inside a preview window it is always blocked.)' : n === 'NotFoundError' ? 'No camera was found on this device.' : n === 'NotReadableError' ? 'Another app is using the camera. Close it and try again.' : 'The camera could not start (' + n + ').'; s.innerHTML = '<div class="msg">📷 ' + why + '<br><b>No problem:</b> tap “Take / choose a photo” (it opens your phone camera) or use the sample.</div>'; }
+      if (!navigator.mediaDevices || !navigator.mediaDevices.getUserMedia) { s.innerHTML = '<div class="msg">📷 This browser cannot open the camera here (it needs https). Tap “Take / choose a photo” instead.</div>'; return; }
+      s.innerHTML = '<div class="small">Waiting for camera permission… tap Allow.</div>';
+      function ok(m) { stream = m; s.innerHTML = '<video id="vid" autoplay playsinline muted></video><div class="row" style="justify-content:center;margin-top:8px"><button class="btn" id="snap">📸 Snap!</button></div>'; var v = $('#vid'); v.srcObject = m; var pl = v.play && v.play(); if (pl && pl.catch) pl.catch(function () {});
+        $('#snap').onclick = function () { var c = document.createElement('canvas'); c.width = v.videoWidth || 320; c.height = v.videoHeight || 240; c.getContext('2d').drawImage(v, 0, 0); stopCam(); setPhoto(c); }; }
+      navigator.mediaDevices.getUserMedia({ video: { facingMode: 'user' }, audio: false }).then(ok).catch(function () { navigator.mediaDevices.getUserMedia({ video: true, audio: false }).then(ok).catch(fail); });
     };
     $('#fl').onchange = function (e) { var f = e.target.files && e.target.files[0]; if (!f) return; var r = new FileReader(); r.onload = function () { var im = new Image(); im.onload = function () { setPhoto(im); }; im.src = r.result; }; r.readAsDataURL(f); };
     $('#smp').onclick = function () { var c = document.createElement('canvas'); c.width = c.height = 240; var x = c.getContext('2d'), g = x.createLinearGradient(0, 0, 0, 240); g.addColorStop(0, '#fde68a'); g.addColorStop(1, '#fb923c'); x.fillStyle = g; x.fillRect(0, 0, 240, 240); x.font = '170px serif'; x.textAlign = 'center'; x.textBaseline = 'middle'; x.fillText('🙂', 120, 130); setPhoto(c); };
@@ -393,14 +402,17 @@ table.pp{width:100%;border-collapse:collapse;font-size:13px;margin:10px 0}.pp th
     $('#get').onclick = function () { this.disabled = true; var f = $('#flow'); dl(f, '⬇ Downloading trial', 1500, function () { f.insertAdjacentHTML('beforeend', '<div class="msg" style="background:rgba(251,191,36,.2);border-color:#fbbf24">✔ Installed. Trial period: 30 days. Some features are locked.</div>'); unlock(); }); };
   }
   function useSha(h, unlock) {
-    var full = false, day = 1, dayT = 0, score = 0, lv = 1, run = true, nagShown = false, lockSeen = false, dino = { y: 0, vy: 0 }, cx = 540, jump = false, last = performance.now(), play = 0, nagAt = 5, flash = 0, ov = null;
-    h.innerHTML = '<div class="stt">🎮 Play the trial!</div><div class="stats2"><span>📅 Day <b id="dy">1</b> / 30</span><span>🎚️ Level <b id="lv">1</b> / 3 🔒</span><span>⭐ <b id="sc">0</b></span><button class="btn sec sm" id="skp">⏩ Skip 10 days</button></div><div class="gbox" id="gb"><canvas id="gc" width="480" height="190"></canvas></div><div class="small">Tap the game (or press Space) to jump over the cactus 🌵.</div><div class="msg" id="gm" style="min-height:0;background:rgba(255,255,255,.06);border-color:var(--line)">Keep playing and see what the trial version does…</div>';
-    var gb = $('#gb'), cv = $('#gc'), x = cv.getContext('2d');
+    var full = false, day = 1, dayT = 0, coins = 0, lv = 1, lives = 3, run = true, nagShown = false, lockSeen = false, nagAt = 6, play = 0, ov = null, last = performance.now(),
+      d = { y: 0, vy: 0, j: 0 }, items = [], parts = [], pops = [], spawn = 1.2, inv = 0, flash = 0, shk = 0, off = 0, combo = 0, banner = 0, bannerT = '', ac = null;
+    h.innerHTML = '<div class="stt">🎮 Play the trial!</div><div class="stats2"><span>📅 Day <b id="dy">1</b>/30</span><span id="lvs">🎚️ Level <b id="lv">1</b>/3 🔒</span><span>🪙 <b id="sc">0</b></span><span id="hp">❤️❤️❤️</span><button class="btn sec sm" id="skp">⏩ Skip 10 days</button></div><div class="gbox" id="gb"><canvas id="gc" width="480" height="210"></canvas></div><div class="small">Tap to jump · tap again in the air to double-jump (Space on keyboard). Grab 🪙, dodge 🌵 and 🦅. 5 coins = next level!</div><div class="msg" id="gm" style="min-height:0;background:rgba(255,255,255,.06);border-color:var(--line)">Keep playing and see what the trial version does…</div>';
+    var gb = $('#gb'), cv = $('#gc'), x = cv.getContext('2d'), G = 160;
+    function snd(f, t) { try { ac = ac || new (window.AudioContext || window.webkitAudioContext)(); var o = ac.createOscillator(), g = ac.createGain(); o.type = 'square'; o.frequency.value = f; g.gain.value = .05; o.connect(g); g.connect(ac.destination); o.start(); g.gain.exponentialRampToValueAtTime(.001, ac.currentTime + (t || .12)); o.stop(ac.currentTime + (t || .12)); } catch (e) {} }
+    function hearts() { var s = ''; for (var i = 0; i < 3; i++) s += i < lives ? '❤️' : '🖤'; $('#hp').textContent = s; }
     function check() { if (nagShown && (lockSeen || full) && !check.d) { check.d = 1; unlock(); } }
     function overlay(html) { if (ov) ov.remove(); ov = document.createElement('div'); ov.className = 'ov'; ov.innerHTML = html; gb.appendChild(ov); run = false; return ov; }
     function close() { if (ov) { ov.remove(); ov = null; } run = true; last = performance.now(); }
     function buy() {
-      overlay('<div class="big">💳 Paying $29…</div>'); lt(function () { full = true; lv = 1; close(); $('#gm').innerHTML = '✔ <b>Registered!</b> The full version has no time limit, no pop-ups and all 20 levels.'; $('#lv').parentNode.innerHTML = '🎚️ Level <b id="lv">' + lv + '</b> / 20'; check(); unlock(); }, 1100);
+      overlay('<div class="big">💳 Paying $29…</div>'); lt(function () { full = true; lives = 3; hearts(); close(); $('#gm').innerHTML = '✔ <b>Registered!</b> The full version has no time limit, no pop-ups and all 20 levels. Enjoy the 🦕!'; $('#lvs').innerHTML = '🎚️ Level <b id="lv">' + lv + '</b>/20'; check(); unlock(); }, 1100);
     }
     function nag() {
       nagShown = true; var o = overlay('<div class="nag"><b>🛒 Love this game?</b><br>Buy the FULL version today!<br><span style="color:#dc2626;font-weight:900">−20% · $29</span><div class="row" style="justify-content:center;margin-top:8px"><button class="btn sm" id="nb">Buy now</button><button class="btn sec sm" id="nl" disabled style="color:#0f172a">Later (3)</button></div></div>'), n = 3;
@@ -408,26 +420,54 @@ table.pp{width:100%;border-collapse:collapse;font-size:13px;margin:10px 0}.pp th
     }
     function lock() { lockSeen = true; overlay('<div class="big">🔒 Level 4 is in the FULL version</div><div>The trial only has 3 levels.</div><button class="btn" id="b1">🛒 Buy full version $29</button>').querySelector('#b1').onclick = buy; $('#gm').textContent = '🔒 Features are limited in a trial. Pay to unlock more!'; check(); }
     function expire() { lockSeen = true; overlay('<div class="big">⌛ Trial expired!</div><div>30 days are over. Pay to keep playing.</div><button class="btn" id="b1">🛒 Buy full version $29</button>').querySelector('#b1').onclick = buy; check(); }
-    $('#skp').onclick = function () { if (full || !run && !ov) return; day = Math.min(30, day + 10); $('#dy').textContent = day; if (day >= 30) expire(); };
-    function tap() { if (ov) return; jump = true; }
-    gb.addEventListener('pointerdown', tap); var key = function (e) { if (e.code === 'Space') { e.preventDefault(); tap(); } }; document.addEventListener('keydown', key); timers.push({ _k: 1 });
+    function over() { overlay('<div class="big">💥 Game over!</div><div>You collected ' + coins + ' 🪙</div><button class="btn" id="b1">🔄 Try again</button>').querySelector('#b1').onclick = function () { lives = 3; hearts(); items = []; inv = 1.5; close(); }; }
+    $('#skp').onclick = function () { if (full || ov) return; day = Math.min(30, day + 10); $('#dy').textContent = day; if (day >= 30) expire(); };
+    function tap() { if (ov || !run) return; if (d.j < 2) { d.vy = d.j ? 330 : 400; d.j++; snd(d.j > 1 ? 620 : 440, .1); for (var i = 0; i < 5; i++) parts.push({ x: 70, y: G, vx: -40 - Math.random() * 60, vy: -Math.random() * 60, l: .4, c: '#fde68a' }); } }
+    gb.addEventListener('pointerdown', tap); var key = function (e) { if (e.code === 'Space' || e.code === 'ArrowUp') { e.preventDefault(); tap(); } }; document.addEventListener('keydown', key);
+    function addWave() {
+      var r = Math.random();
+      if (r < .4) items.push({ k: 'c', x: 500, h: 0 }); else if (r < .62) items.push({ k: 'b', x: 500, h: 12 });
+      else if (r < .85) { for (var i = 0; i < 4; i++) items.push({ k: 'o', x: 520 + i * 34, h: 40 + Math.sin(i / 3 * Math.PI) * 55 }); }
+      else { items.push({ k: 'c', x: 500, h: 0 }); items.push({ k: 'o', x: 590, h: 70 }); items.push({ k: 'o', x: 620, h: 90 }); }
+    }
     function loop(now) {
-      if (!document.body.contains(gb)) { document.removeEventListener('keydown', key); return; }
-      var dt = Math.min(.05, (now - last) / 1000); last = now;
+      if (!document.body.contains(gb)) { document.removeEventListener('keydown', key); try { ac && ac.close(); } catch (e) {} return; }
+      var dt = Math.min(.05, (now - last) / 1000); last = now; var sp = 170 + lv * 40;
       if (run) {
-        play += dt; if (!full) { dayT += dt; if (dayT > 4) { dayT = 0; day++; $('#dy').textContent = day; if (day >= 30) expire(); } }
-        if (jump && dino.y <= 0) { dino.vy = 360; jump = false; } jump = false; dino.y += dino.vy * dt; dino.vy -= 980 * dt; if (dino.y <= 0) { dino.y = 0; dino.vy = 0; }
-        cx -= (180 + lv * 38) * dt;
-        if (cx < -30) { cx = 500 + Math.random() * 180; score++; $('#sc').textContent = score; if (score % 3 === 0) { lv++; if (!full && lv > 3) { lv = 3; lock(); } else $('#lv').textContent = lv; } }
-        if (cx < 96 && cx > 48 && dino.y < 24) { score = Math.max(0, score - 1); $('#sc').textContent = score; cx = 540; flash = .4; }
-        if (!full && !nagShown && play > nagAt) nag(); else if (!full && nagShown && play > nagAt + 14) { nagAt = play; if (run) nag(); }
+        play += dt; off += sp * dt; if (!full) { dayT += dt; if (dayT > 4) { dayT = 0; day++; $('#dy').textContent = day; if (day >= 30) expire(); } }
+        d.vy -= 1050 * dt; d.y += d.vy * dt; if (d.y <= 0) { if (d.j) for (var q = 0; q < 6; q++) parts.push({ x: 70, y: G, vx: -30 - Math.random() * 80, vy: -Math.random() * 50, l: .35, c: '#d6b370' }); d.y = 0; d.vy = 0; d.j = 0; }
+        spawn -= dt; if (spawn <= 0) { addWave(); spawn = 1.1 + Math.random() * 1.0 - lv * .08; }
+        inv = Math.max(0, inv - dt);
+        items.forEach(function (it) {
+          it.x -= sp * dt; if (it.dead) return;
+          var near = it.x > 44 && it.x < 100, dy = d.y;
+          if (it.k === 'c' || it.k === 'b') { if (near && dy < 30 && !inv) { it.dead = 1; lives--; hearts(); combo = 0; flash = .4; shk = .3; inv = 1.2; snd(120, .3); if (lives <= 0) over(); } }
+          else if (near && Math.abs(dy + 18 - it.h) < 28) {
+            it.dead = 1; coins++; combo++; $('#sc').textContent = coins; snd(880 + combo * 60, .12); pops.push({ x: it.x, y: G - it.h - 30, t: combo > 2 ? '+1 🔥x' + combo : '+1', l: .7 });
+            for (var i = 0; i < 6; i++) parts.push({ x: it.x, y: G - it.h - 16, vx: (Math.random() - .5) * 160, vy: -Math.random() * 120, l: .5, c: '#fbbf24' });
+            var nl = 1 + Math.floor(coins / 5);
+            if (nl > lv) { if (!full && nl > 3) { coins--; $('#sc').textContent = coins; lock(); } else { lv = nl; $('#lv').textContent = lv; banner = 1.4; bannerT = '🎉 LEVEL ' + lv + '!'; snd(1000, .3); } }
+          }
+        });
+        items = items.filter(function (it) { return it.x > -40 && !it.dead; });
+        if (!full && !nagShown && play > nagAt) nag(); else if (!full && nagShown && play > nagAt + 16) { nagAt = play; if (run) nag(); }
       }
-      flash = Math.max(0, flash - dt);
-      var g = x.createLinearGradient(0, 0, 0, 190); g.addColorStop(0, lv === 1 ? '#7dd3fc' : lv === 2 ? '#fdba74' : '#a78bfa'); g.addColorStop(1, '#e0f2fe'); x.fillStyle = g; x.fillRect(0, 0, 480, 190);
-      x.fillStyle = '#a16207'; x.fillRect(0, 150, 480, 40); x.fillStyle = '#fde68a'; x.fillRect(0, 150, 480, 4);
-      x.font = '44px serif'; x.textBaseline = 'alphabetic'; x.fillText('🦖', 56, 152 - dino.y); x.font = '38px serif'; x.fillText('🌵', cx, 152);
-      if (flash > 0) { x.fillStyle = 'rgba(239,68,68,.35)'; x.fillRect(0, 0, 480, 190); }
-      raf = requestAnimationFrame(loop);
+      parts.forEach(function (p) { p.l -= dt; p.x += p.vx * dt; p.y += p.vy * dt; p.vy += 300 * dt; }); parts = parts.filter(function (p) { return p.l > 0; });
+      pops.forEach(function (p) { p.l -= dt; p.y -= 30 * dt; }); pops = pops.filter(function (p) { return p.l > 0; });
+      flash = Math.max(0, flash - dt); shk = Math.max(0, shk - dt); banner = Math.max(0, banner - dt);
+      x.save(); if (shk > 0) x.translate((Math.random() - .5) * 8, (Math.random() - .5) * 8);
+      var th = [['#7dd3fc', '#e0f2fe', '#86efac'], ['#fdba74', '#fef3c7', '#fcd34d'], ['#6d28d9', '#c4b5fd', '#a78bfa']][Math.min(lv, 3) - 1] || ['#0b1226', '#4c1d95', '#7c3aed'];
+      var g = x.createLinearGradient(0, 0, 0, G); g.addColorStop(0, th[0]); g.addColorStop(1, th[1]); x.fillStyle = g; x.fillRect(-10, -10, 500, G + 10);
+      x.fillStyle = th[2]; x.globalAlpha = .6; for (var m = 0; m < 4; m++) { var mx = ((m * 170 - off * .2) % 680 + 680) % 680 - 100; x.beginPath(); x.moveTo(mx, G); x.lineTo(mx + 70, G - 60 - (m % 2) * 25); x.lineTo(mx + 140, G); x.fill(); } x.globalAlpha = 1;
+      x.font = '34px serif'; x.textBaseline = 'alphabetic'; for (var c2 = 0; c2 < 3; c2++) { var cx2 = ((c2 * 220 - off * .5) % 660 + 660) % 660 - 80; x.fillText(lv === 3 ? '🌙' : '☁️', cx2, 40 + c2 * 14); }
+      x.fillStyle = '#a16207'; x.fillRect(-10, G, 500, 60); x.fillStyle = '#fde68a'; x.fillRect(-10, G, 500, 5); x.fillStyle = '#854d0e'; for (var s = 0; s < 14; s++) x.fillRect(((s * 47 - off) % 660 + 660) % 660 - 20, G + 14 + (s % 3) * 12, 14, 3);
+      items.forEach(function (it) { x.font = (it.k === 'c' ? 36 : it.k === 'b' ? 34 : 26) + 'px serif'; x.fillText(it.k === 'c' ? '🌵' : it.k === 'b' ? '🦅' : '🪙', it.x, G - it.h + (it.k === 'o' ? Math.sin(now / 150 + it.x) * 3 : 0)); });
+      x.save(); x.translate(70, G - d.y); var bob = d.y > 0 ? 0 : Math.abs(Math.sin(now / 70)) * 4; if (d.y > 0) x.rotate(-.25); if (inv > 0 && Math.floor(now / 80) % 2) x.globalAlpha = .4; x.font = '46px serif'; x.fillText(full ? '🦕' : '🦖', -24, -bob); x.restore(); x.globalAlpha = 1;
+      parts.forEach(function (p) { x.fillStyle = p.c; x.globalAlpha = Math.min(1, p.l * 3); x.fillRect(p.x, p.y, 4, 4); }); x.globalAlpha = 1;
+      pops.forEach(function (p) { x.font = '900 16px system-ui'; x.fillStyle = '#fff'; x.strokeStyle = '#0f172a'; x.lineWidth = 3; x.strokeText(p.t, p.x, p.y); x.fillText(p.t, p.x, p.y); });
+      if (banner > 0) { x.font = '900 32px system-ui'; x.textAlign = 'center'; x.fillStyle = '#fff'; x.strokeStyle = '#7c3aed'; x.lineWidth = 6; x.strokeText(bannerT, 240, 80); x.fillText(bannerT, 240, 80); x.textAlign = 'start'; }
+      if (flash > 0) { x.fillStyle = 'rgba(239,68,68,.35)'; x.fillRect(-10, -10, 500, 230); }
+      x.restore(); raf = requestAnimationFrame(loop);
     }
     raf = requestAnimationFrame(loop);
   }
@@ -442,25 +482,33 @@ table.pp{width:100%;border-collapse:collapse;font-size:13px;margin:10px 0}.pp th
     $('#get').onclick = function () { this.disabled = true; var f = $('#flow'); dl(f, '⬇ Installing', 1300, function () { f.insertAdjacentHTML('beforeend', '<div class="msg" style="background:rgba(16,185,129,.2);border-color:#34d399">✔ Installed for $0! No payment, no key.</div>'); unlock(); }); };
   }
   function useFre(h, unlock) {
-    var sent = 0, tried = false, round = 0, ads = [['🍔', 'Super Burger: 50% off today!'], ['👟', 'Run Fast shoes: buy 1 get 1'], ['🎮', 'Play GameZone free!']], ai = 0;
-    var Q = [['Hi Mia! 👋', 'What’s up?', 'Good morning ☀️'], ['Sure! 🎉', 'Sorry, I am busy', 'What time?'], ['See you there 👍', 'OK!', 'Can’t wait']], A = ['Hi! Want to go to the park? 🌳', 'Great! At 4 pm! ⏰', 'Yay! See you! 😄'];
-    h.innerHTML = '<div class="stt">💬 Chat with a friend</div><div class="phone2"><div class="ph-h">🐱 Mia <small>● online</small></div><div class="msgs" id="ms"></div><div class="chips" id="cp"></div><div class="adb" id="ad"></div></div><div class="row" style="justify-content:center;margin-top:10px"><button class="btn sec sm" id="vs">👀 View source code</button><button class="btn sec sm" id="md">🛠️ Change the app</button></div><div class="msg" id="fm" style="min-height:0;background:rgba(255,255,255,.06);border-color:var(--line)">Send 3 messages, then try to look inside the app.</div>';
-    var ms = $('#ms'), cp = $('#cp');
-    function add(cls, w, t) { var d = document.createElement('div'); d.className = 'bub2 ' + cls; d.innerHTML = '<small>' + w + '</small><span>' + esc(t) + '</span>'; ms.appendChild(d); ms.scrollTop = 99999; return d; }
+    var sent = 0, tried = false, ads = [['🍔', 'Super Burger: 50% off today!'], ['👟', 'Run Fast shoes: buy 1 get 1'], ['🎮', 'Play GameZone free!']], ai = 0, shown = false, busy = false, hist = [];
+    h.innerHTML = '<div class="stt">💬 Chat with Mia. Type anything!</div><div class="wa"><div class="wa-h"><span class="wa-av">🐱</span><div><b>Mia</b><small id="st">online</small></div><span class="wa-ic">📞 🎥 ⋮</span></div><div class="wa-b" id="ms"><div class="wa-day">TODAY</div></div><div class="wa-f"><button class="wa-e" id="em" aria-label="Emoji">😊</button><input id="inp" placeholder="Message" autocomplete="off" maxlength="120"><button class="wa-s" id="snd" aria-label="Send">➤</button></div><div class="adb" id="ad"></div></div><div class="small" style="text-align:center">Try: “hi”, “how are you?”, “park”, “homework”, “what is your name?”</div><div class="row" style="justify-content:center;margin-top:8px"><button class="btn sec sm" id="vs">👀 View source code</button><button class="btn sec sm" id="md">🛠️ Change the app</button></div><div class="msg" id="fm" style="min-height:0;background:rgba(255,255,255,.06);border-color:var(--line)">Send 3 messages, then try to look inside the app.</div>';
+    var ms = $('#ms'), inp = $('#inp');
+    function tm() { var n = new Date(); return ('0' + n.getHours()).slice(-2) + ':' + ('0' + n.getMinutes()).slice(-2); }
+    function add(cls, t) { var d = document.createElement('div'); d.className = 'wa-m ' + cls; d.innerHTML = '<span></span><i>' + tm() + (cls === 'me' ? ' <u>✓</u>' : '') + '</i>'; d.firstChild.textContent = t; ms.appendChild(d); ms.scrollTop = 99999; return d; }
     function ad() { var a = ads[ai++ % ads.length]; $('#ad').innerHTML = '<span style="font-size:22px">' + a[0] + '</span><span>' + a[1] + '</span><small>Ad</small>'; } ad(); iv(ad, 3000);
-    function chips() { cp.innerHTML = ''; if (round >= 3) return; Q[round].forEach(function (q) { var b = document.createElement('button'); b.className = 'chp'; b.textContent = q; b.onclick = function () { send(q); }; cp.appendChild(b); }); }
+    var R = [[/\b(hi|hello|hey|yo)\b|哈囉|你好/i, ['Hi! 😄 How are you?', 'Heyyy! 👋', 'Hello! I was just thinking of you 😊']], [/how are you|how r u|what'?s up|sup/i, ['I’m great, thanks! Just finished lunch 🍜', 'Good! A bit sleepy 😴 You?']], [/(i'?m|im) (fine|good|great|ok|well)|\bfine\b|\bgood\b/i, ['Nice to hear! 😊', 'Yay! 🎉']],
+      [/park|play|hang|meet|go out|free/i, ['Great idea! Let’s go to the park 🌳 at 4 pm?', 'Sure! Park at 4? ⏰']], [/4|four|ok|okay|sure|yes|yeah|yep/i, ['Perfect! See you there 👍', 'Yay! 😄 Don’t be late!']], [/homework|study|exam|test|ict/i, ['Ugh homework 😩 I still have ICT to finish. Software licences, right?', 'ICT is fun, but the test is scary 😱']],
+      [/name|who are you/i, ['I’m Mia 🐱 and you are chatting on ChatChat!'], ], [/ads?\b|advert/i, ['Yeah, ChatChat shows ads. That is how it stays free 😅']], [/free|price|pay|money/i, ['ChatChat is freeware: free to use, but no source code for us 😂']], [/lol|haha|😂|funny/i, ['😂😂😂', 'Haha stop 🤣']], [/bye|goodbye|see you|cya|later/i, ['Bye! 👋 Talk later!']], [/love|❤|thanks|thank you|thx/i, ['Aww 🥰', 'You’re welcome! 😊']]],
+      F = ['Hmm, tell me more! 🤔', 'Really? 😮', 'Haha OK 😄', 'Interesting! 😀', 'Send me a photo later 📸'];
+    function reply(t) { for (var i = 0; i < R.length; i++) if (R[i][0].test(t)) { var a = R[i][1]; return a[Math.floor(Math.random() * a.length)]; } return F[Math.floor(Math.random() * F.length)]; }
     function chk() { if (sent >= 3 && tried) unlock(); }
-    function send(q) {
-      cp.innerHTML = ''; add('me', 'You', q); sent++; var r = round++; var tp = add('you', 'Mia', '…');
-      lt(function () { tp.lastChild.textContent = A[r]; chips(); chk(); if (sent === 2) interstitial(); }, 800);
+    function send() {
+      var t = inp.value.trim(); if (!t || busy) return; inp.value = ''; var m = add('me', t); sent++; hist.push(t); busy = true;
+      lt(function () { m.querySelector('u').textContent = '✓✓'; }, 400);
+      lt(function () { m.querySelector('u').style.color = '#53bdeb'; $('#st').textContent = 'typing…'; }, 900);
+      lt(function () { $('#st').textContent = 'online'; add('you', reply(t)); busy = false; chk(); if (sent === 2 && !shown) { shown = true; interstitial(); } }, 900 + Math.min(1800, 600 + t.length * 40));
     }
     function interstitial() {
-      var o = document.createElement('div'); o.className = 'ov'; o.style.borderRadius = '20px'; o.innerHTML = '<div style="background:#fef9c3;color:#78350f;border-radius:16px;padding:14px;max-width:240px"><small style="background:#f59e0b;color:#fff;border-radius:6px;padding:0 6px">Ad</small><div style="font-size:44px">🍔</div><b>Super Burger</b><br>50% off today!<br><button class="btn sm" id="cx" disabled style="margin-top:8px">Skip ad (3)</button></div>'; $('.phone2').appendChild(o);
+      var o = document.createElement('div'); o.className = 'ov'; o.style.borderRadius = '20px'; o.innerHTML = '<div style="background:#fef9c3;color:#78350f;border-radius:16px;padding:14px;max-width:240px"><small style="background:#f59e0b;color:#fff;border-radius:6px;padding:0 6px">Ad</small><div style="font-size:44px">🍔</div><b>Super Burger</b><br>50% off today!<br><button class="btn sm" id="cx" disabled style="margin-top:8px">Skip ad (3)</button></div>'; $('.wa').appendChild(o);
       var n = 3, t = setInterval(function () { n--; var b = o.querySelector('#cx'); if (n <= 0) { clearInterval(t); b.disabled = false; b.textContent = 'Close ✖'; b.onclick = function () { o.remove(); }; } else b.textContent = 'Skip ad (' + n + ')'; }, 1000); timers.push(t);
     }
+    $('#snd').onclick = send; inp.onkeydown = function (e) { if (e.key === 'Enter') send(); };
+    var E = ['😊', '😂', '👍', '🎉', '❤️', '😴'], ei = 0; $('#em').onclick = function () { inp.value += E[ei++ % E.length]; inp.focus(); };
     $('#vs').onclick = function () { tried = true; shake($('#stage')); $('#fm').innerHTML = '🔒 <b>Source code: not given.</b> You can use ChatChat, but you cannot see how it is made.'; chk(); };
     $('#md').onclick = function () { tried = true; shake($('#stage')); $('#fm').innerHTML = '🚫 <b>You cannot modify it.</b> Freeware is free of charge, but you may not change the program.'; chk(); };
-    add('you', 'Mia', 'Hey! 🙂'); chips();
+    lt(function () { add('you', 'Hey! 🙂 What are you up to?'); }, 500);
   }
   function helpFre(h, unlock) {
     var open = {}, contact = false;
