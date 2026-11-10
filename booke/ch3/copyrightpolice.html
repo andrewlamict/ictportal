@@ -179,6 +179,8 @@ input[type=text]{width:100%;font:inherit;padding:10px 12px;border-radius:12px;bo
 .wave{transform-box:fill-box;transform-origin:50% 0;animation:wv .5s ease-in-out infinite alternate}@keyframes wv{from{transform:rotate(-155deg)}to{transform:rotate(-115deg)}}
 .type{transform-box:fill-box;transform-origin:50% 0;animation:ty .25s ease-in-out infinite alternate}@keyframes ty{from{transform:rotate(-62deg)}to{transform:rotate(-80deg)}}
 .moveW{transition:transform 1.4s ease-out,opacity .8s}.moveF{transition:transform .8s ease-in-out,opacity .6s}.runA{transition:transform .9s ease-in}
+.camfl{position:absolute;inset:0;background:#fff;opacity:0;pointer-events:none;z-index:2}.camfl.go{animation:camfl .4s ease-out}@keyframes camfl{0%{opacity:.9}100%{opacity:0}}
+.qh{font-weight:900;font-size:18px;text-align:center;margin:8px 0}
 .hs{opacity:0;pointer-events:none;cursor:pointer;transition:opacity .5s}
 .ready .hs{opacity:1;pointer-events:auto}.hs.found{opacity:0;transition:opacity .9s .5s}
 .hring{transform-box:fill-box;transform-origin:center;animation:pr 1.2s ease-out infinite}
@@ -211,7 +213,7 @@ input[type=text]{width:100%;font:inherit;padding:10px 12px;border-radius:12px;bo
   var $ = function (s, r) { return (r || document).querySelector(s); };
   var st = $('#stage'), timers = [];
   function lt(fn, ms) { var t = setTimeout(fn, ms); timers.push(t); return t; }
-  function clearAll() { timers.forEach(clearTimeout); timers = []; }
+  function clearAll() { timers.forEach(clearTimeout); timers = []; cancelAnimationFrame(raf); }
   function esc(s) { return String(s).replace(/[&<>"]/g, function (c) { return { '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;' }[c]; }); }
   function shuffle(a) { a = a.slice(); for (var i = a.length - 1; i > 0; i--) { var j = Math.floor(Math.random() * (i + 1)), t = a[i]; a[i] = a[j]; a[j] = t; } return a; }
   function T(x, y, s, sz, fill, anc, w, ex) { return '<text x="' + x + '" y="' + y + '" font-size="' + sz + '" fill="' + (fill || '#0f172a') + '" text-anchor="' + (anc || 'middle') + '" font-weight="' + (w || 800) + '" ' + (ex || '') + '>' + s + '</text>'; }
@@ -222,15 +224,15 @@ input[type=text]{width:100%;font:inherit;padding:10px 12px;border-radius:12px;bo
   /* ---------- characters (local coords, feet at 0,0, facing right) ---------- */
   function fig(o) {
     var s = o.s || 1, fl = o.flip ? -1 : 1, sk = o.skin || '#f2c9a0', hr = o.hair || '#2a1a12', sh = o.shirt || '#60a5fa', pn = o.pants || '#334155', m = o.mouth || 'smile', arm = o.arm || 'down', g = '';
-    g += '<g transform="translate(' + o.x + ',' + o.y + ') scale(' + (s * fl) + ',' + s + ')"><g class="' + (o.walk ? 'walk' : '') + '">';
-    g += '<g class="lg l1">' + R(-11, -32, 9, 32, pn, 4) + '<ellipse cx="-6" cy="0" rx="8" ry="3.4" fill="#0f172a"/></g><g class="lg l2">' + R(2, -32, 9, 32, pn, 4) + '<ellipse cx="7" cy="0" rx="8" ry="3.4" fill="#0f172a"/></g>';
+    g += '<g transform="translate(' + o.x + ',' + (o.y + (o.dy || 0)) + ') scale(' + (s * fl) + ',' + s + ')"><g class="' + (o.walk ? 'walk' : '') + '">';
+    g += '<g transform="rotate(' + (o.sw || 0) + ' -6.5 -32)"><g class="lg l1">' + R(-11, -32, 9, 32, pn, 4) + '<ellipse cx="-6" cy="0" rx="8" ry="3.4" fill="#0f172a"/></g></g><g transform="rotate(' + (-(o.sw || 0)) + ' 6.5 -32)"><g class="lg l2">' + R(2, -32, 9, 32, pn, 4) + '<ellipse cx="7" cy="0" rx="8" ry="3.4" fill="#0f172a"/></g></g>';
     g += R(-16, -74, 32, 46, sh, 11);
     if (o.cop) g += R(-16, -37, 32, 5, '#111827') + R(-3, -38, 6, 7, '#fbbf24', 1) + '<path d="M-7 -74 L0 -64 L7 -74Z" fill="#fff"/><path d="M-2 -66 L0 -64 L2 -66 L3 -50 L0 -47 L-3 -50Z" fill="#0f172a"/>' + star(-8, -58, 6, '#fbbf24');
     /* arms */
-    var la = { down: 0, up: 160, hold: 40 }[arm] || 0, ra = { down: 0, point: -88, up: -165, hold: -45, salute: -150, type: -70 }[arm];
-    if (ra == null) ra = 0;
+    var la = { down: 0, up: 160, hold: 40 }[arm] || 0, ra = { down: 0, point: -88, up: -165, hold: -45, salute: -150, type: -70 }[arm], num = o.ra != null;
+    if (ra == null) ra = 0; if (num) ra = o.ra; if (o.la != null) la = o.la;
     g += '<g transform="rotate(' + la + ' -16 -68)">' + R(-25, -68, 9, 30, sh, 4.5) + '<circle cx="-20.5" cy="-37" r="5" fill="' + sk + '"/></g>';
-    g += '<g class="' + (arm === 'wave' ? 'wave' : arm === 'type' ? 'type' : '') + '" transform="' + (arm === 'wave' || arm === 'type' ? '' : 'rotate(' + ra + ' 16 -68)') + '">' + R(16, -68, 9, 30, sh, 4.5) + '<circle cx="20.5" cy="-37" r="5" fill="' + sk + '"/></g>';
+    g += '<g class="' + (!num && arm === 'wave' ? 'wave' : !num && arm === 'type' ? 'type' : '') + '" transform="' + (!num && (arm === 'wave' || arm === 'type') ? '' : 'rotate(' + ra + ' 16 -68)') + '">' + R(16, -68, 9, 30, sh, 4.5) + '<circle cx="20.5" cy="-37" r="5" fill="' + sk + '"/></g>';
     /* head */
     g += '<circle cx="0" cy="-92" r="18" fill="' + sk + '"/>';
     var hs = o.hs || 'short';
@@ -277,127 +279,256 @@ input[type=text]{width:100%;font:inherit;padding:10px 12px;border-radius:12px;bo
   function lines(x, y, w, n, gap, fill, ex) { var s = ''; for (var i = 0; i < n; i++) s += R(x, y + i * gap, w - (i % 3 === 2 ? w * .3 : 0), 4, fill || '#cbd5e1', 2, ex || ''); return s; }
   function kids(cols) { var s = ''; cols.forEach(function (c, i) { var x = 240 + i * 52; s += R(x - 16, 252, 32, 24, '#475569', 9) + '<circle cx="' + x + '" cy="244" r="11" fill="#f2c9a0"/><path d="M' + (x - 11) + ' 244 A11 11 0 0 1 ' + (x + 11) + ' 244Z" fill="' + c + '"/>'; }); return s; }
 
-  /* ---------- the ten cases ---------- */
+  /* ---------- animation helpers ---------- */
+  var raf = 0;
+  function seg(t, a, b) { return Math.max(0, Math.min(1, (t - a) / (b - a))); }
+  function lerp(a, b, u) { return a + (b - a) * u; }
+  function eas(u) { return u < .5 ? 2 * u * u : 1 - Math.pow(-2 * u + 2, 2) / 2; }
+  function ex(o, p) { for (var k in p) o[k] = p[k]; return o; }
+  function pk(t, a) { var u = (t - a) / .35; if (u <= 0) return 0; if (u >= 1) return 1; var c1 = 1.7, c3 = c1 + 1; return 1 + c3 * Math.pow(u - 1, 3) + c1 * Math.pow(u - 1, 2); }
+  function E(x, y, ch, sz, extra) { return '<text x="' + x.toFixed(1) + '" y="' + y.toFixed(1) + '" font-size="' + (sz || 24) + '" text-anchor="middle" ' + (extra || '') + '>' + ch + '</text>'; }
+  function P(x, y, ch, sz, k) { return k > 0 ? '<g transform="translate(' + x + ',' + y + ') scale(' + k.toFixed(2) + ')">' + E(0, 0, ch, sz) + '</g>' : ''; }
+  function typed(s, u) { return esc(s.slice(0, Math.round(s.length * u))); }
+  function bub(x, y, txt, k) { k = k == null ? 1 : k; if (k <= 0) return ''; var w = Math.max(70, txt.length * 5.4 + 18); return '<g transform="translate(' + x + ',' + y + ') scale(' + k.toFixed(2) + ')"><rect x="' + (-w / 2) + '" y="-24" width="' + w + '" height="26" rx="10" fill="#fff" stroke="#0f172a" stroke-width="2"/><path d="M-5 2 l5 8 l5 -8z" fill="#fff"/>' + T(0, -7, esc(txt), 10.5, '#0f172a') + '</g>'; }
+  function typ(t, a) { return a != null && t > a ? -62 - 18 * Math.sin(t * 20) : -40; }
+  function cust(x, o) { return fig(ex({ x: x, y: 228, skin: '#fcd9b6', hair: '#111827', hs: 'short', shirt: '#14b8a6', pants: '#334155' }, o)); }
+  var PHOTO = '<rect width="100" height="70" fill="url(#sunset)"/><circle cx="50" cy="40" r="14" fill="#fde047"/><path d="M0 70 L30 42 L58 64 L78 50 L100 70Z" fill="#1e1b4b"/>';
+
+  /* ---------- the ten cases: each one is a short animated story ---------- */
   var CASES = [
     { // 1 pirate DVD stall
-      rep: 'A stall on the street is selling brand-new movie DVDs for $10!', bg: bgStreet(), sx: 340,
-      sus: { skin: '#e0a46b', hair: '#111827', hs: 'short', shirt: '#f97316', pants: '#334155', mouth: 'smirk', arm: 'wave' },
+      rep: 'A stall on the street is selling brand-new movie DVDs for $10!', bg: bgStreet(), sx: 340, D: 10,
+      sus: { skin: '#e0a46b', hair: '#111827', hs: 'short', shirt: '#f97316', pants: '#334155', mouth: 'smirk' },
       back: R(262, 128, 6, 100, '#78716c') + R(412, 128, 6, 100, '#78716c') + R(270, 70, 140, 24, '#7f1d1d', 6) + T(340, 87, 'NEW MOVIES — $10!', 13, '#fde047') +
         [0, 1, 2, 3, 4, 5].map(function (i) { var t0 = 250 + i * 30, b0 = 240 + i * 33.3; return '<path d="M' + t0 + ' 98 H' + (t0 + 30) + ' L' + (b0 + 33.3) + ' 130 H' + b0 + 'Z" fill="' + (i % 2 ? '#fff' : '#ef4444') + '"/>'; }).join(''),
       front: R(252, 176, 176, 10, '#a16207', 3) + R(256, 186, 168, 34, '#b45309') + T(340, 208, '© ? ? ?', 10, '#fde68a') + disc(285, 168, 12) + disc(312, 170, 12) + disc(299, 160, 12) +
         R(366, 148, 40, 28, '#64748b', 4) + R(372, 160, 22, 4, '#0f172a') + '<circle cx="399" cy="154" r="3" fill="#22c55e" class="blink"/>' + R(414, 146, 30, 22, '#fff', 3, 'stroke="#94a3b8"') + T(429, 162, '$10', 13, '#dc2626'),
-      hot: [[299, 150], [429, 138], [340, 114]],
+      act: function (t) {
+        var f = '', s = {}, cp = seg(t, 1.4, 3.4);
+        if (cp > 0 && cp < 1) f += R(368, 139, 36, 6, '#334155', 2) + R(368, 139, 36 * cp, 6, '#22c55e', 2) + T(386, 134, 'COPYING…', 7, '#0f172a');
+        s.ra = t > 7.4 ? -150 : t > 5 && t < 6.6 ? -85 : t > 1.2 && t < 3.6 ? -55 - 18 * Math.sin(t * 9) : -40;
+        if (t > 7.4) { s.la = 150; s.sweat = true; s.mouth = 'o'; }
+        var u = seg(t, 3.4, 4.3); if (u > 0 && u < 1) f += disc(lerp(386, 326, u), 150 - 26 * Math.sin(Math.PI * u) + 13 * u, 10);
+        if (t >= 4.3 && t < 5.9) f += disc(326, 163, 11);
+        u = seg(t, 5.9, 6.6); if (u > 0 && u < 1) f += disc(lerp(326, 440, u), lerp(163, 152, u) - 12 * Math.sin(Math.PI * u), 11);
+        var cx = t < 3.6 ? 560 : t < 4.8 ? lerp(560, 452, eas(seg(t, 3.6, 4.8))) : t < 6.8 ? 452 : lerp(452, 580, seg(t, 6.8, 8.8)), mv = (t >= 3.6 && t < 4.8) || (t >= 6.8 && t < 8.8);
+        if (cx < 540) f += cust(cx, { flip: t < 6.7, mouth: t > 6.4 ? 'big' : 'smile', sw: mv ? Math.sin(t * 14) * 24 : 0, ra: t >= 4.8 && t < 5.8 ? -80 : -35 }) + (t > 6.6 ? E(cx + 28, 184, '📀', 18) : '');
+        u = seg(t, 4.9, 5.8); if (u > 0 && u < 1) f += E(lerp(434, 356, u), 152 - 14 * Math.sin(Math.PI * u), '💵', 22);
+        if (t > 5.8 && t < 7.4) f += T(366, 132 - 14 * seg(t, 5.8, 7.4), '+$10', 14, '#16a34a', 'middle', 900);
+        if (t > 7.3) f += bub(70, 94, 'Show me your licence!', pk(t, 7.3));
+        if (t > 8.4) f += bub(340, 108, 'Licence? Uh-oh… 😰', pk(t, 8.4));
+        return { front: f, sus: s };
+      },
+      ev: [[3.7, 0], [5.5, 1], [8.6, 2]],
+      cap: [[0, '👮 Officer Lam arrives…'], [1.4, '💿 He burns a new film onto discs'], [4.0, '🧒 A customer walks up'], [5.0, '💵 $10 for a copied film!'], [7.3, '📜 “Show me your licence!”'], [8.5, '😰 He has no permission']],
       clues: ['📀 New films burned onto discs at home', '💰 Sold for $10 each: selling for profit', '🧾 He cannot show any permission from the film company'],
       ans: 'arrest', law: '3.3 Copyright infringement · piracy',
       why: 'Copying films and selling the discs without permission is piracy. Selling infringing copies is a crime: up to $50,000 per copy and 4 years in prison.', fix: 'Get permission from the owner (and pay royalties), or sell legal discs.',
       cry: 'Not me!', ok: 'Hehe… caught!' },
     { // 2 P2P uploader
-      rep: 'Someone is sharing the newest film online so everybody can download it free!', bg: bgRoom('#1e3a5f', '#0f172a'), sx: 215,
-      sus: { skin: '#fcd9b6', hair: '#111827', hs: 'short', shirt: '#6d28d9', pants: '#1f2937', mouth: 'smirk', arm: 'type', phones: true },
+      rep: 'Someone is sharing the newest film online so everybody can download it free!', bg: bgRoom('#1e3a5f', '#0f172a'), sx: 215, D: 9.5,
+      sus: { skin: '#fcd9b6', hair: '#111827', hs: 'short', shirt: '#6d28d9', pants: '#1f2937', mouth: 'smirk', phones: true },
       back: R(410, 56, 62, 88, '#7f1d1d', 6) + T(441, 74, 'NOW SHOWING', 8, '#fde047') + T(441, 108, '🎬', 28) + T(441, 128, 'in cinemas', 8, '#fff') +
         R(268, 50, 134, 92, '#0b1226', 6, 'stroke="#94a3b8" stroke-width="3"') + T(335, 70, 'BLOCKBUSTER.mkv', 11, '#7dd3fc') + T(335, 83, '(new film, not his)', 8.5, '#fca5a5', 'middle', 700) +
-        R(284, 96, 102, 10, '#334155', 5) + R(284, 96, 102, 10, '#22c55e', 5, 'class="prog"') + T(335, 124, '⬆ UPLOADING · 1,024 peers', 9, '#86efac') + R(327, 142, 16, 18, '#64748b') + R(310, 158, 50, 6, '#64748b', 3),
-      front: desk(160, 270), hot: [[335, 70], [335, 124], [441, 100]],
+        R(284, 96, 102, 10, '#334155', 5) + R(327, 142, 16, 18, '#64748b') + R(310, 158, 50, 6, '#64748b', 3),
+      front: desk(160, 270),
+      act: function (t) {
+        var f = '', pg = seg(t, 2, 8);
+        f += R(284, 96, 102 * pg, 10, '#22c55e', 5) + T(335, 124, '⬆ UPLOADING · ' + Math.floor(1024 * pg) + ' peers', 9, '#86efac');
+        for (var i = 0; i < 12; i++) { var u = seg(t, 2.3 + i * .45, 3.4 + i * .45); if (u > 0) f += E(lerp(335, 250 + (i % 6) * 40, eas(u)), lerp(52, i < 6 ? 16 : 38, eas(u)), '💻', 16); }
+        if (t > 6.2) f += P(455, 128, '📉', 22, pk(t, 6.2)) + T(441, 142, 'sales ↓', 8, '#fca5a5');
+        return { front: f, sus: { ra: typ(t, 1.2) } };
+      },
+      ev: [[2.4, 0], [5.8, 1], [7.6, 2]],
+      cap: [[0, '👮 Officer Lam arrives…'], [1.4, '⌨️ He uploads a brand-new film'], [3.5, '💻 Strangers start downloading'], [6.0, '👥 1,024 peers, all for free!'], [6.8, '🎟️ Cinema ticket sales drop']],
       clues: ['🎬 He is uploading a new film he does not own', '👥 1,024 strangers are downloading it for free', '🎟️ The film company loses cinema and DVD sales'],
       ans: 'arrest', law: '3.3 Internet piracy',
       why: 'Sharing a film through P2P file sharing is Internet piracy. Even when it is free, distributing in a way that harms the owner is a crime, and the owner can sue for compensation.', fix: 'Watch legal copies. Only share your own work, or work that comes with a licence.',
       cry: 'It was free!', ok: 'Oops…' },
     { // 3 cracked software
-      rep: 'A student downloaded “free” design software from a strange website!', bg: bgRoom('#312e81', '#1e1b4b'), sx: 215,
-      sus: { skin: '#e0a46b', hair: '#3b2a1a', hs: 'bun', shirt: '#16a34a', pants: '#1f2937', mouth: 'big', arm: 'type' },
-      back: R(268, 50, 134, 92, '#0b1226', 6, 'stroke="#94a3b8" stroke-width="3"') + R(282, 62, 106, 70, '#e2e8f0', 4) + R(282, 62, 106, 14, '#475569', 4) + T(335, 73, 'KEYGEN.exe', 9, '#fff') + R(300, 96, 70, 20, '#ef4444', 6) + T(335, 110, 'Generate key', 10, '#fff') + T(335, 90, 'Pro Design 2026', 8, '#0f172a') +
-        '<g class="bobb">' + R(406, 62, 66, 38, '#fff', 4, 'stroke="#ef4444" stroke-width="2"') + T(439, 78, '🦠', 16) + T(439, 94, 'VIRUS!', 9, '#dc2626') + '</g>' +
-        '<g class="bobb2">' + R(226, 28, 56, 30, '#fef08a', 4, 'stroke="#ca8a04" stroke-width="2"') + T(254, 42, '⚠️ 1 file', 9, '#92400e') + T(254, 53, 'infected', 8, '#92400e') + '</g>' +
-        R(394, 128, 40, 26, '#fde047', 2, 'transform="rotate(-6 414 141)"') + T(414, 139, 'Support:', 7.5, '#78350f', 'middle', 800, 'transform="rotate(-6 414 141)"') + T(414, 149, 'none ✗', 8, '#dc2626', 'middle', 800, 'transform="rotate(-6 414 141)"') + R(327, 142, 16, 18, '#64748b') + R(310, 158, 50, 6, '#64748b', 3),
-      front: desk(160, 270), hot: [[335, 100], [439, 80], [416, 142]],
+      rep: 'A student downloaded “free” design software from a strange website!', bg: bgRoom('#312e81', '#1e1b4b'), sx: 215, D: 9.5,
+      sus: { skin: '#e0a46b', hair: '#3b2a1a', hs: 'bun', shirt: '#16a34a', pants: '#1f2937', mouth: 'big' },
+      back: R(268, 50, 134, 92, '#0b1226', 6, 'stroke="#94a3b8" stroke-width="3"') + R(282, 62, 106, 70, '#e2e8f0', 4) + R(282, 62, 106, 14, '#475569', 4) + T(335, 73, 'KEYGEN.exe', 9, '#fff') + T(335, 90, 'Pro Design 2026', 8, '#0f172a') + R(327, 142, 16, 18, '#64748b') + R(310, 158, 50, 6, '#64748b', 3),
+      front: desk(160, 270),
+      act: function (t) {
+        var f = '', s = { ra: typ(t, 1) }, pr = t > 2.5 && t < 2.8;
+        f += R(300, 96, 70, 20, pr ? '#991b1b' : '#ef4444', 6) + T(335, 110, 'Generate key', 10, '#fff');
+        if (t < 3.6) { var cu = eas(seg(t, 1.2, 2.4)); f += E(lerp(395, 345, cu), lerp(60, 108, cu), '🖱️', 16); }
+        if (t > 2.7) f += T(335, 127, '✔ ACTIVATED 8F2A-91CC', 7.5, '#16a34a');
+        if (t > 3.3 && t < 4.5) { s.ra = -165; s.la = 160; s.mouth = 'big'; s.happyEyes = true; }
+        if (t >= 4.6) { s.ra = -150; s.la = 150; s.mouth = 'o'; s.sweat = true; }
+        [[440, 80, 4.6], [252, 50, 5.1], [304, 26, 5.6], [418, 30, 6.1]].forEach(function (p, i) { var k = pk(t, p[2]); if (k > 0) f += '<g transform="translate(' + p[0] + ',' + (p[1] + Math.sin(t * 4 + i) * 3) + ') scale(' + k.toFixed(2) + ')">' + R(-33, -19, 66, 38, '#fff', 4, 'stroke="#ef4444" stroke-width="2"') + T(0, -2, '🦠', 16) + T(0, 14, 'VIRUS!', 9, '#dc2626') + '</g>'; });
+        if (t > 6.8 && Math.floor(t * 6) % 2) f += R(268, 50, 134, 92, 'rgba(239,68,68,.3)', 6);
+        if (t > 7.2) f += bub(215, 108, 'Need help…?', pk(t, 7.2));
+        if (t > 7.8) { var k2 = pk(t, 7.8); f += '<g transform="translate(414,141) scale(' + k2.toFixed(2) + ') rotate(-6)">' + R(-24, -14, 48, 28, '#fde047', 2) + T(0, -3, 'Support:', 8, '#78350f') + T(0, 9, 'none ✗', 9, '#dc2626') + '</g>'; }
+        return { front: f, sus: s };
+      },
+      ev: [[3.0, 0], [5.2, 1], [8.0, 2]],
+      cap: [[0, '👮 Officer Lam arrives…'], [1.2, '🖱️ He uses a crack instead of paying'], [3.4, '🎉 “Free software!”'], [4.6, '🦠 Viruses pop up everywhere!'], [7.2, '☎️ He asks for help…'], [7.9, '🚫 There is no support']],
       clues: ['🔓 A crack/keygen to skip paying for the licence key', '🦠 Pirated software often carries malware', '🛠️ No updates and no technical support'],
       ans: 'arrest', law: '3.3 + 3.6 Pirated software',
       why: 'A crack gets around the licence key, so the software is pirated. It may bring malware, and there is no technical support.', fix: 'Buy a licence, or use freeware or open-source software.',
       cry: 'It was free!', ok: 'It said free…' },
     { // 4 plagiarism
-      rep: 'A teacher says this homework looks copied from the Internet!', bg: bgRoom('#334155', '#1f2937'), sx: 235,
-      sus: { skin: '#fcd9b6', hair: '#4b2e1e', hs: 'long', shirt: '#38bdf8', pants: '#1e3a8a', mouth: 'smile', arm: 'down', blush: true },
-      back: R(282, 46, 82, 86, '#fff', 4, 'stroke="#94a3b8" stroke-width="2"') + R(282, 46, 82, 14, '#2563eb', 4) + T(323, 56, 'The History of Robots', 7, '#fff') + lines(290, 70, 66, 3, 10, '#fde047', 'class="blink"') + lines(290, 102, 66, 3, 9) +
-        '<g class="nudge">' + T(374, 94, '➜', 22, '#fbbf24') + '</g>' +
-        R(388, 46, 84, 86, '#fff', 4, 'stroke="#94a3b8" stroke-width="2"') + T(430, 60, 'My Homework', 8, '#0f172a') + lines(396, 70, 68, 3, 10, '#fde047', 'class="blink"') + lines(396, 102, 68, 3, 9) +
+      rep: 'A teacher says this homework looks copied from the Internet!', bg: bgRoom('#334155', '#1f2937'), sx: 235, D: 9.5,
+      sus: { skin: '#fcd9b6', hair: '#4b2e1e', hs: 'long', shirt: '#38bdf8', pants: '#1e3a8a', mouth: 'smile', blush: true },
+      back: R(282, 46, 82, 86, '#fff', 4, 'stroke="#94a3b8" stroke-width="2"') + R(282, 46, 82, 14, '#2563eb', 4) + T(323, 56, 'The History of Robots', 7, '#fff') + lines(290, 70, 66, 3, 10) + lines(290, 102, 66, 3, 9) +
+        T(374, 94, '➜', 22, '#fbbf24') +
+        R(388, 46, 84, 86, '#fff', 4, 'stroke="#94a3b8" stroke-width="2"') + T(430, 60, 'My Homework', 8, '#0f172a') + lines(396, 102, 68, 3, 9) +
         R(388, 140, 84, 26, '#fff', 4, 'stroke="#f87171" stroke-width="2" stroke-dasharray="4 3"') + T(430, 156, 'References: (empty)', 7.5, '#dc2626'),
-      front: '', hot: [[430, 80], [430, 112], [430, 154]],
+      front: '',
+      act: function (t) {
+        var f = '', s = {}, i;
+        for (i = 0; i < 3; i++) { var w = 66 * seg(t, 1.5 + i * .45, 1.95 + i * .45); if (w > 0) f += R(290, 70 + i * 10, w, 4, '#fde047', 2); }
+        if (t > 1.4 && t < 3.2) { f += E(290 + 66 * seg(t, 1.5, 2.9), 84, '🖱️', 14); s.ra = -50 - 12 * Math.sin(t * 6); }
+        if (t > 3.0 && t < 3.9) f += bub(323, 36, '✂️ Copy…', pk(t, 3.0));
+        for (i = 0; i < 3; i++) { var u = seg(t, 3.3 + i * .25, 4.3 + i * .25); if (u >= 1) f += R(396, 70 + i * 10, 66, 4, '#fde047', 2); else if (u > 0) f += R(lerp(290, 396, u), 70 + i * 10 - 16 * Math.sin(Math.PI * u), 66, 4, '#fde047', 2); }
+        var pr = t > 5.6 && t < 5.9;
+        f += R(398, 172, 64, 14, pr ? '#15803d' : '#22c55e', 6) + T(430, 183, t > 5.9 ? 'Submitted ✔' : 'Submit ▶', 8, '#fff');
+        if (t > 6.2) { f += E(340, 214, '🧑‍🏫', 28) + bub(340, 190, 'Where is the source?', pk(t, 6.2)); s.sweat = true; s.mouth = 'o'; }
+        if (t > 6.8 && Math.floor(t * 3) % 2 === 0) { for (i = 0; i < 3; i++) f += T(382, 76 + i * 10, '?', 9, '#dc2626'); f += T(430, 126, '(source?)', 8.5, '#dc2626'); }
+        if (t > 7.8 && Math.floor(t * 3) % 2 === 0) f += R(388, 140, 84, 26, 'none', 4, 'stroke="#ef4444" stroke-width="3"');
+        return { front: f, sus: s };
+      },
+      ev: [[4.6, 0], [6.8, 1], [8.0, 2]],
+      cap: [[0, '👮 Officer Lam arrives…'], [1.4, '🖱️ She selects a website’s text'], [3.2, '✂️ Copy… and paste!'], [5.6, '📤 She hands it in'], [6.2, '🧑‍🏫 “Where is the source?”'], [7.8, '📚 No reference list']],
       clues: ['✂️ The same sentences as the website, word for word', '🔖 No in-text citation like (Lee, 2020)', '📚 The reference list is empty'],
       ans: 'warn', law: '3.5 Plagiarism',
       why: 'Using someone’s work without acknowledging them is plagiarism: unethical, but not always the same as breaking copyright law. A warning and a lesson fit best here.', fix: 'Put the source in the text, e.g. (Lee, 2020), and add a reference list.',
       cry: 'I was only copying!', ok: 'Sorry! I will cite!' },
     { // 5 CC BY blogger
-      rep: 'A blogger posted somebody else’s photo on a website!', bg: bgRoom('#44403c', '#292524'), sx: 215,
-      sus: { skin: '#e0a46b', hair: '#3b1f0e', hs: 'long', shirt: '#ec4899', pants: '#4c1d95', mouth: 'big', arm: 'down', blush: true },
+      rep: 'A blogger posted somebody else’s photo on a website!', bg: bgRoom('#44403c', '#292524'), sx: 215, D: 9,
+      sus: { skin: '#e0a46b', hair: '#3b1f0e', hs: 'long', shirt: '#ec4899', pants: '#4c1d95', mouth: 'big', blush: true },
       back: '<defs><linearGradient id="sunset" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#fb923c"/><stop offset=".6" stop-color="#f472b6"/><stop offset="1" stop-color="#6d28d9"/></linearGradient></defs>' +
-        R(252, 34, 212, 138, '#fff', 8, 'stroke="#94a3b8" stroke-width="3"') + R(252, 34, 212, 18, '#2563eb', 8) + T(300, 47, 'My Travel Blog', 9, '#fff') +
-        R(262, 58, 100, 70, 'url(#sunset)', 4) + '<circle cx="312" cy="98" r="14" fill="#fde047"/><path d="M262 128 L292 100 L320 122 L340 108 L362 128Z" fill="#1e1b4b"/>' +
-        R(262, 134, 200, 28, '#f1f5f9', 4) + T(362, 147, 'Photo: “Sunset” by Amy Chan', 9, '#0f172a') + T(362, 158, 'Licence: CC BY 4.0', 9, '#166534') +
-        lines(374, 100, 80, 4, 8) + '<circle cx="426" cy="72" r="15" fill="#16a34a" stroke="#fff" stroke-width="2"/>' + T(426, 71, 'cc', 11, '#fff') + T(426, 82, 'BY', 7.5, '#fff'),
-      front: '', hot: [[312, 92], [362, 150], [426, 72]],
+        R(252, 34, 212, 138, '#fff', 8, 'stroke="#94a3b8" stroke-width="3"') + R(252, 34, 212, 18, '#2563eb', 8) + T(300, 47, 'My Travel Blog', 9, '#fff') + R(262, 58, 100, 70, '#e2e8f0', 4) + R(262, 134, 200, 28, '#f1f5f9', 4) + lines(374, 100, 80, 4, 8),
+      front: '',
+      act: function (t) {
+        var f = '', s = { ra: typ(t, 3.4) };
+        if (t > .9) f += '<circle cx="146" cy="56" r="22" fill="#fde68a" stroke="#fff" stroke-width="3"/>' + E(146, 65, '👩‍🎨', 26) + T(146, 92, 'Amy Chan', 9, '#fde68a');
+        var u = eas(seg(t, 2.0, 3.2));
+        if (u > 0) { var w = lerp(24, 100, u), h = lerp(17, 70, u); f += '<g transform="translate(' + (lerp(160, 312, u) - w / 2).toFixed(1) + ',' + (lerp(50, 93, u) - h / 2).toFixed(1) + ') scale(' + (w / 100).toFixed(3) + ',' + (h / 70).toFixed(3) + ')">' + PHOTO + '</g>'; }
+        f += T(362, 147, typed('Photo: “Sunset” by Amy Chan', seg(t, 3.5, 4.6)), 9) + T(362, 158, typed('Licence: CC BY 4.0', seg(t, 4.7, 5.5)), 9, '#166534');
+        if (t > 5.8) f += '<g transform="translate(426,72) scale(' + pk(t, 5.8).toFixed(2) + ')"><circle r="15" fill="#16a34a" stroke="#fff" stroke-width="2"/>' + T(0, -1, 'cc', 11, '#fff') + T(0, 10, 'BY', 7.5, '#fff') + '</g>' + P(446, 52, '✨', 14, pk(t, 6.0));
+        if (t > 6.6) f += T(146, 106, 'Thanks for the credit!', 8.5, '#fde68a') + P(146, 124, '👍', 20, pk(t, 6.6));
+        return { front: f, sus: s };
+      },
+      ev: [[3.2, 0], [5.4, 1], [6.2, 2]],
+      cap: [[0, '👮 Officer Lam arrives…'], [1.0, '📷 Amy shares a photo with CC BY'], [3.4, '✍️ The blogger adds a credit'], [5.7, '🅭 The CC BY badge: reuse allowed'], [6.7, '👍 Amy is happy']],
       clues: ['📸 It is somebody else’s photo', '✍️ Credit is given: title, creator and licence', '🅭 The photographer allows reuse with credit (CC BY)'],
       ans: 'ok', law: '3.2 Creative Commons',
       why: 'A CC BY licence lets anyone reuse the photo if they give credit: the title, the creator and the licence. The blogger did all three, so it is legal.', fix: 'Always read the licence: BY = credit, SA = share alike, NC = no commercial use, ND = no changes.',
       cry: 'Hmm?', ok: 'Thank you!' },
     { // 6 quote with citation
-      rep: 'A student used words from a book in a school project!', bg: bgRoom('#365314', '#1a2e05'), sx: 215,
-      sus: { skin: '#fcd9b6', hair: '#111827', hs: 'short', shirt: '#38bdf8', pants: '#1e3a8a', mouth: 'big', arm: 'hold', ex: '<text x="26" y="-30" font-size="18">📖</text>' },
-      back: R(252, 30, 214, 146, '#fef9c3', 6, 'stroke="#a16207" stroke-width="4"') + T(359, 48, 'ROBOTS PROJECT', 12, '#7c2d12') +
-        R(262, 58, 194, 40, '#fff', 4) + R(262, 58, 5, 40, '#2563eb') + T(362, 76, '“Robots will change many jobs.”', 9.5, '#0f172a', 'middle', 700) + T(424, 90, '(Lee, 2020, p. 12)', 8.5, '#2563eb') +
-        lines(262, 106, 194, 3, 9) + R(262, 140, 194, 28, '#fff', 4) + T(290, 151, 'References', 8, '#0f172a', 'middle') + T(362, 162, 'Lee, K. (2020). Robots and Us. Hong Kong: Books.', 7.5, '#475569', 'middle', 600),
-      front: '', hot: [[286, 78], [440, 88], [360, 156]],
+      rep: 'A student used words from a book in a school project!', bg: bgRoom('#365314', '#1a2e05'), sx: 215, D: 9.5,
+      sus: { skin: '#fcd9b6', hair: '#111827', hs: 'short', shirt: '#38bdf8', pants: '#1e3a8a', mouth: 'big', ex: '<text x="26" y="-30" font-size="18">📖</text>' },
+      back: R(252, 30, 214, 146, '#fef9c3', 6, 'stroke="#a16207" stroke-width="4"') + T(359, 48, 'ROBOTS PROJECT', 12, '#7c2d12') + R(262, 58, 194, 40, '#fff', 4) + R(262, 58, 5, 40, '#2563eb') +
+        R(262, 140, 194, 28, '#fff', 4) + T(290, 151, 'References', 8, '#0f172a'),
+      front: '',
+      act: function (t) {
+        var f = '', s = { ra: t > 5.6 ? typ(t, 5.6) : -55 }, i;
+        var u = seg(t, 2.0, 3.1); if (u > 0 && u < 1) f += R(lerp(236, 330, u) - 46, lerp(150, 78, u) - 8 - 20 * Math.sin(Math.PI * u), 92, 16, '#fde047', 4) + T(lerp(236, 330, u), lerp(150, 78, u) + 3 - 20 * Math.sin(Math.PI * u), '“Robots will…”', 8, '#0f172a');
+        f += T(362, 76, typed('“Robots will change many jobs.”', seg(t, 3.0, 3.9)), 9.5, '#0f172a', 'middle', 700);
+        f += T(424, 90, typed('(Lee, 2020, p. 12)', seg(t, 4.2, 5.0)), 8.5, '#2563eb');
+        if (t > 5.0 && t < 5.9 && Math.floor(t * 5) % 2 === 0) f += R(384, 80, 82, 14, 'none', 4, 'stroke="#2563eb" stroke-width="2"');
+        for (i = 0; i < 3; i++) { var w = 194 * (i === 2 ? .7 : 1) * seg(t, 5.6 + i * .4, 6.0 + i * .4); if (w > 0) f += R(262, 106 + i * 9, w, 4, '#cbd5e1', 2); }
+        f += T(362, 162, typed('Lee, K. (2020). Robots and Us. Hong Kong: Books.', seg(t, 7.0, 8.2)), 7.5, '#475569', 'middle', 600);
+        if (t > 8.4) f += P(440, 52, '✅', 20, pk(t, 8.4));
+        return { front: f, sus: s };
+      },
+      ev: [[3.9, 0], [5.2, 1], [8.3, 2]],
+      cap: [[0, '👮 Officer Lam arrives…'], [1.4, '📖 He reads a book for his project'], [3.0, '✂️ One short sentence is quoted'], [4.2, '🔖 …with the source'], [7.0, '📚 …and a reference list']],
       clues: ['✂️ Only one short sentence is quoted', '🔖 The source is credited in the text', '📚 A full reference list is at the end'],
       ans: 'ok', law: '3.4 Fair dealing',
       why: 'Using a small part for study, research, criticism or review is allowed without permission (fair dealing), especially when the source is acknowledged.', fix: 'Keep it small, not for profit, and always cite the source.',
       cry: 'Huh?', ok: 'Phew, thank you!' },
     { // 7 teacher shows clip
-      rep: 'A teacher is playing a film in class! Is that allowed?', bg: bgRoom('#4c1d95', '#2e1065'), sx: 190,
-      sus: { skin: '#e0a46b', hair: '#6b7280', hs: 'grey', shirt: '#a78bfa', pants: '#312e81', mouth: 'big', arm: 'point', gl: true },
-      back: R(232, 30, 232, 130, '#0b1226', 8, 'stroke="#94a3b8" stroke-width="4"') + R(240, 38, 216, 90, '#0e7490', 4) + '<path d="M240 100 Q270 88 300 100 T360 100 T420 100 T456 100 V128 H240Z" fill="#0891b2"/>' + T(348, 70, '🌊 DOCUMENTARY: Oceans', 13, '#fff') + T(348, 88, 'short clip for today’s lesson', 8.5, '#cffafe', 'middle', 600) +
-        T(436, 54, '🔒', 12) + R(244, 138, 208, 8, '#334155', 4) + R(244, 138, 7, 8, '#22d3ee', 4) + T(348, 156, '3:00 played of 90:00', 9, '#7dd3fc'),
-      front: kids(['#111827', '#92400e', '#1f2937', '#78350f', '#0f172a']), hot: [[348, 70], [348, 130], [436, 56]],
+      rep: 'A teacher is playing a film in class! Is that allowed?', bg: bgRoom('#4c1d95', '#2e1065'), sx: 190, D: 9,
+      sus: { skin: '#e0a46b', hair: '#6b7280', hs: 'grey', shirt: '#a78bfa', pants: '#312e81', mouth: 'big', gl: true },
+      back: R(232, 30, 232, 130, '#0b1226', 8, 'stroke="#94a3b8" stroke-width="4"') + R(240, 38, 216, 90, '#0e7490', 4) + '<path d="M240 100 Q270 88 300 100 T360 100 T420 100 T456 100 V128 H240Z" fill="#0891b2"/>' + T(348, 74, '🌊 DOCUMENTARY: Oceans', 13, '#fff') + R(244, 138, 208, 8, '#334155', 4),
+      front: kids(['#111827', '#92400e', '#1f2937', '#78350f', '#0f172a']),
+      act: function (t) {
+        var f = '', s = { ra: t > 5.7 && t < 6.2 ? -100 : -88 }, sec = Math.floor(180 * seg(t, 1.8, 5.8)), i;
+        if (t > .8) f += T(348, 54, '📘 Lesson: Ocean life', 10, '#fde68a');
+        f += R(244, 138, Math.max(5, 208 * sec / 5400), 8, '#22d3ee', 4);
+        f += T(348, 158, (t < 5.8 ? '▶ ' : '⏹ ') + Math.floor(sec / 60) + ':' + ('0' + sec % 60).slice(-2) + ' / 90:00', 9.5, '#7dd3fc');
+        if (t < 5.8 && t > 1.6) { f += E(240 + ((t * 40) % 216), 108 + 8 * Math.sin(t * 3), '🐠', 18) + E(456 - ((t * 30) % 216), 118 + 6 * Math.sin(t * 2.4), '🐟', 16); }
+        if (t > 5.8) f += R(240, 38, 216, 90, 'rgba(0,0,0,.55)', 4) + T(348, 76, '⏹ STOP', 20, '#fff');
+        if (t > 6.4) for (i = 0; i < 5; i++) f += P(240 + i * 52, 222, '✋', 18, pk(t, 6.4 + i * .15));
+        if (t > 7.2) { f += P(348, 104, '🔒', 28, pk(t, 7.2)) + T(348, 122, 'class only', 9.5, '#fff'); }
+        return { front: f, sus: s };
+      },
+      ev: [[1.8, 0], [6.2, 1], [7.6, 2]],
+      cap: [[0, '👮 Officer Lam arrives…'], [0.8, '🏫 Lesson time: ocean life'], [1.8, '🎞️ The teacher plays a clip…'], [5.8, '⏹ …and stops after 3 minutes'], [6.4, '🙋 Students discuss it'], [7.2, '🔒 Class only: not shared online']],
       clues: ['🏫 It is used to teach the class (instruction)', '⏱️ Only a 3-minute clip of a 90-minute film', '🔒 Shown in class only: not uploaded or sold'],
       ans: 'ok', law: '3.4 Copyright in education',
       why: 'Showing a few minutes of a documentary to teach is fair dealing for instruction: a small portion, used in class only.', fix: 'Not allowed: copying the whole film or sharing it online.',
       cry: 'Huh?', ok: 'Thank you, officer!' },
     { // 8 whole e-textbook
-      rep: 'A teacher sent a whole e-textbook to hundreds of people!', bg: bgRoom('#134e4a', '#042f2e'), sx: 215,
-      sus: { skin: '#fcd9b6', hair: '#6b7280', hs: 'grey', shirt: '#0ea5e9', pants: '#1f2937', mouth: 'smirk', arm: 'type', gl: true },
+      rep: 'A teacher sent a whole e-textbook to hundreds of people!', bg: bgRoom('#134e4a', '#042f2e'), sx: 215, D: 9,
+      sus: { skin: '#fcd9b6', hair: '#6b7280', hs: 'grey', shirt: '#0ea5e9', pants: '#1f2937', mouth: 'smirk', gl: true },
       back: R(262, 44, 148, 104, '#0b1226', 6, 'stroke="#94a3b8" stroke-width="3"') + R(274, 54, 46, 80, '#fff', 3) + R(274, 54, 46, 20, '#dc2626', 3) + T(297, 66, '© All rights', 6, '#fff') + T(297, 72, 'reserved', 6, '#fff') + T(297, 100, 'Book E', 10, '#0f172a') + T(297, 112, 'e-textbook', 7, '#475569', 'middle', 600) +
-        T(362, 70, 'Sending PDF…', 9.5, '#fff') + R(330, 78, 68, 9, '#334155', 4) + R(330, 78, 68, 9, '#22c55e', 4, 'class="prog"') + T(362, 108, '320 / 320 pages', 10, '#fde047') + T(362, 126, 'To: 500 people 📤', 9, '#7dd3fc') + R(327, 148, 16, 14, '#64748b'),
-      front: desk(160, 270), hot: [[362, 104], [362, 130], [297, 90]],
+        T(362, 70, 'Sending PDF…', 9.5, '#fff') + R(330, 78, 68, 9, '#334155', 4) + R(327, 148, 16, 14, '#64748b'),
+      front: desk(160, 270),
+      act: function (t) {
+        var f = '', s = { ra: typ(t, 1.4) }, pg = seg(t, 1.6, 4.8), rc = Math.floor(500 * seg(t, 5.2, 7)), i;
+        f += R(330, 78, 68 * pg, 9, '#22c55e', 4) + T(362, 108, Math.floor(320 * pg) + ' / 320 pages', 10, '#fde047') + (t > 5.2 ? T(362, 126, 'To: ' + rc + ' people 📤', 9, '#7dd3fc') : '');
+        for (i = 0; i < 10; i++) { var u = seg(t, 5.2 + i * .18, 6.4 + i * .18); if (u > 0 && u < 1) f += E(lerp(362, 250 + ((i * 53) % 220), u), lerp(90, 14 + (i % 3) * 14, u), '✉️', 16); }
+        if (t > 7.4) { f += P(446, 206, '🏢', 34, pk(t, 7.4)) + bub(418, 172, 'That is our book!', pk(t, 7.5)); s.mouth = 'o'; s.sweat = true; }
+        return { front: f, sus: s };
+      },
+      ev: [[4.9, 0], [6.4, 1], [7.9, 2]],
+      cap: [[0, '👮 Officer Lam arrives…'], [1.4, '📚 He scans the WHOLE book'], [5.0, '📤 …and sends it to everyone'], [7.4, '🏢 The publisher is NOT happy']],
       clues: ['📚 The WHOLE book: 320 of 320 pages', '📤 Sent to hundreds of people outside the class', '© “All rights reserved”: the publisher never gave permission'],
       ans: 'arrest', law: '3.4 Not covered by fair dealing',
       why: 'Copying a whole e-textbook and sending it to hundreds of people is not fair dealing. It is too large a portion, and it harms the publisher.', fix: 'Share only a small part for teaching, or buy a licence for the class.',
       cry: 'It is for teaching!', ok: 'Oh no…' },
     { // 9 single-user licence on 30 PCs
-      rep: 'A company bought ONE software licence and put it on all its computers!', bg: bgRoom('#1e293b', '#0f172a'), sx: 190,
-      sus: { skin: '#fcd9b6', hair: '#111827', hs: 'short', shirt: '#475569', pants: '#0f172a', mouth: 'smirk', arm: 'hold' },
+      rep: 'A company bought ONE software licence and put it on all its computers!', bg: bgRoom('#1e293b', '#0f172a'), sx: 190, D: 9,
+      sus: { skin: '#fcd9b6', hair: '#111827', hs: 'short', shirt: '#475569', pants: '#0f172a', mouth: 'smirk' },
       back: R(250, 34, 90, 70, '#fff', 4) + T(295, 50, '📜 LICENCE', 10, '#0f172a') + T(295, 68, 'Single-user', 12, '#1d4ed8') + T(295, 84, '1 computer only', 9, '#475569', 'middle', 700) +
-        R(356, 34, 108, 70, '#0f172a', 6, 'stroke="#94a3b8" stroke-width="2"') + T(410, 54, 'Installed on', 9, '#fff') + T(410, 86, '30 PCs', 24, '#f87171') +
-        [0, 1, 2, 3].map(function (i) { var x = 258 + i * 52; return R(x, 124, 44, 34, '#0b1226', 3, 'stroke="#94a3b8" stroke-width="2"') + T(x + 22, 138, 'KEY:', 7, '#fde047') + T(x + 22, 150, 'A1B2-C3', 8, '#fde047') + R(x + 18, 158, 8, 14, '#64748b'); }).join(''),
-      front: desk(236, 232), hot: [[295, 68], [350, 142], [410, 70]],
+        R(356, 34, 108, 70, '#0f172a', 6, 'stroke="#94a3b8" stroke-width="2"') + T(410, 54, 'Installed on', 9, '#fff') +
+        [0, 1, 2, 3].map(function (i) { var x = 258 + i * 52; return R(x, 124, 44, 34, '#0b1226', 3, 'stroke="#94a3b8" stroke-width="2"') + R(x + 18, 158, 8, 14, '#64748b'); }).join(''),
+      front: desk(236, 232),
+      act: function (t) {
+        var f = '', s = { ra: t > 1.6 && t < 3.0 ? -150 : typ(t, 3) }, i;
+        if (t > 1.6 && t < 3.2 && Math.floor(t * 4) % 2 === 0) f += R(250, 34, 90, 70, 'none', 4, 'stroke="#fbbf24" stroke-width="4"');
+        if (t > 1.6 && t < 3.0) f += E(212, 112, '🔑', 20);
+        for (i = 0; i < 4; i++) { var ti = 3.0 + i * .9, x = 258 + i * 52; if (t >= ti + .7) f += T(x + 22, 138, '✔ KEY:', 7, '#86efac') + T(x + 22, 150, 'A1B2-C3', 8, '#fde047'); else if (t >= ti) f += T(x + 22, 140, 'Installing…', 6.5, '#93c5fd') + R(x + 6, 148, 32 * seg(t, ti, ti + .7), 3, '#60a5fa'); }
+        var n = Math.floor(1 + 29 * seg(t, 3, 7.5)); f += T(410, 86, n + (n === 1 ? ' PC' : ' PCs'), 24, n >= 30 ? '#ef4444' : '#f87171');
+        return { front: f, sus: s };
+      },
+      ev: [[2.6, 0], [5.2, 1], [7.6, 2]],
+      cap: [[0, '👮 Officer Lam arrives…'], [1.4, '🔑 He buys ONE licence key'], [3.0, '💻 …and installs it on every PC'], [5.2, '🔁 The same key again and again'], [7.0, '🔢 30 computers!']],
       clues: ['📜 The licence is single-user: 1 computer only', '🔑 The same key is typed on every PC', '💻 It is installed on 30 computers'],
       ans: 'arrest', law: '3.6 Software licences',
       why: 'A single-user licence covers one user or computer. Installing it on 30 PCs breaks the licence, which is copyright infringement.', fix: 'Buy a multi-user licence or a site licence.',
       cry: 'We paid for it!', ok: 'We only paid once…' },
     { // 10 open source
-      rep: 'A student changed a program and shared the new version online!', bg: bgRoom('#064e3b', '#022c22'), sx: 215,
-      sus: { skin: '#e0a46b', hair: '#111827', hs: 'spike', shirt: '#22c55e', pants: '#1f2937', mouth: 'big', arm: 'type', gl: true },
+      rep: 'A student changed a program and shared the new version online!', bg: bgRoom('#064e3b', '#022c22'), sx: 215, D: 9,
+      sus: { skin: '#e0a46b', hair: '#111827', hs: 'spike', shirt: '#22c55e', pants: '#1f2937', mouth: 'big', gl: true },
       back: R(262, 44, 148, 104, '#0b1226', 6, 'stroke="#94a3b8" stroke-width="3"') + T(336, 58, 'my-game/  (open source)', 8.5, '#86efac') +
-        R(274, 66, 40, 4, '#f472b6', 2) + R(280, 76, 64, 4, '#60a5fa', 2) + R(280, 86, 48, 4, '#fbbf24', 2) + R(274, 96, 56, 4, '#f472b6', 2) + R(280, 106, 30, 4, '#60a5fa', 2) +
-        R(274, 118, 124, 22, '#052e16', 4, 'stroke="#22c55e"') + T(336, 132, 'LICENCE: modify & share ✔', 8.5, '#86efac') +
-        '<g class="bobb">' + R(418, 56, 54, 40, '#fde047', 3) + T(445, 72, '🙌 Credit:', 8, '#78350f') + T(445, 86, 'original devs', 8, '#78350f') + '</g>' + R(327, 148, 16, 14, '#64748b'),
-      front: desk(160, 270), hot: [[300, 82], [336, 130], [445, 62]],
+        R(274, 118, 124, 22, '#052e16', 4, 'stroke="#22c55e"') + T(336, 132, 'LICENCE: modify & share ✔', 8.5, '#86efac') + R(327, 148, 16, 14, '#64748b'),
+      front: desk(160, 270),
+      act: function (t) {
+        var f = '', s = { ra: typ(t, 1.4) }, L = [[274, 66, 40, '#f472b6'], [280, 76, 64, '#60a5fa'], [280, 86, 48, '#fbbf24'], [274, 96, 56, '#f472b6'], [280, 106, 30, '#60a5fa']];
+        if (t > .9 && t < 1.9) f += E(336, 44 + 4 * Math.sin(t * 10), '⬇', 14);
+        L.forEach(function (l, i) { var w = l[2] * seg(t, 1.6 + i * .35, 2.0 + i * .35); if (w > 0) f += R(l[0], l[1], w, 4, l[3], 2); });
+        if (t > 3.8) f += T(268, 116, '+', 9, '#4ade80') + R(280, 112, 70 * seg(t, 3.8, 4.8), 4, '#4ade80', 2);
+        if (t > 4.9 && t < 6.2 && Math.floor(t * 4) % 2 === 0) f += R(274, 118, 124, 22, 'none', 4, 'stroke="#fde047" stroke-width="3"');
+        if (t > 6.4) f += '<g transform="translate(445,76) scale(' + pk(t, 6.4).toFixed(2) + ')">' + R(-28, -22, 56, 44, '#fde047', 3) + T(0, -6, '🙌 Credit:', 8.5, '#78350f') + T(0, 8, 'original devs', 8, '#78350f') + '</g>';
+        var u = seg(t, 6.8, 8.2); if (u > 0 && u < 1) f += E(lerp(400, 462, u), lerp(110, 190, u), '📤', 18);
+        return { front: f, sus: s };
+      },
+      ev: [[3.4, 0], [5.4, 1], [7.2, 2]],
+      cap: [[0, '👮 Officer Lam arrives…'], [1.0, '⬇ He downloads public source code'], [3.8, '🛠️ He improves the game'], [5.0, '📜 The licence says: modify & share OK'], [6.4, '🙌 He credits the original devs']],
       clues: ['📂 The source code is public: anyone can read it', '📜 The licence allows modifying and sharing', '🙌 He credits the original developers'],
       ans: 'ok', law: '3.6 Open-source software',
       why: 'Open-source software can be read, modified and redistributed as long as the licence is followed. He did, so it is legal.', fix: 'Check the licence: some require changes to be shared under the same licence.',
       cry: 'Huh?', ok: 'Thank you!' }
   ];
-  var HOTR = 13;
 
   /* ---------- game state ---------- */
-  var order = [], idx = 0, good = 0, bad = 0, found = 0, locked = false;
+  var order = [], idx = 0, good = 0, bad = 0, locked = false;
 
   function intro() {
     clearAll();
@@ -407,39 +538,65 @@ input[type=text]{width:100%;font:inherit;padding:10px 12px;border-radius:12px;bo
       lam(240, 262, { s: 1.65, arm: 'salute' }) + star(60, 150, 18, '#fbbf24') + star(420, 150, 18, '#fbbf24') +
       '<text x="108" y="210" font-size="34" class="bobb">©️</text><text x="352" y="210" font-size="34" class="bobb2">🚓</text></svg>';
     st.innerHTML = '<div class="stagebox">' + s + '</div>' +
-      '<div class="report"><i>🚨</i><span>Officer Lam needs your help! 10 reports are waiting. Tap the 🔍 clues in each scene, then decide what to do.</span></div>' +
+      '<div class="report"><i>🚨</i><span>Officer Lam needs your help! Watch what people do in each of the 10 reports. When the 📸 evidence is ready, decide what to do.</span></div>' +
       '<div class="verd" style="margin-top:8px"><div class="vb a" style="cursor:default"><b>🚓</b>Arrest<small>It breaks the law</small></div><div class="vb w" style="cursor:default"><b>📝</b>Warn<small>Wrong, but not a crime</small></div><div class="vb o" style="cursor:default"><b>✅</b>Let go<small>It is allowed</small></div></div>' +
       '<div class="row" style="justify-content:center;margin-top:10px"><button class="btn" id="go">🚨 Start patrol</button></div>';
     $('#go').onclick = function () { order = shuffle(CASES); idx = 0; good = 0; bad = 0; caseStart(); };
   }
 
   function sceneSVG(c) {
-    var sus = {}; for (var k in c.sus) sus[k] = c.sus[k]; sus.x = c.sx; sus.y = 228;
-    c.susO = sus;
-    var hs = c.hot.map(function (p, i) { return '<g class="hs" data-i="' + i + '" transform="translate(' + p[0] + ',' + p[1] + ')"><circle class="hring" r="' + HOTR + '" fill="none" stroke="#fbbf24" stroke-width="3"/><circle r="10" fill="#fbbf24" stroke="#fff" stroke-width="2"/><text y="5" font-size="12" text-anchor="middle">🔍</text></g>'; }).join('');
-    return '<svg id="sv" viewBox="0 0 480 270" role="img" aria-label="Crime scene">' + c.bg + c.back +
-      '<g id="susW" class="moveF">' + fig(sus) + '</g>' + c.front + '<g id="carW"></g>' +
-      '<g id="lamW" class="moveW" style="transform:translateX(-140px)">' + lam(70, 228, { walk: true }) + '</g>' +
-      '<g id="fx"></g>' + hs + '</svg>';
+    var sus = {}; for (var k in c.sus) sus[k] = c.sus[k]; sus.x = c.sx; sus.y = 228; c.susO = sus;
+    return '<svg id="sv" viewBox="0 0 480 270" role="img" aria-label="Animated crime scene">' + c.bg + c.back +
+      '<g id="dBack"></g><g id="susW" class="moveF"></g>' + c.front + '<g id="dFront"></g><g id="carW"></g><g id="lamW" class="moveW"></g><g id="fx"></g></svg>';
   }
   function hud() { return '<div class="hud"><span>🚨 Case <b>' + (idx + 1) + '</b> / ' + order.length + '</span><span>✅ ' + good + '</span><span>❌ ' + bad + '</span></div>'; }
 
+  function lamAt(t) {
+    var u = seg(t, 0, 1.5), mv = u < 1, o = { x: lerp(-50, 70, eas(u)), mouth: 'big' };
+    o.sw = mv ? Math.sin(t * 14) * 26 : 0; o.dy = mv ? -Math.abs(Math.sin(t * 14)) * 2 : Math.sin(t * 2.2) * 0.8; o.ra = mv ? Math.sin(t * 14) * 14 : -40; o.la = mv ? -Math.sin(t * 14) * 14 : 0;
+    return o;
+  }
+  function draw(c, t) {
+    var a = c.act(t) || {}, so = ex(ex({}, c.susO), a.sus || {}), lo = lamAt(t), ex2 = '', last = -9, i;
+    for (i = 0; i < c.ev.length; i++) if (c.ev[i][0] <= t) last = c.ev[i][0];
+    if (t > 1.5) ex2 += E(lo.x + 44, 182 + lo.dy, '📋', 18);
+    if (last > -9 && t - last < 1) ex2 += P(lo.x + 6, 94, '📸', 24, pk(t, last));
+    $('#dBack').innerHTML = a.back || ''; $('#susW').innerHTML = fig(so); $('#dFront').innerHTML = a.front || ''; $('#lamW').innerHTML = lam(lo.x, 228, lo) + ex2;
+  }
+  function revealClue(c, i, quiet) {
+    var cl = $('#cl').children[i]; if (!cl || cl.classList.contains('on')) return; cl.className = 'clue on'; cl.innerHTML = '<span>📸 ' + esc(c.clues[i]) + '</span>';
+    if (!quiet) { var f = $('#fl'); f.classList.remove('go'); void f.offsetWidth; f.classList.add('go'); }
+  }
+
   function caseStart() {
-    clearAll(); var c = order[idx]; found = 0; locked = false;
-    st.innerHTML = hud() + '<div class="report"><i>📞</i><span>' + esc(c.rep) + '</span></div><div class="stagebox" id="sb" style="position:relative">' + sceneSVG(c) + '</div>' +
-      '<div class="clues" id="cl">' + c.clues.map(function () { return '<div class="clue">🔍 <span>Tap the 🔍 in the picture to find a clue</span></div>'; }).join('') + '</div>' +
+    clearAll(); var c = order[idx]; locked = false;
+    st.innerHTML = hud() + '<div class="report"><i>📞</i><span>' + esc(c.rep) + '</span></div><div class="stagebox" id="sb" style="position:relative">' + sceneSVG(c) + '<div class="camfl" id="fl"></div></div>' +
+      '<div class="qh" id="cap" style="min-height:30px">&nbsp;</div><div class="row" style="justify-content:center" id="ctl"><button class="btn sec sm" id="sk">⏩ Skip</button></div>' +
+      '<div class="clues" id="cl">' + c.clues.map(function () { return '<div class="clue">📷 <span>Watch carefully: evidence is coming…</span></div>'; }).join('') + '</div>' +
       '<div class="verd" id="vd"><button class="vb a" data-v="arrest" disabled><b>🚓</b>Arrest<small>It breaks the law</small></button><button class="vb w" data-v="warn" disabled><b>📝</b>Warn<small>Wrong, not a crime</small></button><button class="vb o" data-v="ok" disabled><b>✅</b>Let go<small>It is allowed</small></button></div><div id="exp"></div>';
-    var sv = $('#sv'), lamW = $('#lamW');
-    lt(function () { lamW.style.transform = 'translateX(0)'; }, 60);
-    lt(function () { $('#lamW').innerHTML = lam(70, 228, {}); sv.classList.add('ready'); }, 1550);
-    [].forEach.call(sv.querySelectorAll('.hs'), function (g) {
-      g.onclick = function () {
-        if (g.classList.contains('found') || locked) return; var i = +g.dataset.i; g.classList.add('found'); g.querySelector('text').textContent = '✔'; g.querySelector('circle:nth-child(2)').setAttribute('fill', '#34d399'); found++;
-        var cl = $('#cl').children[found - 1]; cl.className = 'clue on'; cl.innerHTML = '<span>' + esc(c.clues[i]) + '</span>';
-        if (found === c.hot.length) { [].forEach.call(document.querySelectorAll('.vb'), function (b) { b.disabled = false; }); $('#vd').scrollIntoView({ block: 'nearest', behavior: 'smooth' }); }
-      };
-    });
     [].forEach.call(document.querySelectorAll('#vd .vb'), function (b) { b.onclick = function () { if (locked || b.disabled) return; verdict(b.dataset.v); }; });
+    run(c);
+  }
+  function run(c) {
+    var t0 = performance.now(), evi = 0, lastCap = -1;
+    [].forEach.call(document.querySelectorAll('#vd .vb'), function (b) { b.disabled = true; });
+    $('#ctl').innerHTML = '<button class="btn sec sm" id="sk">⏩ Skip</button>';
+    function end() {
+      draw(c, c.D); for (var i = 0; i < c.clues.length; i++) revealClue(c, i, true);
+      $('#cap').textContent = '🕵️ What should Officer Lam do?';
+      $('#ctl').innerHTML = '<button class="btn sec sm" id="rp">🔁 Watch again</button>'; $('#rp').onclick = function () { if (!locked) run(c); };
+      [].forEach.call(document.querySelectorAll('#vd .vb'), function (b) { b.disabled = false; });
+      $('#vd').scrollIntoView({ block: 'nearest', behavior: 'smooth' });
+    }
+    $('#sk').onclick = function () { cancelAnimationFrame(raf); end(); };
+    function frame(now) {
+      var t = Math.min(c.D, (now - t0) / 1000); draw(c, t);
+      while (evi < c.ev.length && t >= c.ev[evi][0]) { revealClue(c, c.ev[evi][1]); evi++; }
+      var ci = 0; for (var i = 0; i < c.cap.length; i++) if (c.cap[i][0] <= t) ci = i;
+      if (ci !== lastCap) { lastCap = ci; $('#cap').textContent = c.cap[ci][1]; }
+      if (t < c.D) raf = requestAnimationFrame(frame); else end();
+    }
+    cancelAnimationFrame(raf); raf = requestAnimationFrame(frame);
   }
 
   function bubble(x, y, txt, ok) { return '<g class="popin"><rect x="' + (x - 60) + '" y="' + (y - 24) + '" width="120" height="26" rx="10" fill="#fff" stroke="' + (ok ? '#16a34a' : '#ef4444') + '" stroke-width="2"/><path d="M' + (x - 5) + ' ' + (y + 2) + ' l5 8 l5 -8z" fill="#fff"/>' + T(x, y - 7, esc(txt), 10.5, '#0f172a') + '</g>'; }
