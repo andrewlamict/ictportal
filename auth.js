@@ -187,13 +187,39 @@
       body.innerHTML = h; body.querySelector('#dash-back').onclick = render;
     }
     function esc(s) { return String(s).replace(/[&<>"]/g, function (c) { return { '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;' }[c]; }); }
+    var sortK = 'xp', sortD = -1;
+    var COLS = [{ t: 'Name', k: 'name' }, { t: 'Email', k: 'email' }, { t: 'Level', k: 'level' }, { t: 'XP', k: 'xp' }, { t: 'MC correct', k: 'mc' }, { t: 'Accuracy', k: 'acc' }, { t: 'Games', k: 'games' }, { t: 'Visits', k: 'visits' }, { t: 'Last visit', k: 'last' }];
+    function val(r, k) {
+      var sm = summary(r);
+      switch (k) {
+        case 'name': return String(r.name || '').toLowerCase(); case 'email': return String(r.email || '').toLowerCase();
+        case 'level': return r.level || 1; case 'xp': return r.xp || 0; case 'mc': return sm.mc;
+        case 'acc': return sm.att ? sm.ok / sm.att : -1; case 'games': return sm.games; case 'visits': return r.visits || 0;
+        case 'last': try { return r.lastSeen.toMillis(); } catch (e) { return 0; }
+      }
+      return 0;
+    }
+    function view() {
+      var q = (m.querySelector('#dash-q').value || '').toLowerCase();
+      return rows.filter(function (r) { return !q || ((r.name || '') + ' ' + (r.email || '')).toLowerCase().indexOf(q) >= 0; }).sort(function (a, b) {
+        var x = val(a, sortK), y = val(b, sortK), c = typeof x === 'string' ? x.localeCompare(y, undefined, { numeric: true }) : x - y;
+        return (c || (val(b, 'xp') - val(a, 'xp'))) * (c ? sortD : 1);
+      });
+    }
     function render() {
       var q = (m.querySelector('#dash-q').value || '').toLowerCase();
       var body = m.querySelector('.dash-body'); body.textContent = '';
       var t = document.createElement('table');
-      var h = t.createTHead().insertRow(); ['Name', 'Email', 'Level', 'XP', 'MC correct', 'Accuracy', 'Games', 'Visits', 'Last visit', ''].forEach(function (x) { var th = document.createElement('th'); th.textContent = x; h.appendChild(th); });
+      var h = t.createTHead().insertRow();
+      COLS.forEach(function (c) {
+        var th = document.createElement('th'); th.className = 'dash-sort' + (sortK === c.k ? ' on' : ''); th.tabIndex = 0; th.title = 'Sort by ' + c.t;
+        th.textContent = c.t + (sortK === c.k ? (sortD > 0 ? ' ▲' : ' ▼') : ' ↕');
+        var go = function () { if (sortK === c.k) sortD = -sortD; else { sortK = c.k; sortD = c.k === 'name' || c.k === 'email' ? 1 : -1; } render(); };
+        th.onclick = go; th.onkeydown = function (e) { if (e.key === 'Enter' || e.key === ' ') { e.preventDefault(); go(); } }; h.appendChild(th);
+      });
+      h.appendChild(document.createElement('th'));
       var tb = t.createTBody();
-      rows.filter(function (r) { return !q || (r.name + ' ' + r.email).toLowerCase().indexOf(q) >= 0; }).forEach(function (r) {
+      view().forEach(function (r) {
         var tr = tb.insertRow();
         var sm = summary(r); [r.name, r.email, 'Lv ' + (r.level || 1), r.xp || 0, sm.mc, sm.acc, sm.games, r.visits || 0, fmt(r.lastSeen)].forEach(function (x) { tr.insertCell().textContent = x; });
         var bt = document.createElement('button'); bt.type = 'button'; bt.textContent = 'Details'; bt.className = 'dash-det'; bt.onclick = function () { detail(r); }; tr.insertCell().appendChild(bt);
@@ -207,7 +233,7 @@
     }).catch(function (e) { m.querySelector('.dash-body').textContent = 'Could not load: ' + (e && e.code || e) + '. Check the Firestore rules and your ICT_ADMINS email.'; });
     m.querySelector('#dash-q').addEventListener('input', render);
     m.querySelector('#dash-copy').onclick = function () {
-      var csv = 'name,email,level,xp,mc_correct,accuracy,games,visits\n' + rows.map(function (r) { var sm = summary(r); return [r.name, r.email, r.level, r.xp, sm.mc, sm.acc, sm.games, r.visits].map(function (x) { return '"' + String(x == null ? '' : x).replace(/"/g, '""') + '"'; }).join(','); }).join('\n');
+      var csv = 'name,email,level,xp,mc_correct,accuracy,games,visits\n' + view().map(function (r) { var sm = summary(r); return [r.name, r.email, r.level, r.xp, sm.mc, sm.acc, sm.games, r.visits].map(function (x) { return '"' + String(x == null ? '' : x).replace(/"/g, '""') + '"'; }).join(','); }).join('\n');
       navigator.clipboard.writeText(csv).then(function () { F.toast('CSV copied'); }, function () { F.toast('Copy failed'); });
     };
   }
